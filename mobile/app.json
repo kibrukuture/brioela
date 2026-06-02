@@ -1,0 +1,216 @@
+{
+  "expo": {
+    "name": "Schnl",
+    "slug": "schnl",
+    "version": "1.0.0",
+    "scheme": "com.schnl.app",
+    "backgroundColor": "#FFFFFF",
+    "web": {
+      "bundler": "metro",
+      "output": "static",
+      "favicon": "./assets/media/favicon.png"
+    },
+    "plugins": [
+      [
+        "expo-media-library",
+        {
+          "savePhotosPermission": "Allow $(PRODUCT_NAME) to save photos.",
+          "isAccessMediaLocationEnabled": true
+        }
+      ],
+      ["expo-localization"],
+      [
+        "expo-local-authentication",
+        {
+          "faceIDPermission": "Allow $(PRODUCT_NAME) to use Face ID."
+        }
+      ],
+      [
+        "expo-font",
+        {
+          "fonts": ["./assets/fonts/parafina_black.ttf"],
+          "android": {
+            "fonts": [
+              {
+                "fontFamily": "parafina_black",
+                "fontDefinitions": [
+                  {
+                    "path": "./assets/fonts/parafina_black.ttf",
+                    "weight": 900,
+                    "style": "normal"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "minSdkVersion": 26,
+            "kotlinJvmTarget": "17",
+            "extraGradleProperties": {
+              "kotlin.compiler.jvmTarget": "17",
+              "kotlin.daemon.jvmargs": "-Xmx2048M",
+              "org.gradle.jvmargs": "-Xmx4g -XX:MaxMetaspaceSize=1024m"
+            }
+          },
+          "ios": {
+            "deploymentTarget": "16.1",
+            "useFrameworks": "static"
+          }
+        }
+      ],
+      [
+        "expo-calendar",
+        {
+          "calendarPermission": "Allow $(PRODUCT_NAME) to access your calendar to add and manage events"
+        }
+      ],
+      ["expo-apple-authentication"],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow $(PRODUCT_NAME) to access photos"
+        }
+      ],
+      [
+        "expo-document-picker",
+        {
+          "iCloudContainerEnvironment": "Production"
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/notification_icon.png",
+          "color": "#ffffff",
+          "defaultChannel": "default",
+          "enableBackgroundRemoteNotifications": false
+        }
+      ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera",
+          "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone",
+          "recordAudioAndroid": true
+        }
+      ],
+      [
+        "expo-av",
+        {
+          "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone."
+        }
+      ],
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#FFFFFF",
+          "image": "./assets/media/splash.png",
+          "imageWidth": 400
+        }
+      ],
+      "expo-router",
+      [
+        "expo-dev-launcher",
+        {
+          "launchMode": "most-recent"
+        }
+      ],
+      [
+        "expo-audio",
+        {
+          "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone."
+        }
+      ],
+      "expo-secure-store",
+      "expo-web-browser",
+      "./courier-plugin.js",
+      "react-native-quick-crypto",
+      "./plugins/with-kotlin-jvm-target.js"
+    ],
+    "experiments": {
+      "typedRoutes": true,
+      "tsconfigPaths": true
+    },
+    "orientation": "portrait",
+    "icon": "./assets/media/icon.png",
+    "userInterfaceStyle": "automatic",
+    "splash": {
+      "image": "./assets/media/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "associatedDomains": ["applinks:schnl.com"],
+      "supportsTablet": true,
+      "usesAppleSignIn": true,
+      "bundleIdentifier": "com.schnl.app",
+      "jsEngine": "hermes",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSLocationWhenInUseUsageDescription": "Schnl needs your location to determine regional banking eligibility and comply with regulatory requirements."
+      },
+      "entitlements": {
+        "com.apple.developer.networking.wifi-info": true
+      }
+    },
+    "android": {
+      "edgeToEdgeEnabled": true,
+      "jsEngine": "hermes",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/media/adaptive.png",
+        "backgroundColor": "#ffffff"
+      },
+      "package": "com.schnl.app",
+      "permissions": [
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.MODIFY_AUDIO_SETTINGS",
+        "android.permission.READ_CALENDAR",
+        "android.permission.WRITE_CALENDAR",
+        "android.permission.USE_BIOMETRIC",
+        "android.permission.USE_FINGERPRINT"
+      ],
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [
+            {
+              "scheme": "https",
+              "host": "schnl.com",
+              "pathPrefix": "/pay"
+            }
+          ],
+          "category": ["BROWSABLE", "DEFAULT"]
+        },
+        {
+          "action": "VIEW",
+          "data": [
+            {
+              "scheme": "com.schnl.app"
+            }
+          ],
+          "category": ["BROWSABLE", "DEFAULT"]
+        }
+      ]
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "f4babf7c-f73e-43fe-8f32-46270c65a2a6"
+      }
+    },
+    "newArchEnabled": true,
+    "owner": "kibrukuture"
+  }
+}

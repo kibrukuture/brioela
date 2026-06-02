@@ -1,0 +1,29 @@
+{
+  "about": {
+    "title": "Account",
+    "subtitle": "Manage your data and settings",
+    "description": "Here you can request your data or delete your account. All actions are immediate and secure."
+  },
+  "requestData": {
+    "title": "Your Data",
+    "subtitle": "Download everything we have",
+    "description": "Get a complete copy of your account data — assignments, habits, notes, and everything else. We'll email you a secure download link.",
+    "btnLabel": "Request Data"
+  },
+  "deleteAccount": {
+    "title": "Delete Account",
+    "subtitle": "This action is permanent",
+    "description": "Deleting your account permanently removes all your data from our servers. This action cannot be undone.",
+    "btnLabel": "Delete Account"
+  },
+  "deletionConfirmation": {
+    "title": "Delete Account",
+    "message": "Are you sure you want to permanently delete your account? This action cannot be undone.",
+    "btnLabel": "Delete",
+    "btnLabelCancel": "Cancel"
+  },
+  "onDataRequestSubmission": {
+    "title": "Request Submitted",
+    "message": "Your data is being prepared. Once ready, a secure download link will be sent to your registered email."
+  }
+}

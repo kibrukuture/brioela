@@ -1,0 +1,1 @@
+ALTER TABLE "schnl"."banking_virtual_accounts" ADD COLUMN "banking_rail" "schnl"."banking_rail";

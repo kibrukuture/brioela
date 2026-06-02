@@ -1,0 +1,51 @@
+import type { CardData } from './types';
+
+export function getMockCards(): readonly CardData[] {
+  return [
+    {
+      id: 'card-1',
+      type: 'physical',
+      status: 'expiring_soon',
+      design: 'hello_world',
+      lastFourDigits: '1796',
+      expiryDate: '05/26',
+      cardholderName: 'KIBRU JOBA KUTURE',
+      cardNumber: '4569 3305 0486 1796',
+      securityCode: '462',
+      billingAddress: 'Eichendorffring 107 Y.514, Giessen, 35394, Germany',
+      pin: '8522',
+      isExpiringSoon: true,
+      expiryWarningMessage: 'This card will expire on May 31, 2026',
+    },
+    {
+      id: 'card-2',
+      type: 'virtual',
+      status: 'frozen',
+      design: 'schnl_frozen',
+      lastFourDigits: '0311',
+      expiryDate: '12/27',
+      cardholderName: 'KIBRU JOBA KUTURE',
+      cardNumber: '4569 3305 0486 0311',
+      securityCode: '891',
+      billingAddress: 'Eichendorffring 107 Y.514, Giessen, 35394, Germany',
+      pin: '4521',
+      isExpiringSoon: false,
+      expiryWarningMessage: null,
+    },
+    {
+      id: 'card-3',
+      type: 'virtual',
+      status: 'active',
+      design: 'schnl_tropical',
+      lastFourDigits: '8539',
+      expiryDate: '08/28',
+      cardholderName: 'KIBRU JOBA KUTURE',
+      cardNumber: '4569 3305 0486 8539',
+      securityCode: '234',
+      billingAddress: 'Eichendorffring 107 Y.514, Giessen, 35394, Germany',
+      pin: '7789',
+      isExpiringSoon: false,
+      expiryWarningMessage: null,
+    },
+  ] as const;
+}

@@ -1,0 +1,27 @@
+{
+	"name": "schnl-api",
+	"main": "src/index.ts",
+	"compatibility_date": "2025-11-30",
+	"compatibility_flags": ["nodejs_compat", "nodejs_compat_populate_process_env"],
+	"observability": {
+		"logs": {
+			"enabled": true,
+			"head_sampling_rate": 1,
+			"invocation_logs": true
+		}
+	},
+
+	// Disable workers.dev URL
+	"workers_dev": false,
+
+	// Disable Preview URLs
+	"preview_urls": false,
+
+	// Only serve on api.schnl.com
+	"routes": [
+		{
+			"pattern": "api.schnl.com/*",
+			"zone_name": "schnl.com"
+		}
+	]
+}

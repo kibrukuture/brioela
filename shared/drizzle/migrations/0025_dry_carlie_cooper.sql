@@ -1,0 +1,1 @@
+ALTER TABLE "schnl"."banking_virtual_accounts" DROP COLUMN "banking_rail";

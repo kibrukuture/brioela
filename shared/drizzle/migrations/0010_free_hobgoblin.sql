@@ -1,0 +1,2 @@
+ALTER TABLE "schnl"."users" ADD CONSTRAINT "users_membership_number_unique" UNIQUE("membership_number");--> statement-breakpoint
+ALTER TABLE "schnl"."users" ADD CONSTRAINT "membership_number_format" CHECK (membership_number IS NULL OR membership_number ~ '^[IC]-[23456789ADEFGHJKLMNPQRTUVWXY]{8}$');

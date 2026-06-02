@@ -1,0 +1,54 @@
+{
+  "title": "Einstellungen",
+  "account": "Konto",
+  "profile": "Profil",
+  "notifications": "Benachrichtigungen",
+
+  "appearance": "Darstellung",
+  "privacy": "Datenschutz",
+  "termsOfService": "Nutzungsbedingungen",
+  "privacyPolicy": "Datenschutzerklärung",
+  "deleteAccount": "Konto löschen",
+  "logout": "Abmelden",
+  "version": "Schnl v1.0.0",
+  "aboutUs": "Über uns",
+  "loading": "Laden",
+
+  "support": "Hilfe",
+
+  "calendars": "Kalender",
+  "reminderSettings": "Erinnerungseinstellungen",
+
+  "language": {
+    "label": "Sprache",
+    "description": "Wähle, welche Sprache du verwenden möchtest."
+  },
+  "languageNames": {
+    "en": "Englisch",
+    "de": "Deutsch",
+    "ar": "Arabisch"
+  },
+  "appearanceSection": {
+    "label": "Darstellung",
+    "description": "Wähle, welches Theme verwendet wird.",
+    "themes": {
+      "system": "System",
+      "light": "Hell",
+      "dark": "Dunkel"
+    }
+  },
+  "billing": {
+    "label": "Rechnung",
+    "description": "Verwalte deine Rechnungsinformationen."
+  },
+  "website": {
+    "label": "Website",
+    "privacy": "Datenschutzerklärung",
+    "terms": "Nutzungsbedingungen"
+  },
+  "aboutSchnl": {
+    "rateUs": "Schnl magst du? Bewerte uns",
+    "shareWith": "Mit Freunden teilen",
+    "aboutUs": "Über uns"
+  }
+}

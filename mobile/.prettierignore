@@ -1,0 +1,20 @@
+# Generated / vendor
+node_modules/
+.*/
+
+# Expo
+.expo/
+
+# Native projects
+ios/
+android/
+
+# Build outputs
+build/
+dist/
+
+# Lockfiles
+bun.lock
+package-lock.json
+yarn.lock
+pnpm-lock.yaml

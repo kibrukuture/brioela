@@ -1,0 +1,29 @@
+{
+  "about": {
+    "title": "Konto",
+    "subtitle": "Verwalte deine Daten und Einstellungen",
+    "description": "Hier kannst du deine Daten anfordern oder dein Konto löschen. Alle Aktionen sind sofort und sicher."
+  },
+  "requestData": {
+    "title": "Deine Daten",
+    "subtitle": "Alles herunterladen, was wir haben",
+    "description": "Erhalte eine vollständige Kopie deiner Kontodaten – Aufgaben, Gewohnheiten, Notizen und alles andere. Wir senden dir einen sicheren Download-Link per E-Mail.",
+    "btnLabel": "Daten anfordern"
+  },
+  "deleteAccount": {
+    "title": "Konto löschen",
+    "subtitle": "Diese Aktion ist endgültig",
+    "description": "Durch das Löschen deines Kontos werden alle deine Daten dauerhaft von unseren Servern entfernt. Diese Aktion kann nicht rückgängig gemacht werden.",
+    "btnLabel": "Konto löschen"
+  },
+  "deletionConfirmation": {
+    "title": "Konto löschen",
+    "message": "Bist du sicher, dass du dein Konto dauerhaft löschen möchtest? Diese Aktion kann nicht rückgängig gemacht werden.",
+    "btnLabel": "Löschen",
+    "btnLabelCancel": "Abbrechen"
+  },
+  "onDataRequestSubmission": {
+    "title": "Anfrage eingereicht",
+    "message": "Deine Daten werden vorbereitet. Sobald sie bereit sind, senden wir dir einen sicheren Download-Link an deine registrierte E-Mail-Adresse."
+  }
+}

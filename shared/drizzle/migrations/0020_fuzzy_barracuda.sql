@@ -1,0 +1,2 @@
+CREATE TYPE "schnl"."crypto_network" AS ENUM('ethereum', 'polygon', 'base', 'solana', 'tron', 'arbitrum');--> statement-breakpoint
+ALTER TABLE "schnl"."banking_wallets" ADD COLUMN "network" "schnl"."crypto_network" DEFAULT 'ethereum' NOT NULL;

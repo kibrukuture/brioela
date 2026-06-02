@@ -1,0 +1,1 @@
+ALTER TABLE "schnl"."users" ALTER COLUMN "is_discoverable" SET DEFAULT false;

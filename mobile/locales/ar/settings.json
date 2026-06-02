@@ -1,0 +1,38 @@
+{
+  "title": "الإعدادات",
+  "account": "الحساب",
+  "profile": "الملف الشخصي",
+  "notifications": "الإشعارات",
+  "language": "اللغة",
+  "appearance": "المظهر",
+  "privacy": "الخصوصية",
+  "termsOfService": "شروط الخدمة",
+  "privacyPolicy": "سياسة الخصوصية",
+  "deleteAccount": "حذف الحساب",
+  "logout": "تسجيل الخروج",
+  "version": "Schnl v1.0.0",
+  "aboutUs": "معلومات عنا",
+  "loading": "جار التحميل",
+  "chooseWhichLanguageToUse": "اختر اللغة التي تريد استخدامها.",
+  "languageNames": {
+    "en": "الإنجليزية",
+    "de": "الألمانية",
+    "ar": "العربية"
+  },
+  "appearanceSection": {
+    "label": "المظهر",
+    "description": "اختر المظهر الذي تريد استخدامه.",
+    "themes": {
+      "system": "النظام",
+      "light": "فاتح",
+      "dark": "داكن"
+    }
+  },
+  "support": "الدعم",
+  "aboutSchnl": "عن كلمر",
+  "loveSchnlRateUs": "تحب كلمر؟ قيمنا",
+  "shareWithFriends": "شارك مع الأصدقاء",
+  "calendars": "التقويمات",
+  "reminderSettings": "إعدادات التذكير",
+  "website": "الموقع الإلكتروني"
+}

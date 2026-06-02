@@ -1,0 +1,30 @@
+{
+  "name": "@schnl/shared",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio",
+    "db:drop": "drizzle-kit drop",
+    "db:check": "drizzle-kit check",
+    "db:up": "drizzle-kit up",
+    "db:migrate:run": "tsx drizzle/migrate.ts"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "@tolbel/align": "^1.2.7",
+    "drizzle-kit": "^0.31.8",
+    "drizzle-orm": "^0.44.7",
+    "ibantools": "^4.5.1",
+    "validator": "^13.15.26",
+    "zod": "^4.3.2"
+  }
+}

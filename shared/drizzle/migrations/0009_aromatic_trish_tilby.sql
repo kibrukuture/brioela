@@ -1,0 +1,1 @@
+ALTER TABLE "schnl"."users" ADD COLUMN "membership_number" text;

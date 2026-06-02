@@ -1,0 +1,2 @@
+export const SMART_WALLET_SESSION_GRANT_DURATION_DAYS = 365 as const;
+

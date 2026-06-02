@@ -1,0 +1,15 @@
+{
+  "loading": "Laden",
+  "save": "Speichern",
+  "cancel": "Abbrechen",
+  "delete": "Löschen",
+  "edit": "Bearbeiten",
+  "confirm": "Bestätigen",
+  "back": "Zurück",
+  "next": "Weiter",
+  "done": "Fertig",
+  "error": "Fehler",
+  "success": "Erfolg",
+  "retry": "Wiederholen",
+  "close": "Schließen"
+}

@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX "banking_wallet_sessions_one_active_per_wallet" ON "schnl"."banking_wallet_sessions" USING btree ("wallet_id") WHERE status = 'active';

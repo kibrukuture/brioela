@@ -1,0 +1,22 @@
+import { useEffect } from 'react';
+import { useRouter } from 'expo-router'; // We don't even need useSegments anymore
+import { useAuthStore } from '@/stores/account/use-auth-store';
+
+export function useProtectedRoute() {
+  const { user, isLoading } = useAuthStore();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (isLoading) {
+      return; // Wait for auth state to load
+    }
+
+    // Since this hook is ONLY used in protected layouts, we don't need to check
+    // which group we are in. If we are executing this code, we are in a protected area.
+
+    if (!user) {
+      // If no user, redirect to onboarding.
+      router.replace('/onboarding');
+    }
+  }, [user, isLoading, router]);
+}

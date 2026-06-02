@@ -1,0 +1,53 @@
+{
+  "title": "Settings",
+  "account": "Account",
+  "profile": "Profile",
+  "notifications": "Notifications",
+
+  "privacy": "Privacy",
+  "termsOfService": "Terms of Service",
+  "privacyPolicy": "Privacy Policy",
+  "deleteAccount": "Delete Account",
+  "logout": "Logout",
+  "version": "Schnl v1.0.0",
+  "aboutUs": "About Us",
+  "loading": "Loading",
+
+  "support": "Support",
+
+  "calendars": "Calendars",
+  "reminderSettings": "Reminder Settings",
+
+  "language": {
+    "label": "Language",
+    "description": "Choose which language to use."
+  },
+  "languageNames": {
+    "en": "English",
+    "de": "German",
+    "ar": "Arabic"
+  },
+  "appearanceSection": {
+    "label": "Appearance",
+    "description": "Choose which theme is used.",
+    "themes": {
+      "system": "System",
+      "light": "Light",
+      "dark": "Dark"
+    }
+  },
+  "billing": {
+    "label": "Billing",
+    "description": "Manage your billing information."
+  },
+  "website": {
+    "label": "Website",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service"
+  },
+  "aboutSchnl": {
+    "rateUs": "Love Schnl? Rate us",
+    "shareWith": "Share with friends",
+    "aboutUs": "About Us"
+  }
+}
