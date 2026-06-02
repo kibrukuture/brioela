@@ -1,4 +1,3 @@
-import '@thirdweb-dev/react-native-adapter';
 import { useCallback, useEffect } from 'react';
 import { initI18n } from '@/lib/i18n';
 import * as SystemUI from 'expo-system-ui';
@@ -33,10 +32,7 @@ import { PostHogScreenTracker } from '@/components/posthog/posthog-screen-tracke
 import { TanStackQueryNativeSetup } from '@/components/tanstack/tanstack-query-native-setup';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { initializeOneSignal } from '@/lib/push-notifications/one-signal';
-import { ThirdWebProvider } from '@/providers/third-web-provider';
 import { PaperProvider } from 'react-native-paper';
-import { StripeProvider } from '@stripe/stripe-react-native';
-import { getStripePublishableKey } from '@/lib/payment-providers/stripe';
 
 // import { useQueryNativeSetup } from '@/hooks/tanstack/use-query-native-setup';
 
@@ -64,7 +60,6 @@ export default function RootLayout() {
   const { colorScheme, isDarkColorScheme } = useColorScheme();
   initializeOneSignal();
 
-  const stripePublishableKey = getStripePublishableKey();
   // useQueryNativeSetup();
   // tracking screen views
 
@@ -109,26 +104,22 @@ export default function RootLayout() {
           <PaperProvider>
             <QueryProvider>
               <TanStackQueryNativeSetup />
-              <StripeProvider publishableKey={stripePublishableKey}>
-                <ThirdWebProvider>
-                  <PostHogProvider>
-                    <PostHogScreenTracker>
-                      <StatusBar style={isDarkColorScheme ? 'light' : 'dark'} />
-                      <GestureHandlerRootView style={{ flex: 1 }} onLayout={onLayoutRootView}>
-                        <SheetProvider>
-                          <ActionSheetProvider>
-                            <NavThemeProvider value={NAV_THEME[colorScheme]}>
-                              <AppGate>
-                                <Stack screenOptions={{ headerShown: false }} />
-                              </AppGate>
-                            </NavThemeProvider>
-                          </ActionSheetProvider>
-                        </SheetProvider>
-                      </GestureHandlerRootView>
-                    </PostHogScreenTracker>
-                  </PostHogProvider>
-                </ThirdWebProvider>
-              </StripeProvider>
+              <PostHogProvider>
+                <PostHogScreenTracker>
+                  <StatusBar style={isDarkColorScheme ? 'light' : 'dark'} />
+                  <GestureHandlerRootView style={{ flex: 1 }} onLayout={onLayoutRootView}>
+                    <SheetProvider>
+                      <ActionSheetProvider>
+                        <NavThemeProvider value={NAV_THEME[colorScheme]}>
+                          <AppGate>
+                            <Stack screenOptions={{ headerShown: false }} />
+                          </AppGate>
+                        </NavThemeProvider>
+                      </ActionSheetProvider>
+                    </SheetProvider>
+                  </GestureHandlerRootView>
+                </PostHogScreenTracker>
+              </PostHogProvider>
             </QueryProvider>
           </PaperProvider>
         </KeyboardProvider>

@@ -6,15 +6,12 @@ import {
   Platform,
   TouchableOpacity,
   Linking,
-  ActivityIndicator,
 } from 'react-native';
 import * as Burnt from 'burnt';
 
 import ModalHandle from '@/components/ui/modal-handle';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useUser } from '@/hooks/users/use-user';
-import { useStripeBilling } from '@/hooks/payments/use-stripe-billing';
-
 interface BillingManagementModalProps {
   visible: boolean;
   onClose: () => void;
@@ -22,8 +19,6 @@ interface BillingManagementModalProps {
 
 const BillingManagementModal: React.FC<BillingManagementModalProps> = ({ visible, onClose }) => {
   const { data: user } = useUser();
-
-  const { mutate: openStripeBilling, isPending } = useStripeBilling();
 
   const handleManageSubscription = async () => {
     if (!user?.subscriptionPlatform) {
@@ -87,13 +82,6 @@ const BillingManagementModal: React.FC<BillingManagementModalProps> = ({ visible
         break;
       }
 
-      case 'STRIPE': {
-        if (user?.id) {
-          openStripeBilling();
-        }
-        break;
-      }
-
       default: {
         Burnt.toast({
           title: 'Error',
@@ -136,10 +124,9 @@ const BillingManagementModal: React.FC<BillingManagementModalProps> = ({ visible
 
               <TouchableOpacity
                 onPress={handleManageSubscription}
-                disabled={isPending}
                 className="rounded-lg border border-gray-200 px-4 py-2 text-center font-semibold"
                 style={{ overflow: 'hidden' }}>
-                {isPending ? <ActivityIndicator size="small" /> : <Text>Manage</Text>}
+                <Text>Manage</Text>
               </TouchableOpacity>
             </View>
           </View>
