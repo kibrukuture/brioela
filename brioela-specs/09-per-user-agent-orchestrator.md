@@ -279,19 +279,19 @@ The Orchestrator DO is not just a food database. It holds every dimension of wha
 
 | Domain | What it holds | Schema type |
 |---|---|---|
-| `food_memory` | scan history, recipe history, meal logs, negative outcomes | structured (Drizzle schema) |
+| `food_memory` | scan history, recipe history, meal logs, negative outcomes | structured |
 | `constraint_memory` | allergies, dislikes, dietary identity, boycott filters | structured |
 | `behavioral_patterns` | stress eating signals, sickness correlations, time-of-day patterns | structured |
 | `medical_conditions` | declared or inferred conditions (spec 28) | structured |
-| `medication_profile` | detected medications, active drug-food interaction skill (spec 34) | structured |
+| `user_memory` | all declarative facts about the user — categorized (health, diet, location, relationships, preferences, personality), key/value/confidence/source — replaces the old `medication_profile` and `lifestyle_memory` | structured with AI-written values |
+| `user_personality` | AI-inferred personality traits — trait name, evidence array, strength score; never predefined by a developer; agent decides what traits exist from patterns over time | unstructured (AI-authored traits) |
 | `health_signals` | stool photos, glucose readings, symptom logs (spec 34) | structured |
-| `lifestyle_memory` | free-form AI-written observations (dog, gym, baby, garden, travel context) | unstructured (key/value/confidence) |
 | `location_memory` | visited places, inferred travel context, home city | structured |
 | `session_history` | cooking session summaries, grandma style profiles | structured |
 | `session_archive` | cold-tier archived turns from compressed sessions — FTS5-indexed, searchable via recall_session_context | structured |
-| `skills` | reusable instruction sets in markdown — name, description, content, tags, use_count | structured |
+| `skills` | reusable procedural instruction sets in markdown — name, description, content, tags, use_count | structured |
 
-`lifestyle_memory` is the only unstructured domain. The agent writes its own keys and values with no predetermined schema. This is intentional — it allows the agent to learn new things about the user that no human could anticipate at design time.
+**The core distinction across all domains**: `user_memory` and `user_personality` hold *who the user is* (declarative facts and personality traits). `skills` holds *how to serve the user* (procedural instructions). These must never be conflated. A medication detected from a photo → fact in `user_memory`. The agent deciding to create a procedure for handling medication questions → entry in `skills`. Most visual intake produces only memory updates. Skills are rare, earned from patterns, created by the agent's own judgment.
 
 ## Data Boundaries
 

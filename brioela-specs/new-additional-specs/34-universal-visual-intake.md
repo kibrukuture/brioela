@@ -12,17 +12,51 @@ The agent's job: classify, decide, route. Everything else is automatic.
 
 This is the closest Brioela gets to a true Hermes-like agent — a system that builds a complete, multi-dimensional picture of a person from passive observation, not from forms, not from settings, not from explicit declarations. The user just shows it things. The agent learns.
 
+## Memory vs Skills — The Distinction That Must Not Be Blurred
+
+Before anything else: a photo almost never creates a skill. It almost always updates memory. These are different things and must stay separate.
+
+**Memory (declarative)** — facts about the user. "Takes metformin 500mg." "Has a dog." "Visited Japan in June." "Blood pressure reading 138/88." These are stored in `user_memory` and `user_personality`. They tell the agent WHO the user is.
+
+**Skills (procedural)** — reusable how-to instructions the agent follows. "When this user asks about food safety, cross-reference their medication list before answering." "When cooking sessions involve a user with an infant, suggest faster prep times." These are stored in the `skills` table. They tell the agent HOW to serve this user better.
+
+A prescription photo → writes a medication fact to `user_memory` (declarative). But it may ALSO cause the agent to create a skill: "I should now always check drug-food interactions for this user during any food discussion." That skill creation is the agent's own judgment call — it decides whether the new memory fact warrants a new procedural skill. Usually: memory only. Occasionally: memory + skill.
+
+This is the same distinction Hermes makes. Most input → memory. Skills are rare and earned from patterns.
+
 ## What Happens When a Photo Is Submitted
 
 1. The image goes to the Vision classification pipeline (a single Gemini vision call — not a streaming session).
-2. The agent produces a structured classification:
-   - **What is this?** (free-form, AI-written description)
-   - **Is this relevant to knowing this user?** (yes / no / uncertain)
-   - **If yes: what memory domain does this belong to?** (food, medication, health-signal, lifestyle, location, discard)
-   - **What should be written to memory, if anything?**
-   - **Does this unlock or strengthen a new capability?**
-3. Based on the classification, the agent routes to the appropriate handler in the Orchestrator DO.
-4. Memory is written, a skill is activated or strengthened, or the image is discarded — all silently. The user receives a one-line confirmation or nothing at all.
+2. The model returns a **structured JSON object** — not free text:
+
+```json
+{
+  "shouldProcess": true,
+  "category": "health",
+  "reasoning": "prescription bottle label visible, drug name readable",
+  "memoryUpdates": [
+    {
+      "table": "user_memory",
+      "category": "health",
+      "key": "medications",
+      "value": "metformin 500mg, twice daily",
+      "confidence": 0.91
+    }
+  ],
+  "personalitySignals": [],
+  "newSkill": {
+    "create": true,
+    "name": "medication-aware-food-guidance",
+    "description": "Cross-reference user medication list for interactions before any food recommendation",
+    "content": "...(full procedural markdown)..."
+  }
+}
+```
+
+The `newSkill` field is null in the vast majority of cases. The model only proposes a skill when it identifies a genuinely reusable procedure — not just a fact.
+
+3. The Orchestrator DO handler parses the JSON, writes `memoryUpdates` to the appropriate tables, and conditionally calls `skill_create` if `newSkill.create` is true.
+4. Everything is silent. The user receives a one-line confirmation only when a new skill is created for the first time.
 
 ## Classification Domains
 
@@ -66,28 +100,33 @@ A photo of a blank wall, a blurry image, a selfie with no food or health context
 
 The discard threshold is intentionally high. The agent errs toward discarding rather than writing noise to memory. A low-confidence observation is worth less than a clean memory with no noise.
 
-## The Medication Skill
+## What a Medication Photo Actually Does
 
-When the agent detects medication, it unlocks the Medication Skill in the Orchestrator DO — a capability set that was dormant before.
+A medication photo writes a fact to memory. That is the primary action. What changes downstream is driven by the memory fact being present — not by a "skill" being unlocked.
 
-What the Medication Skill does:
+**The memory write (always happens):**
+The drug name, dosage, and frequency are written to `user_memory` under `category = 'health'`, `key = 'medications'`. This fact is now part of the user's permanent profile. It is injected into every session context from this point on, the same way allergies are.
 
-- **Scan flag augmentation**: every product scan now checks for drug-food interactions with the identified medication. Grapefruit + statins. Vitamin K + Warfarin. Tyramine + MAOIs. These are flagged inline on the scan result, at the same priority level as a hard allergy flag.
-- **Recipe filter augmentation**: recipes using high-interaction ingredients are flagged or filtered in the same way dietary conditions are handled (spec 28).
-- **Voice session context**: the medication profile is injected into every cooking session so the AI can mention interactions proactively.
-- **Interaction database**: drug-food interaction rules are maintained as versioned config in Supabase — not hardcoded in DO logic, so they can be updated without a deploy.
+**The downstream behavioral effects (driven by the memory fact):**
+- Every product scan now automatically checks drug-food interactions for any medication in the user's `user_memory.medications` list. Grapefruit + statins. Vitamin K + Warfarin. Tyramine + MAOIs. The interaction check is part of the scan pipeline — it runs whenever `user_memory` contains any medications.
+- Recipe suggestions are filtered against the same interaction rules.
+- Voice session context includes the medication list so the AI can mention interactions proactively.
+- Interaction rules live in Supabase as versioned config — not hardcoded — so they update without a deploy.
 
-The Medication Skill is cumulative. If the user photographs two different medications, both are active and both are checked on every scan.
+**The skill (sometimes created, AI decides):**
+The agent may create a procedural skill in the `skills` table: "When this user asks about any food or product, always check `user_memory.medications` for interactions before responding." This is a procedural how-to, not a fact. The agent creates it if it judges the behavioral change is complex enough to be worth a reusable procedure. For simple single-medication cases, the memory fact alone is sufficient and no skill is created.
 
-The user can say "I stopped taking [drug]" at any point. The agent deactivates that medication from the profile and stops checking interactions.
+Medications are cumulative. Multiple medication photos → multiple entries in `user_memory.medications`. All are checked on every scan.
+
+"I stopped taking [drug]" → agent sets `active = false` on that entry in `user_memory`. Interaction checks for that drug stop immediately.
 
 ## The Agent's Autonomy Principle
 
 This feature is unusual in that the agent has more autonomy than any other feature in Brioela. The rules:
 
 1. **The agent decides relevance.** It does not ask "should I remember this?" It decides. If confidence is below a threshold, it discards.
-2. **The agent writes its own memory schema for lifestyle data.** No human-designed columns for "has_dog" or "is_athletic." The agent writes what it observed in natural language, with a confidence score.
-3. **The agent decides when a skill should activate.** Seeing a prescription bottle once is enough to activate the Medication Skill. Seeing a dog once might write a low-confidence note. Seeing a gym three times builds the confidence to write a higher-weight lifestyle signal.
+2. **The agent writes its own memory values and personality traits.** No human-designed columns for "has_dog" or "is_athletic." Facts go to `user_memory` with AI-written values. Personality traits go to `user_personality` with AI-decided trait names — the developer never predefines what traits exist.
+3. **The agent decides when a skill should be created.** Most photos produce only memory updates. A skill is only created when the agent identifies a reusable procedure — something it will need to do differently for this user in every future session. Seeing a prescription bottle → memory update (always) + possible skill creation (AI decides). Seeing a dog → memory note. Seeing three gym photos → `user_personality` trait upgrade.
 4. **The agent never shows its work unless asked.** It does not produce a notification every time it writes to memory. The memory update is silent. The user experiences the effect (richer context, better suggestions, new scan flags) without being told "I just learned X about you." That would feel surveillance-like. The learning is invisible; the benefit is visible.
 
 ## What the User Sees
@@ -106,18 +145,76 @@ The user can access a "what Brioela knows about me" screen in settings that show
 
 - Medication profile feeds into spec 28 (medical condition food profile) — medications are treated like a medical condition modifier on top of any declared condition.
 - Health signals feed into spec 30 (food illness detective) — stool and symptom photos are additional input to the illness investigation pipeline.
-- Lifestyle memory feeds into spec 09 (orchestrator DO) context injection — the agent has richer context for all sessions.
-- Location photos feed into spec 22 (pre-trip food intelligence) — agent infers travel context without explicit declaration.
-- Recipe session context is enriched by lifestyle memory — the agent knows it's cooking for someone with an infant, or someone who lifts weights, without being told.
+- `user_memory` and `user_personality` feed into spec 09 (orchestrator DO) context injection — every session is enriched by the full picture of who the user is.
+- Location photos feed into spec 22 (pre-trip food intelligence) — `user_memory.location.visited_places` signals travel context without the user ever saying where they are going.
+- Recipe session context is enriched by personality traits — the agent knows it is cooking for someone with an infant (faster prep), or a fitness-focused person (protein-dense options), purely from observed patterns.
 
 ## Data Model
 
-- `visual_intake_event`: event_id, user_id, classification_domain, classification_summary, confidence, memory_written (boolean), skill_activated (nullable), created_at. No raw image stored after processing.
-- `medication_profile`: user_id, drug_name, dosage (nullable), frequency (nullable), confidence, source (photo/voice), active (boolean), detected_at, deactivated_at.
-- `lifestyle_memory`: entry_id, user_id, key (free-form, AI-written), value (free-form, AI-written), confidence (0.0–1.0), source_event_id, created_at, updated_at.
-- `health_signal_event`: event_id, user_id, signal_type (stool/glucose/blood_pressure/rash/other), value (free-form), bristol_scale_type (nullable), related_food_window_json, created_at.
+### `user_memory` — Declarative facts about the user
 
-Raw images are **never stored**. Classification and derived facts only. The image is processed in memory, the result is written, the image is discarded.
+All memory from visual intake (and from any other source) writes to a single structured table. Category is the namespace; key is the specific fact; value is the AI-authored content.
+
+```sql
+CREATE TABLE user_memory (
+  id          TEXT PRIMARY KEY,
+  category    TEXT NOT NULL,   -- health | diet | location | relationships | preferences | personality
+  key         TEXT NOT NULL,   -- e.g. "medications", "visited_places", "food_restrictions", "has_dog"
+  value       TEXT NOT NULL,   -- the fact in natural language
+  confidence  REAL NOT NULL,   -- 0.0–1.0, grows with repeated evidence
+  source      TEXT NOT NULL,   -- "image" | "conversation" | "inferred" | "explicit"
+  active      INTEGER DEFAULT 1, -- 0 = deactivated (user said it's no longer true)
+  observed_at INTEGER NOT NULL,
+  updated_at  INTEGER NOT NULL
+);
+```
+
+Examples of what the agent writes here across all visual intake types:
+
+| category | key | value |
+|---|---|---|
+| health | medications | "metformin 500mg, twice daily" |
+| health | health_monitoring | "tracks blood glucose, readings ~130–150 mg/dL" |
+| diet | food_restrictions | "avoids gluten, not celiac — preference-level" |
+| location | visited_places | "coastal Japan, June 2026" |
+| relationships | household | "has an infant at home" |
+| preferences | lifestyle | "grows own herbs and vegetables" |
+| personality | fitness | "active gym user, protein-focused diet" |
+
+### `user_personality` — AI-inferred personality traits
+
+Distinct from individual facts. The agent builds trait inferences over time from patterns across many observations — not from a single photo. A trait is only written here when confidence is earned from multiple signals.
+
+```sql
+CREATE TABLE user_personality (
+  trait        TEXT PRIMARY KEY,  -- AI-decided, never predefined: "health_conscious", "dog_person", "outdoor_traveler"
+  evidence     TEXT NOT NULL,     -- JSON array of observation IDs that support this trait
+  strength     REAL NOT NULL,     -- 0.0–1.0, grows with more supporting evidence
+  inferred_at  INTEGER NOT NULL,
+  updated_at   INTEGER NOT NULL
+);
+```
+
+The AI decides what traits exist. There is no list of allowed traits. After seeing gym photos, protein supplements, and early-morning recipe choices, the agent infers `trait = "fitness-focused"` with evidence pointing to three separate signals. After one gym photo, the confidence is low; after a consistent pattern, it graduates to a real trait. This table is what makes Brioela understand the user as a person, not just as a set of food preferences.
+
+### Other tables
+
+- `visual_intake_event`: event_id, user_id, classification_category, classification_summary, confidence, memory_written (boolean), skill_created (boolean), created_at. No raw image stored.
+- `health_signal_event`: event_id, user_id, signal_type (stool/glucose/blood_pressure/rash/other), value, bristol_scale_type (nullable), related_food_window_json, created_at.
+
+Raw images are **never stored**. Classification and derived facts only.
+
+### Memory Curator
+
+The `user_memory` and `user_personality` tables need their own maintenance pass — separate from the Skills Curator — for the same reason: without it, low-confidence noise accumulates, duplicate facts pile up, and outdated entries (user no longer has an infant, stopped going to the gym) linger.
+
+The Memory Curator runs on the same DO alarm trigger as the Skills Curator (idle + interval elapsed). It:
+- Consolidates duplicate entries: two `user_memory` rows with `key = "medications"` from two different photos are merged into one canonical entry.
+- Upgrades confidence on repeated signals: a personality trait seen three times in a month gets its `strength` raised.
+- Flags stale entries: a `visited_places` entry from 18 months ago is marked low-confidence without being deleted.
+- Proposes deletions: entries with `confidence < 0.2` and no recent supporting evidence are surfaced for the agent to review and optionally delete.
+
+The Curator never deletes anything automatically. It proposes; the agent (or the user via the "what Brioela knows about me" screen) confirms.
 
 ## Technical Constraints
 
