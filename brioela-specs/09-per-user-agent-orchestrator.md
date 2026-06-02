@@ -175,7 +175,7 @@ Tools registered on the Orchestrator DO:
 
 ## Skills System
 
-Skills and tools are two different things. Tools are executable functions (code that runs — `scan_product`, `write_memory`, `check_medication_interactions`). Skills are reusable instruction sets — markdown text stored in the `skills` SQLite table that the AI loads on demand.
+Skills and tools are two different things. Tools are executable functions (code that runs — `scan_product`, `memory_update`, `check_medication_interactions`). Skills are reusable instruction sets — text stored in the `skills` SQLite table that the AI loads on demand.
 
 The agent is not pre-programmed with a fixed set of behaviors. It has a growing library of skills it has learned, and it decides which skill is relevant for each task by reading a compact index injected into its system prompt.
 
@@ -285,7 +285,7 @@ The Orchestrator DO is not just a food database. It holds every dimension of wha
 | `constraint_memory` | allergies, dislikes, dietary identity, boycott filters | structured |
 | `behavioral_patterns` | stress eating signals, sickness correlations, time-of-day patterns | structured |
 | `medical_conditions` | declared or inferred conditions (spec 28) | structured |
-| `user_memory` | all declarative facts about the user — categorized (health, diet, location, relationships, preferences, personality), key/value/confidence/source — replaces the old `medication_profile` and `lifestyle_memory` | structured with AI-written values |
+| `user_memory` | all declarative facts about the user — dot-separated namespace (e.g. `health.medications`, `life.places`, `personality.fitness`), key, value JSON, confidence, source, read_count, write_count | structured with AI-written values |
 | `user_personality` | AI-inferred personality traits — trait name, evidence array, strength score; never predefined by a developer; agent decides what traits exist from patterns over time | unstructured (AI-authored traits) |
 | `health_signals` | stool photos, glucose readings, symptom logs (spec 34) | structured |
 | `location_memory` | visited places, inferred travel context, home city | structured |

@@ -68,9 +68,7 @@ The agent recognizes food products, meals, restaurant dishes, homemade cooking, 
 ### Medication / Prescription
 The agent recognizes pill bottles, blister packs, medication packaging, prescription labels. Extracts the drug name where visible.
 
-**Unlocks the Medication Skill** (see below).
-
-Writes to the `medication_profile` memory domain: drug name, dosage if visible, estimated frequency (from context or a single follow-up question). Updates all scan verdicts to flag drug-food interactions for that medication. Permanent until the user says they stopped taking it.
+Calls `memory_update` with `namespace = "health.medications"`, `key = <drug name>`, `value = { dose, frequency }`. This fact is now permanent in `user_memory` and injected into every session context going forward. Scan verdicts automatically check drug-food interactions for any entry in `health.medications`. The AI may also create a procedural skill if it judges the behavioral change complex enough to warrant one — but the memory write always happens regardless.
 
 ### Health Signals
 The agent recognizes health-relevant visual information the user chooses to share: a glucose monitor reading, a blood pressure cuff display, a stool photo (the Bristol Stool Scale is real clinical medicine and Brioela can use it), a rash that might be a food reaction, a food diary page, a nutrition label photographed separately from a product scan.
@@ -80,15 +78,16 @@ For stool: the agent classifies against the Bristol Stool Scale (types 1–7), n
 For glucose readings, blood pressure, or other clinical numbers: written to a `health_signals` memory domain. If the number is outside a range associated with an active medical condition (spec 28), the agent notes the correlation silently — it does not alarm the user unless a pattern is clear.
 
 ### Lifestyle and Personality
-The agent recognizes context from images that tell it something real about the user as a person: a dog, a gym, a bookshelf, a garden, a baby, a piece of sports equipment, a cultural item, a type of neighborhood. These do not map to a predetermined schema. The agent writes free-form observations to the `lifestyle_memory` domain using its own judgment about what is worth noting.
+The agent recognizes context from images that tell it something real about the user as a person: a dog, a gym, a bookshelf, a garden, a baby, a piece of sports equipment, a cultural item, a type of neighborhood.
 
-Examples of what it might write:
-- Photo of a dog: "user has a dog (pet context — may affect food storage patterns, interest in pet-safe foods)"
-- Photo of a home garden: "user grows their own herbs/vegetables — interest in organic, fresh, self-sufficiency signals"
-- Photo of a gym bag and protein powder: "active fitness lifestyle — protein content, performance nutrition signals"
-- Photo of a baby: "has an infant at home — may affect meal complexity preferences, time pressure, interest in quick healthy meals"
+Individual observations go to `user_memory` via `memory_update`. The agent picks an appropriate namespace:
 
-The agent decides what to write and how to weight it. There is no `personality.sql` schema designed by a human. The AI writes the schema it needs, in natural language descriptions stored in a flexible SQLite `lifestyle_memory` table (key, value, confidence, source, created_at). The agent reads this table when building context for any session, adding nuance it would not have from food data alone.
+- Photo of a dog → `namespace = "relationships.pets"`, `key = "dog"`, `value = { present: true, signal: "pet_owner" }`
+- Photo of a home garden → `namespace = "preferences.lifestyle"`, `key = "gardening"`, `value = { grows: ["herbs", "vegetables"], signal: "organic_interest" }`
+- Photo of a gym bag → `namespace = "personality.fitness"`, `key = "gym"`, `value = { active: true, observed_count: 1 }`
+- Photo of a baby → `namespace = "relationships.household"`, `key = "infant"`, `value = { present: true, affects: ["meal_complexity", "prep_time"] }`
+
+When multiple observations in the same domain accumulate enough signal, the agent also writes to `user_personality` — a synthesized trait rather than an individual fact. One gym photo → `user_memory` only. Three gym photos over three weeks → `user_personality` trait `"fitness-focused"` with rising `strength`. The agent decides when the pattern is strong enough to graduate to a trait. No developer defines when that threshold is.
 
 ### Location and Travel Context
 A photo of a beach, a landmark, an airport departure board, a street in a foreign city — the agent infers location context. Not precise GPS (that is a different system) but contextual location memory: "user was in Japan in June," "user visited a coastal region," "user was at an airport (travel context — activate travel intel pre-load)."
@@ -284,7 +283,7 @@ The metformin entry is untouchable — high read, updated multiple times, core t
 
 - Visual intake submission rate (users who actually use this beyond food scanning).
 - Classification accuracy (manual audit of sampled events — is the agent making reasonable decisions?).
-- Medication Skill activation rate among users who submit prescription photos.
+- `health.medications` namespace population rate among users who submit prescription photos.
 - Medication scan flag engagement (user taps the drug-food interaction flag to read more).
 - Lifestyle memory accumulation rate per user over 30/60/90 days.
 - Retention impact: users with rich lifestyle memory profiles vs. users with only food data.

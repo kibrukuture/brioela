@@ -285,7 +285,7 @@ What gets extracted and written to DO SQLite memory:
 | User mentions technique ("I'm using a smaller pan") | `session_context.active_overrides` |
 | User mentions feeling unwell mid-session | `health_signals` event |
 | AI confirms a step was completed | `recipe_state.completed_steps[]` |
-| User says they stopped taking a medication | `medication_profile` update |
+| User says they stopped taking a medication | `user_memory` `health.medications` entry set to `active = false` |
 | Grandma demonstrates a technique | `cook_style_profile` signal |
 
 This extraction runs on the cheap model — a single structured JSON output call against each turn marked for compression. The extracted facts persist in SQLite. The raw turn can then be safely summarized or archived. The information lives on, just in a more durable form.
@@ -452,10 +452,16 @@ export class BrioelOrchestrator extends Agent {
       execute: async (args) => this.checkDrugFoodInteractions(args),
     }),
 
-    write_memory: tool({
-      description: 'Persist a durable fact about the user to long-term SQLite memory.',
-      parameters: z.object({ domain: z.string(), key: z.string(), value: z.string(), confidence: z.number() }),
-      execute: async (args) => this.persistMemoryFact(args),
+    memory_update: tool({
+      description: 'Write or update a fact about the user. Always check the existing namespace list first — extend existing namespaces before creating new ones.',
+      parameters: z.object({
+        namespace: z.string().regex(/^[a-z][a-z0-9]*(\.[a-z][a-z0-9]*){0,2}$/).max(48),
+        key: z.string().regex(/^[a-z][a-z0-9_-]*$/).max(64),
+        value: z.record(z.string(), z.unknown()),
+        confidence: z.number().min(0).max(1).default(1.0),
+        source: z.enum(['image', 'conversation', 'inferred', 'cron']),
+      }),
+      execute: async (args) => this.memoryUpdate(args), // merge logic + cap enforcement in impl
     }),
 
     // ... all other executable capabilities follow this pattern
