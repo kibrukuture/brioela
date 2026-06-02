@@ -144,6 +144,14 @@ This means adding a new capability is always: write one `tool({})` definition. T
 
 Tools registered on the Orchestrator DO:
 
+**Skill management tools (the foundation — always registered):**
+- `skill_view(name)` — load the full markdown content of a named skill from SQLite; increments use_count.
+- `skill_create(name, description, content, tags)` — save a new reusable skill extracted from a conversation.
+- `skill_update(name, content, reason)` — rewrite an existing skill with a better approach.
+- `skill_archive(name, reason)` — remove a skill from the active index without deleting it; archived skills no longer appear in the prompt but their content and history are retained in SQLite. Use when a skill is superseded or no longer relevant.
+- `skill_delete(name, reason)` — permanently delete a skill from SQLite. Irreversible. The agent calls this only when a skill is confirmed wrong, harmful, or a duplicate of another skill that already covers it better.
+
+**Memory and constraint tools:**
 - `read_memory(domain, key)` — read a fact from personal SQLite.
 - `write_memory(domain, key, value, confidence)` — persist or update a durable fact.
 - `write_lifestyle_memory(key, value, confidence)` — write a free-form lifestyle/personality observation; key and value are AI-authored, no predetermined schema.
@@ -162,9 +170,59 @@ Tools registered on the Orchestrator DO:
 - `generate_meal_plan(days, use_inventory)` — build a minimum-spend meal plan from current inventory.
 - `check_medication_interactions(ingredients)` — check a list of ingredients against the active medication profile.
 
+## Skills System
+
+Skills and tools are two different things. Tools are executable functions (code that runs — `scan_product`, `write_memory`, `check_medication_interactions`). Skills are reusable instruction sets — markdown text stored in the `skills` SQLite table that the AI loads on demand.
+
+The agent is not pre-programmed with a fixed set of behaviors. It has a growing library of skills it has learned, and it decides which skill is relevant for each task by reading a compact index injected into its system prompt.
+
+### Skills Table (in DO SQLite)
+
+```
+skills: name, description, content (markdown), tags (JSON), use_count, archived (boolean), archived_reason, created_at, updated_at
+```
+
+- `description` is one line — this is the only part shown in the index (cheap, always injected).
+- `content` is full markdown — only loaded when the AI calls `skill_view(name)`.
+- `use_count` increments on every load — the foundation of skill evolution.
+- `archived` skills are excluded from the index and never shown in the system prompt, but their content remains in SQLite for inspection or restoration.
+
+### Skill Selection: Index-Then-Load
+
+Every system prompt includes a skills index built dynamically from the skills table:
+
+```
+## Available skills
+Before replying, scan this list. If one matches your current task, call skill_view(name) first.
+
+- cooking-coach: Step-by-step voice cooking methodology with intervention logic
+- allergy-detection: Behavioral inference workflow for detecting and confirming allergens
+- illness-detective: Food history analysis procedure for foodborne illness investigation
+- recipe-reconstruction: Multi-speaker session technique for capturing grandma-style recipes
+- medication-awareness: Drug-food interaction checking workflow
+```
+
+The model reads this, recognizes the relevant skill by its one-line description, and calls `skill_view(name)` to load the full markdown content into context. The full content is only loaded when needed. The index costs ~2–3 tokens per skill regardless of how long the skill content is.
+
+This is how Hermes works. Not vector search. The model understands intent; cosine similarity understands proximity. They are not the same. A skill description like "allergy detection workflow" will be correctly identified by the model for a user saying "I think I reacted to something I ate" — vector search might return the wrong skill at 0.82 similarity.
+
+### Skill Evolution
+
+Skills are not static. The agent can improve them:
+
+- `skill_create(name, description, content)` — extracts a new reusable pattern from a conversation and saves it to the skills table. The agent calls this when it identifies a workflow that should be repeatable.
+- `skill_update(name, content, reason)` — rewrites an existing skill when a better approach was found. The agent calls this after a session where it improvised something that worked better than the current instructions.
+- `use_count` is incremented on every `skill_view` call. Skills ordered by use_count in the index — most-used appear first.
+
+The agent builds and refines its own skill library. A skill that starts as a rough outline after the first cooking session becomes a precise, battle-tested procedure after a hundred sessions.
+
+### Skill Deduplication (Background, Not Hot Path)
+
+When `skill_create` is called, a background job embeds the new skill's description via Cloudflare Vectorize and checks for semantic near-duplicates. If a similar skill already exists, the agent is prompted to merge or update rather than create noise. This is a write-path background check — not part of skill retrieval.
+
 ## Context Injection into Live Sessions
 
-When a cooking session starts, the Orchestrator DO builds a context payload: user name, hard allergies, active dislikes, dietary identity, current recipe with steps, prior notes on this recipe, relevant behavioral patterns, recent negative outcomes. This is injected into Gemini Live as system instructions at session connect time. Changes during the session are pushed into the live WebSocket via `send_realtime_input`.
+When a cooking session starts, the Orchestrator DO builds a context payload: user name, hard allergies, active dislikes, dietary identity, current recipe with steps, prior notes on this recipe, relevant behavioral patterns, recent negative outcomes, and the skills index. This is injected into Gemini Live as system instructions at session connect time. Changes during the session are pushed into the live WebSocket via `send_realtime_input`.
 
 ## Memory Domains in the Orchestrator DO SQLite
 
@@ -181,6 +239,7 @@ The Orchestrator DO is not just a food database. It holds every dimension of wha
 | `lifestyle_memory` | free-form AI-written observations (dog, gym, baby, garden, travel context) | unstructured (key/value/confidence) |
 | `location_memory` | visited places, inferred travel context, home city | structured |
 | `session_history` | cooking session summaries, grandma style profiles | structured |
+| `skills` | reusable instruction sets in markdown — name, description, content, tags, use_count | structured |
 
 `lifestyle_memory` is the only unstructured domain. The agent writes its own keys and values with no predetermined schema. This is intentional — it allows the agent to learn new things about the user that no human could anticipate at design time.
 

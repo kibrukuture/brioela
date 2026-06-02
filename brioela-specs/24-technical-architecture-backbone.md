@@ -239,78 +239,130 @@ async compressHistory() {
 
 This fires automatically when `messages.length > N` during any session. Without it, long sessions hit context limits and the agent starts hallucinating or ignoring earlier context. The summary is stored back to DO SQLite so it survives a DO eviction and reconnect.
 
-### 2. Skill Selection via AI Tool Calling (Not Pre-Injection)
+### 2. Skill Selection: Tools + Index-Then-Load (Not Vector Search)
 
-The agent has many capabilities: food scan analysis, allergy checking, recipe reranking, medication interaction checking, travel pre-load, illness detection, visual intake classification, and more. The wrong approach is pre-selecting which skills to inject into the context before the AI sees the request — that requires you to predict what the AI will need, which is exactly the kind of decision the AI is better at than you.
+There are two distinct things here that must not be conflated: **tools** and **skills**. They work differently and serve different purposes.
 
-The correct approach: **register all skills as callable tools and let the AI decide what to call.**
+**Tools** are executable functions — code that runs. They are registered with Zod schemas using the Vercel AI SDK `tool()` pattern. The AI calls them when it needs to do something: scan a product, check medication interactions, fetch a recipe, write to memory. The model sees all tool schemas at all times and decides which to call based on the full conversation context.
 
-This is the same pattern as Vercel AI SDK's `tools` parameter — you define tool schemas upfront, pass them all to the model, and the model calls whichever ones it needs based on what is actually happening in the conversation. No pre-filtering. No embedding similarity step. The model's own reasoning determines relevance.
+**Skills** are reusable instruction sets — markdown stored in SQLite. They are things like a complete cooking coach methodology, a structured allergy detection workflow, a step-by-step illness investigation procedure. The AI reads a compact index of all available skills in the system prompt, decides which skill is relevant for the current task, and loads the full skill content on demand via `skill_view()` — itself a tool call.
+
+This is how Hermes actually works. Not vector search. The model reads the index and uses its own reasoning to decide relevance. The model understands intent; a cosine similarity score understands proximity. They are not the same thing.
+
+#### The Tools Layer (Vercel AI SDK)
 
 ```typescript
-import { Agent } from '@cloudflare/agents'
-import { tool } from 'ai' // Vercel AI SDK tool helper, works in CF Workers
-import { z } from 'zod'
-
 export class BrioelOrchestrator extends Agent {
-
-  // All skills are registered as tools. The AI calls what it needs.
   tools = {
-    scanProduct: tool({
-      description: 'Analyze a scanned product against the user\'s full constraint profile. Returns verdict, allergen flags, community notes.',
+    // Executable capabilities — AI calls these to do things
+    skill_view: tool({
+      description: 'Load the full instructions for a named skill. Call this first when a skill in the index matches your current task.',
+      parameters: z.object({
+        name: z.string().describe('exact skill name from the skills index'),
+      }),
+      execute: async ({ name }) => {
+        const skill = await this.db.select().from(skills)
+          .where(eq(skills.name, name)).get()
+        if (!skill) return `Skill "${name}" not found`
+        // increment use_count — powers skill evolution over time
+        await this.db.update(skills)
+          .set({ useCount: sql`use_count + 1` })
+          .where(eq(skills.name, name))
+        return skill.content // full markdown, now injected into context
+      },
+    }),
+
+    skill_create: tool({
+      description: 'Save a new reusable skill learned from this conversation.',
+      parameters: z.object({
+        name: z.string(),
+        description: z.string().describe('one line — this is what appears in the index'),
+        content: z.string().describe('full skill instructions in markdown'),
+        tags: z.array(z.string()),
+      }),
+      execute: async ({ name, description, content, tags }) => {
+        await this.db.insert(skills).values({
+          name, description, content,
+          tags: JSON.stringify(tags), useCount: 0, createdAt: Date.now(),
+        })
+        return `Skill "${name}" created and added to index`
+      },
+    }),
+
+    skill_update: tool({
+      description: 'Improve an existing skill based on what just worked or failed.',
+      parameters: z.object({
+        name: z.string(),
+        content: z.string().describe('updated full skill content in markdown'),
+        reason: z.string().describe('what changed and why'),
+      }),
+      execute: async ({ name, content }) => {
+        await this.db.update(skills)
+          .set({ content, updatedAt: Date.now() })
+          .where(eq(skills.name, name))
+        return `Skill "${name}" updated`
+      },
+    }),
+
+    scan_product: tool({
+      description: 'Analyze a scanned product against this user\'s full constraint profile.',
       parameters: z.object({ productId: z.string(), geoHash: z.string() }),
-      execute: async ({ productId, geoHash }) => this.runScanAnalysis(productId, geoHash),
+      execute: async (args) => this.runScanAnalysis(args),
     }),
 
-    checkMedicationInteractions: tool({
-      description: 'Check if any ingredients conflict with the user\'s active medications.',
+    check_medication_interactions: tool({
+      description: 'Check a list of ingredients against the user\'s active medications.',
       parameters: z.object({ ingredients: z.array(z.string()) }),
-      execute: async ({ ingredients }) => this.checkDrugFoodInteractions(ingredients),
+      execute: async (args) => this.checkDrugFoodInteractions(args),
     }),
 
-    fetchRecipes: tool({
-      description: 'Search the user\'s saved recipes or suggest new ones matching a query.',
-      parameters: z.object({ query: z.string(), maxResults: z.number().optional() }),
-      execute: async ({ query, maxResults }) => this.queryRecipes(query, maxResults ?? 5),
-    }),
-
-    classifyVisualInput: tool({
-      description: 'Classify a photo submitted by the user. Decide domain, update memory, activate skills if needed.',
-      parameters: z.object({ imageBase64: z.string() }),
-      execute: async ({ imageBase64 }) => this.routeVisualIntake(imageBase64),
-    }),
-
-    detectIllnessSuspects: tool({
-      description: 'Given a symptom report, rank the most probable food culprits from the user\'s recent history.',
-      parameters: z.object({ symptomOnsetHours: z.number() }),
-      execute: async ({ symptomOnsetHours }) => this.runIllnessDetective(symptomOnsetHours),
-    }),
-
-    generateMealPlan: tool({
-      description: 'Generate a 7-day meal plan from current fridge inventory, minimizing spend.',
-      parameters: z.object({ days: z.number().default(7) }),
-      execute: async ({ days }) => this.buildMealPlan(days),
-    }),
-
-    writeLongTermMemory: tool({
-      description: 'Persist a durable fact about the user to SQLite memory.',
+    write_memory: tool({
+      description: 'Persist a durable fact about the user to long-term SQLite memory.',
       parameters: z.object({ domain: z.string(), key: z.string(), value: z.string(), confidence: z.number() }),
       execute: async (args) => this.persistMemoryFact(args),
     }),
 
-    // ... all other skills follow the same pattern
+    // ... all other executable capabilities follow this pattern
   }
 }
 ```
 
-When a user says "I feel sick, what did I eat last night" — the AI calls `detectIllnessSuspects`. When a photo comes in — it calls `classifyVisualInput`. When the cooking session needs a recipe — it calls `fetchRecipes`. The AI chains tool calls as needed: fetch the recipe, then check medication interactions against its ingredients, then write a note to long-term memory. All decided by the model, not pre-programmed logic.
+#### The Skills Index (System Prompt Layer)
 
-**Why this is better than pre-injecting skill descriptions:**
-- The AI sees all tool schemas but only executes what it actually needs — no wasted context on irrelevant skill descriptions.
-- The AI can chain tools in sequences a developer would not have anticipated.
-- Tool schemas (Zod) are self-documenting — the AI reads the `description` field to understand when to call each tool.
-- No embedding infrastructure needed for skill selection. Cloudflare Vectorize is reserved for semantic search over the user's personal data (recipe history, scan history) — not for skill routing.
-- Adding a new skill is one `tool({})` definition. No retraining, no re-embedding, no threshold recalibration.
+The skills index is a small text block — just name + one-line description per skill — assembled dynamically from the `skills` SQLite table and injected into every system prompt. Ordered by `use_count` so the most-used skills appear first.
+
+```typescript
+async buildSystemPrompt(): Promise<string> {
+  const allSkills = await this.db
+    .select({ name: skills.name, description: skills.description })
+    .from(skills)
+    .orderBy(desc(skills.useCount))
+    .all()
+
+  const skillsIndex = allSkills.length > 0 ? `
+## Available skills
+Before replying, scan this list. If one matches your current task, call skill_view(name) first.
+
+${allSkills.map(s => `- ${s.name}: ${s.description}`).join('\n')}
+` : ''
+
+  return `${SOUL_MD}
+
+${memoryBlock}
+${skillsIndex}
+Current time: ${new Date().toISOString()}`
+}
+```
+
+The index costs almost nothing in tokens — 2–3 tokens per skill. A user with 30 skills uses ~90 tokens for the full index. The full skill content (potentially hundreds of lines of markdown) is only ever loaded when the AI explicitly calls `skill_view(name)`. This is the point: the model reads the index, recognizes the relevant skill by its description, and fetches only what it needs.
+
+**Why the model outperforms vector search here:**
+
+A user says "my JWT is expiring too early." Vector search might return `code-review` at cosine 0.82 and `auth-patterns` at 0.71 — and inject the wrong one because similarity ≠ intent. The model reads the index and calls `skill_view("auth-patterns")` immediately because it understands the sentence, not just the proximity of embeddings.
+
+**Skills are also self-improving.** The `use_count` increment on every `skill_view` call is the seed of a GEPA-like evolution loop: the agent can call `skill_update` when a skill worked better than before, and `skill_create` to extract a new reusable pattern from a conversation. The agent builds its own skill library over time without developer intervention.
+
+**Where Cloudflare Vectorize actually belongs:** not skill retrieval — skill deduplication. When the agent calls `skill_create`, a background job embeds the new skill's description and checks Vectorize for semantic near-duplicates before writing. If something similar exists, the agent merges or updates rather than creating noise. This is a background write path, not a hot read path.
 
 ### 3. DO Cold Wake Latency (Eviction During Streaming)
 
