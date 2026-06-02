@@ -1,5 +1,4 @@
 import { AppState } from 'react-native';
-import 'react-native-url-polyfill/auto';
 import { createClient } from '@supabase/supabase-js';
 import { SUPABASE_CONFIG } from '@/constants';
 import { encryptedAuthAdapter } from '@/lib/storage/encrypted-storage';

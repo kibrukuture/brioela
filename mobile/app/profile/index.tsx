@@ -224,15 +224,6 @@ export default function ProfileScreen() {
       title: 'Actions and agreements',
       items: [
         {
-          id: 'referrals',
-          icon: <Users size={iconSize} color={iconColor} />,
-          title: 'Referrals',
-          subtitle: 'Send and manage referrals',
-          onPress: () => {
-            router.push('/banking/wallet-activation');
-          },
-        },
-        {
           id: 'agreements',
           icon: <Info size={iconSize} color={iconColor} />,
           title: 'Our agreements',
