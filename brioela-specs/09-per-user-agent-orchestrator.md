@@ -169,6 +169,7 @@ Tools registered on the Orchestrator DO:
 - `run_illness_detective(symptom_onset_hours)` — rank probable food culprits from recent history cross-referenced with active recalls.
 - `generate_meal_plan(days, use_inventory)` — build a minimum-spend meal plan from current inventory.
 - `check_medication_interactions(ingredients)` — check a list of ingredients against the active medication profile.
+- `recall_session_context(query, session_id?)` — FTS5 search over archived (cold-tier) session turns when the agent needs something that was compressed out of the active context window. This is the MemGPT paging pattern — cold storage is searchable, not a black hole.
 
 ## Skills System
 
@@ -179,13 +180,15 @@ The agent is not pre-programmed with a fixed set of behaviors. It has a growing 
 ### Skills Table (in DO SQLite)
 
 ```
-skills: name, description, content (markdown), tags (JSON), use_count, archived (boolean), archived_reason, created_at, updated_at
+skills: name, description, content (markdown), tags (JSON), source (system|user), status (active|stale|archived),
+        use_count, last_used_at, archived_reason, created_at, updated_at
 ```
 
 - `description` is one line — this is the only part shown in the index (cheap, always injected).
 - `content` is full markdown — only loaded when the AI calls `skill_view(name)`.
 - `use_count` increments on every load — the foundation of skill evolution.
-- `archived` skills are excluded from the index and never shown in the system prompt, but their content remains in SQLite for inspection or restoration.
+- `source`: `system` = bundled skills Brioela ships with (cooking coach, allergy detection, illness detective, etc.); `user` = skills the agent created itself from conversations. The Curator only ever touches `user` skills. System skills are never modified or archived automatically.
+- `status`: three states — `active` (in the index), `stale` (Curator flagged it as long-unused, still in index but deprioritized), `archived` (excluded from the index entirely).
 
 ### Skill Selection: Index-Then-Load
 
@@ -206,19 +209,65 @@ The model reads this, recognizes the relevant skill by its one-line description,
 
 This is how Hermes works. Not vector search. The model understands intent; cosine similarity understands proximity. They are not the same. A skill description like "allergy detection workflow" will be correctly identified by the model for a user saying "I think I reacted to something I ate" — vector search might return the wrong skill at 0.82 similarity.
 
+### When the Agent Creates a Skill
+
+The AI decides autonomously. There is no threshold, no automatic trigger, no external system telling it to create a skill. The agent recognizes a repeatable pattern mid-conversation — a workflow it improvised that worked, a procedure it wants to remember, a technique it derived from a session — and calls `skill_create` on its own judgment.
+
+This is explicitly not rule-based. The model sees the conversation, recognizes that what just happened is worth preserving as a reusable procedure, and acts. No developer logic decides when this fires. The agent's reasoning does.
+
+Example: a user has a grandma cooking session that produces a novel spice-layering technique the agent had to improvise. After the session, the agent calls `skill_create("ethiopian-spice-layering", "Technique for building berbere-style spice depth in three stages", <full markdown procedure>)`. Next time it encounters a similar recipe, it sees this in the index and loads it.
+
 ### Skill Evolution
 
-Skills are not static. The agent can improve them:
+Skills are not static. The agent improves them over time:
 
-- `skill_create(name, description, content)` — extracts a new reusable pattern from a conversation and saves it to the skills table. The agent calls this when it identifies a workflow that should be repeatable.
-- `skill_update(name, content, reason)` — rewrites an existing skill when a better approach was found. The agent calls this after a session where it improvised something that worked better than the current instructions.
-- `use_count` is incremented on every `skill_view` call. Skills ordered by use_count in the index — most-used appear first.
+- `skill_update(name, content, reason)` — rewrites a skill when it found a better approach. Called after a session where it improvised something that outperformed the existing instructions.
+- `use_count` increments on every `skill_view` call. Index is ordered by `use_count` — the most-used skills appear first, reducing prompt scan time.
 
-The agent builds and refines its own skill library. A skill that starts as a rough outline after the first cooking session becomes a precise, battle-tested procedure after a hundred sessions.
+A skill that starts as a rough outline after one session becomes a precise, tested procedure after a hundred. The agent builds its own library from experience.
 
-### Skill Deduplication (Background, Not Hot Path)
+### The Curator
 
-When `skill_create` is called, a background job embeds the new skill's description via Cloudflare Vectorize and checks for semantic near-duplicates. If a similar skill already exists, the agent is prompted to merge or update rather than create noise. This is a write-path background check — not part of skill retrieval.
+The Curator is a background maintenance pass that runs automatically against user-created skills. It keeps the skill library clean and prevents it from accumulating noise.
+
+**What it does:**
+- Tracks how often each skill is viewed and used.
+- Moves long-unused skills through the lifecycle: `active` → `stale` → `archived`.
+- Runs a short auxiliary model pass that reads all user skills and proposes consolidations: if two skills cover overlapping territory, the Curator proposes merging them and calls `skill_update` or `skill_archive` accordingly.
+- Patches drift: if a skill's instructions reference a workflow that has since changed (e.g., an API the agent no longer uses), the Curator flags it for review.
+
+**When it runs:**
+The Curator is triggered by a DO alarm — not a cron daemon. On every Orchestrator DO wake, it checks two conditions:
+1. Has enough time passed since the last Curator run? (Default interval: 7 days.)
+2. Has the agent been idle long enough that running now won't interrupt active work? (Default: 2+ hours since last user interaction.)
+
+If both conditions are true, the Curator runs. Otherwise it schedules itself again at the next alarm cycle.
+
+```typescript
+async alarm() {
+  const lastCuratorRun = await this.ctx.storage.get('curator_last_run')
+  const lastActivity = await this.ctx.storage.get('last_activity')
+  const now = Date.now()
+
+  const curatorDue = !lastCuratorRun || (now - lastCuratorRun) > CURATOR_INTERVAL_MS
+  const agentIdle = !lastActivity || (now - lastActivity) > CURATOR_MIN_IDLE_MS
+
+  if (curatorDue && agentIdle) {
+    await this.runCurator()
+    await this.ctx.storage.put('curator_last_run', now)
+  }
+
+  // reschedule next check
+  await this.ctx.storage.setAlarm(now + CURATOR_CHECK_INTERVAL_MS)
+}
+```
+
+**What the Curator never touches:**
+System skills (`source = 'system'`) — the bundled skills Brioela ships with (cooking coach, allergy detection, illness detective, recipe reconstruction, medication awareness). These are permanent. The Curator only manages skills the agent itself created.
+
+### Skill Deduplication on Create (Background, Not Hot Path)
+
+When `skill_create` is called, a background QStash job embeds the new skill's description via Cloudflare Vectorize and checks for semantic near-duplicates. If a similar skill exists, the agent is prompted to merge or update rather than create a duplicate. This is a write-path background check — never on the retrieval path.
 
 ## Context Injection into Live Sessions
 
@@ -239,6 +288,7 @@ The Orchestrator DO is not just a food database. It holds every dimension of wha
 | `lifestyle_memory` | free-form AI-written observations (dog, gym, baby, garden, travel context) | unstructured (key/value/confidence) |
 | `location_memory` | visited places, inferred travel context, home city | structured |
 | `session_history` | cooking session summaries, grandma style profiles | structured |
+| `session_archive` | cold-tier archived turns from compressed sessions — FTS5-indexed, searchable via recall_session_context | structured |
 | `skills` | reusable instruction sets in markdown — name, description, content, tags, use_count | structured |
 
 `lifestyle_memory` is the only unstructured domain. The agent writes its own keys and values with no predetermined schema. This is intentional — it allows the agent to learn new things about the user that no human could anticipate at design time.

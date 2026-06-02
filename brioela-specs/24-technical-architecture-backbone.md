@@ -207,37 +207,173 @@ These are not theoretical. They are the failure modes a production agent system 
 
 ### 1. Context Compression
 
-Long-running agents accumulate conversation history. A 45-minute grandma cooking session with a busy multi-speaker transcript will exceed Gemini Live's context window if raw history is injected naively. Hermes solves this with a dedicated `context_compressor.py` that summarizes middle turns when message count exceeds a threshold.
+Long-running agents accumulate conversation history. A 45-minute grandma cooking session with a busy multi-speaker transcript will exceed Gemini Live's context window if raw history is injected naively. Naive compression — "summarize everything and drop it" — is the wrong answer. It loses exactly the things that matter: hard constraints stated early, exact measurements, the reasoning behind decisions, implicit preferences the user demonstrated but never declared.
 
-Brioela's equivalent: a `compressHistory()` method on the `BrioelOrchestrator` DO.
+The smart compressor does three things in order: **extract facts into durable memory before compressing**, **protect what is sacred**, **summarize the rest**. Information does not disappear — it migrates tiers.
+
+#### The Three Storage Tiers
+
+```
+Tier 1 — Hot (in context window)
+  Verbatim turns: sacred block + recent N turns
+
+Tier 2 — Warm (in context window, compressed)
+  Structured summaries replacing middle turns
+  Still in the active context, but dense
+
+Tier 3 — Cold (DO SQLite, out of context)
+  Archived raw turns + their extracted facts
+  Searchable via recall_session_context tool
+  Agent can page these back into context if needed
+```
+
+The agent never loses information. It moves information from hot → warm → cold. Cold storage is still reachable — if the agent needs something from an archived turn, it calls `recall_session_context(query)` and gets it back.
+
+#### The Sacred Block — Never Compressed Under Any Circumstances
+
+Some content is re-injected into the system prompt at every step regardless of what compression did to the rest of the history:
+
+- **Hard allergy and safety flags**: if a user mentioned an allergen mid-session, that fact is in the sacred block forever.
+- **Active medical conditions and medications**: from the user's DO profile, re-injected at session start and never overwritten by compression.
+- **Session initialization context**: the recipe being cooked, current step index, participant constraint summaries (for multi-person rooms).
+- **Any active recall alert**: if a recall was flagged during the session, it stays in context.
+- **First 3 turns verbatim**: system prompt + initial user request + first AI response. These define the session's purpose and must never be summarized away.
+
+Sacred block content is assembled once and stored as a separate `sacred_context` field on the session record in DO SQLite. Every compression pass regenerates the active context as: `sacred_block + compressed_middle + recent_tail`. The sacred block is immune.
+
+#### Dual-Layer Trigger (Hermes Pattern)
+
+Two thresholds, deliberately offset so they don't fire simultaneously:
+
+**Layer 1 — Proactive compressor (fires at 50% context usage)**
 
 ```typescript
-async compressHistory() {
+async maybeCompress(currentTokenCount: number, contextLimit: number) {
+  const usage = currentTokenCount / contextLimit
+
+  if (usage < 0.50) return // nothing to do
+
+  // Phase 1: prune tool results first — zero LLM cost
+  // Replace old tool call outputs >200 chars with a placeholder
+  await this.pruneToolResults()
+
+  // Phase 2: extract facts from compressible turns BEFORE touching them
+  // This is the Mem0 insight — information migrates to SQLite, never disappears
+  await this.extractFactsFromMiddle()
+
+  // Phase 3: summarize the middle turns with a cheap model
+  await this.summarizeMiddle()
+}
+```
+
+**Layer 2 — Safety net (fires at 85% context usage)**
+
+The safety net fires only if Layer 1 did not bring usage below the safe range. It is more aggressive: archives everything except `protect_first_n = 3` turns and `protect_last_n = 20` turns, regardless of content. This is the last resort before the context window overflows.
+
+Never let usage reach 95%. At 95% the model starts degrading — ignoring early context, hallucinating constraints, losing recipe step state. The safety net at 85% exists precisely to prevent this.
+
+#### Phase 2: Extract Before Compress (The Key Step)
+
+Before any turn is summarized or archived, the compressor runs a structured extraction pass over the turns about to be compressed. This is the Mem0 pattern — convert raw conversation into structured durable facts before discarding the raw turn.
+
+What gets extracted and written to DO SQLite memory:
+
+| Pattern in the turn | Extracted as |
+|---|---|
+| User states a preference ("I hate cilantro") | `constraint_memory` — soft dislike |
+| User mentions equipment limit ("no blender") | `session_context.equipment_constraints` |
+| User mentions technique ("I'm using a smaller pan") | `session_context.active_overrides` |
+| User mentions feeling unwell mid-session | `health_signals` event |
+| AI confirms a step was completed | `recipe_state.completed_steps[]` |
+| User says they stopped taking a medication | `medication_profile` update |
+| Grandma demonstrates a technique | `cook_style_profile` signal |
+
+This extraction runs on the cheap model — a single structured JSON output call against each turn marked for compression. The extracted facts persist in SQLite. The raw turn can then be safely summarized or archived. The information lives on, just in a more durable form.
+
+#### Phase 3: Summarize the Middle
+
+After fact extraction, the middle turns are summarized in chunks. The summary model is cheap and fast — standard Gemini Flash text, not Gemini Live.
+
+```typescript
+async summarizeMiddle() {
   const messages = await this.db.select().from(sessionMessages)
-    .where(eq(sessionMessages.sessionId, this.activeSessionId))
+    .where(and(
+      eq(sessionMessages.sessionId, this.activeSessionId),
+      eq(sessionMessages.compressible, true),
+    ))
     .orderBy(asc(sessionMessages.createdAt))
 
-  if (messages.length <= COMPRESSION_THRESHOLD) return
+  if (messages.length === 0) return
 
-  // keep first N (system context) and last M (recent turns) verbatim
-  const middleTurns = messages.slice(KEEP_HEAD, messages.length - KEEP_TAIL)
+  // summary budget: 20% of the compressed content's token size (Hermes formula)
+  const summaryBudget = Math.floor(estimateTokens(messages) * 0.20)
 
-  // summarize the middle with a cheap model call (not Gemini Live — use standard Gemini Flash text)
-  const summary = await summarizeWithCheapModel(middleTurns)
+  const summary = await cheapModel.generate({
+    prompt: COMPRESSION_PROMPT, // structured template: goals, constraints, decisions, progress, what not to forget
+    content: messages.map(m => m.content).join('\n'),
+    maxTokens: summaryBudget,
+  })
 
-  // replace middle turns with single summary row
-  await this.db.delete(sessionMessages)
-    .where(inArray(sessionMessages.id, middleTurns.map(m => m.id)))
+  // archive the raw turns to cold storage
+  await this.db.update(sessionMessages)
+    .set({ status: 'archived', archivedAt: Date.now() })
+    .where(inArray(sessionMessages.id, messages.map(m => m.id)))
+
+  // write the summary as a warm-tier turn
   await this.db.insert(sessionMessages).values({
     sessionId: this.activeSessionId,
     role: 'system',
-    content: `[compressed: ${summary}]`,
-    createdAt: middleTurns[0].createdAt,
+    content: `[summary of ${messages.length} turns]: ${summary}`,
+    status: 'warm',
+    createdAt: messages[0].createdAt,
   })
 }
 ```
 
-This fires automatically when `messages.length > N` during any session. Without it, long sessions hit context limits and the agent starts hallucinating or ignoring earlier context. The summary is stored back to DO SQLite so it survives a DO eviction and reconnect.
+The summary template always asks for: the active goal at that point, any constraints mentioned, decisions made and why, what step the recipe was at, and "what must not be forgotten." This last item is the most important — it forces the model to surface the things naive summarization would drop.
+
+#### The `recall_session_context` Tool (Cold Storage Paging)
+
+Once turns are archived, the agent can still access them. This is the MemGPT pattern — cold storage is not a black hole, it is a searchable library.
+
+```typescript
+recall_session_context: tool({
+  description: 'Search archived session turns when you need something from earlier in this conversation that may have been compressed.',
+  parameters: z.object({
+    query: z.string().describe('what you are looking for'),
+    sessionId: z.string().optional(),
+  }),
+  execute: async ({ query, sessionId }) => {
+    // FTS5 search over archived session turns
+    return this.db.select()
+      .from(sessionMessages)
+      .where(and(
+        eq(sessionMessages.status, 'archived'),
+        sql`sessionMessages MATCH ${query}`, // FTS5
+      ))
+      .limit(5)
+      .all()
+  },
+})
+```
+
+The agent calls this when it realizes it needs context it does not have — "I think the user mentioned something about their pan size earlier." It retrieves the relevant archived turns and can act on them without them needing to be live in the context window.
+
+#### What Naive Compression Loses (and This Design Does Not)
+
+Five categories that disappear in naive summarization, all preserved by this design:
+
+1. **Exact numeric values** — measurements, temperatures, timings. These are extracted as structured facts before summarization. "350°F for 20 minutes" does not become "cooked at appropriate temperature."
+2. **Hard constraints stated early** — "I'm out of butter." This becomes an `equipment_constraint` fact in SQLite before the turn is compressed.
+3. **Decision reasoning** — why the AI chose a substitution. Preserved in the summary template's "decisions made and why" field.
+4. **Cross-turn dependencies** — step 3 depended on something established in step 1. The sacred block's recipe state tracks this.
+5. **Implicit preferences** — the user never said they hate overcooking, but they reacted negatively twice to suggestions that involved long cook times. These behavioral signals are extracted as `constraint_memory` entries before the turns are compressed.
+
+#### Session compressor vs. Orchestrator compressor
+
+The **CookingAgent DO** runs the compressor described above — it manages live session history for cooking sessions.
+
+The **BrioelOrchestrator DO** runs a simpler version for its own long-running ambient history (multi-day context across many interactions). It uses the same fact-extraction pattern but fires less frequently — triggered by the DO alarm cycle, not by real-time token usage. Its compression target is the `ambient_history` table, not an active session's `sessionMessages` table.
 
 ### 2. Skill Selection: Tools + Index-Then-Load (Not Vector Search)
 
@@ -417,7 +553,15 @@ const recipes = await result.json()
 
 The parent never awaits a sub-agent for more than the user's request timeout allows. If a sub-agent task is too slow for inline response, the parent fires it via QStash and collects the result in a follow-up alarm.
 
-### 5. Architectural Validation
+### 5. The Curator Uses the Alarm System (Not a Cron)
+
+The Curator (the background skill maintenance pass described in spec 09) runs on the same DO alarm mechanism as all other ambient features — not a separate cron job or scheduled function. Every alarm wake checks two conditions before running the Curator: enough time elapsed since the last run, and the agent has been idle long enough. If both are true, the Curator runs as part of the normal `alarm()` handler.
+
+This means no additional infrastructure for the Curator. It is a pure DO alarm — zero cost while waiting, fires exactly when conditions are met, and requires no external scheduler. The same pattern used for the weekly food summary, the travel pre-load, and sickness follow-up is the pattern that powers the Curator.
+
+The implication: every user's skill library gets quietly maintained over time purely as a side effect of DO alarms that were already in place.
+
+### 6. Architectural Validation
 
 The one DO per user decision is the right one. This is worth stating explicitly because it is the foundation every other decision builds on.
 
