@@ -58,7 +58,7 @@
             }
           },
           "ios": {
-            "deploymentTarget": "16.1",
+            "deploymentTarget": "16.4",
             "useFrameworks": "static"
           }
         }
@@ -129,7 +129,6 @@
       "expo-secure-store",
       "expo-web-browser",
       "./courier-plugin.js",
-      "react-native-quick-crypto",
       "./plugins/with-kotlin-jvm-target.js"
     ],
     "experiments": {
