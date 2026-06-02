@@ -127,9 +127,7 @@
         }
       ],
       "expo-secure-store",
-      "expo-web-browser",
-      "./courier-plugin.js",
-      "./plugins/with-kotlin-jvm-target.js"
+      "expo-web-browser"
     ],
     "experiments": {
       "typedRoutes": true,
