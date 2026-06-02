@@ -24,6 +24,36 @@ A prescription photo → writes a medication fact to `user_memory` (declarative)
 
 This is the same distinction Hermes makes. Most input → memory. Skills are rare and earned from patterns.
 
+## Input Types: Photo vs Video — and the Ground Boundary
+
+Universal Visual Intake accepts both photos and video clips. The rules for each differ completely depending on context.
+
+### Personal Visual Intake (photos and video)
+
+**Photos** and **video clips** taken at home — while cooking, while eating, while doing anything in a personal space — go through this spec's pipeline. They are processed by the agent, written to `user_memory` or `user_personality` as appropriate, and are **completely private**. They are never shared to any community surface, never visible to other users, never included in Ground, never transmitted anywhere except into the user's own AI context.
+
+Examples of personal visual intake:
+- Photographing a meal you just cooked.
+- Taking a short video of your fridge contents so the agent can infer your inventory.
+- Recording yourself tasting something and noting your reaction (the agent infers from what it sees, not from any audio transcript that goes anywhere).
+- Photographing a prescription bottle at home.
+- Photographing a supplement label you want the agent to remember.
+- Photographing your pantry shelf.
+
+All of this stays with the user. Period.
+
+### Ground Finds (spec 35) — a completely different path
+
+Video or photos taken **in public spaces** (grocery stores, restaurants, markets, stalls) that the user **chooses to submit as a community Find** go through spec 35 (Ground), not through this spec.
+
+Ground video is subject to entirely different rules: audio stripped, faces blocked, max 30 seconds, community authenticity gate, stored in a shared Supabase table. None of that applies to personal visual intake.
+
+The distinction is not about location detection — it is about user intent. When the user submits something to Ground, they tap a specific Ground submission flow. When they use universal visual intake, they are showing the agent something for their own memory. These are two separate actions in the UI, two separate code paths, two separate destinations.
+
+**There is no scenario where personal visual intake bleeds into Ground, or vice versa.**
+
+---
+
 ## What Happens When a Photo Is Submitted
 
 1. The image goes to the Vision classification pipeline (a single Gemini vision call — not a streaming session).

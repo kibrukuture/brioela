@@ -567,7 +567,35 @@ This means no additional infrastructure for the Curator. It is a pure DO alarm �
 
 The implication: every user's skill library gets quietly maintained over time purely as a side effect of DO alarms that were already in place.
 
-### 6. Architectural Validation
+### 6. Offline Behavior and Sync Queue
+
+Brioela is a heavily online app. Most of its intelligence requires a live connection: the Orchestrator DO runs in Cloudflare's edge, AI calls go to Gemini, community data lives in Supabase. There is no "offline mode" in the sense of a fully functional disconnected app.
+
+However, the core use case — scanning a product at a grocery store — happens in environments with unreliable or absent cell signal. The app must handle this gracefully.
+
+**What works offline (client-side only):**
+- Camera can open and capture an image or video.
+- Barcode decode from the camera frame runs locally using the device's native barcode API — no network call required to extract the UPC.
+- Previously cached product results (stored in the client after prior scans) can display instantly for products the user has scanned before.
+- The pending scan is queued locally on the device.
+
+**What requires connectivity:**
+- Resolving a new UPC against the product database.
+- Running the AI verdict (drug interactions, personalization, health scoring).
+- Writing to the Orchestrator DO (scan event, memory update).
+- Ground find submission.
+- Voice and live vision sessions — these are impossible offline and display a clear connection state indicator.
+
+**The queue contract:**
+When the app detects no connectivity, scans and visual intake submissions are written to a local device queue (IndexedDB on PWA, SQLite on native). When connectivity resumes:
+1. The queue is drained in FIFO order.
+2. Each item is submitted to the Orchestrator DO as a normal event with its original capture timestamp, not the upload timestamp.
+3. If an item fails to upload after 3 retries (network error, DO unavailable), it stays in queue and retries on next connectivity event. It is never silently dropped.
+4. The user does not need to do anything — the upload is silent. A small indicator shows "syncing" while the queue drains.
+
+The offline queue is local to the device only. It is not persisted to iCloud, Google Drive, or any cloud backup. If the user uninstalls the app before connectivity returns, unsynced items are lost. This is acceptable — the app is not a primary record system for health-critical data, and the data would not have had a chance to be acted on anyway.
+
+### 7. Architectural Validation
 
 The one DO per user decision is the right one. This is worth stating explicitly because it is the foundation every other decision builds on.
 
