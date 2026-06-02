@@ -2,7 +2,7 @@
 
 const { getDefaultConfig } = require('expo/metro-config');
 const path = require('path');
-const { withNativeWind } = require('nativewind/metro');
+const { withNativewind } = require('nativewind/metro');
 
 /** @type {import('expo/metro-config').MetroConfig} */
 const config = getDefaultConfig(__dirname); // ✅ This works in CommonJS
@@ -11,7 +11,7 @@ config.watchFolders = [path.resolve(__dirname, '../shared')];
 
 //
 
-const metroConfig = withNativeWind(config);
+const metroConfig = withNativewind(config);
 
 metroConfig.resolver.unstable_enablePackageExports = true;
 metroConfig.resolver.unstable_conditionNames = ['react-native', 'browser', 'require', 'node'];
