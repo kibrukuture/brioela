@@ -80,3 +80,9 @@ The product is engineered to create this moment as early as possible in the user
 2. A feature that requires the user to remember to use it is a feature that will be abandoned within two weeks.
 
 Every spec in this folder must be read against these two laws before implementation begins.
+
+## The Third Law: Scanning Is Always Free
+
+Unlimited scanning is never paywalled. Not on day one. Not ever.
+
+The scan moment is the core viral loop, the primary acquisition mechanism, and the daily habit driver. People scanning products in grocery stores and showing the results to strangers next to them is free distribution at scale. A paywall after 10 scans breaks that loop permanently. Yuka proved that unlimited free scanning grows to 73 million users. No other metric overrides this rule.

@@ -26,12 +26,13 @@ Provide a hands-free, conversational cooking assistant that guides a user throug
 
 ## AI Model: Gemini Live
 
-This feature uses `gemini-live-2.5-flash-preview` exclusively. Reasons:
+This feature uses `gemini-3.1-flash-live-preview` exclusively. Reasons:
 
 - Full-duplex: Gemini Live hears the user and produces audio simultaneously in a single model. There is no separate STT → LLM → TTS pipeline to assemble or maintain.
 - Barge-in: the user can interrupt mid-response and the model recognizes it as a correction or question, not noise.
 - `thinkingLevel`: set to `minimal` for ambient step-by-step questions (lowest latency, fastest response). Raise to `low` or `medium` if the user asks a complex technique or substitution question.
 - Knows when to shut up: the model does not monologue. It answers what was asked and stops.
+- Affective dialogue: model interprets tone, emotion, and pace from raw audio. If a user gets frustrated mid-cook, it de-escalates and adjusts its tone. This is native to the model, not a feature you build.
 
 ## Session Initialization
 

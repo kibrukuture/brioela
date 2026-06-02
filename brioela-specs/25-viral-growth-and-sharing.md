@@ -85,6 +85,20 @@ The hyperlocal community notes and healthy food map are network-effect features.
 
 This creates geographic clusters of value that deepen over time and are hard to replicate from scratch by a competitor.
 
+## The 80-Day Build-in-Public Launch Strategy
+
+Before the app ships: 80 days of daily TikTok content. One post per day, roughly 30 minutes of effort.
+
+Split into two phases:
+
+**Days 1–40 (problem content, not product demos):**
+Build an audience around the pain, not the app. Content: "why everything labeled healthy is lying to you," "the ingredient in 80% of products nobody talks about," "I scanned 50 products this week and here's what I found." You become the authority on food transparency before the app exists. That audience trusts you by the time you ship.
+
+**Days 41–80 (build-in-public):**
+Show the app being built. Real reactions. Early testers scanning things. Behind the scenes. Anticipation builds.
+
+By launch day there is an audience waiting. The first viral moment lands on a primed base, not cold. This is the difference between the worst case and the middle case at month 3.
+
 ## What Not to Do
 
 - No push notification re-engagement campaigns. Brioela does not spam users back.

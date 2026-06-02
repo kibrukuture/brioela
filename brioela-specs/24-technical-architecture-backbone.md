@@ -9,124 +9,193 @@ Brioela runs entirely on managed, serverless infrastructure. No self-managed ser
 ```
 Mobile / PWA clients
        ↓ HTTP + WebSocket
-Cloudflare Workers (Hono.js routing)
-       ↓ DO RPC
-Per-User Agent DO (CF Agent SDK)
-       ↓ QStash publish
-Upstash QStash → Upstash Workflow (async multi-step jobs)
+Cloudflare Workers (Hono.js routing — single codebase, one wrangler.toml)
+       ↓ DO RPC via idFromName(userId)
+BrioelOrchestrator DO (CF Agent SDK, Drizzle + SQLite, per-user brain)
+       ↓ QStash publish / Workflow start
+Upstash QStash (one-shot fire-and-forget jobs)
+Upstash Workflow (multi-step durable flows with waitForEvent)
        ↓ cache reads
-Upstash Redis (product cache, rate limits, session state)
+Upstash Redis (product cache, rate limits, session deduplication)
        ↓ shared reads/writes
-Cloudflare D1 or Supabase Postgres (global shared data)
+Supabase Postgres (global shared data: products, community notes, map, businesses)
 
-Live cooking sessions:
-Mobile clients → LiveKit Cloud (WebRTC SFU)
-                      ↓ audio + video frames
-               Gemini Live (gemini-live-2.5-flash-preview)
-                      ↓ transcript + events
-               CookingAgent DO ← injects user memory from Orchestrator DO
+Live cooking sessions (multi-person):
+Mobile clients → LiveKit Cloud (WebRTC SFU, managed)
+                      ↓ audio stream + video frames
+               Gemini Live (gemini-3.1-flash-live-preview)
+               [LiveKit Agent Worker: Node.js on Railway/Fly.io]
+                      ↓ transcript + events (HTTP back to CF Worker)
+               CookingAgent DO ← pulls context from Orchestrator DO
                       ↓ async
                Upstash Workflow (summarize, save recipe, update memory)
+
+Single-user voice sessions (no room):
+Mobile client → Gemini Live WebSocket directly
+             ← context injected from Orchestrator DO at session start
 ```
 
-## Component Decisions and Reasons
+## Component Decisions
 
 ### Cloudflare Workers + Hono.js (API Layer)
 
-All HTTP routing runs on Cloudflare Workers using Hono.js as the framework. Hono is fast, type-safe, and built for the Workers runtime. Every API endpoint defined in the feature specs routes through here. Workers are stateless — they call into DOs for user-specific state and into shared databases for global data.
+All HTTP routing runs on Cloudflare Workers using Hono.js. Single codebase, single `wrangler.toml`. Your Hono Worker, your Durable Object classes, and your Agent classes all live in the same repo and deploy together with `wrangler deploy`.
 
-Workers handle: authentication, request validation, rate limiting, routing to the correct DO or database, and response shaping.
+```typescript
+// src/index.ts
+import { Hono } from 'hono'
+import { BrioelOrchestrator } from './agents/orchestrator'
+import { CookingAgent } from './agents/cooking'
 
-### Cloudflare Agent SDK + Durable Objects (Per-User Agent Brain)
+const app = new Hono<{ Bindings: Env }>()
 
-Each Brioela user has exactly one persistent agent instance implemented using the Cloudflare Agent SDK (the `agents` npm package). This builds on top of Durable Objects and provides: structured state management, built-in SQLite storage per agent, WebSocket support, RPC methods, and self-scheduling.
+app.post('/scan', async (c) => {
+  const userId = c.req.header('x-user-id')!
+  const id = c.env.ORCHESTRATOR.idFromName(userId)
+  const orchestrator = c.env.ORCHESTRATOR.get(id)
+  return orchestrator.fetch(c.req.raw)
+})
 
-The Hermes architecture principle applies here: each user's agent is fully isolated, self-contained, and owns all private data for that user. It does not share state, tooling, or execution context with any other user's agent. This is the opposite of a pooled or shared agent model. One user's agent failure or computation never touches another user.
+export default app
+export { BrioelOrchestrator, CookingAgent } // must export all DO classes
+```
 
-The agent has two conceptual roles:
-- **Orchestrator DO**: long-lived, always exists per user, holds SQLite personal memory (scan history, preferences, recipes, constraints, patterns, negative outcomes). This is the permanent brain.
-- **CookingAgent DO**: activated per cooking session, holds live session state (current recipe, step index, participant list, transcript accumulation, real-time context window). Fires events back to the Orchestrator DO on session events. After session ends, it summarizes and writes durable facts back to the Orchestrator DO via Upstash Workflow.
+Workers are stateless — born per request, die per request. They are the front door that routes traffic into the correct user's DO.
 
-The Orchestrator DO injects memory context into every active session (allergies, dislikes, prior patterns, current recipe) and receives event callbacks from all product features.
+### Cloudflare Agent SDK + Durable Objects (Per-User Brain)
 
-### Gemini Live (Voice + Vision AI Brain)
+Each user has one `BrioelOrchestrator` DO instance — addressed by `idFromName(userId)`. Uses the Cloudflare Agent SDK (`@cloudflare/agents` package), which is an abstraction built on top of the raw Durable Object primitive. The Agent class extends DurableObject — there is no separate "Agent SDK process." It is the DO.
 
-Model: `gemini-live-2.5-flash-preview` (full-duplex, single model, audio + video + text simultaneously).
+SQLite via Drizzle ORM:
+```typescript
+export class BrioelOrchestrator extends Agent {
+  db = drizzle(this.ctx.storage, { schema })
+  // this.ctx.storage is CF's built-in DO storage, always present
+  // Drizzle wraps it with full type-safe SQL interface
+}
+```
 
-Gemini Live replaces the previous Grok Voice consideration. Reasons: natively processes video frames and audio in the same model (Grok Voice is audio-only), Google's global infrastructure has far more regional presence than xAI's US+EU only setup, and pricing at audio-only sessions ($0.0045/min) is substantially cheaper than Grok Voice ($0.05/min) while providing more capability.
+wrangler.toml must declare `new_sqlite_classes` to provision SQLite (not just KV):
+```toml
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["BrioelOrchestrator"]
+```
 
-Technical specs:
-- Audio input: raw 16-bit PCM at 16kHz little-endian.
-- Video input: JPEG or PNG frames, max 1 frame per second, max 768×768 pixels.
-- Audio output: raw 16-bit PCM at 24kHz little-endian.
-- Session control: WebSocket.
-- Context injection: system instructions at session connect time carrying user memory (allergies, preferences, current recipe, cooking style).
-- Mid-session context push: supported via `send_realtime_input` with text key when session state changes (new step, allergy match detected, etc.).
-- Barge-in: fully supported — model knows when to shut up and when a mid-sentence user utterance is a correction vs. a filler.
-- thinkingLevel: configurable per session. Use `minimal` for ambient cooking questions (fastest response). Use `low` or `medium` for complex substitution or technique questions.
+DO capabilities used by Brioela:
+- **SQLite via Drizzle**: full SQL, type-safe schema, migrations, 10GB limit, unlimited rows.
+- **KV storage**: also available via `this.ctx.storage.get/put` for simple key-value access.
+- **Alarms**: `this.ctx.storage.setAlarm(timestamp)` — DO wakes itself at a future time. The core mechanism for ambient intelligence (weekly summaries, pattern detection, travel pre-load, sickness follow-up) without any cron jobs. Each alarm event triggers `async alarm()` on the DO.
+- **WebSocket hibernation**: DO holds WebSocket connections open and hibernates between messages at zero cost. Wakes in milliseconds on message arrival. This is how 2-hour cooking sessions work within the CPU limits.
+- **CPU time**: 30 seconds per request, configurable to 5 minutes. But each WebSocket message is its own event with a fresh CPU budget — a 2-hour session is thousands of tiny events, each ~50-100ms CPU, total active CPU well under 5 minutes.
+- **FTS5 full-text search**: built into DO SQLite. Used for searching user scan history and recipe notes without external search.
+- **Data Studio**: SQLite-backed DOs are viewable and editable in the Cloudflare dashboard. Critical for debugging individual user memory state.
+- **Storage limit**: 10GB per DO, unlimited rows. A heavy user's complete lifetime data realistically stays under 50MB.
+
+### AI Model: Gemini Live (Voice + Vision Brain)
+
+Model: `gemini-3.1-flash-live-preview`
+
+This is a single full-duplex model that simultaneously hears audio, sees video frames, reads injected text context, and speaks back. No separate STT → LLM → TTS pipeline. One WebSocket, one brain.
+
+Key capabilities:
+- **Full-duplex**: receives audio and produces audio simultaneously.
+- **Native video**: processes JPEG/PNG frames alongside audio in the same reasoning pass. No duct-taping a separate vision model.
+- **Barge-in**: model recognizes user interruption mid-response and treats it as a correction or question, not noise.
+- **thinkingLevel**: `minimal` (lowest latency, for cooking questions), `low`/`medium` (for complex technique or substitution questions).
+- **Affective dialogue**: natively interprets tone, emotion, and pace from raw audio. Can de-escalate frustration and adopt empathetic tone. Useful for cooking sessions where stress is normal.
+- **Context injection**: system instructions at session connect time (user memory, allergies, recipe, style). Mid-session context updates via `send_realtime_input` text key.
+
+Audio specs:
+- Input: raw 16-bit PCM, 16kHz, little-endian.
+- Output: raw 16-bit PCM, 24kHz, little-endian.
+- LiveKit handles these conversions automatically.
+
+Video specs:
+- JPEG or PNG frames, max 1 fps, max 768×768 pixels.
+- Brioela sends 1 frame every 2-4 seconds by default to reduce cost.
 
 Cost model:
-- Audio only (voice assistant without camera): ~$0.0045/min.
-- Audio + video (live vision cooking coach with camera on): ~$0.051/min.
-- Vision-on sessions are premium-tier only due to cost.
+- Audio input: 25 tokens/sec → $0.0045/min (at $3.00/M tokens).
+- Audio + video: 283 tokens/sec → $0.051/min.
+- Audio-only is 10× cheaper than Grok Voice. Vision-on is comparable to Grok Voice but Gemini actually sees the video.
+
+Why Gemini over Grok Voice for Brioela: Grok Voice wins on task-completion benchmarks (67.3% vs 43.8% τ-voice) and raw latency (0.78s vs 0.96s), but Grok Voice is audio-only. Brioela's cooking coach requires the AI to watch the camera. Gemini is the only full-duplex model with native video support. Grok is not used.
 
 ### LiveKit Cloud (Real-Time Media Transport)
 
-LiveKit Cloud is the managed WebRTC SFU. Not self-hosted — LiveKit manages servers, scaling, regions, reconnection, and encryption. Used only for multi-person cooking sessions and the live vision cooking coach feature.
+Used only for multi-person cooking sessions. Not self-hosted — LiveKit Cloud manages servers, SFU, scaling, regions, reconnection, and encryption.
 
-LiveKit owns: audio and video track routing between participants, SFU management, session presence, room lifecycle.
-LiveKit does NOT own: AI reasoning, memory, recipe state, business logic.
+LiveKit owns: audio and video track routing between participants, room lifecycle, SFU management.
+LiveKit does NOT own: AI reasoning, memory, business logic, recipe state.
 
-Cost: $0.0005/minute per participant. A 45-minute grandma cooking session with grandma + parent + child + AI = 4 participants × $0.0005 × 45 = $0.09 total LiveKit cost. Negligible against Gemini Live cost for the same session.
+Cost: $0.0005/min per participant. A 45-min grandma session (4 participants) = $0.09 total LiveKit cost.
 
-The LiveKit Agent Worker is a separate Node.js process (not a Cloudflare Worker — LiveKit Agents SDK requires Node.js). It runs on managed infrastructure such as Railway or Fly.io and connects to LiveKit Cloud rooms as an AI participant. It pulls user memory context from the Cloudflare Worker endpoint before joining a room, relays audio/video between LiveKit and Gemini Live, and fires transcript events back to the CookingAgent DO for memory updates.
+The LiveKit Agent Worker is a separate Node.js process — it cannot run inside a Cloudflare Worker. LiveKit's Agents SDK requires Node.js runtime. This worker deploys on Railway or Fly.io (managed PaaS). It connects to LiveKit Cloud rooms as an AI participant, pulls user context from the Cloudflare Worker endpoint before joining, relays audio/video to Gemini Live, and fires transcript events back to the CookingAgent DO via HTTP.
 
-Single-user voice sessions (no room, no multiple participants) do NOT use LiveKit. They connect directly to Gemini Live via WebSocket from the client, with context injected from the per-user Orchestrator DO at session start.
+Single-user voice sessions do NOT use LiveKit. The client connects directly to Gemini Live via WebSocket, with context injected by the Orchestrator DO at session start.
 
-### Upstash QStash (Async Job Delivery)
+### Upstash QStash (One-Shot Async Delivery)
 
-QStash is used for all fire-and-forget background jobs where guaranteed delivery and retry behavior are required. Examples: triggering recipe import processing after a URL is shared, triggering receipt OCR after a photo is captured, triggering weekly summary generation, triggering pattern detection after scan events accumulate. HTTP-based, serverless, no queue infrastructure to manage.
-
-### Upstash Redis (Cache and Rate Limits)
-
-Redis is used for: product lookup caching (resolved products cached to avoid repeated Open Food Facts calls), community note hot cache per geohash, rate limiting per user per feature, scan deduplication, active session tracking.
+For fire-and-forget background jobs: guaranteed delivery, retries on failure, no state between steps. Use when there is one step or when steps are fully independent. Examples: send push notification, trigger product enrichment fetch, fan out to multiple endpoints, schedule a delayed message.
 
 ### Upstash Workflow (Durable Multi-Step Execution)
 
-Upstash Workflow provides durable, step-by-step execution for complex async jobs that must not be lost if a step fails. Used for: recipe import pipeline (fetch source → extract transcript → normalize recipe → confidence check → save), receipt processing pipeline (OCR → merchant resolve → line item match → spend summary update), post-cooking session summarization (compile transcript → extract recipe steps → merge into memory → notify user).
+Built on top of QStash. Adds multi-step state and `waitForEvent`. Use when steps depend on each other or you need to pause indefinitely for an external trigger.
+
+Your code (Cloudflare Worker) runs each step. Upstash owns the orchestration state between steps — carries accumulated context, handles retries, resumes after `waitForEvent`. Upstash does NOT run your logic on their servers. One HTTP call into your Worker per step.
+
+Example for Brioela:
+```
+scan happens
+→ step 1: deep product analysis (retries if fails)
+→ step 2: cross-check user allergen SQLite in DO
+→ step 3: waitForEvent("community_note_added") ← zero cost, just a stored record
+→ step 4: notify user with full context from steps 1+2
+```
+
+Upstash Box was evaluated as an alternative for running per-user agents. Decision: rejected. Upstash Box is managed compute that cannot provide geographic edge co-location. Cloudflare DOs automatically provision close to the user's first request, giving sub-100ms wake times. For real-time scan personalization, edge proximity matters. Upstash is used for QStash, Workflow, and Redis only.
+
+### Upstash Redis
+
+Serverless Redis. Used for: product lookup cache (resolved products cached with TTL to reduce Open Food Facts calls), community note hot cache per geohash, rate limiting per user per feature, scan deduplication, active session token tracking.
+
+### Supabase Postgres (Global Shared Data)
+
+Flat monthly pricing. Used for all shared, cross-user data:
+- Product corpus (canonical products, ingredients, nutrition, origin).
+- Community notes.
+- Map places and sightings.
+- Business and practitioner profiles.
+- Featured listings.
+
+Not used for any user-private data. User-private data lives exclusively in the per-user Orchestrator DO's SQLite.
 
 ### Product Data Sources
 
-- Open Food Facts: primary source, 3.3M+ products globally, free, open license.
-- Country-specific government food databases: supplementary, injected by country based on user location at scan time.
-- Product cache: resolved products cached in Upstash Redis with TTL to reduce repeated lookups.
-- Pending scans: products that cannot be resolved are stored as pending for later enrichment when databases update.
+- Open Food Facts: primary, 3.3M+ products globally, free.
+- Country-specific government food databases: supplementary, selected by user's current location geo at scan time.
+- Resolved products cached in Upstash Redis with TTL.
+- Unresolvable scans stored as pending in Supabase for later enrichment.
 
 ## Data Boundary Rules
 
-- Private data (personal memory, constraints, scan history, recipes, patterns): lives only in the per-user Orchestrator DO's SQLite. Never in shared databases. Never accessible by other users or by workers without an authenticated RPC call to that user's DO.
-- Shared data (product corpus, community notes, map places, business profiles): lives in shared Cloudflare D1 or Supabase Postgres. Readable by any worker. Writable only through validated API paths.
-- Cached data: Upstash Redis. TTL-bound. Treated as disposable.
-- Ephemeral session data: CookingAgent DO. Flushed after session closes and key facts are written to Orchestrator DO.
+- **Private** (personal memory, constraints, scan history, recipes, patterns): Orchestrator DO SQLite only. Never in Supabase. Never accessible without authenticated RPC to that user's DO.
+- **Shared** (product corpus, community notes, map, businesses): Supabase Postgres. No user PII.
+- **Cached**: Upstash Redis. TTL-bound, disposable.
+- **Ephemeral session**: CookingAgent DO. Flushed after session closes and key facts written to Orchestrator DO.
 
 ## What Runs Where
 
 | Component | Runtime | Who manages it |
 |---|---|---|
 | API routing | Cloudflare Workers (Hono.js) | Cloudflare |
-| Per-user agent brain | Cloudflare Durable Objects (Agent SDK) | Cloudflare |
-| Async job delivery | Upstash QStash | Upstash |
-| Durable workflows | Upstash Workflow | Upstash |
-| Cache and rate limits | Upstash Redis | Upstash |
-| Shared relational data | Cloudflare D1 or Supabase Postgres | Cloudflare / Supabase |
+| Per-user agent brain | Cloudflare Durable Objects (CF Agent SDK) | Cloudflare |
+| One-shot async jobs | Upstash QStash | Upstash |
+| Multi-step durable flows | Upstash Workflow | Upstash |
+| Cache + rate limits | Upstash Redis | Upstash |
+| Global shared data | Supabase Postgres | Supabase |
 | Real-time media rooms | LiveKit Cloud | LiveKit |
-| LiveKit agent worker | Railway or Fly.io | Managed PaaS |
-| AI voice + vision | Gemini Live | Google |
+| LiveKit AI agent worker | Railway or Fly.io (Node.js) | Managed PaaS |
+| AI voice + vision | Gemini Live (gemini-3.1-flash-live-preview) | Google |
 | Product data | Open Food Facts + gov DBs | External |
-
-## Non-Functional Requirements
-
-- Zero self-managed servers anywhere in the stack.
-- Any component failure must not cascade to other users (per-user isolation at DO level).
-- Idle users cost effectively zero (DOs hibernate, QStash only charges on messages).
-- All user-private data must remain inside the per-user DO boundary and be deletable on user account deletion without touching shared tables.

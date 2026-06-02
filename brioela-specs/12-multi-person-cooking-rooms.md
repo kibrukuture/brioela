@@ -50,7 +50,7 @@ The Brioela AI agent joins the LiveKit room as a participant via the LiveKit Age
 
 The AI agent's voice goes back into the room via LiveKit so all participants hear it simultaneously.
 
-The AI agent uses `gemini-live-2.5-flash-preview` as its brain — the same model as single-user sessions. The system prompt includes all participants' constraints merged into a unified context. When there is a conflict (grandma's recipe uses butter, one participant is dairy-free), the AI flags this to the group and suggests a per-person substitution.
+The AI agent uses `gemini-3.1-flash-live-preview` as its brain — the same model as single-user sessions. The system prompt includes all participants' constraints merged into a unified context. When there is a conflict (grandma's recipe uses butter, one participant is dairy-free), the AI flags this to the group and suggests a per-person substitution.
 
 ## Per-Participant Constraint Handling
 
