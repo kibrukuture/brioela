@@ -136,21 +136,31 @@ Reason: Cloudflare Durable Objects run at the actual edge — automatically prov
 - Alarm fired (type determines what runs).
 - **Visual intake classified** (classification_domain, summary, confidence, skill_to_activate) — see spec 34.
 
-## Agent Tool Set
+## Agent Tool Set (AI-Callable Tools)
 
-- `read_memory(domain, key)` — read from personal SQLite.
-- `write_memory(domain, key, value, confidence)` — write or update a fact.
-- `write_lifestyle_memory(key, value, confidence)` — write free-form lifestyle/personality observations; key and value are AI-written, no predetermined schema.
-- `propose_constraint(type, value, evidence)` — create a constraint candidate.
-- `confirm_constraint(constraint_id)` — mark confirmed.
-- `schedule_job(type, payload, delay)` — push to Upstash QStash.
-- `start_workflow(type, payload)` — start an Upstash Workflow.
-- `get_session_context(session_id)` — build full context payload for a session; includes lifestyle_memory, medication_profile, and health_signals alongside food data.
-- `record_outcome(event_type, entity_id, notes)` — log outcome events.
+The Orchestrator DO registers all capabilities as callable tools using the Vercel AI SDK `tool()` pattern. The AI agent decides which tools to call based on context — tools are never pre-selected or pre-injected by developer logic. The agent sees all tool schemas and calls what it needs, chains calls in any sequence, and discards what is irrelevant.
+
+This means adding a new capability is always: write one `tool({})` definition. The AI starts using it automatically. No routing logic, no pre-filtering, no threshold tuning.
+
+Tools registered on the Orchestrator DO:
+
+- `read_memory(domain, key)` — read a fact from personal SQLite.
+- `write_memory(domain, key, value, confidence)` — persist or update a durable fact.
+- `write_lifestyle_memory(key, value, confidence)` — write a free-form lifestyle/personality observation; key and value are AI-authored, no predetermined schema.
+- `propose_constraint(type, value, evidence)` — create an unconfirmed constraint candidate (allergy, dislike, dietary identity).
+- `confirm_constraint(constraint_id)` — mark a proposed constraint as confirmed.
+- `schedule_job(type, payload, delay)` — fire a one-shot background job via Upstash QStash.
+- `start_workflow(type, payload)` — start a durable multi-step flow via Upstash Workflow.
+- `get_session_context(session_id)` — assemble the full context payload for a live session; includes all memory domains: food, constraints, lifestyle, medications, health signals.
+- `record_outcome(event_type, entity_id, notes)` — log a durable outcome event.
 - `flag_location(place_id, reason)` — permanently avoid a place for this user.
-- `set_alarm(timestamp, type, payload)` — schedule a DO alarm.
-- `classify_visual_intake(image_bytes)` — classify a submitted photo, decide relevance, route to correct memory domain or discard; see spec 34.
-- `activate_skill(skill_name, payload)` — enable a dormant capability set (e.g., Medication Skill activates on first prescription photo detected).
+- `set_alarm(timestamp, type, payload)` — schedule a DO alarm for a future ambient action.
+- `classify_visual_intake(image_bytes)` — classify a submitted photo, decide relevance and domain, route to memory or discard; see spec 34.
+- `activate_skill(skill_name, payload)` — unlock a dormant capability set (e.g., Medication Skill on first prescription photo).
+- `fetch_recipes(query, filters)` — semantic search over the user's saved recipe history.
+- `run_illness_detective(symptom_onset_hours)` — rank probable food culprits from recent history cross-referenced with active recalls.
+- `generate_meal_plan(days, use_inventory)` — build a minimum-spend meal plan from current inventory.
+- `check_medication_interactions(ingredients)` — check a list of ingredients against the active medication profile.
 
 ## Context Injection into Live Sessions
 
