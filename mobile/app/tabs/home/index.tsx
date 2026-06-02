@@ -1,7 +1,7 @@
 import type React from 'react';
 import { useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, Pressable, Image } from 'react-native';
-import { useHeaderHeight } from '@react-navigation/elements';
+import { useHeaderHeight } from "expo-router/react-navigation";
 import dayjs from 'dayjs';
 import {
   Bank,
