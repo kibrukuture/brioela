@@ -178,15 +178,5 @@
     "extends": "universe/native",
     "root": true
   },
-  "private": true,
-  "expo": {
-    "doctor": {
-      "reactNativeDirectoryCheck": {
-        "exclude": [
-          "react-native-encrypted-storage"
-        ],
-        "listUnknownPackages": false
-      }
-    }
-  }
+  "private": true
 }
