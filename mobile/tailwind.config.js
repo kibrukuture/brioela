@@ -1,15 +1,13 @@
-const { hairlineWidth, platformSelect } = require('nativewind/theme');
+const { hairlineWidth } = require('nativewind/theme');
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  // NOTE: Update this to include the paths to all of your component files.
-  darkMode: 'class', // Enable manual toggling of dark mode
+  darkMode: 'media',
   content: [
     './app/**/*.{js,jsx,ts,tsx}',
     './components/**/*.{js,jsx,ts,tsx}',
     './designs/**/*.{js,jsx,ts,tsx}',
   ],
-  presets: [require('nativewind/preset')],
   theme: {
     extend: {
       fontFamily: {
@@ -21,38 +19,38 @@ module.exports = {
         parafina: ['parafina_black', 'Inter'],
       },
       colors: {
-        border: withOpacity('border'),
-        input: withOpacity('input'),
-        ring: withOpacity('ring'),
-        background: withOpacity('background'),
-        foreground: withOpacity('foreground'),
+        border: 'rgb(var(--border) / <alpha-value>)',
+        input: 'rgb(var(--input) / <alpha-value>)',
+        ring: 'rgb(var(--ring) / <alpha-value>)',
+        background: 'rgb(var(--background) / <alpha-value>)',
+        foreground: 'rgb(var(--foreground) / <alpha-value>)',
         primary: {
-          DEFAULT: withOpacity('primary'),
-          foreground: withOpacity('primary-foreground'),
+          DEFAULT: 'rgb(var(--primary) / <alpha-value>)',
+          foreground: 'rgb(var(--primary-foreground) / <alpha-value>)',
         },
         secondary: {
-          DEFAULT: withOpacity('secondary'),
-          foreground: withOpacity('secondary-foreground'),
+          DEFAULT: 'rgb(var(--secondary) / <alpha-value>)',
+          foreground: 'rgb(var(--secondary-foreground) / <alpha-value>)',
         },
         destructive: {
-          DEFAULT: withOpacity('destructive'),
-          foreground: withOpacity('destructive-foreground'),
+          DEFAULT: 'rgb(var(--destructive) / <alpha-value>)',
+          foreground: 'rgb(var(--destructive-foreground) / <alpha-value>)',
         },
         muted: {
-          DEFAULT: withOpacity('muted'),
-          foreground: withOpacity('muted-foreground'),
+          DEFAULT: 'rgb(var(--muted) / <alpha-value>)',
+          foreground: 'rgb(var(--muted-foreground) / <alpha-value>)',
         },
         accent: {
-          DEFAULT: withOpacity('accent'),
-          foreground: withOpacity('accent-foreground'),
+          DEFAULT: 'rgb(var(--accent) / <alpha-value>)',
+          foreground: 'rgb(var(--accent-foreground) / <alpha-value>)',
         },
         popover: {
-          DEFAULT: withOpacity('popover'),
-          foreground: withOpacity('popover-foreground'),
+          DEFAULT: 'rgb(var(--popover) / <alpha-value>)',
+          foreground: 'rgb(var(--popover-foreground) / <alpha-value>)',
         },
         card: {
-          DEFAULT: withOpacity('card'),
-          foreground: withOpacity('card-foreground'),
+          DEFAULT: 'rgb(var(--card) / <alpha-value>)',
+          foreground: 'rgb(var(--card-foreground) / <alpha-value>)',
         },
       },
       borderWidth: {
@@ -62,18 +60,3 @@ module.exports = {
   },
   plugins: [],
 };
-
-function withOpacity(variableName) {
-  return ({ opacityValue }) => {
-    if (opacityValue !== undefined) {
-      return platformSelect({
-        ios: `rgb(var(--${variableName}) / ${opacityValue})`,
-        android: `rgb(var(--android-${variableName}) / ${opacityValue})`,
-      });
-    }
-    return platformSelect({
-      ios: `rgb(var(--${variableName}))`,
-      android: `rgb(var(--android-${variableName}))`,
-    });
-  };
-}

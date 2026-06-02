@@ -11,7 +11,7 @@ config.watchFolders = [path.resolve(__dirname, '../shared')];
 
 //
 
-const metroConfig = withNativeWind(config, { input: './global.css', inlineRem: 16 });
+const metroConfig = withNativeWind(config);
 
 metroConfig.resolver.unstable_enablePackageExports = true;
 metroConfig.resolver.unstable_conditionNames = ['react-native', 'browser', 'require', 'node'];
