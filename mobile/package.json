@@ -1,7 +1,7 @@
 {
   "name": "schnl",
   "version": "1.0.0",
-  "main": "./index.js",
+  "main": "expo-router/entry",
   "scripts": {
     "start": "EXPO_JS_ENGINE=hermes cross-env NODE_ENV=development expo start --dev-client",
     "ios": "EXPO_JS_ENGINE=hermes cross-env NODE_ENV=development expo run:ios",
@@ -133,7 +133,6 @@
     "react-native-confirmation-code-field": "^8.0.1",
     "react-native-encrypted-storage": "^4.0.3",
     "react-native-gesture-handler": "~2.31.2",
-    "react-native-get-random-values": "~1.11.0",
     "react-native-graph": "^1.2.0",
     "react-native-keyboard-controller": "1.21.6",
     "react-native-linear-gradient": "^2.8.3",
@@ -152,7 +151,6 @@
     "react-native-screens": "4.25.2",
     "react-native-svg": "15.15.4",
     "react-native-uitextview": "^1.4.0",
-    "react-native-url-polyfill": "^2.0.0",
     "react-native-web": "^0.21.2",
     "reanimated-color-picker": "^4.3.0",
     "stripe": "^20.4.1",
