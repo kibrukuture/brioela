@@ -134,27 +134,49 @@ Reason: Cloudflare Durable Objects run at the actual edge — automatically prov
 - Sickness event logged.
 - Travel intent detected (destination, date, confidence).
 - Alarm fired (type determines what runs).
+- **Visual intake classified** (classification_domain, summary, confidence, skill_to_activate) — see spec 34.
 
 ## Agent Tool Set
 
 - `read_memory(domain, key)` — read from personal SQLite.
 - `write_memory(domain, key, value, confidence)` — write or update a fact.
+- `write_lifestyle_memory(key, value, confidence)` — write free-form lifestyle/personality observations; key and value are AI-written, no predetermined schema.
 - `propose_constraint(type, value, evidence)` — create a constraint candidate.
 - `confirm_constraint(constraint_id)` — mark confirmed.
 - `schedule_job(type, payload, delay)` — push to Upstash QStash.
 - `start_workflow(type, payload)` — start an Upstash Workflow.
-- `get_session_context(session_id)` — build full context payload for a session.
+- `get_session_context(session_id)` — build full context payload for a session; includes lifestyle_memory, medication_profile, and health_signals alongside food data.
 - `record_outcome(event_type, entity_id, notes)` — log outcome events.
 - `flag_location(place_id, reason)` — permanently avoid a place for this user.
 - `set_alarm(timestamp, type, payload)` — schedule a DO alarm.
+- `classify_visual_intake(image_bytes)` — classify a submitted photo, decide relevance, route to correct memory domain or discard; see spec 34.
+- `activate_skill(skill_name, payload)` — enable a dormant capability set (e.g., Medication Skill activates on first prescription photo detected).
 
 ## Context Injection into Live Sessions
 
 When a cooking session starts, the Orchestrator DO builds a context payload: user name, hard allergies, active dislikes, dietary identity, current recipe with steps, prior notes on this recipe, relevant behavioral patterns, recent negative outcomes. This is injected into Gemini Live as system instructions at session connect time. Changes during the session are pushed into the live WebSocket via `send_realtime_input`.
 
+## Memory Domains in the Orchestrator DO SQLite
+
+The Orchestrator DO is not just a food database. It holds every dimension of what the agent knows about this user:
+
+| Domain | What it holds | Schema type |
+|---|---|---|
+| `food_memory` | scan history, recipe history, meal logs, negative outcomes | structured (Drizzle schema) |
+| `constraint_memory` | allergies, dislikes, dietary identity, boycott filters | structured |
+| `behavioral_patterns` | stress eating signals, sickness correlations, time-of-day patterns | structured |
+| `medical_conditions` | declared or inferred conditions (spec 28) | structured |
+| `medication_profile` | detected medications, active drug-food interaction skill (spec 34) | structured |
+| `health_signals` | stool photos, glucose readings, symptom logs (spec 34) | structured |
+| `lifestyle_memory` | free-form AI-written observations (dog, gym, baby, garden, travel context) | unstructured (key/value/confidence) |
+| `location_memory` | visited places, inferred travel context, home city | structured |
+| `session_history` | cooking session summaries, grandma style profiles | structured |
+
+`lifestyle_memory` is the only unstructured domain. The agent writes its own keys and values with no predetermined schema. This is intentional — it allows the agent to learn new things about the user that no human could anticipate at design time.
+
 ## Data Boundaries
 
-- Per-user Orchestrator DO SQLite: personal memory, derived facts, scan history, recipes, patterns, negative outcomes. Private. Never in shared databases.
+- Per-user Orchestrator DO SQLite: all memory domains listed above. Private. Never in shared databases.
 - CookingAgent DO: ephemeral session state. Flushed after session closes and key facts written to Orchestrator.
 - Shared data (product corpus, community notes, map): Supabase Postgres. Readable by Workers. Never stored in DO.
 - Cache: Upstash Redis. TTL-bound, disposable.
