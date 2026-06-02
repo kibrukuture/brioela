@@ -205,23 +205,72 @@ Raw images are **never stored**. Classification and derived facts only.
 
 ### Memory Curator
 
-The `user_memory` and `user_personality` tables need their own maintenance pass — separate from the Skills Curator — for the same reason: without it, low-confidence noise accumulates, duplicate facts pile up, and outdated entries (user no longer has an infant, stopped going to the gym) linger.
+The `user_memory` and `user_personality` tables need their own maintenance pass — separate from the Skills Curator — for the same reason: without it, low-confidence noise accumulates, duplicate facts pile up, and outdated entries linger forever.
 
-The Memory Curator runs on the same DO alarm trigger as the Skills Curator (idle + interval elapsed). It:
-- Consolidates duplicate entries: two `user_memory` rows with `key = "medications"` from two different photos are merged into one canonical entry.
-- Upgrades confidence on repeated signals: a personality trait seen three times in a month gets its `strength` raised.
-- Flags stale entries: a `visited_places` entry from 18 months ago is marked low-confidence without being deleted.
-- Proposes deletions: entries with `confidence < 0.2` and no recent supporting evidence are surfaced for the agent to review and optionally delete.
+The Memory Curator runs on the same DO alarm trigger as the Skills Curator (idle + interval elapsed, default 7 days). It loads all memory entries with their `read_count`, `write_count`, `last_read`, and `last_write` and makes decisions based on the full picture.
 
-The Curator never deletes anything automatically. It proposes; the agent (or the user via the "what Brioela knows about me" screen) confirms.
+#### The Grace Period — Never Touch New Entries
+
+Before any curator logic runs, new entries are skipped unconditionally:
+
+```typescript
+const GRACE_PERIOD_MS = 14 * 24 * 60 * 60 * 1000 // 14 days
+
+for (const entry of allEntries) {
+  const isNew = (Date.now() - entry.lastWrite) < GRACE_PERIOD_MS
+  if (isNew) continue // never touch — it hasn't had time to accumulate reads yet
+  
+  // proceed with evaluation...
+}
+```
+
+Without this, a newly written entry that hasn't been read yet looks like garbage to the curator. The 14-day window gives every new entry a fair chance before it is ever evaluated.
+
+#### The Decision Matrix
+
+The curator agent sees all entries with their counts and applies this logic:
+
+```
+read_count > 50  AND  write_count > 1                → core memory — never touch
+read_count = 0   AND  last_write > 30 days ago        → archive candidate
+write_count = 1  AND  confidence < 0.4                → low-confidence single observation — flag for review
+namespace has only 1 key  AND  read_count = 0         → probably a one-off — merge or archive
+two namespaces are semantically similar               → propose merge
+read_count > 10  AND  last_read < 90 days ago         → was important, now dormant — flag as stale
+```
+
+A real example of what the curator sees:
+
+```
+namespace: health.medications
+  metformin:  read=847, write=3, confidence=1.0, last_read=today    → core, untouchable
+
+namespace: food.snacks.afternoon
+  crackers:   read=0,   write=1, confidence=0.3, last_write=45d ago  → archive candidate
+
+namespace: life.misc
+  random_obs: read=0,   write=1, confidence=0.2, last_write=60d ago  → garbage, propose delete
+```
+
+The metformin entry is untouchable — high read, updated multiple times, core to every health session. The other two are clearly noise. The curator proposes archiving or deleting them.
+
+#### What the Curator Never Does
+
+- Never deletes automatically. It proposes; the agent confirms with `memory_update(active: 0)` or the user confirms via the "what Brioela knows about me" screen.
+- Never touches `user_personality` traits that have `strength > 0.7` — high-confidence inferred traits are protected.
+- Never touches entries within the 14-day grace period, regardless of counts.
+
+#### The Self-Fulfilling Prophecy Guard
+
+`read_count` alone cannot be the only signal. Some namespaces are always loaded (health, diet) because they are always relevant — their counts explode while less-used namespaces look like garbage even if they hold important context. The curator weighs `last_write` recency alongside `read_count` to distinguish between "genuinely unused" and "not yet relevant." Something written recently is never garbage — give it time.
 
 ## Technical Constraints
 
 - Classification is a single Gemini vision call (standard, not Live). Not a streaming session. Target latency: under 2 seconds.
 - The classification result is a structured JSON object parsed by the Orchestrator DO handler — not a free-text response.
-- Lifestyle memory is an unstructured table — key and value are free-form strings written by the model. This is intentional. No schema migration needed when the agent learns a new type of lifestyle signal.
-- The Medication Skill activation writes a `skill_activated` event to the DO and persists the medication profile. The skill is loaded on every subsequent scan verdict call.
-- Drug-food interaction rules live in Supabase as a versioned config table: `drug_food_interaction` (drug_name, food_ingredient, interaction_type, severity, description). Updated by the team, not hardcoded.
+- All memory writes go through `memory_update` — the single write path. The AI never writes directly to SQLite.
+- Drug-food interaction rules live in Supabase as a versioned config table: `drug_food_interaction` (drug_name, food_ingredient, interaction_type, severity, description). Updated without a deploy.
+- `read_count` increments are fire-and-forget — never awaited, never allowed to block a session response.
 
 ## Privacy
 

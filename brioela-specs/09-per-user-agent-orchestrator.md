@@ -310,9 +310,20 @@ CREATE TABLE user_memory (
   confidence  REAL NOT NULL DEFAULT 1.0,
   source      TEXT NOT NULL,       -- 'image' | 'conversation' | 'inferred' | 'cron'
   active      INTEGER DEFAULT 1,   -- 0 = deactivated by user or agent
+  read_count  INTEGER DEFAULT 0,   -- times this entry was injected into a prompt
+  write_count INTEGER DEFAULT 0,   -- times this entry was written/updated with new evidence
+  last_read   INTEGER,             -- timestamp of last prompt injection
+  last_write  INTEGER,             -- timestamp of last write
   updated_at  INTEGER NOT NULL
 );
 ```
+
+**`read_count` vs `write_count` are different signals and the curator uses both differently:**
+
+- High read, low write = very valuable, core memory — never touch. (Medication entry: written once from one photo, read 200 times in every health conversation.)
+- Low read, low write, old `last_write` = candidate for archival. (A one-time observation never used again.)
+- High write, rising confidence = actively reinforced fact — healthy, keep it.
+- Written recently (within 14 days), not yet read much = new entry, give it time — grace period, curator never touches it.
 
 ### The Zod Schema (Tool Boundary Enforcement)
 
@@ -389,7 +400,13 @@ memory_update: tool({
       })
       .onConflictDoUpdate({
         target: userMemory.id,
-        set: { value: JSON.stringify(mergedValue), confidence, updatedAt: Date.now() },
+        set: {
+          value: JSON.stringify(mergedValue),
+          confidence,
+          writeCount: sql`write_count + 1`,  // increment on every update
+          lastWrite: Date.now(),
+          updatedAt: Date.now(),
+        },
       })
 
     return `memory updated: ${namespace}.${key}`
@@ -412,6 +429,33 @@ Second photo (refill, 1000mg):
 ```
 
 Old keys are never lost. New keys are added. Changed keys are updated. The AI writes only what it observed right now; the code handles the rest.
+
+### `loadMemoryForPrompt()` — Read Count as a Side Effect
+
+Most memory reads are passive — namespaces are loaded into the system prompt automatically every turn, not via explicit tool calls. The read count must be incremented here, not inside a tool, because the AI never "asks" to read this memory — it just has it.
+
+```typescript
+async loadMemoryForPrompt(namespaces: string[]): Promise<MemoryEntry[]> {
+  const entries = await this.db
+    .select()
+    .from(userMemory)
+    .where(inArray(userMemory.namespace, namespaces))
+    .all()
+
+  // fire and forget — never await, never block the response
+  this.db.update(userMemory)
+    .set({
+      readCount: sql`read_count + 1`,
+      lastRead: Date.now(),
+    })
+    .where(inArray(userMemory.namespace, namespaces))
+    .run() // no await — this is a background write
+
+  return entries
+}
+```
+
+This runs every time a session context is assembled. The increment is a side effect of normal operation — zero extra developer action required. Over weeks, the counts naturally reflect actual usage. The curator reads these counts and knows what matters.
 
 ### Option A — AI Sees Existing Namespaces (Intelligence Layer)
 
