@@ -23,17 +23,19 @@ Provide a location-aware map of nearby healthy food options, products, and trust
 - Verified business profiles.
 - Public place data.
 - Optional merchant feeds.
+- Ground finds layer (spec 35) — real-time community observations rendered as a separate signal overlay on the same base map.
 
 ## Data Model
 - `map_place`: place_id, kind, name, lat, lng, verification_status.
 - `map_place_signal`: place_id, healthy_score, community_score, affordability_score, recency_score.
 - `product_sighting`: place_id, product_id, seen_at, user_id, confidence.
+- Ground finds are stored separately in the `find` and `location_signal_summary` tables (spec 35) — they are not merged into `map_place_signal`. Both layers render on the same Mapbox GL base map with independent toggles.
 
 ## Ranking Model
 - Base place quality.
 - Product relevance to user memory.
 - Distance and open-now status.
-- Local community note density.
+- Ground find density at location (from `location_signal_summary`, replaces generic "community note density").
 - Price and recent availability confidence.
 
 ## API Surface

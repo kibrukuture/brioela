@@ -1,52 +1,29 @@
 # 03. Hyperlocal Community Notes
 
-## Goal
+> **Deprecated — superseded by spec 35 (Ground).**
+>
+> This spec described a generic community note system attached to products. The full design has been replaced by Ground (spec 35), which implements the same goal with a complete privacy model, AI authenticity gate, voice-to-find flow, 3D map surface, and strict no-social-media design constraints.
+>
+> The data model, API surface, and moderation approach in this spec are **not implemented**. Refer to spec 35 for the current design.
+
+## Original Goal (historical reference)
 Attach local, product-specific notes to scanned food items so nearby users can benefit from real usage feedback that is more contextually relevant than global reviews.
 
-## User Outcome
-- Scan a product.
-- See short local notes only when relevant.
-- Add a concise note after purchase or use.
+## What Replaced This
 
-## In Scope
-- Product-linked note creation.
-- Geo-scoped note visibility.
-- Light moderation and abuse prevention.
-- Ranking notes by local relevance and trust.
+Spec 35 (Ground) covers:
+- Product-linked finds (the equivalent of community notes, product-specific)
+- Location-scoped visibility via the 3D Ground map
+- AI authenticity gate replacing manual moderation
+- Voice-to-find flow with audio discarded at source
+- Privacy model with no public contributor identity
+- No engagement signals (no helpful counts, no voting)
 
-## Out of Scope
-- Generic social feed.
-- Threaded long-form discussion.
+The `find` table in spec 35 replaces `community_note`. The `location_signal_summary` table replaces `note_signal`. There is no equivalent to `note_visibility_window` — finds expire by timestamp, not by configured window.
 
-## Core Rules
-- Notes are attached to canonical products.
-- Visibility is scoped by geographic radius or city cluster.
-- Only short, structured notes should surface inline during scan.
-- Notes must be rankable by freshness, proximity, and reporter trust.
+## API Surface (replaced)
 
-## Data Model
-- `community_note`: note_id, product_id, author_user_id, geo_hash, body, sentiment, created_at, status.
-- `note_signal`: note_id, helpful_count, report_count, local_view_count.
-- `note_visibility_window`: note_id, region_id, start_at, end_at.
-
-## API Surface
-- `POST /api/community-notes`
-- `GET /api/products/:id/community-notes`
-- `POST /api/community-notes/:id/report`
-
-## Ranking Inputs
-- Distance from current user.
-- Time since posted.
-- Whether the author has repeated scan/use history on similar products.
-- Note helpfulness and moderation risk.
-
-## Moderation Requirements
-- Rate limiting per user and per product.
-- Spam detection on repeated text.
-- Toxicity and defamation filtering.
-- Soft delete with audit trail.
-
-## Success Metrics
-- Percentage of scans with at least one local note.
-- Note helpfulness rate.
-- Report rate per thousand notes.
+The spec 35 equivalents:
+- `POST /api/finds` (replaces `POST /api/community-notes`)
+- `GET /api/finds/nearby` (replaces `GET /api/products/:id/community-notes`)
+- `POST /api/finds/:id/report` (retained concept, same shape)
