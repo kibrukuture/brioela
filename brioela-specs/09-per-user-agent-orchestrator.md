@@ -151,25 +151,27 @@ Tools registered on the Orchestrator DO:
 - `skill_archive(name, reason)` — remove a skill from the active index without deleting it; archived skills no longer appear in the prompt but their content and history are retained in SQLite. Use when a skill is superseded or no longer relevant.
 - `skill_delete(name, reason)` — permanently delete a skill from SQLite. Irreversible. The agent calls this only when a skill is confirmed wrong, harmful, or a duplicate of another skill that already covers it better.
 
-**Memory and constraint tools:**
-- `read_memory(domain, key)` — read a fact from personal SQLite.
-- `write_memory(domain, key, value, confidence)` — persist or update a durable fact.
-- `write_lifestyle_memory(key, value, confidence)` — write a free-form lifestyle/personality observation; key and value are AI-authored, no predetermined schema.
+**Memory tools:**
+- `memory_update(namespace, key, value, confidence, source)` — the single tool for all memory writes. Namespace is dot-separated (`health.medications`, `life.places`). Enforces regex + hard cap + merge logic. See the Memory Namespace System section for full implementation.
+- `memory_read(namespace, key?)` — read one entry or all entries under a namespace.
 - `propose_constraint(type, value, evidence)` — create an unconfirmed constraint candidate (allergy, dislike, dietary identity).
 - `confirm_constraint(constraint_id)` — mark a proposed constraint as confirmed.
+- `classify_visual_intake(image_bytes)` — classify a submitted photo, decide relevance, call `memory_update` with the result; see spec 34.
+- `recall_session_context(query, session_id?)` — FTS5 search over archived cold-tier session turns. MemGPT paging pattern — cold storage is a searchable library, not a trash can.
+
+**Action and scheduling tools:**
 - `schedule_job(type, payload, delay)` — fire a one-shot background job via Upstash QStash.
 - `start_workflow(type, payload)` — start a durable multi-step flow via Upstash Workflow.
-- `get_session_context(session_id)` — assemble the full context payload for a live session; includes all memory domains: food, constraints, lifestyle, medications, health signals.
+- `get_session_context(session_id)` — assemble full context payload for a live session; includes `user_memory`, `user_personality`, constraints, health signals, active skill index.
 - `record_outcome(event_type, entity_id, notes)` — log a durable outcome event.
 - `flag_location(place_id, reason)` — permanently avoid a place for this user.
 - `set_alarm(timestamp, type, payload)` — schedule a DO alarm for a future ambient action.
-- `classify_visual_intake(image_bytes)` — classify a submitted photo, decide relevance and domain, route to memory or discard; see spec 34.
-- `activate_skill(skill_name, payload)` — unlock a dormant capability set (e.g., Medication Skill on first prescription photo).
+
+**Domain-specific tools:**
 - `fetch_recipes(query, filters)` — semantic search over the user's saved recipe history.
 - `run_illness_detective(symptom_onset_hours)` — rank probable food culprits from recent history cross-referenced with active recalls.
 - `generate_meal_plan(days, use_inventory)` — build a minimum-spend meal plan from current inventory.
-- `check_medication_interactions(ingredients)` — check a list of ingredients against the active medication profile.
-- `recall_session_context(query, session_id?)` — FTS5 search over archived (cold-tier) session turns when the agent needs something that was compressed out of the active context window. This is the MemGPT paging pattern — cold storage is searchable, not a black hole.
+- `check_medication_interactions(ingredients)` — check a list of ingredients against `user_memory` `health.medications` entries.
 
 ## Skills System
 
@@ -292,6 +294,192 @@ The Orchestrator DO is not just a food database. It holds every dimension of wha
 | `skills` | reusable procedural instruction sets in markdown — name, description, content, tags, use_count | structured |
 
 **The core distinction across all domains**: `user_memory` and `user_personality` hold *who the user is* (declarative facts and personality traits). `skills` holds *how to serve the user* (procedural instructions). These must never be conflated. A medication detected from a photo → fact in `user_memory`. The agent deciding to create a procedure for handling medication questions → entry in `skills`. Most visual intake produces only memory updates. Skills are rare, earned from patterns, created by the agent's own judgment.
+
+## Memory Namespace System
+
+All declarative user facts write through one tool — `memory_update` — into one table — `user_memory`. The namespace is a dot-separated string the AI chooses. The design has two layers working together: **the AI sees existing namespaces before deciding** (intelligence) and **the code enforces hard constraints regardless** (enforcement). Neither alone is enough.
+
+### The SQLite Table
+
+```sql
+CREATE TABLE user_memory (
+  id          TEXT PRIMARY KEY,    -- "${namespace}:${key}"
+  namespace   TEXT NOT NULL,       -- dot-separated, max 3 levels: "health.medications"
+  key         TEXT NOT NULL,       -- specific item within namespace: "metformin", "visited_japan"
+  value       TEXT NOT NULL,       -- JSON object — never a bare string
+  confidence  REAL NOT NULL DEFAULT 1.0,
+  source      TEXT NOT NULL,       -- 'image' | 'conversation' | 'inferred' | 'cron'
+  active      INTEGER DEFAULT 1,   -- 0 = deactivated by user or agent
+  updated_at  INTEGER NOT NULL
+);
+```
+
+### The Zod Schema (Tool Boundary Enforcement)
+
+```typescript
+const MemoryEntrySchema = z.object({
+  namespace: z.string()
+    .regex(/^[a-z][a-z0-9]*(\.[a-z][a-z0-9]*){0,2}$/)
+    // enforces: lowercase only, dot-separated, max 3 levels deep
+    // rejects:  "Health.Medications" (uppercase), "a.b.c.d.e" (too deep)
+    // allows:   "health.medications", "life.places", "diet"
+    .max(48),
+  key: z.string()
+    .regex(/^[a-z][a-z0-9_-]*$/)
+    .max(64),
+  value: z.record(z.string(), z.unknown()), // JSON object, never bare string
+  confidence: z.number().min(0).max(1).default(1.0),
+  source: z.enum(['image', 'conversation', 'inferred', 'cron']),
+})
+```
+
+The regex on `namespace` is the first physical constraint. Zod rejects malformed namespaces at the tool boundary before anything touches SQLite. The AI cannot create uppercase namespaces, cannot nest deeper than 3 levels, cannot write a bare string as a value.
+
+### The `memory_update` Tool (Full Implementation)
+
+```typescript
+memory_update: tool({
+  description: 'Write or update a fact about the user. Always check the existing namespace list in the system prompt first — extend existing namespaces before creating new ones.',
+  parameters: MemoryEntrySchema,
+  execute: async ({ namespace, key, value, confidence, source }) => {
+
+    // ENFORCEMENT LAYER 1: namespace format already rejected by Zod above
+
+    // ENFORCEMENT LAYER 2: hard cap — prevents namespace explosion
+    const { count } = await this.db
+      .select({ count: sql<number>`count(distinct namespace)` })
+      .from(userMemory)
+      .get()
+
+    const namespaceExists = await this.db
+      .select({ id: userMemory.id })
+      .from(userMemory)
+      .where(eq(userMemory.namespace, namespace))
+      .limit(1)
+      .get()
+
+    if (!namespaceExists && count >= 40) {
+      // self-correcting rejection: return the list so AI can retry with existing namespace
+      const list = await this.getNamespaceList()
+      return `REJECTED: namespace cap reached (${count}/40). Use an existing namespace:\n${list}`
+    }
+
+    // MERGE: load existing entry and merge — never overwrite, never lose old data
+    const existing = await this.db
+      .select()
+      .from(userMemory)
+      .where(and(
+        eq(userMemory.namespace, namespace),
+        eq(userMemory.key, key),
+      ))
+      .get()
+
+    const mergedValue = existing
+      ? { ...JSON.parse(existing.value), ...value }  // spread merge: old keys preserved, new keys added, changed keys updated
+      : value
+
+    await this.db
+      .insert(userMemory)
+      .values({
+        id: `${namespace}:${key}`,
+        namespace, key,
+        value: JSON.stringify(mergedValue),
+        confidence, source,
+        updatedAt: Date.now(),
+      })
+      .onConflictDoUpdate({
+        target: userMemory.id,
+        set: { value: JSON.stringify(mergedValue), confidence, updatedAt: Date.now() },
+      })
+
+    return `memory updated: ${namespace}.${key}`
+  },
+})
+```
+
+**The merge logic** is the critical piece. The AI never needs to read old data before writing. The execute function handles it:
+
+```
+First photo (metformin 500mg):
+  existing = null
+  stored   = { dose: "500mg", frequency: "2x daily" }
+
+Second photo (refill, 1000mg):
+  existing = { dose: "500mg", frequency: "2x daily" }
+  new      = { dose: "1000mg", refill_date: "2026-06-01" }
+  merged   = { dose: "1000mg", frequency: "2x daily", refill_date: "2026-06-01" }
+              ↑ updated        ↑ preserved              ↑ added
+```
+
+Old keys are never lost. New keys are added. Changed keys are updated. The AI writes only what it observed right now; the code handles the rest.
+
+### Option A — AI Sees Existing Namespaces (Intelligence Layer)
+
+The existing namespace list is injected into every system prompt. The AI reads it before writing and chooses an existing namespace wherever possible. This is the intelligence side.
+
+```typescript
+async buildMemoryContext(): Promise<string> {
+  const namespaces = await this.db
+    .selectDistinct({ namespace: userMemory.namespace })
+    .from(userMemory)
+    .all()
+
+  if (namespaces.length === 0) return ''
+
+  const list = namespaces.map(n => `- ${n.namespace}`).join('\n')
+
+  return `
+## Existing memory namespaces (always extend these before creating new ones):
+${list}
+
+Rules:
+- Pick the closest existing namespace first
+- Only create a new one if nothing fits
+- Max 3 dot levels: category.subcategory.detail
+- All lowercase, no spaces, no uppercase ever
+`
+}
+```
+
+The AI sees `["health.medications", "diet.restrictions", "life.places"]` and immediately picks `health.medications` for a new medication photo. No new namespace is created. No developer intervention. Just the AI making an informed choice because it has the information it needs.
+
+### Option B — Hard Enforcement (Code Layer)
+
+The hard cap at 40 namespaces and the Zod regex run regardless of what the AI intends. If the AI is confused, the code stops it. If the rejection happens, the error message returns the current namespace list so the AI can self-correct and retry without human involvement:
+
+```
+REJECTED: namespace cap reached (40/40). Use an existing namespace:
+- health.medications
+- diet.restrictions
+- life.places
+...
+```
+
+The AI reads the rejection, picks the right namespace, retries. One round trip, no human needed.
+
+### Typing at Read Time
+
+At write time, `value` is `Record<string, unknown>` — that is honest TypeScript, not lazy TypeScript. The AI invents content; you cannot know it at compile time. At read time, when you consume a specific namespace in a known UI context, you cast with a specific schema:
+
+```typescript
+// When showing the medications screen:
+const MedicationValue = z.object({
+  dose: z.string().optional(),
+  frequency: z.string().optional(),
+  refill_date: z.string().optional(),
+})
+
+const meds = await db.select().from(userMemory)
+  .where(eq(userMemory.namespace, 'health.medications'))
+  .all()
+
+const parsed = meds.map(m => ({
+  key: m.key,
+  data: MedicationValue.safeParse(JSON.parse(m.value)),
+}))
+```
+
+Zod enforces the envelope at the write boundary. You enforce the content schema at the specific UI boundary where you know what you are reading. Everything in between is legitimately `unknown`.
 
 ## Data Boundaries
 

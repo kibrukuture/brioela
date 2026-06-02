@@ -153,33 +153,32 @@ The user can access a "what Brioela knows about me" screen in settings that show
 
 ### `user_memory` — Declarative facts about the user
 
-All memory from visual intake (and from any other source) writes to a single structured table. Category is the namespace; key is the specific fact; value is the AI-authored content.
+All memory from visual intake (and from any other source) writes through `memory_update` into this table. The namespace is a dot-separated path the AI chooses. Full implementation — Zod schema, merge logic, hard cap enforcement, namespace list injection — is in spec 09 (Memory Namespace System section).
 
 ```sql
 CREATE TABLE user_memory (
-  id          TEXT PRIMARY KEY,
-  category    TEXT NOT NULL,   -- health | diet | location | relationships | preferences | personality
-  key         TEXT NOT NULL,   -- e.g. "medications", "visited_places", "food_restrictions", "has_dog"
-  value       TEXT NOT NULL,   -- the fact in natural language
-  confidence  REAL NOT NULL,   -- 0.0–1.0, grows with repeated evidence
-  source      TEXT NOT NULL,   -- "image" | "conversation" | "inferred" | "explicit"
-  active      INTEGER DEFAULT 1, -- 0 = deactivated (user said it's no longer true)
-  observed_at INTEGER NOT NULL,
+  id          TEXT PRIMARY KEY,    -- "${namespace}:${key}"
+  namespace   TEXT NOT NULL,       -- dot-separated, max 3 levels, lowercase: "health.medications"
+  key         TEXT NOT NULL,       -- specific item within namespace: "metformin", "visited_japan"
+  value       TEXT NOT NULL,       -- JSON object — never a bare string
+  confidence  REAL NOT NULL DEFAULT 1.0,
+  source      TEXT NOT NULL,       -- 'image' | 'conversation' | 'inferred' | 'cron'
+  active      INTEGER DEFAULT 1,   -- 0 = deactivated by user or agent
   updated_at  INTEGER NOT NULL
 );
 ```
 
-Examples of what the agent writes here across all visual intake types:
+Examples of what the agent writes across all visual intake types:
 
-| category | key | value |
+| namespace | key | value (JSON object) |
 |---|---|---|
-| health | medications | "metformin 500mg, twice daily" |
-| health | health_monitoring | "tracks blood glucose, readings ~130–150 mg/dL" |
-| diet | food_restrictions | "avoids gluten, not celiac — preference-level" |
-| location | visited_places | "coastal Japan, June 2026" |
-| relationships | household | "has an infant at home" |
-| preferences | lifestyle | "grows own herbs and vegetables" |
-| personality | fitness | "active gym user, protein-focused diet" |
+| health.medications | metformin | `{ dose: "500mg", frequency: "2x daily" }` |
+| health.monitoring | glucose | `{ recent_readings: ["138", "142"], unit: "mg/dL" }` |
+| diet.restrictions | gluten | `{ level: "preference", not_celiac: true }` |
+| life.places | japan_june_2026 | `{ region: "coastal", context: "travel" }` |
+| relationships.household | infant | `{ present: true, affects: ["meal_complexity", "prep_time"] }` |
+| preferences.lifestyle | garden | `{ grows: ["herbs", "vegetables"], signal: "organic_interest" }` |
+| personality.fitness | gym | `{ active: true, focus: "protein", observed_count: 3 }` |
 
 ### `user_personality` — AI-inferred personality traits
 
