@@ -20,7 +20,7 @@ export default function CreateSchnlTagScreen() {
   const setSchnlTagMutation = useSetSchnlTag();
 
   // Local state
-  const [tag, setTag] = useState(user?.schnlTag || '');
+  const [tag, setTag] = useState(user?.brioelaTag || '');
   const [localError, setLocalError] = useState<string | undefined>(undefined);
 
   // Debounce tag for API check
@@ -156,13 +156,13 @@ export default function CreateSchnlTagScreen() {
               {(checkError as Error).message || 'Error checking availability'}
             </Text>
           )}
-          {!localError && !checkError && tag === user?.schnlTag && tag.length > 0 && (
+          {!localError && !checkError && tag === user?.brioelaTag && tag.length > 0 && (
             <Text className="mt-2 text-sm text-neutral-400">This is your current tag</Text>
           )}
           {!localError &&
             !checkError &&
             checkResult?.available === false &&
-            tag !== user?.schnlTag && (
+            tag !== user?.brioelaTag && (
               <Text className="mt-2 text-sm text-red-500">This tag is already taken</Text>
             )}
         </View>
@@ -177,13 +177,13 @@ export default function CreateSchnlTagScreen() {
             !!localError ||
             tag.length < 3 ||
             checkResult?.available === false ||
-            tag === user?.schnlTag
+            tag === user?.brioelaTag
           }
           className={`w-full items-center justify-center rounded-full py-4 ${
             !localError &&
             tag.length >= 3 &&
             checkResult?.available !== false &&
-            tag !== user?.schnlTag
+            tag !== user?.brioelaTag
               ? 'bg-neutral-900'
               : 'bg-neutral-200'
           }`}>
@@ -195,7 +195,7 @@ export default function CreateSchnlTagScreen() {
                 !localError &&
                 tag.length >= 3 &&
                 checkResult?.available !== false &&
-                tag !== user?.schnlTag
+                tag !== user?.brioelaTag
                   ? 'text-white'
                   : 'text-neutral-400'
               }`}>

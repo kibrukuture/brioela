@@ -275,10 +275,10 @@ export default function ProfileScreen() {
   ];
 
   // Display helper - formats tag with @ if present
-  const displaySchnlTag = user?.schnlTag
-    ? user.schnlTag.startsWith('@')
-      ? user.schnlTag
-      : `@${user.schnlTag}`
+  const displaySchnlTag = user?.brioelaTag
+    ? user.brioelaTag.startsWith('@')
+      ? user.brioelaTag
+      : `@${user.brioelaTag}`
     : '@set-schnl-tag';
 
   const { mutateAsync: updateProfilePicture, isPending: isUpdatingProfilePicture } =
@@ -386,7 +386,7 @@ export default function ProfileScreen() {
           {/* SchnlTag badge */}
           <Pressable
             onPress={() => {
-              if (user?.schnlTag) {
+              if (user?.brioelaTag) {
                 router.push('/profile/schnl-tag');
               } else {
                 router.push('/profile/create-schnl-tag');
