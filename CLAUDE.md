@@ -109,3 +109,22 @@ bun --hot ./index.ts
 ```
 
 For more information, read the Bun API docs in `node_modules/bun-types/docs/**.md`.
+
+## Hard Rules — Always Apply
+
+### Effect Hooks
+- `usehooks-ts` is the ONLY legal way to use any effect hook in this project
+- Always use `useIsomorphicLayoutEffect` from `usehooks-ts` — never `useEffect` or `useLayoutEffect` directly
+- If `usehooks-ts` is missing: install it (`bun add usehooks-ts`), never replace it
+
+### No Lazy / Wild Dog Behavior
+- Never remove a dependency because it's missing — install it properly
+- Never replace an API, hook, or pattern with a workaround — find the correct current version and use it
+- Never stub out code just to make errors disappear — fix the root cause
+- When something is deprecated or legacy: find the new proper API via docs/web, use that instead
+- One rule always extends: if "no X", infer all related lazy shortcuts are also banned
+
+### Code Quality
+- No `any`, `as unknown as`, or fake coercions — ever, including old/dead code
+- No legacy APIs — if an API is legacy, find and use the current replacement
+- New Brioela code must be fully typed. Old Schnl dead code: fix to compile, do not over-engineer
