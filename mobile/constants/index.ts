@@ -1,15 +1,15 @@
 // ALL OF THE CONSTANTS ARE PUBLIC
 export const AUTH_CONFIG = {
-  WEB_CLIENT_ID: '988633527488-5bsfpb2dl1c4jqlnlibvl6dt0jj1dijs.apps.googleusercontent.com',
-  IOS_CLIENT_ID: '988633527488-v3q9fsnfdfuh2qpp0lihqk99q8j349k2.apps.googleusercontent.com',
-  ANDROID_CLIENT_ID: '988633527488-h5f6bqvkpivmpcq7cl4q6gcbf7p6tqnn.apps.googleusercontent.com',
+  WEB_CLIENT_ID: '564077835215-87n57t50c2togjsm1v5vkff8ak7k2lab.apps.googleusercontent.com',
+  IOS_CLIENT_ID: "564077835215-n9cid3r0tpl6v62g7csbk9qid8jvmae3.apps.googleusercontent.com",
+  ANDROID_CLIENT_ID: "564077835215-jkpg254hjketqhu4is1q3f4divi5r9cf.apps.googleusercontent.com",
 
-  REDIRECT_URI: 'https://bejwakpfefuexxbrqsfy.supabase.co/auth/v1/callback',
+  REDIRECT_URI: "https://qtcfbqutoyxfimlrdrsv.supabase.co/auth/v1/callback",
 };
 
 export const SUPABASE_CONFIG = {
-  EXPO_PUBLIC_SUPABASE_URL: 'https://bejwakpfefuexxbrqsfy.supabase.co',
-  EXPO_PUBLIC_SUPABASE_ANON_KEY: 'sb_publishable_cSgVUpi4MNCoo7YhODrkaw_OX01ktUx',
+  EXPO_PUBLIC_SUPABASE_URL: "https://qtcfbqutoyxfimlrdrsv.supabase.co",
+  EXPO_PUBLIC_SUPABASE_ANON_KEY: "sb_publishable_ZkKNXJnerWKCmf18-IctHg_9rYGw9yo",
 };
 
 export const SUPERWALL_CONFIG = {
