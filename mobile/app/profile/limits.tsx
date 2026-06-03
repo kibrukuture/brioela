@@ -1,5 +1,6 @@
 import type React from 'react';
-import { useEffect, useMemo, useState } from 'react';
+import { useIsomorphicLayoutEffect } from 'usehooks-ts';
+import { useMemo, useState } from 'react';
 import { View, Text, TouchableOpacity, TextInput, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Controller, useForm } from 'react-hook-form';
@@ -12,15 +13,13 @@ import type { BankingCurrencyCode } from '@brioela/shared/constants/banking-curr
 import {
   atomicToDecimalString,
   decimalStringToAtomicString,
-  parseAmountAtomic,
-} from '@brioela/shared/utils/money';
+  parseAmountAtomic } from '@brioela/shared/utils/money';
 import { NativeSegmentedTabs } from '@/components/ui/native-segmented-tabs';
 import { useBankingLimits } from '@/network/banking/use-banking-limits';
 import { useUpdateBankingLimit } from '@/network/banking/use-update-banking-limit';
 import type {
   BankingLimitScope,
-  BankingLimitPeriod,
-} from '@brioela/shared/validators/banking-limit.validator';
+  BankingLimitPeriod } from '@brioela/shared/validators/banking-limit.validator';
 import { BackButton } from '@/components/ui/back-button';
 
 const PRESET_DECIMAL_VALUES = ['5', '100', '200', '500', '1000', '5000', '10000'] as const;
@@ -43,7 +42,7 @@ export default function LimitsScreen(): React.ReactElement {
   }, [currencyOptions, selectedCurrency]);
 
   const currencyCodeByUpper = useMemo(() => {
-    const result: Record<string, BankingCurrencyCode> = {};
+    const result: Record<string, BankingCurrencyCode> = {} ;
     for (const value of bankingCurrencyValues) {
       result[value.toUpperCase()] = value;
     }
@@ -59,8 +58,7 @@ export default function LimitsScreen(): React.ReactElement {
     showActionSheetWithOptions(
       {
         options: nextOptions,
-        cancelButtonIndex,
-      },
+        cancelButtonIndex },
       (selectedIndex) => {
         if (typeof selectedIndex !== 'number') return;
         if (selectedIndex === cancelButtonIndex) return;
@@ -101,10 +99,9 @@ export default function LimitsScreen(): React.ReactElement {
 
   const { control, handleSubmit, setValue, watch, reset } = useForm<{ amountDecimal: string }>({
     defaultValues: { amountDecimal: existingDecimal },
-    mode: 'onChange',
-  });
+    mode: 'onChange' });
 
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     reset({ amountDecimal: existingDecimal });
   }, [existingDecimal, reset, selectedCurrency, selectedScope, selectedPeriod]);
 
@@ -129,8 +126,7 @@ export default function LimitsScreen(): React.ReactElement {
         currency: selectedCurrency,
         scope: selectedScope,
         period: selectedPeriod,
-        amountAtomic,
-      });
+        amountAtomic });
 
       Burnt.toast({ title: 'Updated', preset: 'done' });
     } catch (error) {

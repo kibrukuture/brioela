@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
+import { useIsomorphicLayoutEffect } from 'usehooks-ts';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { View, Text, Switch, ScrollView, Alert } from 'react-native';
 import { BackButton } from '@/components/ui/back-button';
@@ -11,7 +12,7 @@ export default function ProfileSecurityScreen(): React.JSX.Element {
   const [deviceAuthEnabled, setDeviceAuthEnabled] = useState(false);
   const { authenticate, isAvailable } = useLocalAuthentication();
 
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     const loadPreference = async () => {
       try {
         const value = await encryptedStorage.get(SECURE_STORAGE_KEYS.LOCAL_DEVICE_AUTH_ENABLED);
@@ -36,8 +37,7 @@ export default function ProfileSecurityScreen(): React.JSX.Element {
           return;
         }
         const result = await authenticate({
-          promptMessage: 'Authenticate to enable device protection',
-        });
+          promptMessage: 'Authenticate to enable device protection' });
         if (!result.success || !('authenticated' in result) || !result.authenticated) {
           Alert.alert('Authentication required', 'Device authentication failed or was cancelled.');
           return;

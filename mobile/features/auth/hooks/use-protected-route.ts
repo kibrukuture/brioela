@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useIsomorphicLayoutEffect } from 'usehooks-ts';
 import { useRouter } from 'expo-router'; // We don't even need useSegments anymore
 import { useAuthStore } from '@/stores/account/use-auth-store';
 
@@ -6,7 +6,7 @@ export function useProtectedRoute() {
   const { user, isLoading } = useAuthStore();
   const router = useRouter();
 
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     if (isLoading) {
       return; // Wait for auth state to load
     }

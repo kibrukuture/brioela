@@ -1,4 +1,4 @@
-// import { useEffect, useState } from 'react';
+// import { useState } from 'react';
 // import { ActivityIndicator, Text, View } from 'react-native';
 // import { SafeAreaView } from 'react-native-safe-area-context';
 // import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -13,7 +13,7 @@
 
 //   const claim = useClaimPayRequest();
 
-//   useEffect(() => {
+//   useIsomorphicLayoutEffect(() => {
 //     if (!token) return;
 
 //     claim.mutate(
@@ -50,7 +50,7 @@
 //   );
 // }
 
-import { useEffect } from 'react';
+import { useIsomorphicLayoutEffect } from 'usehooks-ts';
 import { ActivityIndicator, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -65,7 +65,7 @@ export default function PayClaimPage() {
 
   const claim = useClaimPayRequest();
 
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     if (!token) return;
 
     claim.mutate(
@@ -79,17 +79,14 @@ export default function PayClaimPage() {
           if (status === 'claimed' && !payoutDetailsSubmittedAt) {
             router.replace({
               pathname: '/pay/payout-details/[id]',
-              params: { id: res.payRequestId },
-            });
+              params: { id: res.payRequestId } });
             return;
           }
 
           router.replace({
             pathname: '/pay/payout-details/confirmation',
-            params: { id: res.payRequestId },
-          });
-        },
-      }
+            params: { id: res.payRequestId } });
+        } }
     );
   }, [token]);
 

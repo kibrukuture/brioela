@@ -1,8 +1,8 @@
-import { useEffect } from 'react';
+import { useIsomorphicLayoutEffect } from 'usehooks-ts';
 import { Alert, Platform } from 'react-native';
 
 export const useAndroidNote = (message: string) => {
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     if (Platform.OS === 'android') {
       Alert.alert('Note', message);
     }

@@ -1,4 +1,5 @@
-import React, { useEffect } from 'react';
+import React from 'react';
+import { useIsomorphicLayoutEffect } from 'usehooks-ts';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -20,18 +21,16 @@ const AnimatedTabIcon: React.FC<AnimatedTabIconProps> = ({
   color,
   size,
   tabName,
-  style,
-}) => {
+  style }) => {
   // Use scale for the animation
   const scale = useSharedValue(1);
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
-      transform: [{ scale: scale.value }],
-    };
+      transform: [{ scale: scale.value }] };
   });
 
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     if (isFocused) {
       // Scale up slightly when focused
       scale.value = withSpring(1.15, { damping: 15, stiffness: 400 }); // Bouncy pop
@@ -70,8 +69,7 @@ const AnimatedTabIcon: React.FC<AnimatedTabIconProps> = ({
                 height: 64,
                 marginTop: -16, // to lift it above others
               }
-            : {}),
-        }}
+            : {} ) }}
       />
     </Animated.View>
   );

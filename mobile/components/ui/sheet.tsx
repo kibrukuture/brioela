@@ -7,6 +7,7 @@ import {
   BottomSheetModal,
 } from '@gorhom/bottom-sheet';
 import * as React from 'react';
+import { useIsomorphicLayoutEffect } from 'usehooks-ts';
 import { useColorScheme } from '@/lib/useColorScheme';
 import { Animated, useWindowDimensions } from 'react-native';
 import useSheetStore from '@/stores/ui/use-sheet-store';
@@ -162,7 +163,7 @@ function useSheetRef() {
  *
  * This removes boilerplate like:
  * ```ts
- * React.useEffect(() => {
+ * useIsomorphicLayoutEffect(() => {
  *   if (!isVisible) sheetRef.current?.dismiss();
  * }, [isVisible]);
  * ```
@@ -201,7 +202,7 @@ function useManagedSheetRef(isVisible: boolean) {
    * Without this, calling `setIsVisible(false)` in React may not actually close
    * the sheet UI, because the sheet is controlled by a ref.
    */
-  React.useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     if (!isVisible) {
       ref.current?.dismiss();
     }
@@ -221,7 +222,7 @@ function SheetContentWrapper({ children }: { children: React.ReactNode }) {
   const isSheetVisible = useSheetStore((state) => state.isSheetVisible);
   const scaleAnim = React.useRef(new Animated.Value(1)).current;
 
-  React.useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     Animated.timing(scaleAnim, {
       toValue: 1, // no animation needed.
       duration: 250,

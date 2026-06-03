@@ -1,4 +1,5 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
+import { useIsomorphicLayoutEffect } from 'usehooks-ts';
 import { ActivityIndicator, Modal, Platform, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -39,8 +40,7 @@ export default function BankStatementsScreen(): React.ReactElement {
       },
       {
         message: 'End date must be the same as or after the start date',
-        path: ['endDate'],
-      }
+        path: ['endDate'] }
     );
   }, []);
 
@@ -50,8 +50,7 @@ export default function BankStatementsScreen(): React.ReactElement {
   }>({
     defaultValues: { startDate: '', endDate: '' },
     resolver: zodResolver(statementFormSchema),
-    mode: 'onSubmit',
-  });
+    mode: 'onSubmit' });
 
   const resolvedRange = useMemo(() => {
     if (rangeMode === 'custom') {
@@ -79,8 +78,7 @@ export default function BankStatementsScreen(): React.ReactElement {
         try {
           const response = await generateStatement.mutateAsync({
             startDate: values.startDate,
-            endDate: values.endDate,
-          });
+            endDate: values.endDate });
 
           const reader = new FileReader();
           const base64 = await new Promise<string>((resolve, reject) => {
@@ -98,13 +96,11 @@ export default function BankStatementsScreen(): React.ReactElement {
           const fileUri = FileSystem.documentDirectory + fileName;
 
           await FileSystem.writeAsStringAsync(fileUri, base64, {
-            encoding: FileSystem.EncodingType.Base64,
-          });
+            encoding: FileSystem.EncodingType.Base64 });
 
           await shareAsync(fileUri, {
             mimeType: 'application/pdf',
-            dialogTitle: 'Share Bank Statement',
-          });
+            dialogTitle: 'Share Bank Statement' });
 
           Burnt.toast({ title: 'Statement ready', preset: 'done' });
         } catch (error) {
@@ -218,7 +214,7 @@ export default function BankStatementsScreen(): React.ReactElement {
     customTextClass = 'text-white';
   }
 
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     if (rangeMode === 'preset' && resolvedRange) {
       setValue('startDate', resolvedRange.start.toISOString());
       setValue('endDate', resolvedRange.end.toISOString());

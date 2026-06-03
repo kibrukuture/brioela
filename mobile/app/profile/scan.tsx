@@ -1,4 +1,5 @@
-import { useState, useEffect, type ReactElement } from 'react';
+import { useState, type ReactElement } from 'react';
+import { useIsomorphicLayoutEffect } from 'usehooks-ts';
 import {
   View,
   Text,
@@ -6,8 +7,7 @@ import {
   Dimensions,
   StatusBar,
   StyleSheet,
-  Image,
-} from 'react-native';
+  Image } from 'react-native';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { useRouter } from 'expo-router';
 import * as Haptics from 'expo-haptics';
@@ -18,8 +18,7 @@ import Animated, {
   withTiming,
   withSequence,
   Easing,
-  interpolateColor,
-} from 'react-native-reanimated';
+  interpolateColor } from 'react-native-reanimated';
 import { ArrowLeft, Flashlight, FlashlightOff, Send, UserPlus } from 'lucide-react-native';
 import { Sheet, useSheetRef } from '@/components/ui/sheet';
 
@@ -48,8 +47,7 @@ const parseScannedData = (data: string): ScannedUser | null => {
       handle: `@${handle}`,
       name: 'Kibru Joba Kuture', // Would come from API
       avatar: 'https://i.pravatar.cc/150?img=3',
-      paymentUrl: data,
-    };
+      paymentUrl: data };
   }
   return null;
 };
@@ -71,17 +69,15 @@ export default function ScanScreen(): ReactElement {
   const successProgress = useSharedValue<number>(0);
 
   // Scanning line animation
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     scanLinePosition.value = withRepeat(
       withSequence(
         withTiming(SCAN_AREA_SIZE - 4, {
           duration: 2000,
-          easing: Easing.inOut(Easing.ease),
-        }),
+          easing: Easing.inOut(Easing.ease) }),
         withTiming(0, {
           duration: 2000,
-          easing: Easing.inOut(Easing.ease),
-        })
+          easing: Easing.inOut(Easing.ease) })
       ),
       -1,
       false
@@ -89,7 +85,7 @@ export default function ScanScreen(): ReactElement {
   }, []);
 
   // Corner pulse animation
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     cornerScale.value = withRepeat(
       withSequence(withTiming(1.05, { duration: 1000 }), withTiming(1, { duration: 1000 })),
       -1,
@@ -98,12 +94,10 @@ export default function ScanScreen(): ReactElement {
   }, []);
 
   const scanLineStyle = useAnimatedStyle(() => ({
-    transform: [{ translateY: scanLinePosition.value }],
-  }));
+    transform: [{ translateY: scanLinePosition.value }] }));
 
   const cornerAnimatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: cornerScale.value }],
-  }));
+    transform: [{ scale: cornerScale.value }] }));
 
   const cornerColorStyle = useAnimatedStyle(() => {
     const borderColor = interpolateColor(successProgress.value, [0, 1], ['#ffffff', '#22c55e']);
@@ -151,9 +145,7 @@ export default function ScanScreen(): ReactElement {
       pathname: '/tabs/transactions',
       params: {
         handle: scannedUser?.handle,
-        name: scannedUser?.name,
-      },
-    });
+        name: scannedUser?.name } });
   };
 
   const handleAddContact = (): void => {
@@ -174,7 +166,7 @@ export default function ScanScreen(): ReactElement {
     }, 300);
   };
 
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     if (isSheetVisible) {
       sheetRef.current?.present();
     } else {
@@ -224,8 +216,7 @@ export default function ScanScreen(): ReactElement {
         facing="back"
         enableTorch={torch}
         barcodeScannerSettings={{
-          barcodeTypes: ['qr'],
-        }}
+          barcodeTypes: ['qr'] }}
         onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
       />
 
@@ -272,8 +263,7 @@ export default function ScanScreen(): ReactElement {
                     shadowOffset: { width: 0, height: 0 },
                     shadowOpacity: 0.8,
                     shadowRadius: 8,
-                    elevation: 8,
-                  },
+                    elevation: 8 },
                 ]}
               />
             )}
@@ -348,8 +338,7 @@ export default function ScanScreen(): ReactElement {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000',
-  },
+    backgroundColor: '#000' },
   camera: {
     position: 'absolute',
     top: 0,
@@ -357,13 +346,10 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     width: SCREEN_WIDTH,
-    height: SCREEN_HEIGHT,
-  },
+    height: SCREEN_HEIGHT },
   overlay: {
     position: 'absolute',
     top: 0,
     left: 0,
     right: 0,
-    bottom: 0,
-  },
-});
+    bottom: 0 } });

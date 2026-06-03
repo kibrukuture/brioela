@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useIsomorphicLayoutEffect } from 'usehooks-ts';
 import { Pressable, Text, TextInput, View } from 'react-native';
 import { Sheet, BottomSheetView, useManagedSheetRef } from '@/components/ui/sheet';
 import { TRANSFER_PURPOSES, type TransferPurpose } from '@brioela/shared/constants';
@@ -26,7 +27,7 @@ export function TransferPurposeSheet({
 
   const [search, setSearch] = React.useState('');
 
-  React.useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     if (isVisible) {
       sheetRef.current?.present();
       setSearch('');

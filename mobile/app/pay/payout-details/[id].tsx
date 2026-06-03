@@ -1,4 +1,5 @@
-import React, { useEffect } from 'react';
+import React from 'react';
+import { useIsomorphicLayoutEffect } from 'usehooks-ts';
 import { ActivityIndicator, Text, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -33,7 +34,7 @@ export default function PayPayoutDetailsPage() {
   const status = payRequestQuery.data?.payRequest?.status;
   const payoutDetailsSubmittedAt = payRequestQuery.data?.payRequest?.payoutDetailsSubmittedAt;
 
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     if (!id) return;
     if (!status) return;
 

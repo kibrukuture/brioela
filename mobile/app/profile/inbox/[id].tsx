@@ -1,4 +1,5 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useMemo } from 'react';
+import { useIsomorphicLayoutEffect } from 'usehooks-ts';
 import { View, Text, TouchableOpacity, Linking } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -20,7 +21,7 @@ export default function InAppNotificationDetailsScreen(): React.JSX.Element {
     return list.find((n) => n.id === id) ?? null;
   }, [notificationsQuery.data, id]);
 
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     if (!notification) return;
     if (notification.isRead) return;
     updateMutation.mutate({ id: notification.id, input: { isRead: true } });

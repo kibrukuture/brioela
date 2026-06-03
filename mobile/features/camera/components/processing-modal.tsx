@@ -1,4 +1,5 @@
-import React, { useEffect } from 'react';
+import React from 'react';
+import { useIsomorphicLayoutEffect } from 'usehooks-ts';
 import { Text, TouchableOpacity, ActivityIndicator } from 'react-native';
 import Animated, { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
 import { useCameraProcessingStore } from '@/stores/hardware/use-camera-processing';
@@ -14,7 +15,7 @@ export default function ProcessingModal({ visible, onCancel }: ProcessingModalPr
   const opacity = useSharedValue(0);
   const scale = useSharedValue(0.8);
 
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     if (visible) {
       opacity.value = withSpring(1, { damping: 20, stiffness: 300 });
       scale.value = withSpring(1, { damping: 20, stiffness: 300 });
@@ -25,12 +26,10 @@ export default function ProcessingModal({ visible, onCancel }: ProcessingModalPr
   }, [visible, opacity, scale]);
 
   const overlayStyle = useAnimatedStyle(() => ({
-    opacity: opacity.value,
-  }));
+    opacity: opacity.value }));
 
   const modalStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
-  }));
+    transform: [{ scale: scale.value }] }));
 
   const handleCancel = () => {
     abortRequest();
@@ -51,8 +50,7 @@ export default function ProcessingModal({ visible, onCancel }: ProcessingModalPr
           bottom: 0,
           backgroundColor: 'rgba(0, 0, 0, 0.5)',
           justifyContent: 'center',
-          alignItems: 'center',
-        },
+          alignItems: 'center' },
       ]}>
       <Animated.View
         style={[
@@ -67,8 +65,7 @@ export default function ProcessingModal({ visible, onCancel }: ProcessingModalPr
             shadowOffset: { width: 0, height: 4 },
             shadowOpacity: 0.25,
             shadowRadius: 8,
-            elevation: 8,
-          },
+            elevation: 8 },
         ]}>
         <ActivityIndicator size="large" color="#3B82F6" />
 

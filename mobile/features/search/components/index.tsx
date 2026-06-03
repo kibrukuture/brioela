@@ -1,4 +1,5 @@
-import React, { FC, useEffect, useRef, PropsWithChildren } from 'react';
+import React, { FC, useRef, PropsWithChildren } from 'react';
+import { useIsomorphicLayoutEffect } from 'usehooks-ts';
 import { TextInput, View } from 'react-native';
 import { useSharedValue } from 'react-native-reanimated';
 import { HeaderSpacer } from '@/features/search/components/header-spacer';
@@ -24,7 +25,7 @@ export const SearchWrapper: FC<PropsWithChildren> = ({ children }) => {
   const { setInputRef, setScreenView, setIsListDragging, setOffsetY, setBlurIntensity } =
     useSearchHeaderStore();
 
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     setInputRef(inputRef);
     setScreenView(screenView);
     setIsListDragging(isListDragging);

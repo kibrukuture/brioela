@@ -1,4 +1,5 @@
-import { useState, useRef, useCallback, useEffect } from 'react';
+import { useState, useRef, useCallback } from 'react';
+import { useIsomorphicLayoutEffect } from 'usehooks-ts';
 import { Alert, Dimensions } from 'react-native';
 import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
 import * as FileSystem from 'expo-file-system';
@@ -10,8 +11,7 @@ import {
   withTiming,
   interpolate,
   SharedValue,
-  useAnimatedProps,
-} from 'react-native-reanimated';
+  useAnimatedProps } from 'react-native-reanimated';
 import { Gesture } from 'react-native-gesture-handler';
 import { CapturedImage } from '@/features/camera/components/types';
 import { now } from '@/lib/date-time-utils';
@@ -41,15 +41,12 @@ export default function useCamera(options?: { initialImages?: CapturedImage[] })
   const animatedCameraProps = useAnimatedProps(() => ({ zoom: zoom.value }));
   const animatedBottomStyle = useAnimatedStyle(() => ({ height: bottomSectionHeight.value }));
   const animatedCameraStyle = useAnimatedStyle(() => ({
-    height: screenHeight - bottomSectionHeight.value,
-  }));
+    height: screenHeight - bottomSectionHeight.value }));
   const animatedPreviewStyle = useAnimatedStyle(() => ({
     opacity: previewOpacity.value,
-    transform: [{ translateY: interpolate(previewOpacity.value, [0, 1], [20, 0]) }],
-  }));
+    transform: [{ translateY: interpolate(previewOpacity.value, [0, 1], [20, 0]) }] }));
   const animatedSendButtonStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: sendButtonScale.value }],
-  }));
+    transform: [{ scale: sendButtonScale.value }] }));
 
   const pinchGesture = Gesture.Pinch()
     .onStart(() => {
@@ -109,8 +106,7 @@ export default function useCamera(options?: { initialImages?: CapturedImage[] })
     const photo = await cameraRef.current.takePictureAsync({
       quality: 0.8,
       base64: false,
-      skipProcessing: false,
-    });
+      skipProcessing: false });
     if (!photo || !photo.uri) throw new Error('No photo returned from camera');
     const fileInfo = await FileSystem.getInfoAsync(photo.uri);
     if (!fileInfo.exists) throw new Error('Captured file does not exist');
@@ -227,13 +223,13 @@ export default function useCamera(options?: { initialImages?: CapturedImage[] })
   // 👇 --- NEW, INTERNALIZED CLEANUP LOGIC ---
   // We use the robust "ref pattern" inside the hook, hiding the complexity.
   const clearImagesRef = useRef(clearImages);
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     // On every render, we update the ref to point to the latest `clearImages` function.
     // This has no performance cost.
     clearImagesRef.current = clearImages;
   });
 
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     // This effect runs only ONCE when the hook is first used.
     // Its cleanup will run only ONCE when the component using the hook unmounts.
     return () => {
@@ -246,7 +242,7 @@ export default function useCamera(options?: { initialImages?: CapturedImage[] })
   }, []); // The empty array ensures this is a mount/unmount effect.
 
   // ADD THIS ENTIRE BLOCK
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     // If the hook initializes with existing images,
     // make sure the bottom preview section animates into view.
     if (capturedImages.length > 0) {
@@ -273,6 +269,5 @@ export default function useCamera(options?: { initialImages?: CapturedImage[] })
     removeImage,
     clearImages,
     toggleCameraFacing,
-    animateBottomSection,
-  };
+    animateBottomSection };
 }

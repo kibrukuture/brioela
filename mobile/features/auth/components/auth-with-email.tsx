@@ -1,4 +1,5 @@
 import React from 'react';
+import { useIsomorphicLayoutEffect } from 'usehooks-ts';
 import {
   Modal,
   View,
@@ -99,7 +100,7 @@ const AuthWithEmailModal: React.FC<AuthWithEmailModalProps> = ({
   });
 
   // Reset inputs when modal closes or screen changes
-  React.useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     if (!visible) {
       setScreen('signIn');
       reset({ email: '', password: '' });
@@ -107,7 +108,7 @@ const AuthWithEmailModal: React.FC<AuthWithEmailModalProps> = ({
   }, [reset, setScreen, visible]);
 
   // Only reset password when switching to/from forgot password screen
-  React.useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     if (screen === 'forgotPassword') {
       reset({ ...getValues(), password: '' });
     }

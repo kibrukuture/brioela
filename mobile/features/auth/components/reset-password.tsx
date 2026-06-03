@@ -1,4 +1,5 @@
-import React, { useEffect, useState, useCallback, JSX } from 'react';
+import React, { useState, useCallback, JSX } from 'react';
+import { useIsomorphicLayoutEffect } from 'usehooks-ts';
 import {
   View,
   Text,
@@ -7,8 +8,7 @@ import {
   Alert,
   ActivityIndicator,
   KeyboardAvoidingView,
-  Platform,
-} from 'react-native';
+  Platform } from 'react-native';
 import { supabase } from '@/lib/auth/supabase';
 import * as Linking from 'expo-linking';
 import { useRouter } from 'expo-router';
@@ -30,12 +30,10 @@ export default function ResetPassword(): JSX.Element {
   const {
     control,
     handleSubmit,
-    formState: { errors, isValid },
-  } = useForm<ResetPasswordFormValues>({
+    formState: { errors, isValid } } = useForm<ResetPasswordFormValues>({
     defaultValues: { password: '', confirmPassword: '' },
     mode: 'onChange',
-    resolver: zodResolver(resetPasswordSchema),
-  });
+    resolver: zodResolver(resetPasswordSchema) });
 
   // Handler to parse token from URL
   const handleUrl = useCallback((event: { url: string }) => {
@@ -49,7 +47,7 @@ export default function ResetPassword(): JSX.Element {
     }
   }, []);
 
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     // Subscribe to URL events
     const subscription = Linking.addEventListener('url', handleUrl);
 

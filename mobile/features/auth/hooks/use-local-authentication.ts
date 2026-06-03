@@ -1,11 +1,11 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback } from 'react';
+import { useIsomorphicLayoutEffect } from 'usehooks-ts';
 import {
   authenticate,
   getAuthenticationInfo,
   type LocalAuthOptions,
   type AuthenticationInfo,
-  type LocalAuthResult,
-} from '@/lib/auth/local-authentication';
+  type LocalAuthResult } from '@/lib/auth/local-authentication';
 
 /**
  * Hook for managing local authentication state and operations.
@@ -65,7 +65,7 @@ export function useLocalAuthentication() {
   );
 
   // Load authentication info on mount
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     loadAuthInfo();
   }, [loadAuthInfo]);
 
@@ -89,6 +89,5 @@ export function useLocalAuthentication() {
     /**
      * Reloads authentication information from the device.
      */
-    refreshAuthInfo: loadAuthInfo,
-  };
+    refreshAuthInfo: loadAuthInfo };
 }

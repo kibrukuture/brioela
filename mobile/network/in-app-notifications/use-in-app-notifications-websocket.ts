@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useIsomorphicLayoutEffect } from 'usehooks-ts';
 import { useQueryClient } from '@tanstack/react-query';
 import { QUERY_KEYS } from '@/network/core/query-keys';
 import { connectInAppNotificationsWs } from '@/network/in-app-notifications/connect-in-app-notifications-ws';
@@ -6,14 +6,13 @@ import { connectInAppNotificationsWs } from '@/network/in-app-notifications/conn
 export const useInAppNotificationsWebsocket = () => {
   const queryClient = useQueryClient();
 
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     const ws = connectInAppNotificationsWs({
       onEvent: async () => {
         await queryClient.invalidateQueries({ queryKey: QUERY_KEYS.IN_APP_NOTIFICATIONS.LIST });
-      },
-    });
+      } });
 
-    ws.connect().catch(() => {});
+    ws.connect().catch(() => {} );
 
     return () => {
       ws.disconnect();

@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useIsomorphicLayoutEffect } from 'usehooks-ts';
 import { usePathname, useGlobalSearchParams } from 'expo-router';
 import { usePostHog } from 'posthog-react-native';
 
@@ -7,7 +7,7 @@ export function usePostHogScreenTracking() {
   const params = useGlobalSearchParams();
   const posthog = usePostHog();
 
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     posthog.screen(pathname, params);
   }, [pathname, params, posthog]);
 }

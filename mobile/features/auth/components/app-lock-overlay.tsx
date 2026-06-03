@@ -1,4 +1,5 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
+import { useIsomorphicLayoutEffect } from 'usehooks-ts';
 import { AppState, type AppStateStatus, Image, Pressable, Text, View } from 'react-native';
 import { ScanFace } from 'lucide-react-native';
 import { getAuthenticationInfo } from '@/lib/auth/local-authentication';
@@ -22,7 +23,7 @@ export default function AppLockOverlay({ children }: { children: React.ReactNode
     return Boolean(user) && deviceAuthEnabled;
   }, [user, deviceAuthEnabled]);
 
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     const loadPreference = async () => {
       try {
         setDeviceAuthEnabled(await isEnabled());
@@ -34,7 +35,7 @@ export default function AppLockOverlay({ children }: { children: React.ReactNode
     loadPreference();
   }, [isEnabled]);
 
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     if (didInitialLockRef.current) return;
     if (!user) return;
     if (!deviceAuthEnabled) return;
@@ -42,7 +43,7 @@ export default function AppLockOverlay({ children }: { children: React.ReactNode
     setIsLocked(true);
   }, [deviceAuthEnabled, user]);
 
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     const loadButtonLabel = async () => {
       try {
         const info = await getAuthenticationInfo();
@@ -89,7 +90,7 @@ export default function AppLockOverlay({ children }: { children: React.ReactNode
     }
   }, [isEligible, requireDeviceAuth]);
 
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     const onAppStateChange = (nextAppState: AppStateStatus) => {
       const prev = appStateRef.current;
       appStateRef.current = nextAppState;
@@ -118,7 +119,7 @@ export default function AppLockOverlay({ children }: { children: React.ReactNode
     return () => sub.remove();
   }, [deviceAuthEnabled, user]);
 
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     if (isLocked && isEligible) {
       unlock();
     }

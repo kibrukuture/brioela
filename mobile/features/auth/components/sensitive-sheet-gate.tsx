@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useIsomorphicLayoutEffect } from 'usehooks-ts';
 import { useDeviceAuthGate } from '@/features/auth/hooks/use-device-auth-gate';
 
 export interface SensitiveSheetGateProps {
@@ -20,7 +21,7 @@ export function SensitiveSheetGate({
 }: SensitiveSheetGateProps) {
   const { requireDeviceAuth } = useDeviceAuthGate();
 
-  React.useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     const run = async () => {
       if (!isVisible) return;
       const ok = await requireDeviceAuth(promptMessage, progressTitle);

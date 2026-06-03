@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useIsomorphicLayoutEffect } from 'usehooks-ts';
 import { View, Text, ActivityIndicator, Pressable, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -15,7 +16,7 @@ export default function CreateCardProcessingScreen() {
   const { data, refetch } = useCardOrder(id);
   useCards();
 
-  React.useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     if (!id) return;
     const interval = setInterval(() => {
       refetch();
@@ -25,7 +26,7 @@ export default function CreateCardProcessingScreen() {
 
   const status = data?.order.status ?? 'processing';
 
-  React.useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     if (status === 'completed' || status === 'preparing' || status === 'shipped') {
       resetCreateCardFlow();
       router.replace('/tabs/cards');

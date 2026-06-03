@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useIsomorphicLayoutEffect } from 'usehooks-ts';
 import { onlineManager } from '@tanstack/react-query';
 import * as Network from 'expo-network';
 
@@ -8,7 +8,7 @@ import * as Network from 'expo-network';
  */
 export function useNetworkStatus() {
   // console.log('[TanStack Network] Setting up network listener');
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     const unsubscribe = onlineManager.setEventListener((setOnline) => {
       // console.log('[TanStack Network] Network listener registered');
       const subscription = Network.addNetworkStateListener((state) => {

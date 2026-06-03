@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { useIsomorphicLayoutEffect } from 'usehooks-ts';
 import { View, Text, TextInput, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
 import { KeyboardAwareScrollView, KeyboardStickyView } from 'react-native-keyboard-controller';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -29,11 +30,10 @@ export default function CreateSchnlTagScreen() {
   const {
     data: checkResult,
     isLoading: isChecking,
-    error: checkError,
-  } = useCheckSchnlTag(debouncedTag);
+    error: checkError } = useCheckSchnlTag(debouncedTag);
 
   // Validation Effect
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     // 1. Basic format check
     const validation = validateSchnlTag(tag);
     if (!validation.valid && tag.length > 0) {
@@ -71,13 +71,11 @@ export default function CreateSchnlTagScreen() {
       [
         {
           text: 'Cancel',
-          style: 'cancel',
-        },
+          style: 'cancel' },
         {
           text: 'Confirm',
           style: 'default',
-          onPress: performSave,
-        },
+          onPress: performSave },
       ]
     );
   };

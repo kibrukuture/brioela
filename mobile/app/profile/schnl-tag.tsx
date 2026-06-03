@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
+import { useIsomorphicLayoutEffect } from 'usehooks-ts';
 import {
   View,
   Text,
@@ -9,8 +10,7 @@ import {
   Switch,
   Linking,
   Alert,
-  ActivityIndicator,
-} from 'react-native';
+  ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   ArrowLeft,
@@ -20,8 +20,7 @@ import {
   Upload,
   Download,
   QrCode,
-  X,
-} from 'lucide-react-native';
+  X } from 'lucide-react-native';
 import { Sheet, useSheetRef, BottomSheetView } from '@/components/ui/sheet';
 import { useRouter } from 'expo-router';
 import QRCode from 'react-native-qrcode-svg';
@@ -52,7 +51,7 @@ export default function SchnltagScreen(): React.JSX.Element {
   const schnlTag = user?.schnlTag?.replace('@', '') || '';
   const fullPaymentUrl = `https://schnl.com/pay/${schnlTag}`;
 
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     if (isInfoSheetVisible) {
       infoSheetRef.current?.present();
     } else {
@@ -60,7 +59,7 @@ export default function SchnltagScreen(): React.JSX.Element {
     }
   }, [isInfoSheetVisible]);
 
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     if (isPrivacySheetVisible) {
       privacySheetRef.current?.present();
     } else {
@@ -101,15 +100,13 @@ export default function SchnltagScreen(): React.JSX.Element {
       qrRef.current.toDataURL(async (data: string) => {
         const filename = `${FileSystem.cacheDirectory}schnltag-${schnlTag}.png`;
         await FileSystem.writeAsStringAsync(filename, data, {
-          encoding: FileSystem.EncodingType.Base64,
-        });
+          encoding: FileSystem.EncodingType.Base64 });
 
         const isAvailable = await Sharing.isAvailableAsync();
         if (isAvailable) {
           await Sharing.shareAsync(filename, {
             mimeType: 'image/png',
-            dialogTitle: 'Share your SchnlTag',
-          });
+            dialogTitle: 'Share your SchnlTag' });
         } else {
           Alert.alert('Sharing not available', 'Sharing is not available on this device.');
         }
@@ -134,8 +131,7 @@ export default function SchnltagScreen(): React.JSX.Element {
       qrRef.current.toDataURL(async (data: string) => {
         const filename = `${FileSystem.cacheDirectory}schnltag-${schnlTag}.png`;
         await FileSystem.writeAsStringAsync(filename, data, {
-          encoding: FileSystem.EncodingType.Base64,
-        });
+          encoding: FileSystem.EncodingType.Base64 });
 
         // Save directly to gallery
         await MediaLibrary.saveToLibraryAsync(filename);

@@ -1,5 +1,6 @@
 import type React from 'react';
-import { useEffect, useMemo, useState } from 'react';
+import { useIsomorphicLayoutEffect } from 'usehooks-ts';
+import { useMemo, useState } from 'react';
 import { View, Text, TouchableOpacity, TextInput, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
@@ -9,8 +10,7 @@ import { useLocalSearchParams } from 'expo-router';
 import {
   atomicToDecimalString,
   decimalStringToAtomicString,
-  parseAmountAtomic,
-} from '@brioela/shared/utils/money';
+  parseAmountAtomic } from '@brioela/shared/utils/money';
 import { BackButton } from '@/components/ui/back-button';
 import { NativeSegmentedTabs } from '@/components/ui/native-segmented-tabs';
 import { useCardSpendingLimits } from '@/network/cards/use-card-spending-limits';
@@ -46,10 +46,9 @@ export default function SpendingLimitsScreen(): React.ReactElement {
 
   const { control, handleSubmit, setValue, watch, reset } = useForm<{ amountDecimal: string }>({
     defaultValues: { amountDecimal: existingDecimal },
-    mode: 'onChange',
-  });
+    mode: 'onChange' });
 
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     reset({ amountDecimal: existingDecimal });
   }, [existingDecimal, reset, selectedPeriod]);
 
@@ -80,8 +79,7 @@ export default function SpendingLimitsScreen(): React.ReactElement {
         input:
           selectedPeriod === 'daily'
             ? { dailyLimitAtomic: amountAtomic }
-            : { monthlyLimitAtomic: amountAtomic },
-      });
+            : { monthlyLimitAtomic: amountAtomic } });
       Burnt.toast({ title: 'Updated', preset: 'done' });
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Failed to update limit';

@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { useIsomorphicLayoutEffect } from 'usehooks-ts';
 import { View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from 'expo-router';
@@ -22,10 +23,9 @@ export function SendPaymentFlow() {
     targetCurrency: SUPPORTED_CURRENCIES[0],
     recipient: null,
     accountDetails: null,
-    step: 'amount',
-  });
+    step: 'amount' });
 
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     const unsubscribe = navigation.addListener('beforeRemove', (e) => {
       if (paymentFlow.step === 'amount' || paymentFlow.step === 'confirm') {
         return;

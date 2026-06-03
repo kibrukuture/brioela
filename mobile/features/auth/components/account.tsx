@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
+import { useIsomorphicLayoutEffect } from 'usehooks-ts';
 import { View, Text, Pressable, Image, Platform, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { supabase } from '@/lib/auth/supabase';
@@ -40,21 +41,16 @@ export default function SignIn() {
 
   const [btnStat, SetBtnStat] = useState({
     signin: {
-      bool: false,
-    },
+      bool: false },
     signup: {
-      bool: false,
-    },
+      bool: false },
     forgotPass: {
-      bool: false,
-    },
-  });
+      bool: false } });
 
   const [request, response, promptAsync] = Google.useAuthRequest({
     iosClientId: AUTH_CONFIG.IOS_CLIENT_ID,
     androidClientId: AUTH_CONFIG.ANDROID_CLIENT_ID,
-    webClientId: AUTH_CONFIG.WEB_CLIENT_ID,
-  });
+    webClientId: AUTH_CONFIG.WEB_CLIENT_ID });
 
   const showErrorAlert = (title: string, message: string) => {
     Alert.alert(title, message, [{ text: 'OK' }]);
@@ -63,7 +59,7 @@ export default function SignIn() {
   const handlePostLogin = () => router.replace('/tabs/home');
 
   // Handle Google AuthSession response
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     const handleGoogleResponse = async () => {
       try {
         if (response?.type === 'success') {
@@ -76,8 +72,7 @@ export default function SignIn() {
           // Sign in to Supabase
           const { data, error: supabaseError } = await supabase.auth.signInWithIdToken({
             provider: 'google',
-            token: authentication.idToken,
-          });
+            token: authentication.idToken });
 
           if (supabaseError) {
             showErrorAlert(
@@ -128,14 +123,12 @@ export default function SignIn() {
         requestedScopes: [
           AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
           AppleAuthentication.AppleAuthenticationScope.EMAIL,
-        ],
-      });
+        ] });
 
       if (credential && credential.identityToken) {
         const { data, error: supabaseError } = await supabase.auth.signInWithIdToken({
           provider: 'apple',
-          token: credential.identityToken,
-        });
+          token: credential.identityToken });
 
         if (supabaseError) {
           showErrorAlert(
@@ -153,16 +146,14 @@ export default function SignIn() {
             'Sign-in with Supabase completed, but no user data was found.'
           );
         }
-      } else {
-      }
+      } else {} 
     } catch (error: unknown) {
       if (
         typeof error === 'object' &&
         error !== null &&
         'code' in error &&
         (error as { code?: unknown }).code === 'ERR_CANCELED'
-      ) {
-      } else {
+      ) {}  else {
         showErrorAlert('Apple Sign-In Issue', `${(error as Error).message || 'Please try again.'}`);
       }
     }
@@ -175,14 +166,11 @@ export default function SignIn() {
       SetBtnStat((prev) => ({
         ...prev,
         signin: {
-          bool: true,
-        },
-      }));
+          bool: true } }));
       signInSchema.parse({ email, password });
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
-        password,
-      });
+        password });
 
       if (error) {
         Alert.alert('Sign-in Failed', error.message || 'Unable to sign in. Please try again.');
@@ -214,9 +202,7 @@ export default function SignIn() {
       SetBtnStat((prev) => ({
         ...prev,
         signin: {
-          bool: false,
-        },
-      }));
+          bool: false } }));
     }
   };
 
@@ -225,16 +211,13 @@ export default function SignIn() {
       SetBtnStat((prev) => ({
         ...prev,
         signup: {
-          bool: true,
-        },
-      }));
+          bool: true } }));
       signUpSchema.parse({ email, password });
 
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
-        options: {},
-      });
+        options: {}  });
 
       if (error) {
         Alert.alert(
@@ -266,9 +249,7 @@ export default function SignIn() {
       SetBtnStat((prev) => ({
         ...prev,
         signup: {
-          bool: false,
-        },
-      }));
+          bool: false } }));
     }
   };
 
@@ -278,9 +259,7 @@ export default function SignIn() {
       SetBtnStat((prev) => ({
         ...prev,
         forgotPass: {
-          bool: true,
-        },
-      }));
+          bool: true } }));
 
       forgotPasswordSchema.parse({ email });
 
@@ -314,9 +293,7 @@ export default function SignIn() {
       SetBtnStat((prev) => ({
         ...prev,
         forgotPass: {
-          bool: false,
-        },
-      }));
+          bool: false } }));
     }
   };
 
@@ -342,8 +319,7 @@ export default function SignIn() {
                   bg: 'white',
                   textColor: 'gray-800',
                   disabled: !request,
-                  onPress: () => promptAsync(),
-                },
+                  onPress: () => promptAsync() },
                 {
                   logo: <AppleLogo color="white" weight="fill" />,
                   text: authT('providers.apple'),
@@ -351,8 +327,7 @@ export default function SignIn() {
                   textColor: 'gray-100',
                   disabled: false,
                   onPress: signInWithApple,
-                  iosOnly: true,
-                },
+                  iosOnly: true },
               ].map(
                 (btn, i) =>
                   (!btn.iosOnly || Platform.OS === 'ios') && (

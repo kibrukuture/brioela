@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useIsomorphicLayoutEffect } from 'usehooks-ts';
 import { View, Text, Pressable, ActivityIndicator } from 'react-native';
 import { BottomSheetView, Sheet, useManagedSheetRef } from '@/components/ui/sheet';
 
@@ -20,7 +21,7 @@ export const DeleteCardBottomSheet: React.FC<DeleteCardBottomSheetProps> = ({
   const sheetRef = useManagedSheetRef(isVisible);
   const snapPoints = React.useMemo(() => ['40%'], []);
 
-  React.useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     if (isVisible) {
       sheetRef.current?.present();
     } else {

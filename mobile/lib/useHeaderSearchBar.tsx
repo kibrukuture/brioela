@@ -1,5 +1,6 @@
 import { useNavigation } from 'expo-router';
 import * as React from 'react';
+import { useIsomorphicLayoutEffect } from 'usehooks-ts';
 import { SearchBarProps } from 'react-native-screens';
 
 import { useColorScheme } from './useColorScheme';
@@ -11,7 +12,7 @@ export function useHeaderSearchBar(props: SearchBarProps = {}) {
   const navigation = useNavigation();
   const [search, setSearch] = React.useState('');
 
-  React.useLayoutEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     navigation.setOptions({
       headerSearchBarOptions: {
         placeholder: 'Search...',

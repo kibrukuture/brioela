@@ -139,6 +139,7 @@
     "reanimated-color-picker": "^5.1.1",
     "tailwind-merge": "^3.6.0",
     "use-debounce": "^10.1.1",
+    "usehooks-ts": "^3.1.1",
     "validator": "^13.15.35",
     "zod": "^4.4.3",
     "zustand": "^5.0.14"

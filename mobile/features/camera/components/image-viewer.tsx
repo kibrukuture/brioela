@@ -1,4 +1,5 @@
 import React, { useRef, useState, JSX, useCallback } from 'react';
+import { useIsomorphicLayoutEffect } from 'usehooks-ts';
 import { View, Dimensions, TouchableOpacity, StatusBar, Text } from 'react-native';
 import { GestureDetector, Gesture } from 'react-native-gesture-handler';
 import Animated, {
@@ -43,7 +44,7 @@ const ZoomableImage: React.FC<ZoomableImageProps> = ({ uri, isZoomed, onZoomChan
 
   // CRITICAL FIX #1: Memory leak cleanup - Evidence from official Reanimated docs
   // https://github.com/software-mansion/react-native-reanimated/discussions/2415
-  React.useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     return () => {
       cancelAnimation(scale);
       cancelAnimation(translateX);
@@ -168,7 +169,7 @@ export default function ImageViewer({
   const translateY = useSharedValue(screenHeight);
 
   // CRITICAL FIX #3: Cleanup animations on unmount
-  React.useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     return () => {
       cancelAnimation(opacity);
       cancelAnimation(translateY);
@@ -177,7 +178,7 @@ export default function ImageViewer({
 
   // CRITICAL FIX #4: Better timing for setPage using requestAnimationFrame
   // More reliable than arbitrary setTimeout(100)
-  React.useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     if (visible) {
       opacity.value = withTiming(1, { duration: 300 });
       translateY.value = withSpring(0, {

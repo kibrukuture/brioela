@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useCallback, useLayoutEffect } from 'react';
+import React, { useState, useCallback } from 'react';
+import { useIsomorphicLayoutEffect } from 'usehooks-ts';
 import { View, Text, Pressable, StyleSheet, ActivityIndicator, Alert } from 'react-native';
 import { useNavigation } from 'expo-router';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
@@ -11,8 +12,7 @@ import {
   CameraControls,
   CaptureButton,
   ImagePreviewList,
-  CapturedImage,
-} from '@/features/camera';
+  CapturedImage } from '@/features/camera';
 import { useCapturedPhotosStore } from '@/stores/hardware/use-captured-photos-store';
 import ImageViewer from '@/features/camera/components/image-viewer';
 import { usePostLabWork } from '@/network/lab-work/use-post-lab-work';
@@ -38,11 +38,10 @@ export default function AddPhotosScreen() {
   const cameraManager = useCameraManager({
     onImageCaptured: (newImage) => {
       setSessionImages((current) => [...current, newImage]);
-    },
-  });
+    } });
 
   // --- LIFECYCLE & INITIALIZATION ---
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     // On mount, we initialize our session state from the global store.
     // We do not pass permanent URIs to any hook.
     const initializeSession = async () => {
@@ -58,7 +57,7 @@ export default function AddPhotosScreen() {
   }, []);
 
   // An effect to trigger animations based on our reliable session state.
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     animations.animateBottomSection(sessionImages.length > 0);
   }, [sessionImages.length]);
 
@@ -78,8 +77,7 @@ export default function AddPhotosScreen() {
         formData.append('files', {
           uri: img.uri,
           name: `image_${idx + 1}.jpg`,
-          type: 'image/jpeg',
-        } as unknown as Blob);
+          type: 'image/jpeg' } as unknown as Blob);
       });
       const recordType: (typeof HealthRecordType.enumValues)[number] = 'lab_work';
       formData.append('recordType', recordType);
@@ -94,8 +92,7 @@ export default function AddPhotosScreen() {
         title: 'Sent',
         preset: 'done',
         haptic: 'success',
-        duration: 3,
-      });
+        duration: 3 });
     } catch (error) {
       Alert.alert(
         'Send Failed',
@@ -131,7 +128,7 @@ export default function AddPhotosScreen() {
 
   // What is this for?
   // Disables gesture navigation while the viewer is visible.
-  useLayoutEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     navigation.setOptions({ gestureEnabled: false });
   }, []);
 
@@ -226,15 +223,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'black',
-    paddingHorizontal: 24,
-  },
+    paddingHorizontal: 24 },
   permissionText: { color: 'white', fontSize: 16, textAlign: 'center', marginVertical: 16 },
   permissionButton: {
     backgroundColor: '#3461FD',
     paddingVertical: 12,
     paddingHorizontal: 24,
-    borderRadius: 30,
-  },
+    borderRadius: 30 },
   permissionButtonText: { color: 'white', fontSize: 16, fontWeight: 'bold' },
   cameraContainer: { flex: 1, overflow: 'hidden' },
   bottomSheet: { backgroundColor: 'black', borderTopWidth: 1, borderColor: '#333' },
@@ -244,8 +239,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: 24,
     paddingBottom: 32,
-    paddingTop: 16,
-  },
+    paddingTop: 16 },
   placeholder: { width: 60 },
   doneButtonContainer: { width: 60, alignItems: 'center' },
   doneButtonBase: {
@@ -255,9 +249,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingHorizontal: 20,
     borderWidth: 1,
-    borderColor: '#254eda',
-  },
+    borderColor: '#254eda' },
   doneButtonSaving: { backgroundColor: '#5a7bfd' },
   doneButtonPressed: { backgroundColor: '#254eda' },
-  doneButtonText: { color: 'white', fontSize: 16, fontWeight: 'bold' },
-});
+  doneButtonText: { color: 'white', fontSize: 16, fontWeight: 'bold' } });

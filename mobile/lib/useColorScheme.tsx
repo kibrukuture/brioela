@@ -1,6 +1,7 @@
 import * as NavigationBar from 'expo-navigation-bar';
 import { useColorScheme as useNativewindColorScheme } from 'nativewind';
 import * as React from 'react';
+import { useIsomorphicLayoutEffect } from 'usehooks-ts';
 import { Platform } from 'react-native';
 
 import { COLORS } from '@/theme/colors';
@@ -36,7 +37,7 @@ function useColorScheme() {
  */
 function useInitialAndroidBarSync() {
   const { colorScheme } = useColorScheme();
-  React.useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     if (Platform.OS !== 'android') return;
     setNavigationBar(colorScheme).catch((error) => {
       console.error('useColorScheme.tsx", "useInitialColorScheme', error);

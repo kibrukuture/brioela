@@ -1,5 +1,6 @@
 import type React from 'react';
-import { useEffect, useMemo } from 'react';
+import { useIsomorphicLayoutEffect } from 'usehooks-ts';
+import { useMemo } from 'react';
 import { View, Text, TextInput, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
@@ -30,10 +31,9 @@ export default function CardLabelScreen(): React.ReactElement {
 
   const { control, handleSubmit, reset } = useForm<{ label: string }>({
     defaultValues: { label: existingLabel },
-    mode: 'onChange',
-  });
+    mode: 'onChange' });
 
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     reset({ label: existingLabel });
   }, [existingLabel, reset]);
 

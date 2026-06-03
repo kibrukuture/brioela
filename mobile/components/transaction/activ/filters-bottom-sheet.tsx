@@ -1,5 +1,6 @@
 'use client';
-import { useMemo, useEffect } from 'react';
+import { useMemo } from 'react';
+import { useIsomorphicLayoutEffect } from 'usehooks-ts';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { Sheet, useSheetRef, BottomSheetScrollView, BottomSheetView } from '@/components/ui/sheet';
 import {
@@ -9,8 +10,7 @@ import {
   CreditCard,
   CircleNotch,
   Paperclip,
-  CaretDown,
-} from 'phosphor-react-native';
+  CaretDown } from 'phosphor-react-native';
 
 interface FiltersBottomSheetProps {
   isVisible: boolean;
@@ -32,12 +32,11 @@ export function FiltersBottomSheet({
   isVisible,
   onClose,
   onClearFilters,
-  onSeeResults,
-}: FiltersBottomSheetProps) {
+  onSeeResults }: FiltersBottomSheetProps) {
   const sheetRef = useSheetRef();
   const snapPoints = useMemo(() => ['70%'], []);
 
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     if (isVisible) {
       sheetRef.current?.present();
     } else {

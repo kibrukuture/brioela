@@ -1,4 +1,5 @@
-import { FC, useEffect } from 'react';
+import { FC } from 'react';
+import { useIsomorphicLayoutEffect } from 'usehooks-ts';
 import Animated, {
   cancelAnimation,
   Easing,
@@ -10,8 +11,7 @@ import Animated, {
   useAnimatedStyle,
   useDerivedValue,
   useSharedValue,
-  withTiming,
-} from 'react-native-reanimated';
+  withTiming } from 'react-native-reanimated';
 
 // superlist-onboarding-flow-animation 🔽
 
@@ -40,8 +40,7 @@ export const PaginationItem: FC<PaginationItemProps> = ({
   isDragging,
   handleScrollToIndex,
   translateY,
-  topCarouselOffset,
-}) => {
+  topCarouselOffset }) => {
   // Progress from 0 to 1 for the active slide's progress bar animation
   const slideProgress = useSharedValue(0);
 
@@ -91,8 +90,7 @@ export const PaginationItem: FC<PaginationItemProps> = ({
 
   const rBarWidthStyle = useAnimatedStyle(() => {
     return {
-      width: barWidth.get(),
-    };
+      width: barWidth.get() };
   }, []);
 
   // Animated style for the white progress bar that fills the active pagination indicator
@@ -110,12 +108,11 @@ export const PaginationItem: FC<PaginationItemProps> = ({
       width: `${progressWidth}%`,
       // Fade in progress bar only when pagination indicator is expanded (active)
       // Prevents progress bar from showing on inactive indicators
-      opacity: interpolate(barWidth.get(), [0, activeWidth], [0, 1], Extrapolation.CLAMP),
-    };
+      opacity: interpolate(barWidth.get(), [0, activeWidth], [0, 1], Extrapolation.CLAMP) };
   }, []);
 
   // Start progress animation when this slide becomes active
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     if (currentSlideIndex === index) {
       slideProgress.set(0);
       // Animate progress bar from 0 to 1 over slideDuration (2000-3000ms)

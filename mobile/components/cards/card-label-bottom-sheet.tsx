@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useIsomorphicLayoutEffect } from 'usehooks-ts';
 import { View, Text, Pressable, TextInput, ActivityIndicator } from 'react-native';
 import { Controller, useForm } from 'react-hook-form';
 import * as Burnt from 'burnt';
@@ -22,7 +23,7 @@ export const CardLabelBottomSheet: React.FC<CardLabelBottomSheetProps> = ({
     mode: 'onChange',
   });
 
-  React.useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     if (isVisible) {
       sheetRef.current?.present();
     } else {
@@ -30,7 +31,7 @@ export const CardLabelBottomSheet: React.FC<CardLabelBottomSheetProps> = ({
     }
   }, [isVisible, sheetRef]);
 
-  React.useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     reset({ label: existingLabel ?? '' });
   }, [existingLabel, reset, cardId]);
 

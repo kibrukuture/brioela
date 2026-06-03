@@ -1,13 +1,13 @@
 'use client';
-import { useMemo, useEffect, useState } from 'react';
+import { useMemo, useState } from 'react';
+import { useIsomorphicLayoutEffect } from 'usehooks-ts';
 import {
   View,
   Text,
   TouchableOpacity,
   ScrollView,
   TextInput,
-  ActivityIndicator,
-} from 'react-native';
+  ActivityIndicator } from 'react-native';
 import { Sheet, useSheetRef, BottomSheetView } from '@/components/ui/sheet';
 import * as Burnt from 'burnt';
 import * as DocumentPicker from 'expo-document-picker';
@@ -46,8 +46,7 @@ interface TransactionDetailBottomSheetProps {
 export function TransactionDetailBottomSheet({
   transaction,
   isVisible,
-  onClose,
-}: TransactionDetailBottomSheetProps) {
+  onClose }: TransactionDetailBottomSheetProps) {
   const sheetRef = useSheetRef();
   const snapPoints = useMemo(() => ['90%'], []);
 
@@ -75,7 +74,7 @@ export function TransactionDetailBottomSheet({
   const payRequest = usePayRequest(payRequestId ?? undefined);
   const cancelPayRequest = useCancelPayRequest();
 
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     if (isVisible && transaction) {
       setLocalTransaction(transaction);
       setDraftNote(transaction.note ?? '');
@@ -94,8 +93,7 @@ export function TransactionDetailBottomSheet({
 
   const amount = formatBankingAmount({
     amountAtomic: localTransaction.amountAtomic,
-    currency: localTransaction.currency,
-  });
+    currency: localTransaction.currency });
 
   const isFailed = localTransaction.status === 'failed';
 
@@ -162,13 +160,11 @@ export function TransactionDetailBottomSheet({
       const fileUri = (FileSystem.documentDirectory ?? '') + fileName;
 
       await FileSystem.writeAsStringAsync(fileUri, base64, {
-        encoding: FileSystem.EncodingType.Base64,
-      });
+        encoding: FileSystem.EncodingType.Base64 });
 
       await shareAsync(fileUri, {
         mimeType: 'application/pdf',
-        dialogTitle: 'Share Receipt',
-      });
+        dialogTitle: 'Share Receipt' });
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Failed to open receipt';
       Burnt.toast({ title: message, preset: 'error' });
@@ -189,8 +185,7 @@ export function TransactionDetailBottomSheet({
     const result = await DocumentPicker.getDocumentAsync({
       multiple: false,
       copyToCacheDirectory: true,
-      type: ['application/pdf', 'image/jpeg', 'image/png', 'image/webp'],
-    });
+      type: ['application/pdf', 'image/jpeg', 'image/png', 'image/webp'] });
 
     if (result.canceled) return;
     const asset = result.assets?.[0];
@@ -200,20 +195,17 @@ export function TransactionDetailBottomSheet({
     formData.append('file', {
       uri: asset.uri,
       name: asset.name ?? 'attachment',
-      type: asset.mimeType ?? 'application/octet-stream',
-    } as unknown as Blob);
+      type: asset.mimeType ?? 'application/octet-stream' } as unknown as Blob);
 
     try {
       const result = await uploadAttachment.mutateAsync({
         id: localTransaction.id,
-        payload: formData,
-      });
+        payload: formData });
       setLocalTransaction((prev) => {
         if (!prev) return prev;
         return {
           ...prev,
-          attachments: [...(prev.attachments ?? []), result.attachment],
-        };
+          attachments: [...(prev.attachments ?? []), result.attachment] };
       });
       Burnt.toast({ title: 'Uploaded', preset: 'done' });
     } catch (error) {
@@ -229,8 +221,7 @@ export function TransactionDetailBottomSheet({
         if (!prev) return prev;
         return {
           ...prev,
-          attachments: (prev.attachments ?? []).filter((a) => a.id !== attachmentId),
-        };
+          attachments: (prev.attachments ?? []).filter((a) => a.id !== attachmentId) };
       });
       Burnt.toast({ title: 'Deleted', preset: 'done' });
     } catch (error) {

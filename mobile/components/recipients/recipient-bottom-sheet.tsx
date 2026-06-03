@@ -1,4 +1,5 @@
 import React from 'react';
+import { useIsomorphicLayoutEffect } from 'usehooks-ts';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { Sheet, useSheetRef, BottomSheetView } from '@/components/ui/sheet';
 import { ArrowUp, User } from 'lucide-react-native';
@@ -22,7 +23,7 @@ export const RecipientBottomSheet: React.FC<RecipientBottomSheetProps> = ({
 }) => {
   const sheetRef = useSheetRef();
 
-  React.useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     if (isVisible && recipient) {
       sheetRef.current?.present();
     } else {

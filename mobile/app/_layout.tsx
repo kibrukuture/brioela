@@ -1,4 +1,5 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback } from 'react';
+import { useIsomorphicLayoutEffect } from 'usehooks-ts';
 import { initI18n } from '@/lib/i18n';
 import * as SystemUI from 'expo-system-ui';
 import '../global.css';
@@ -21,8 +22,7 @@ import {
   Inter_400Regular,
   Inter_500Medium,
   Inter_600SemiBold,
-  Inter_700Bold,
-} from '@expo-google-fonts/inter';
+  Inter_700Bold } from '@expo-google-fonts/inter';
 import { useUserPreferencesStore } from '@/stores/account/use-user-preferences';
 import { useAppStore } from '@/stores/ui/use-app-store';
 import { useLanguageStore } from '@/stores/ui/use-language-store';
@@ -50,9 +50,7 @@ Notifications.setNotificationHandler({
     shouldPlaySound: true, // Play notification sound
     shouldSetBadge: false, // Don't update app badge (optional)
     shouldShowBanner: true,
-    shouldShowList: true,
-  }),
-});
+    shouldShowList: true }) });
 //
 
 export default function RootLayout() {
@@ -68,8 +66,7 @@ export default function RootLayout() {
     Inter_500Medium,
     Inter_600SemiBold,
     Inter_700Bold,
-    parafina_black: require('@/assets/fonts/parafina_black.ttf'),
-  });
+    parafina_black: require('@/assets/fonts/parafina_black.ttf') });
 
   const onLayoutRootView = useCallback(async () => {
     if (fontsLoaded || fontError) {
@@ -77,7 +74,7 @@ export default function RootLayout() {
     }
   }, [fontsLoaded, fontError]);
 
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     initI18n();
     // load the global stores:
     useUserPreferencesStore.getState().loadPreferences();
@@ -85,7 +82,7 @@ export default function RootLayout() {
     useLanguageStore.getState().loadLanguage();
   }, []);
 
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     // Initialize network monitoring
     useNetworkStore.getState().initialize();
     return () => {

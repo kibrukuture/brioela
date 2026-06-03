@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useIsomorphicLayoutEffect } from 'usehooks-ts';
 import { AppState, Platform, type AppStateStatus } from 'react-native';
 import { focusManager } from '@tanstack/react-query';
 
@@ -7,7 +7,7 @@ import { focusManager } from '@tanstack/react-query';
  * Enables refetchOnWindowFocus to work in React Native/Expo
  */
 export function useFocusManager() {
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     if (Platform.OS === 'web') return;
 
     const handleAppStateChange = (status: AppStateStatus) => {

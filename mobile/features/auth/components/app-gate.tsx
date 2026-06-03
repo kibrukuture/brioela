@@ -1,4 +1,5 @@
-import React, { useEffect } from 'react';
+import React from 'react';
+import { useIsomorphicLayoutEffect } from 'usehooks-ts';
 import { View, ActivityIndicator } from 'react-native';
 import { useAuthStore } from '@/stores/account/use-auth-store';
 import AppLockOverlay from '@/features/auth/components/app-lock-overlay';
@@ -7,7 +8,7 @@ export default function AppGate({ children }: { children: React.ReactNode }) {
   const { isLoading, initializeAuth } = useAuthStore();
 
   // On initial mount, we initialize our auth state.
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     initializeAuth();
   }, []); // This runs only once.
 
