@@ -12,10 +12,7 @@
   "workspaces": [
     "backend",
     "shared",
-    "client",
-    "ext",
-    "pdf-converter",
-    "universal-file-converter"
+    "client" 
   ],
   "packageManager": "bun@1.2.21",
   "dependencies": {
