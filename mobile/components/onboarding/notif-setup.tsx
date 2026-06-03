@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, SafeAreaView, Linking, Platform, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, Linking, Platform, Alert } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import Svg, { G, Path, Circle } from 'react-native-svg';
 import * as Notifications from 'expo-notifications';
 import * as Burnt from 'burnt';

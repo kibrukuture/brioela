@@ -1,7 +1,8 @@
 'use client';
 
 import type * as React from 'react';
-import { View, Text, ScrollView, Pressable, SafeAreaView } from 'react-native';
+import { View, Text, ScrollView, Pressable } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { ChevronLeft } from 'lucide-react-native';
 type CardControlsScreenProps = {
   controls: readonly {

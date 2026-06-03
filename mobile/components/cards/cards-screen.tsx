@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { View, Text, ScrollView, SafeAreaView } from 'react-native';
+import { View, Text, ScrollView } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import type { CardData, ManageCardItemType } from '@/components/cards/types';
 import { CardsHeader } from '@/components/cards/cards-header';

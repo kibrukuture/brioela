@@ -2,7 +2,8 @@
 
 import type React from 'react';
 import { useState } from 'react';
-import { View, ScrollView, SafeAreaView } from 'react-native';
+import { View, ScrollView } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { TransactionHeader } from './transaction-header';
 import { TabSelector } from './tab-selector';
 import { Timeline } from './timeline';
