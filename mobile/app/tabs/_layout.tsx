@@ -1,67 +1,37 @@
 import React from 'react';
-import { Tabs } from '@/components/ui/bottom-tabs';
+import { NativeTabs } from 'expo-router/unstable-native-tabs';
 import { useProtectedRoute } from '@/features/auth/hooks/use-protected-route';
-import { Platform } from 'react-native';
 
 export default function TabsLayout() {
   useProtectedRoute();
 
   return (
-    <>
-      <Tabs
-        // labeled={false}
-        screenOptions={{
-          lazy: false, // stops the screens from being jumpy when switching tabs
-        }}
-        //
-      >
-        <Tabs.Screen
-          name="home"
-          options={{
-            title: 'Home',
-            tabBarIcon: () =>
-              Platform.OS === 'ios'
-                ? { sfSymbol: 'sparkles' }
-                : require('@/assets/icons/sparkles.png'),
-          }}
+    <NativeTabs>
+      <NativeTabs.Trigger name="home">
+        <NativeTabs.Trigger.Label>Home</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon sf="sparkles" md="auto_awesome" />
+      </NativeTabs.Trigger>
+
+      <NativeTabs.Trigger name="transactions">
+        <NativeTabs.Trigger.Label>Activities</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon sf="list.bullet" md="receipt_long" />
+      </NativeTabs.Trigger>
+
+      <NativeTabs.Trigger name="recipients">
+        <NativeTabs.Trigger.Label>Recipients</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon
+          sf={{ default: 'person.2', selected: 'person.2.fill' }}
+          md="group"
         />
+      </NativeTabs.Trigger>
 
-        <Tabs.Screen
-          name="transactions"
-          options={{
-            title: 'Activities',
-
-            tabBarIcon: () =>
-              Platform.OS === 'ios'
-                ? { sfSymbol: 'list.bullet' }
-                : require('@/assets/icons/settings.png'),
-          }}
+      <NativeTabs.Trigger name="cards">
+        <NativeTabs.Trigger.Label>Cards</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon
+          sf={{ default: 'creditcard', selected: 'creditcard.fill' }}
+          md="credit_card"
         />
-
-        <Tabs.Screen
-          name="recipients"
-          options={{
-            title: 'Recipients',
-
-            tabBarIcon: () =>
-              Platform.OS === 'ios'
-                ? { sfSymbol: 'person.2.fill' }
-                : require('@/assets/icons/pill.png'),
-          }}
-        />
-
-        <Tabs.Screen
-          name="cards"
-          options={{
-            title: 'Cards',
-
-            tabBarIcon: () =>
-              Platform.OS === 'ios'
-                ? { sfSymbol: 'creditcard.fill' }
-                : require('@/assets/icons/activity.png'),
-          }}
-        />
-      </Tabs>
-    </>
+      </NativeTabs.Trigger>
+    </NativeTabs>
   );
 }
