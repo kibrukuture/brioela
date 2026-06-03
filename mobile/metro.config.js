@@ -26,9 +26,7 @@ metroConfig.resolver.unstable_conditionNames = ['react-native', 'browser', 'requ
 
 metroConfig.resolver.extraNodeModules = {
   '@brioela/shared': path.resolve(workspaceRoot, 'shared'),
-  'zod/v4': path.resolve(workspaceRoot, 'shared/zod/v4.ts'),
   zod: path.resolve(projectRoot, 'node_modules/zod'),
-  ibantools: path.resolve(projectRoot, 'node_modules/ibantools'),
   'drizzle-orm': path.resolve(projectRoot, 'node_modules/drizzle-orm'),
   '@tolbel/align': path.resolve(projectRoot, 'node_modules/@tolbel/align'),
   validator: path.resolve(projectRoot, 'node_modules/validator'),
