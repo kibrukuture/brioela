@@ -15,7 +15,7 @@ export const SUPABASE_CONFIG = {
 export const SUPERWALL_CONFIG = {
   SUPERWALL_IOS_KEY: 'pk_X-5UBKFLymoU7iWzo7sBm',
   SUPERWALL_ANDROID_KEY: 'pk_6KZmQNoHhssr4hJFCzfLz',
-  SUPERWALL_PLACEMENT_KEY: 'schnl_pro_app',
+  SUPERWALL_PLACEMENT_KEY: 'brioela_pro_app',
 };
 
 // errors;
@@ -34,13 +34,13 @@ export const FILE_CONFIG = {
 
 export const CLOUDFLARE_WORKER_CONFIG = {
   // THIS IS FOR LOCAL DEV.
-  WORKER_BASE_URI: 'ws://worker.schnl.com',
+  WORKER_BASE_URI: 'ws://worker.brioela.com',
   // WORKER_BASE_URI: 'ws://127.0.0.1:8787',
   MED_AGENT_ENPOINT: 'ws://127.0.0.1:8787/ws',
 };
 
 export const CALENDAR_CONFIG = {
-  SCHNL_IDENTIFIER: 'Created by Schnl - Academic Planner',
+  SCHNL_IDENTIFIER: 'Created by Brioela - Academic Planner',
 };
 
 export const LOCAL_STORAGE_KEYS = {
@@ -51,7 +51,7 @@ export const LOCAL_STORAGE_KEYS = {
   CALENDAR_SYNC_ENABLED_KEY: 'app_calendar_sync_enabled',
   SYNCED_CALENDARS_KEY: 'app_synced_calendars',
   CURRENT_TAB_KEY: 'app_current_tab',
-  AUTH_STORAGE_KEY: 'schnl_auth_session',
+  AUTH_STORAGE_KEY: 'brioela_auth_session',
   PUSH_TOGGLE_ENABLED_KEY: 'app_push_toggle_enabled',
   PRIVACY_VISIBILITY: 'app_privacy_visibility',
 } as const;
@@ -64,8 +64,8 @@ export const LOCAL_STORAGE_KEYS = {
  * - `AUTH_ENCRYPTION_KEY` secures the MMKV instance; for production, supply via env.
  */
 export const MMKV_STORAGE = {
-  AUTH_STORAGE_ID: 'schnl_auth_mmkv',
-  AUTH_ENCRYPTION_KEY: 'schnl_auth_mmkv_encryption_key',
+  AUTH_STORAGE_ID: 'brioela_auth_mmkv',
+  AUTH_ENCRYPTION_KEY: 'brioela_auth_mmkv_encryption_key',
 } as const;
 
 /**
@@ -73,7 +73,7 @@ export const MMKV_STORAGE = {
  * These keys should remain stable across app versions.
  */
 export const ENCRYPTED_STORAGE_KEYS = {
-  AUTH_SESSION: 'schnl_auth_session_encrypted',
+  AUTH_SESSION: 'brioela_auth_session_encrypted',
 } as const;
 
 /**
@@ -84,23 +84,23 @@ export const SECURE_STORAGE_KEYS = {
   /**
    * Key for storing card PIN.
    */
-  CARD_PIN: 'schnl_card_pin',
+  CARD_PIN: 'brioela_card_pin',
   /**
    * Key for storing card details (encrypted).
    */
-  CARD_DETAILS: 'schnl_card_details',
+  CARD_DETAILS: 'brioela_card_details',
   /**
    * Key for storing local authentication preference (enabled/disabled).
    */
-  LOCAL_AUTH_ENABLED: 'schnl_local_auth_enabled',
+  LOCAL_AUTH_ENABLED: 'brioela_local_auth_enabled',
   /**
    * Key for storing biometric authentication preference.
    */
-  BIOMETRIC_ENABLED: 'schnl_biometric_enabled',
+  BIOMETRIC_ENABLED: 'brioela_biometric_enabled',
   /**
    * Key for storing local device auth preference for sensitive actions.
    */
-  LOCAL_DEVICE_AUTH_ENABLED: 'schnl_local_device_auth_enabled',
+  LOCAL_DEVICE_AUTH_ENABLED: 'brioela_local_device_auth_enabled',
 } as const;
 
 export const POSTHOG_CONFIGS = {
