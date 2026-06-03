@@ -19,7 +19,7 @@ export const bankingWalletSessions = brioelaSchema
     {
       id: uuid("id").defaultRandom().primaryKey(),
       userId: uuid("user_id")
-        .references(() => users.id)
+        .references(() => users.id, { onDelete: "cascade" })
         .notNull(),
       walletId: uuid("wallet_id")
         .notNull()

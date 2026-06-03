@@ -12,11 +12,11 @@ export const bankingPeerToPeerTransfers = brioelaSchema
 
     senderUserId: uuid("sender_user_id")
       .notNull()
-      .references(() => users.id, { onDelete: "restrict" }),
+      .references(() => users.id, { onDelete: "cascade" }),
 
     recipientUserId: uuid("recipient_user_id")
       .notNull()
-      .references(() => users.id, { onDelete: "restrict" }),
+      .references(() => users.id, { onDelete: "cascade" }),
 
     amountAtomic: bigint("amount_atomic", { mode: "bigint" }).notNull(),
 
