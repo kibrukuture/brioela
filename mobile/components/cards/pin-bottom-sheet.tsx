@@ -2,7 +2,7 @@ import * as React from 'react';
 import { View, Text, Pressable } from 'react-native';
 import { Sheet, useManagedSheetRef, BottomSheetView } from '@/components/ui/sheet';
 import type { PinBottomSheetProps } from '@/components/cards/types';
-import { SensitiveSheetGate } from '@/components/auth/sensitive-sheet-gate';
+import { SensitiveSheetGate } from '@/features/auth/components/sensitive-sheet-gate';
 
 export const PinBottomSheet: React.FC<PinBottomSheetProps> = ({ isVisible, pin, onClose }) => {
   const sheetRef = useManagedSheetRef(isVisible);

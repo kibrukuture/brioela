@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { CapturedImage } from '@/components/camera/types';
+import { CapturedImage } from '@/features/camera/components/types';
 
 // 👇 1. State interface now includes all properties to manage the recorder's lifecycle.
 export interface DraftMedicationLogState {

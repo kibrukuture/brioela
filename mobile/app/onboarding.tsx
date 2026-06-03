@@ -8,7 +8,7 @@ import OnboardingThree from '@/components/onboarding/three';
 import NotifSetup from '@/components/onboarding/notif-setup';
 import OnboardingFive from '@/components/onboarding/five';
 import OnboardingSix from '@/components/onboarding/six';
-import Account from '@/components/auth/account';
+import Account from '@/features/auth/components/account';
 import * as Haptics from 'expo-haptics';
 import Animated, { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import { now } from '@/lib/date-time-utils';

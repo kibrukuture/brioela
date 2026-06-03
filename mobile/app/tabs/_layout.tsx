@@ -1,6 +1,6 @@
 import React from 'react';
 import { Tabs } from '@/components/ui/bottom-tabs';
-import { useProtectedRoute } from '@/hooks/ui/use-protected-route';
+import { useProtectedRoute } from '@/features/auth/hooks/use-protected-route';
 import { Platform } from 'react-native';
 
 export default function TabsLayout() {

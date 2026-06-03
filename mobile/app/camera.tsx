@@ -4,17 +4,17 @@ import { useNavigation } from 'expo-router';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated from 'react-native-reanimated';
 import * as FileSystem from 'expo-file-system';
-import useCameraManager from '@/hooks/camera/use-camera-manager';
-import useCameraAnimations from '@/hooks/camera/use-camera-animations';
+import useCameraManager from '@/features/camera/hooks/use-camera-manager';
+import useCameraAnimations from '@/features/camera/hooks/use-camera-animations';
 import {
   CameraView,
   CameraControls,
   CaptureButton,
   ImagePreviewList,
   CapturedImage,
-} from '@/components/camera';
+} from '@/features/camera';
 import { useCapturedPhotosStore } from '@/stores/hardware/use-captured-photos-store';
-import ImageViewer from '@/components/camera/image-viewer';
+import ImageViewer from '@/features/camera/components/image-viewer';
 import { usePostLabWork } from '@/network/lab-work/use-post-lab-work';
 import { HealthRecordType } from '@brioela/shared/drizzle/schema/health-records.schema';
 import * as Burnt from 'burnt';

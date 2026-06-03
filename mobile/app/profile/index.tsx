@@ -39,7 +39,7 @@ import { Sheet, useSheetRef } from '@/components/ui/sheet';
 import * as ImagePicker from 'expo-image-picker';
 import { optimizeImage } from '@/lib/files/optimize-image';
 import { useUpdateProfilePicture } from '@/network/users/use-update-profile-picture';
-import { useCreateSupportChat } from '@/hooks/support/use-create-support-chat';
+import { useCreateSupportChat } from '@/features/support/hooks/use-create-support-chat';
 import { MenuSectionView } from '@/components/profile/menu-section-view';
 import { CopyButton } from '@/components/profile/copy-button';
 

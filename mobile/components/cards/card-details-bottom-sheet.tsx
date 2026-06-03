@@ -4,7 +4,7 @@ import { Sheet, useManagedSheetRef, BottomSheetScrollView } from '@/components/u
 import { X } from 'lucide-react-native';
 import type { CardDetailsBottomSheetProps, CardDetailsField } from '@/components/cards/types';
 import { CardDetailsRow } from '@/components/cards/card-details-row';
-import { SensitiveSheetGate } from '@/components/auth/sensitive-sheet-gate';
+import { SensitiveSheetGate } from '@/features/auth/components/sensitive-sheet-gate';
 
 export const CardDetailsBottomSheet: React.FC<CardDetailsBottomSheetProps> = ({
   isVisible,

@@ -14,7 +14,7 @@ import { NAV_THEME } from '@/theme';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import * as Notifications from 'expo-notifications';
 import { QueryProvider } from '@/providers/query-provider';
-import AppGate from '@/components/auth/app-gate';
+import AppGate from '@/features/auth/components/app-gate';
 import * as SplashScreen from 'expo-splash-screen';
 import {
   useFonts,
@@ -28,13 +28,13 @@ import { useAppStore } from '@/stores/ui/use-app-store';
 import { useLanguageStore } from '@/stores/ui/use-language-store';
 import { useNetworkStore } from '@/stores/account/use-network-store';
 import { PostHogProvider } from '@/providers/posthog-provider';
-import { PostHogScreenTracker } from '@/components/posthog/posthog-screen-tracker';
-import { TanStackQueryNativeSetup } from '@/components/tanstack/tanstack-query-native-setup';
+import { PostHogScreenTracker } from '@/features/posthog/components/posthog-screen-tracker';
+import { TanStackQueryNativeSetup } from '@/features/tanstack/components/tanstack-query-native-setup';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { initializeOneSignal } from '@/lib/push-notifications/one-signal';
 import { PaperProvider } from 'react-native-paper';
 
-// import { useQueryNativeSetup } from '@/hooks/tanstack/use-query-native-setup';
+// import { useQueryNativeSetup } from '@/features/tanstack/hooks/use-query-native-setup';
 
 // Set the background color
 SystemUI.setBackgroundColorAsync('#FFFFFF');

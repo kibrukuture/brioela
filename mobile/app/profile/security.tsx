@@ -3,7 +3,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { View, Text, Switch, ScrollView, Alert } from 'react-native';
 import { BackButton } from '@/components/ui/back-button';
 import { SECURE_STORAGE_KEYS } from '@/constants';
-import { useLocalAuthentication } from '@/hooks/auth/use-local-authentication';
+import { useLocalAuthentication } from '@/features/auth/hooks/use-local-authentication';
 import { encryptedStorage } from '@/lib/storage/encrypted-storage';
 
 export default function ProfileSecurityScreen(): React.JSX.Element {

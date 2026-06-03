@@ -4,7 +4,7 @@ import { useNavigation } from 'expo-router';
 import * as DocumentPicker from 'expo-document-picker';
 import { Upload, PaperPlaneTilt, File } from 'phosphor-react-native';
 import { useCameraProcessingStore } from '@/stores/hardware/use-camera-processing';
-import ProcessingModal from '@/components/camera/processing-modal';
+import ProcessingModal from '@/features/camera/components/processing-modal';
 // import { useSyllabusProcessing } from '@/lib/hooks/use-syllabus-processing';
 
 export default function AddMedicationsScreen() {
