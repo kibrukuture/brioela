@@ -1,0 +1,27 @@
+#!/bin/bash
+# Xcode 26 broke -destination id=<UDID> for simulators.
+# This wrapper detects simulator UDIDs and replaces with generic/platform=iOS Simulator.
+REAL_XCODE=/Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild
+ARGS=()
+PARAMS=("$@")
+LEN=${#PARAMS[@]}
+i=0
+
+while [ $i -lt $LEN ]; do
+    arg="${PARAMS[$i]}"
+    if [ "$arg" = "-destination" ] && [ $((i+1)) -lt $LEN ]; then
+        dest="${PARAMS[$((i+1))]}"
+        if [[ "$dest" == id=* ]]; then
+            UDID="${dest#id=}"
+            if xcrun simctl list devices 2>/dev/null | grep -q "$UDID"; then
+                ARGS+=("-destination" "generic/platform=iOS Simulator")
+                i=$((i+2))
+                continue
+            fi
+        fi
+    fi
+    ARGS+=("$arg")
+    i=$((i+1))
+done
+
+exec "$REAL_XCODE" "${ARGS[@]}"

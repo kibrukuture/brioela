@@ -4,7 +4,7 @@
   "main": "expo-router/entry",
   "scripts": {
     "start": "EXPO_JS_ENGINE=hermes cross-env NODE_ENV=development expo start --dev-client",
-    "ios": "EXPO_JS_ENGINE=hermes cross-env NODE_ENV=development expo run:ios",
+    "ios": "PATH=\"$PWD/scripts:$PATH\" EXPO_JS_ENGINE=hermes cross-env NODE_ENV=development expo run:ios",
     "android": "EXPO_JS_ENGINE=hermes cross-env NODE_ENV=development expo run:android",
     "build:dev": "EXPO_JS_ENGINE=hermes cross-env NODE_ENV=development eas build --profile development",
     "build:preview": "dotenv -e .env -- cross-env EXPO_JS_ENGINE=hermes NODE_ENV=production eas build --profile preview --local",
