@@ -72,7 +72,7 @@ export const users = brioelaSchema
       }),
       membershipNumber: text("membership_number").unique(),
       profilePicture: text("profile_picture"),
-      schnlTag: text("schnl_tag").unique(),
+      brioelaTag: text("brioela_tag").unique(),
       isDiscoverable: boolean("is_discoverable").default(false).notNull(),
       lastPaid: timestamp("last_paid", { withTimezone: true }),
       phone: text("phone"),
@@ -139,8 +139,8 @@ export const users = brioelaSchema
       // 4. No consecutive specials (checked by application logic, but basic regex here enforces char set and structure)
       // 5. Length 3-20 (1 start + 1-18 mid + 1 end = 3-20)
       check(
-        "schnl_tag_format",
-        sql`schnl_tag IS NULL OR schnl_tag ~ '^[a-z][a-z0-9._]{1,18}[a-z0-9]$'`
+        "brioela_tag_format",
+        sql`brioela_tag IS NULL OR brioela_tag ~ '^[a-z][a-z0-9._]{1,18}[a-z0-9]$'`
       ),
     ]
   )
