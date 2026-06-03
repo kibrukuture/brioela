@@ -1,9 +1,9 @@
 {
   "expo": {
-    "name": "Schnl",
-    "slug": "schnl",
+    "name": "Brioela",
+    "slug": "brioela",
     "version": "1.0.0",
-    "scheme": "com.schnl.app",
+    "scheme": "com.brioela.app",
     "backgroundColor": "#FFFFFF",
     "web": {
       "bundler": "metro",
@@ -58,7 +58,7 @@
             }
           },
           "ios": {
-            "deploymentTarget": "16.1",
+            "deploymentTarget": "16.4",
             "useFrameworks": "static"
           }
         }
@@ -127,10 +127,8 @@
         }
       ],
       "expo-secure-store",
-      "expo-web-browser",
-      "./courier-plugin.js",
-      "react-native-quick-crypto",
-      "./plugins/with-kotlin-jvm-target.js"
+      "expo-web-browser"
+   
     ],
     "experiments": {
       "typedRoutes": true,
@@ -146,14 +144,14 @@
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
-      "associatedDomains": ["applinks:schnl.com"],
+      "associatedDomains": ["applinks:brioela.com"],
       "supportsTablet": true,
       "usesAppleSignIn": true,
-      "bundleIdentifier": "com.schnl.app",
+      "bundleIdentifier": "com.brioela.app",
       "jsEngine": "hermes",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
-        "NSLocationWhenInUseUsageDescription": "Schnl needs your location to determine regional banking eligibility and comply with regulatory requirements."
+        "NSLocationWhenInUseUsageDescription": "Brioela needs your location to determine regional banking eligibility and comply with regulatory requirements."
       },
       "entitlements": {
         "com.apple.developer.networking.wifi-info": true
@@ -166,7 +164,7 @@
         "foregroundImage": "./assets/media/adaptive.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.schnl.app",
+      "package": "com.brioela.app",
       "permissions": [
         "android.permission.READ_EXTERNAL_STORAGE",
         "android.permission.WRITE_EXTERNAL_STORAGE",
@@ -185,7 +183,7 @@
           "data": [
             {
               "scheme": "https",
-              "host": "schnl.com",
+              "host": "brioela.com",
               "pathPrefix": "/pay"
             }
           ],
@@ -195,7 +193,7 @@
           "action": "VIEW",
           "data": [
             {
-              "scheme": "com.schnl.app"
+                "scheme": "com.brioela.app"
             }
           ],
           "category": ["BROWSABLE", "DEFAULT"]
@@ -207,7 +205,7 @@
         "origin": false
       },
       "eas": {
-        "projectId": "f4babf7c-f73e-43fe-8f32-46270c65a2a6"
+     "projectId": "f4babf7c-f73e-43fe-8f32-46270c65a2a6"
       }
     },
     "newArchEnabled": true,

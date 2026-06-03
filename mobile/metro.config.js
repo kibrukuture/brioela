@@ -27,40 +27,4 @@ metroConfig.resolver.extraNodeModules = {
   validator: path.resolve(__dirname, 'node_modules/validator'),
 };
 
-const asyncRequireShim = require.resolve('./shims/async-require-shim.js');
-const ASYNC_REQUIRE_ALIASES = new Set([
-  '@expo/metro-config/build/async-require.js',
-  '@expo/metro-config/build/async-require',
-  '@expo/metro-config/async-require.js',
-  '@expo/metro-config/async-require',
-]);
-
-const matchesAsyncRequire = (request) => {
-  if (!request) return false;
-  if (ASYNC_REQUIRE_ALIASES.has(request)) return true;
-  return (
-    request.includes('@expo/metro-config') &&
-    request.includes('async-require') &&
-    (request.endsWith('.js') || !request.includes('.'))
-  );
-};
-
-const defaultResolveRequest = metroConfig.resolver.resolveRequest;
-metroConfig.resolver.resolveRequest = (context, moduleName, platform) => {
-  // ! FUCKING WASTED 24 HOURS ON THIS ERORR. COME BACK AND WHAT THE FAILURE WAS
-  // !  DUE TO .
-  if (!context.dev && matchesAsyncRequire(moduleName)) {
-    return {
-      type: 'sourceFile',
-      filePath: asyncRequireShim,
-    };
-  }
-
-  if (typeof defaultResolveRequest === 'function') {
-    return defaultResolveRequest(context, moduleName, platform);
-  }
-
-  return metroResolve(context, moduleName, platform);
-};
-
 module.exports = metroConfig;
