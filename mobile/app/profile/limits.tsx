@@ -15,8 +15,8 @@ import {
   parseAmountAtomic,
 } from '@brioela/shared/utils/money';
 import { NativeSegmentedTabs } from '@/components/ui/native-segmented-tabs';
-import { useBankingLimits } from '@/hooks/banking/use-banking-limits';
-import { useUpdateBankingLimit } from '@/hooks/banking/use-update-banking-limit';
+import { useBankingLimits } from '@/network/banking/use-banking-limits';
+import { useUpdateBankingLimit } from '@/network/banking/use-update-banking-limit';
 import type {
   BankingLimitScope,
   BankingLimitPeriod,

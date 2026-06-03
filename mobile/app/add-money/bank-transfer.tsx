@@ -6,7 +6,7 @@ import * as Clipboard from 'expo-clipboard';
 import * as Haptics from 'expo-haptics';
 import { BackButton } from '@/components/ui/back-button';
 import { NativeSegmentedTabs } from '@/components/ui/native-segmented-tabs';
-import { useVirtualAccounts } from '@/hooks/banking/use-virtual-accounts';
+import { useVirtualAccounts } from '@/network/banking/use-virtual-accounts';
 import { getTransferDetails } from '@/lib/banking/get-transfer-details';
 
 function CopyableField(params: { label: string; value: string; subtext?: string }) {

@@ -11,7 +11,7 @@ import * as Burnt from 'burnt';
 
 import ModalHandle from '@/components/ui/modal-handle';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useUser } from '@/hooks/users/use-user';
+import { useUser } from '@/network/users/use-user';
 interface BillingManagementModalProps {
   visible: boolean;
   onClose: () => void;

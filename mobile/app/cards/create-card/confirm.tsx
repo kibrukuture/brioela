@@ -3,7 +3,7 @@ import { View, Text, Pressable, ScrollView, ActivityIndicator } from 'react-nati
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { BackButton } from '@/components/ui/back-button';
-import { useCreateCardOrder } from '@/hooks/cards/use-create-card-order';
+import { useCreateCardOrder } from '@/network/cards/use-create-card-order';
 import * as Burnt from 'burnt';
 import { useCreateCardFlowStore } from '@/stores/cards/use-create-card-flow-store';
 

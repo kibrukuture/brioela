@@ -3,7 +3,7 @@ import { ActivityIndicator, Text, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router, useLocalSearchParams } from 'expo-router';
-import { usePayRequest } from '@/hooks/banking/use-pay-request';
+import { usePayRequest } from '@/network/banking/use-pay-request';
 import { PayRequestPayoutDetailsForm } from '@/components/payments/pay-request-payout-details-form';
 import { BackButton } from '@/components/ui/back-button';
 import { atomicToDecimalString, parseAmountAtomic } from '@brioela/shared/utils/money';

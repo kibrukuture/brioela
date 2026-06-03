@@ -7,7 +7,7 @@ import { Controller, useForm, type SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@/lib/forms/zod-resolver';
 import { emailPaymentSchema } from '@/ui-schema';
 import * as Burnt from 'burnt';
-import { useCreatePayRequestByEmail } from '@/hooks/banking/use-create-pay-request-by-email';
+import { useCreatePayRequestByEmail } from '@/network/banking/use-create-pay-request-by-email';
 import { decimalStringToAtomicString } from '@brioela/shared/utils/money';
 import { PAYOUT_CURRENCIES } from '@brioela/shared/constants';
 import { AccountDetails } from '@/components/payments/payment';

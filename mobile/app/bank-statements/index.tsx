@@ -9,7 +9,7 @@ import { shareAsync } from 'expo-sharing';
 import * as Burnt from 'burnt';
 import dayjs from 'dayjs';
 import { BackButton } from '@/components/ui/back-button';
-import { useGenerateStatement } from '@/hooks/statements/use-generate-statement';
+import { useGenerateStatement } from '@/network/banking/use-generate-statement';
 import { useForm } from 'react-hook-form';
 import { generateStatementRequestSchema } from '@brioela/shared/validators/statement.validator';
 import { zodResolver } from '@/lib/forms/zod-resolver';

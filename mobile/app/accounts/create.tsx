@@ -10,7 +10,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { ArrowLeft } from 'lucide-react-native';
-import { useCreateVirtualAccount } from '@/hooks/banking/use-create-virtual-account';
+import { useCreateVirtualAccount } from '@/network/banking/use-create-virtual-account';
 import { CURRENCY_OPTIONS } from '@/lib/banking/currency-options';
 import { createVirtualAccountSchema } from '@brioela/shared/validators/banking.validator';
 

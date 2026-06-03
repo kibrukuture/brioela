@@ -13,8 +13,8 @@ import {
 } from '@brioela/shared/utils/money';
 import { BackButton } from '@/components/ui/back-button';
 import { NativeSegmentedTabs } from '@/components/ui/native-segmented-tabs';
-import { useCardSpendingLimits } from '@/hooks/cards/use-card-spending-limits';
-import { useUpdateCardSpendingLimits } from '@/hooks/cards/use-update-card-spending-limits';
+import { useCardSpendingLimits } from '@/network/cards/use-card-spending-limits';
+import { useUpdateCardSpendingLimits } from '@/network/cards/use-update-card-spending-limits';
 
 const PRESET_DECIMAL_VALUES = ['5', '100', '200', '500', '1000', '5000', '10000'] as const;
 

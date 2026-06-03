@@ -11,7 +11,7 @@ import * as WebBrowser from 'expo-web-browser';
 import { Feather } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
-import { useKycLink } from '@/hooks/banking/use-kyc-link';
+import { useKycLink } from '@/network/banking/use-kyc-link';
 
 interface KYCStep {
   id: number;

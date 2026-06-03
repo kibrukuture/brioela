@@ -3,10 +3,10 @@ import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Bell, Trash2 } from 'lucide-react-native';
 import { BackButton } from '@/components/ui/back-button';
-import { useInAppNotifications } from '@/hooks/in-app-notifications/use-in-app-notifications';
-import { useUpdateInAppNotification } from '@/hooks/in-app-notifications/use-update-in-app-notification';
-import { useMarkAllInAppNotificationsRead } from '@/hooks/in-app-notifications/use-mark-all-in-app-notifications-read';
-import { useInAppNotificationsWebsocket } from '@/hooks/in-app-notifications/use-in-app-notifications-websocket';
+import { useInAppNotifications } from '@/network/in-app-notifications/use-in-app-notifications';
+import { useUpdateInAppNotification } from '@/network/in-app-notifications/use-update-in-app-notification';
+import { useMarkAllInAppNotificationsRead } from '@/network/in-app-notifications/use-mark-all-in-app-notifications-read';
+import { useInAppNotificationsWebsocket } from '@/network/in-app-notifications/use-in-app-notifications-websocket';
 import { Swipeable } from 'react-native-gesture-handler';
 import { useRouter } from 'expo-router';
 

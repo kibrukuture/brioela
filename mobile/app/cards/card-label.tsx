@@ -7,8 +7,8 @@ import { Controller, useForm } from 'react-hook-form';
 import * as Burnt from 'burnt';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { BackButton } from '@/components/ui/back-button';
-import { useSetCardLabel } from '@/hooks/cards/use-set-card-label';
-import { useCards } from '@/hooks/cards/use-cards';
+import { useSetCardLabel } from '@/network/cards/use-set-card-label';
+import { useCards } from '@/network/cards/use-cards';
 
 export default function CardLabelScreen(): React.ReactElement {
   const router = useRouter();

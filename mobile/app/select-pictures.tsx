@@ -13,7 +13,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { Images, PaperPlaneTilt, X } from 'phosphor-react-native';
 import { now } from '@/lib/date-time-utils';
 import { optimizeImage } from '@/lib/files/optimize-image';
-import { usePostLabWork } from '@/hooks/lab-work/use-post-lab-work';
+import { usePostLabWork } from '@/network/lab-work/use-post-lab-work';
 import { HealthRecordType } from '@brioela/shared/drizzle/schema/health-records.schema';
 import * as Burnt from 'burnt';
 

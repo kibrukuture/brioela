@@ -1,7 +1,7 @@
 import { router } from 'expo-router';
 import React from 'react';
 import { Image, Pressable } from 'react-native';
-import { useUser } from '@/hooks/users/use-user';
+import { useUser } from '@/network/users/use-user';
 
 export default function HomeHeaderLeft() {
   const { data: user } = useUser();

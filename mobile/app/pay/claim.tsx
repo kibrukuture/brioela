@@ -2,7 +2,7 @@
 // import { ActivityIndicator, Text, View } from 'react-native';
 // import { SafeAreaView } from 'react-native-safe-area-context';
 // import { useLocalSearchParams, useRouter } from 'expo-router';
-// import { useClaimPayRequest } from '@/hooks/banking/use-claim-pay-request';
+// import { useClaimPayRequest } from '@/network/banking/use-claim-pay-request';
 // import { BackButton } from '@/components/ui/back-button';
 
 // export default function PayClaimPage() {
@@ -54,9 +54,9 @@ import { useEffect } from 'react';
 import { ActivityIndicator, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useClaimPayRequest } from '@/hooks/banking/use-claim-pay-request';
+import { useClaimPayRequest } from '@/network/banking/use-claim-pay-request';
 import { BackButton } from '@/components/ui/back-button';
-import { getPayRequest } from '@/services/api/banking/banking.api';
+import { getPayRequest } from '@/network/banking/banking.api';
 
 export default function PayClaimPage() {
   const router = useRouter();

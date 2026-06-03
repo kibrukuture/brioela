@@ -3,11 +3,11 @@ import { View, Text, TextInput, TouchableOpacity, ActivityIndicator, Alert } fro
 import { KeyboardAwareScrollView, KeyboardStickyView } from 'react-native-keyboard-controller';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { BackButton } from '@/components/ui/back-button';
-import { useUser } from '@/hooks/users/use-user';
+import { useUser } from '@/network/users/use-user';
 import { useRouter } from 'expo-router';
 import * as Burnt from 'burnt';
-import { useCheckSchnlTag } from '@/hooks/users/use-check-schnl-tag';
-import { useSetSchnlTag } from '@/hooks/users/use-update-user';
+import { useCheckSchnlTag } from '@/network/users/use-check-schnl-tag';
+import { useSetSchnlTag } from '@/network/users/use-update-user';
 import { validateSchnlTag } from '@brioela/shared/utils/schnl-tag';
 import { useDebounce } from 'use-debounce';
 import { TriangleAlert } from 'lucide-react-native';

@@ -23,8 +23,8 @@ import {
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Sheet, useSheetRef, BottomSheetView, BottomSheetScrollView } from '@/components/ui/sheet';
 import { NativeSegmentedTabs } from '@/components/ui/native-segmented-tabs';
-import { useVirtualAccounts } from '@/hooks/banking/use-virtual-accounts';
-import { useBalances } from '@/hooks/banking/use-balances';
+import { useVirtualAccounts } from '@/network/banking/use-virtual-accounts';
+import { useBalances } from '@/network/banking/use-balances';
 import { usePrivacyStore } from '@/stores/ui/use-privacy-store';
 import { getVirtualAccountSummary } from '@/lib/banking/get-virtual-account-summary';
 import { CURRENCY_OPTIONS } from '@/lib/banking/currency-options';
@@ -33,7 +33,7 @@ import * as Burnt from 'burnt';
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@/lib/forms/zod-resolver';
 import { removeVirtualAccountSchema } from '@brioela/shared/validators/banking.validator';
-import { useRemoveVirtualAccount } from '@/hooks/banking/use-remove-virtual-account';
+import { useRemoveVirtualAccount } from '@/network/banking/use-remove-virtual-account';
 
 const ActionButton: React.FC<{
   icon: React.ReactNode;

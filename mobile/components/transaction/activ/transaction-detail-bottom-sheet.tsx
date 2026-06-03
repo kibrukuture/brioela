@@ -20,16 +20,16 @@ import { DetailSection } from './detail-section';
 import type { BankingTransactionListItem } from '@brioela/shared/validators/banking-transaction.validator';
 import { formatBankingAmount } from '@brioela/shared/utils/format-banking-amount';
 import type { BankingTransactionCategory } from '@brioela/shared/validators/banking-transaction-category.validator';
-import { useGetBankingTransactionReceipt } from '@/hooks/transactions/use-get-banking-transaction-receipt';
-import { useEmailBankingTransactionReceipt } from '@/hooks/transactions/use-email-banking-transaction-receipt';
-import { useSetBankingTransactionCategory } from '@/hooks/transactions/use-set-banking-transaction-category';
-import { useSetBankingTransactionNote } from '@/hooks/transactions/use-set-banking-transaction-note';
-import { useUploadBankingTransactionAttachment } from '@/hooks/transactions/use-upload-banking-transaction-attachment';
-import { useDeleteBankingTransactionAttachment } from '@/hooks/transactions/use-delete-banking-transaction-attachment';
+import { useGetBankingTransactionReceipt } from '@/network/banking/use-get-banking-transaction-receipt';
+import { useEmailBankingTransactionReceipt } from '@/network/banking/use-email-banking-transaction-receipt';
+import { useSetBankingTransactionCategory } from '@/network/banking/use-set-banking-transaction-category';
+import { useSetBankingTransactionNote } from '@/network/banking/use-set-banking-transaction-note';
+import { useUploadBankingTransactionAttachment } from '@/network/banking/use-upload-banking-transaction-attachment';
+import { useDeleteBankingTransactionAttachment } from '@/network/banking/use-delete-banking-transaction-attachment';
 import { TransactionCategorySheet } from '@/components/transaction/activ/transaction-category-sheet';
-import { usePayRequest } from '@/hooks/banking/use-pay-request';
-import { useCancelPayRequest } from '@/hooks/banking/use-cancel-pay-request';
-import { useUser } from '@/hooks/users/use-user';
+import { usePayRequest } from '@/network/banking/use-pay-request';
+import { useCancelPayRequest } from '@/network/banking/use-cancel-pay-request';
+import { useUser } from '@/network/users/use-user';
 
 const toSentenceCase = (input: string) => {
   const trimmed = input.trim();

@@ -3,8 +3,8 @@ import { View, Text, ActivityIndicator, Pressable, ScrollView } from 'react-nati
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { BackButton } from '@/components/ui/back-button';
-import { useCards } from '@/hooks/cards/use-cards';
-import { useCardOrder } from '@/hooks/cards/use-card-order';
+import { useCards } from '@/network/cards/use-cards';
+import { useCardOrder } from '@/network/cards/use-card-order';
 import { useCreateCardFlowStore } from '@/stores/cards/use-create-card-flow-store';
 
 export default function CreateCardProcessingScreen() {

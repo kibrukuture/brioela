@@ -9,7 +9,7 @@ import {
   TrendDown,
   Bank,
 } from 'phosphor-react-native';
-import { useTransactions } from '@/hooks/transactions/use-transactions';
+import { useTransactions } from '@/network/banking/use-transactions';
 import type { BankingTransactionListItem } from '@brioela/shared/validators/banking-transaction.validator';
 import { FilterChip } from '@/components/transaction/activ/filter-chip';
 import { SearchHeader } from '@/components/transaction/activ/search-header';

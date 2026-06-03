@@ -2,8 +2,8 @@ import React from 'react';
 import { ActivityIndicator, ScrollView, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { BackButton } from '@/components/ui/back-button';
-import { useUser } from '@/hooks/users/use-user';
-import { useCustomerAddress } from '@/hooks/banking/use-customer-address';
+import { useUser } from '@/network/users/use-user';
+import { useCustomerAddress } from '@/network/banking/use-customer-address';
 import { Empty } from 'phosphor-react-native';
 
 export default function PersonalDetailsScreen(): React.JSX.Element {

@@ -1,6 +1,6 @@
 import type React from 'react';
 import { View, ActivityIndicator } from 'react-native';
-import { useUser } from '@/hooks/users/use-user';
+import { useUser } from '@/network/users/use-user';
 import { LegalNameForm } from '@/components/kyc/legal-name-form';
 import { VerificationStart } from '@/components/kyc/verification-start';
 

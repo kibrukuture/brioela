@@ -2,8 +2,8 @@ import React from 'react';
 import { ActivityIndicator, Alert, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { BackButton } from '@/components/ui/back-button';
-import { useUser } from '@/hooks/users/use-user';
-import { useDeleteUser } from '@/hooks/users/use-delete-user';
+import { useUser } from '@/network/users/use-user';
+import { useDeleteUser } from '@/network/users/use-delete-user';
 import * as Burnt from 'burnt';
 import { useAuthStore } from '@/stores/account/use-auth-store';
 

@@ -19,12 +19,12 @@ import { PinBottomSheet } from '@/components/cards/pin-bottom-sheet';
 import { CardDetailsBottomSheet } from '@/components/cards/card-details-bottom-sheet';
 import { getManageCardItemIds } from '@/components/cards/get-manage-card-item-ids';
 import { DeleteCardBottomSheet } from '@/components/cards/delete-card-bottom-sheet';
-import { useCards } from '@/hooks/cards/use-cards';
-import { useFreezeCard } from '@/hooks/cards/use-freeze-card';
-import { useUnfreezeCard } from '@/hooks/cards/use-unfreeze-card';
-import { useCancelCard } from '@/hooks/cards/use-cancel-card';
-import { useAppleWalletProvisioning } from '@/hooks/cards/use-apple-wallet-provisioning';
-import { useGooglePayProvisioning } from '@/hooks/cards/use-google-pay-provisioning';
+import { useCards } from '@/network/cards/use-cards';
+import { useFreezeCard } from '@/network/cards/use-freeze-card';
+import { useUnfreezeCard } from '@/network/cards/use-unfreeze-card';
+import { useCancelCard } from '@/network/cards/use-cancel-card';
+import { useAppleWalletProvisioning } from '@/network/cards/use-apple-wallet-provisioning';
+import { useGooglePayProvisioning } from '@/network/cards/use-google-pay-provisioning';
 import { mapCardsToCardData } from '@/lib/cards/map-cards-to-card-data';
 
 export default function CardsScreen() {

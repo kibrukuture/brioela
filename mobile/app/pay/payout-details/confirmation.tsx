@@ -3,7 +3,7 @@ import { ActivityIndicator, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router, useLocalSearchParams } from 'expo-router';
 import { CheckCircle2, XCircle } from 'lucide-react-native';
-import { usePayRequest } from '@/hooks/banking/use-pay-request';
+import { usePayRequest } from '@/network/banking/use-pay-request';
 import { atomicToDecimalString, parseAmountAtomic } from '@brioela/shared/utils/money';
 
 export default function PayRequestPayoutDetailsConfirmationPage() {

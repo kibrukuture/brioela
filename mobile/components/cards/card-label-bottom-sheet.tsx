@@ -4,7 +4,7 @@ import { Controller, useForm } from 'react-hook-form';
 import * as Burnt from 'burnt';
 import { Sheet, useManagedSheetRef, BottomSheetView } from '@/components/ui/sheet';
 import type { CardLabelBottomSheetProps } from '@/components/cards/types';
-import { useSetCardLabel } from '@/hooks/cards/use-set-card-label';
+import { useSetCardLabel } from '@/network/cards/use-set-card-label';
 
 export const CardLabelBottomSheet: React.FC<CardLabelBottomSheetProps> = ({
   isVisible,

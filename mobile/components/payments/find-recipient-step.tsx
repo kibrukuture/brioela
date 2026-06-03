@@ -7,7 +7,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@/lib/forms/zod-resolver';
 import { findRecipientSearchSchema } from '@/ui-schema';
 import { useDebounce } from 'use-debounce';
-import { useSearchUsers } from '@/hooks/users/use-search-users';
+import { useSearchUsers } from '@/network/users/use-search-users';
 import { FindRecipientMethodsList } from '@/components/payments/find-recipient-methods-list';
 import { FindOnSchnlScreen } from '@/components/payments/find-on-schnl-screen';
 import { FindOnSchnlSearchModal } from '@/components/payments/find-on-schnl-search-modal';

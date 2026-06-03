@@ -15,7 +15,7 @@ import {
 } from '@/components/camera';
 import { useCapturedPhotosStore } from '@/stores/hardware/use-captured-photos-store';
 import ImageViewer from '@/components/camera/image-viewer';
-import { usePostLabWork } from '@/hooks/lab-work/use-post-lab-work';
+import { usePostLabWork } from '@/network/lab-work/use-post-lab-work';
 import { HealthRecordType } from '@brioela/shared/drizzle/schema/health-records.schema';
 import * as Burnt from 'burnt';
 import { optimizeImage } from '@/lib/files/optimize-image';

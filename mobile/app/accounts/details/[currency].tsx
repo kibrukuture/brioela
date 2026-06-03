@@ -6,7 +6,7 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import { X, Copy, ChevronRight, CheckCircle } from 'lucide-react-native';
 import * as Clipboard from 'expo-clipboard';
 import * as Haptics from 'expo-haptics';
-import { useVirtualAccounts } from '@/hooks/banking/use-virtual-accounts';
+import { useVirtualAccounts } from '@/network/banking/use-virtual-accounts';
 import {
   getVirtualAccountDetails,
   formatBankingAccountShareMessage,

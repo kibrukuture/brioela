@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { BackButton } from '@/components/ui/back-button';
 import { useRecipientDraftStore } from '@/stores/recipients/use-recipient-draft-store';
-import { useCreateRecipient } from '@/hooks/recipients/use-create-recipient';
+import { useCreateRecipient } from '@/network/banking/use-create-recipient';
 import * as Burnt from 'burnt';
 
 export default function VerifyRecipientScreen() {

@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { CardControlsScreen } from '@/components/cards/card-controls-screen';
-import { useCardControls } from '@/hooks/cards/use-card-controls';
-import { useUpdateCardControls } from '@/hooks/cards/use-update-card-controls';
+import { useCardControls } from '@/network/card-controls/use-card-controls';
+import { useUpdateCardControls } from '@/network/card-controls/use-update-card-controls';
 import type { CardControlSetting } from '@/components/cards/types';
 import type {
   CardControlsState,

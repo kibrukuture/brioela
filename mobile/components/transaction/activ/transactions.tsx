@@ -10,7 +10,7 @@ import {
   Bank,
   IconProps,
 } from 'phosphor-react-native';
-import { useTransactions } from '@/hooks/transactions/use-transactions';
+import { useTransactions } from '@/network/banking/use-transactions';
 import type { BankingTransactionListItem } from '@brioela/shared/validators/banking-transaction.validator';
 import { TransactionGroup } from '@/components/transaction/activ/transaction-group';
 import { FilterChip } from '@/components/transaction/activ/filter-chip';

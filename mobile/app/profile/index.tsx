@@ -32,13 +32,13 @@ import {
 import { router } from 'expo-router';
 import { useAuthStore } from '@/stores/account/use-auth-store';
 import { BackButton } from '@/components/ui/back-button';
-import { useUser } from '@/hooks/users/use-user';
+import { useUser } from '@/network/users/use-user';
 import React from 'react';
 import { SealCheck } from 'phosphor-react-native';
 import { Sheet, useSheetRef } from '@/components/ui/sheet';
 import * as ImagePicker from 'expo-image-picker';
 import { optimizeImage } from '@/lib/files/optimize-image';
-import { useUpdateProfilePicture } from '@/hooks/users/use-update-profile-picture';
+import { useUpdateProfilePicture } from '@/network/users/use-update-profile-picture';
 import { useCreateSupportChat } from '@/hooks/support/use-create-support-chat';
 import { MenuSectionView } from '@/components/profile/menu-section-view';
 import { CopyButton } from '@/components/profile/copy-button';

@@ -14,7 +14,7 @@ import {
   useSearchHeaderStore,
 } from '@/stores/ui/use-search-header-store';
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
-import { useSearch } from '@/hooks/search/use-search';
+import { useSearch } from '@/network/search/use-search';
 import { useDebounce } from 'use-debounce';
 import type { UserSearchResult } from '@brioela/shared/validators/user-search.validator';
 

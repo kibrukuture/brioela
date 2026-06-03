@@ -11,7 +11,7 @@ import { KeyboardAwareScrollView, KeyboardStickyView } from 'react-native-keyboa
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { TriangleAlert, ChevronLeft } from 'lucide-react-native';
 import { router } from 'expo-router';
-import { useKycLegalNameAndWallet } from '@/hooks/users/use-kyc-legal-name-and-wallet';
+import { useKycLegalNameAndWallet } from '@/network/users/use-kyc-legal-name-and-wallet';
 import { kycLegalNameSchema } from '@brioela/shared/validators/user.validator';
 import { PLACEHOLDERS } from '@brioela/shared/constants';
 

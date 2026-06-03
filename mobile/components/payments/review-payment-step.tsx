@@ -5,8 +5,8 @@ import { formatIbanForDisplay } from '@brioela/shared/lib';
 import { usePaymentFlowStore } from '@/stores/payments/use-payment-flow-store';
 import type { CreateOutgoingPayoutInput } from '@brioela/shared/validators/outgoing-payout.validator';
 import { decimalStringToAtomicString } from '@brioela/shared/utils/money';
-import { useCreateOutgoingPayout } from '@/hooks/banking/use-create-outgoing-payout';
-import { usePrecheckOutgoingPayout } from '@/hooks/banking/use-precheck-outgoing-payout';
+import { useCreateOutgoingPayout } from '@/network/banking/use-create-outgoing-payout';
+import { usePrecheckOutgoingPayout } from '@/network/banking/use-precheck-outgoing-payout';
 import * as Burnt from 'burnt';
 
 interface ReviewPaymentStepProps {

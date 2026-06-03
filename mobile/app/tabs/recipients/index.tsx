@@ -6,7 +6,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { UsersThree } from 'phosphor-react-native';
 
 import type { BankingRecipientListItem } from '@brioela/shared/validators/banking-recipient.validator';
-import { useRecipients } from '@/hooks/recipients/use-recipients';
+import { useRecipients } from '@/network/banking/use-recipients';
 import { RecentsGrid } from '@/components/recipients/recents-grid';
 import { RecipientListItem } from '@/components/recipients/recipient-list-item';
 import { RecipientBottomSheet } from '@/components/recipients/recipient-bottom-sheet';

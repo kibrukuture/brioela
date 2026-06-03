@@ -29,8 +29,8 @@ import * as Clipboard from 'expo-clipboard';
 import * as FileSystem from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
 import * as MediaLibrary from 'expo-media-library';
-import { useUser } from '@/hooks/users/use-user';
-import { useUpdatePrivacy } from '@/hooks/users/use-update-user';
+import { useUser } from '@/network/users/use-user';
+import { useUpdatePrivacy } from '@/network/users/use-update-user';
 
 export default function SchnltagScreen(): React.JSX.Element {
   const router = useRouter();

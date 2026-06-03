@@ -5,7 +5,7 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import {
   useCommunicationCode,
   useUpdateCommunicationCode,
-} from '@/hooks/communication-codes/use-communication-code';
+} from '@/network/communication-codes/use-communication-code';
 import * as Burnt from 'burnt';
 import { router } from 'expo-router';
 import { Controller, useForm } from 'react-hook-form';

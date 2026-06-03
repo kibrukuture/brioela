@@ -4,8 +4,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import * as ExpoLinking from 'expo-linking';
 import { ArrowLeft, Link as LinkIcon } from 'lucide-react-native';
-import { useInAppNotifications } from '@/hooks/in-app-notifications/use-in-app-notifications';
-import { useUpdateInAppNotification } from '@/hooks/in-app-notifications/use-update-in-app-notification';
+import { useInAppNotifications } from '@/network/in-app-notifications/use-in-app-notifications';
+import { useUpdateInAppNotification } from '@/network/in-app-notifications/use-update-in-app-notification';
 
 export default function InAppNotificationDetailsScreen(): React.JSX.Element {
   const router = useRouter();

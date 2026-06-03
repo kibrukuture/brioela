@@ -8,9 +8,9 @@ import { z } from '@brioela/shared/zod';
 import { zodResolver } from '@/lib/forms/zod-resolver';
 import { BackButton } from '@/components/ui/back-button';
 import { useCreateCardFlowStore } from '@/stores/cards/use-create-card-flow-store';
-import { useLocationSearch } from '@/hooks/maps/use-location-search';
+import { useLocationSearch } from '@/network/maps/use-location-search';
 import { useDebounce } from 'use-debounce';
-import { useCustomerAddress } from '@/hooks/banking/use-customer-address';
+import { useCustomerAddress } from '@/network/banking/use-customer-address';
 import type { CustomerAddressResponse } from '@brioela/shared/validators/customer-address.validator';
 
 type CreateCardAddressFormProps = {
