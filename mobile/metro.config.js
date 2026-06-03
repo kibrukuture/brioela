@@ -2,7 +2,8 @@
 
 const { getDefaultConfig } = require('expo/metro-config');
 const path = require('path');
-const { withNativewind } = require('nativewind/metro');
+const { withNativeWind } = require('nativewind/metro');
+const { resolve: metroResolve } = require('metro-resolver');
 
 /** @type {import('expo/metro-config').MetroConfig} */
 const config = getDefaultConfig(__dirname); // ✅ This works in CommonJS
@@ -11,7 +12,7 @@ config.watchFolders = [path.resolve(__dirname, '../shared')];
 
 //
 
-const metroConfig = withNativewind(config);
+const metroConfig = withNativeWind(config, { input: './global.css', inlineRem: 16 });
 
 metroConfig.resolver.unstable_enablePackageExports = true;
 metroConfig.resolver.unstable_conditionNames = ['react-native', 'browser', 'require', 'node'];
@@ -24,6 +25,42 @@ metroConfig.resolver.extraNodeModules = {
   'drizzle-orm': path.resolve(__dirname, 'node_modules/drizzle-orm'),
   '@tolbel/align': path.resolve(__dirname, 'node_modules/@tolbel/align'),
   validator: path.resolve(__dirname, 'node_modules/validator'),
+};
+
+const asyncRequireShim = require.resolve('./shims/async-require-shim.js');
+const ASYNC_REQUIRE_ALIASES = new Set([
+  '@expo/metro-config/build/async-require.js',
+  '@expo/metro-config/build/async-require',
+  '@expo/metro-config/async-require.js',
+  '@expo/metro-config/async-require',
+]);
+
+const matchesAsyncRequire = (request) => {
+  if (!request) return false;
+  if (ASYNC_REQUIRE_ALIASES.has(request)) return true;
+  return (
+    request.includes('@expo/metro-config') &&
+    request.includes('async-require') &&
+    (request.endsWith('.js') || !request.includes('.'))
+  );
+};
+
+const defaultResolveRequest = metroConfig.resolver.resolveRequest;
+metroConfig.resolver.resolveRequest = (context, moduleName, platform) => {
+  // ! FUCKING WASTED 24 HOURS ON THIS ERORR. COME BACK AND WHAT THE FAILURE WAS
+  // !  DUE TO .
+  if (!context.dev && matchesAsyncRequire(moduleName)) {
+    return {
+      type: 'sourceFile',
+      filePath: asyncRequireShim,
+    };
+  }
+
+  if (typeof defaultResolveRequest === 'function') {
+    return defaultResolveRequest(context, moduleName, platform);
+  }
+
+  return metroResolve(context, moduleName, platform);
 };
 
 module.exports = metroConfig;
