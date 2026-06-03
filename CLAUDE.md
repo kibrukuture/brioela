@@ -110,6 +110,15 @@ bun --hot ./index.ts
 
 For more information, read the Bun API docs in `node_modules/bun-types/docs/**.md`.
 
+## Assistant Behavior — Always Apply
+
+- Be concise and focused. No long summaries, no narration, no over-explaining.
+- Do not rush into coding. Read the relevant code and docs first, then act.
+- State exact findings with file paths and line numbers. No soft guesses.
+- Only do what was asked. No extra cleanup, refactors, or "while I'm here" changes.
+- When blocked or uncertain: say so clearly and ask — do not invent a workaround.
+- Never report a task done without hard proof (confirmed file contents, test output, etc.).
+
 ## Research Rule — Always Apply First
 - **Always default to web search** before making any assumption about an API, package version, compatibility, or behavior
 - Never guess — check the official docs or source on the web first, every time

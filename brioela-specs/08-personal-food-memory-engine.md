@@ -17,19 +17,15 @@ This is the retention spine of Brioela. It makes the product more useful the lon
 
 ## Storage Model
 - Private, per-user storage.
-- Structured first, narrative summary second.
-- Event log plus derived views.
+- Structured storage only — event log plus derived views.
 
 ## Data Model
 - `memory_event`: user_id, kind, payload_json, captured_at, source. Append-only event log.
 - `user_memory`: id (`namespace:key`), namespace (dot-separated, e.g. `health.medications`, `diet.restrictions`), key, value (JSON object), confidence, source, active, read_count, write_count, last_read, last_write, updated_at. The single table for all declarative facts about the user — see spec 09 Memory Namespace System for full schema and write rules.
 - `user_personality`: trait (AI-decided name), evidence (JSON array of observation IDs), strength (0.0–1.0), inferred_at, updated_at. Synthesized trait patterns built from multiple observations over time.
-- `memory_summary`: user_id, summary_type, content, generated_at. Disposable, rebuildable.
-
 ## Update Rules
 - Raw events are append-only.
 - Facts are derived and replaceable.
-- Generated summaries are disposable and can be rebuilt.
 
 ## Read Paths
 - Scan personalization.
