@@ -14,7 +14,7 @@ while [ $i -lt $LEN ]; do
         if [[ "$dest" == id=* ]]; then
             UDID="${dest#id=}"
             if xcrun simctl list devices 2>/dev/null | grep -q "$UDID"; then
-                ARGS+=("-destination" "generic/platform=iOS Simulator" "ARCHS=arm64")
+                ARGS+=("-destination" "generic/platform=iOS Simulator")
                 i=$((i+2))
                 continue
             fi
