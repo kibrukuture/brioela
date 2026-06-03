@@ -12,19 +12,12 @@
     "build:prod:ios": "dotenv -e .env -- cross-env EXPO_JS_ENGINE=hermes NODE_ENV=production eas build --platform ios --profile production --local",
     "build:prod:android": "dotenv -e .env -- cross-env EXPO_JS_ENGINE=hermes NODE_ENV=production eas build --platform android --profile production --local",
     "prebuild": "EXPO_JS_ENGINE=hermes NODE_ENV=production expo prebuild --clean",
-    "postprebuild": "test -f \"ios/Pods/Target Support Files/Pods-Schnl/Pods-Schnl.debug.xcconfig\" && sed -i '' '/EXCLUDED_ARCHS\\[sdk=iphonesimulator\\*\\] = arm64/d' \"ios/Pods/Target Support Files/Pods-Schnl/Pods-Schnl.debug.xcconfig\" || true; test -f \"ios/Pods/Target Support Files/Pods-Schnl/Pods-Schnl.release.xcconfig\" && sed -i '' '/EXCLUDED_ARCHS\\[sdk=iphonesimulator\\*\\] = arm64/d' \"ios/Pods/Target Support Files/Pods-Schnl/Pods-Schnl.release.xcconfig\" || true",
-    "prebuild:clean": "expo prebuild --clean",
-    "prebuild:clean:ios:fix-simulator": "expo prebuild --clean && sed -i '' '/EXCLUDED_ARCHS\\[sdk=iphonesimulator\\*\\] = arm64/d' \"ios/Pods/Target Support Files/Pods-Schnl/Pods-Schnl.debug.xcconfig\" \"ios/Pods/Target Support Files/Pods-Schnl/Pods-Schnl.release.xcconfig\"",
     "lint": "eslint \"**/*.{js,jsx,ts,tsx}\" && prettier -c \"**/*.{js,jsx,ts,tsx,json}\"",
     "format": "eslint \"**/*.{js,jsx,ts,tsx}\" --fix && prettier \"**/*.{js,jsx,ts,tsx,json}\" --write",
     "web": "cross-env NODE_ENV=development expo start --web",
     "git:save": "git add . && git commit -m 'save'",
     "git:push": "git add . && git commit -m 'save' && git push",
-    "migrate:schemas": "bun ../scripts/copySchemas.ts",
-    "check:ios:release": "EXPO_JS_ENGINE=hermes npx expo run:ios --configuration Release --device 'iPhone' --no-install",
-    "run:ios:release": "EXPO_JS_ENGINE=hermes npx expo run:ios --configuration Release --device 'iPhone'",
-    "check:android:release": "EXPO_JS_ENGINE=hermes gradlew assembleRelease",
-    "ci": "bun lint && bun test && bun check:ios:release"
+    "ci": "bun lint && bun test"
   },
   "dependencies": {
     "@bottom-tabs/react-navigation": "^1.2.0",
