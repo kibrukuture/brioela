@@ -20,7 +20,7 @@ export const bankingVirtualAccounts = brioelaSchema
       bankAddress: text("bank_address"),
       bankingRails: BankingRail("banking_rails")
         .array()
-        .default(sql`'{}'::"schnl"."banking_rail"[]`),
+        .default(sql`'{}'::"brioela"."banking_rail"[]`),
 
       providerId: text("provider_id").notNull(),
       currency: BankingCurrency("currency").notNull(),

@@ -4,14 +4,14 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "db:generate": "drizzle-kit generate",
-    "db:migrate": "drizzle-kit migrate",
+    "db:gen": "drizzle-kit generate",
+    "db:mig": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
     "db:drop": "drizzle-kit drop",
     "db:check": "drizzle-kit check",
     "db:up": "drizzle-kit up",
-    "db:migrate:run": "tsx drizzle/migrate.ts"
+    "db:mig:run": "tsx drizzle/migrate.ts"
   },
   "devDependencies": {
     "@types/bun": "latest"
