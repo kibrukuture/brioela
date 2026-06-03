@@ -28,7 +28,7 @@
 
     "baseUrl": ".",
     "paths": {
-      "@schnl/shared/*": ["./*"]
+      "@brioela/shared/*": ["./*"]
     }
   }
 }

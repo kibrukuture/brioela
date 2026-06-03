@@ -6,7 +6,7 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./*"],
-      "@schnl/shared/*": ["../shared/*"],
+      "@brioela/shared/*": ["../shared/*"],
       "zod/v4": ["../shared/zod/v4"]
     }
   },
