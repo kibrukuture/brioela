@@ -1,8 +1,8 @@
 import { AppContext } from '@/index';
-import { CheckSchnlTagResponse, checkSchnlTagSchema } from '@schnl/shared/validators/user.validator';
-import { eq } from '@schnl/shared/drizzle';
+import { CheckSchnlTagResponse, checkSchnlTagSchema } from '@brioela/shared/validators/user.validator';
+import { eq } from '@brioela/shared/drizzle';
 import { getDb } from '@/core/database/client';
-import { users } from '@schnl/shared/drizzle/schema/user.schema';
+import { users } from '@brioela/shared/drizzle/schema/user.schema';
 import { assertSchnlTagAllowed } from '@/api/users/helpers';
 import { HTTPException } from 'hono/http-exception';
 
