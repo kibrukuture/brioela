@@ -1,7 +1,7 @@
 {
-	"name": "schnl-api",
+	"name": "brioela",
 	"main": "src/index.ts",
-	"compatibility_date": "2025-11-30",
+	"compatibility_date": "2026-06-03",
 	"compatibility_flags": ["nodejs_compat", "nodejs_compat_populate_process_env"],
 	"observability": {
 		"logs": {
@@ -20,8 +20,8 @@
 	// Only serve on api.schnl.com
 	"routes": [
 		{
-			"pattern": "api.schnl.com/*",
-			"zone_name": "schnl.com"
+			"pattern": "api.brioela.com/*",
+			"zone_name": "brioela.com"
 		}
 	]
 }
