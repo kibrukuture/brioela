@@ -70,7 +70,6 @@ export function TransferPurposeSheet({
         <View className="mt-4 flex-1">
           <FlashList
             data={filtered}
-            estimatedItemSize={52}
             keyExtractor={(item) => item}
             renderItem={({ item }) => {
               const isSelected = item === value;

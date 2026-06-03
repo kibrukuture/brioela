@@ -5,6 +5,7 @@ import {
   BottomSheetBackdrop,
   BottomSheetBackdropProps,
   BottomSheetModal,
+  SNAP_POINT_TYPE,
 } from '@gorhom/bottom-sheet';
 import * as React from 'react';
 import { useIsomorphicLayoutEffect } from 'usehooks-ts';
@@ -75,11 +76,11 @@ const Sheet = React.forwardRef<BottomSheetModal, SheetProps>(
     );
 
     const handleSheetChanges = React.useCallback(
-      (index: number) => {
+      (index: number, position: number, type: SNAP_POINT_TYPE) => {
         setSheetVisible(index >= 0);
 
         if (onChange) {
-          onChange(index);
+          onChange(index, position, type);
         }
       },
       [onChange, setSheetVisible]

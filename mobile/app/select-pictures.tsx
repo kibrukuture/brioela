@@ -14,7 +14,6 @@ import { Images, PaperPlaneTilt, X } from 'phosphor-react-native';
 import { now } from '@/lib/date-time-utils';
 import { optimizeImage } from '@/lib/files/optimize-image';
 import { usePostLabWork } from '@/network/lab-work/use-post-lab-work';
-import { HealthRecordType } from '@brioela/shared/drizzle/schema/health-records.schema';
 import * as Burnt from 'burnt';
 
 interface SelectedImage {
@@ -76,7 +75,7 @@ export default function SelectPicturesScreen() {
           type: original.mimeType || 'image/jpeg',
         } as unknown as Blob);
       });
-      const recordType: (typeof HealthRecordType.enumValues)[number] = 'lab_work';
+      const recordType = 'lab_work' as const;
       formData.append('recordType', recordType);
       formData.append('sourceName', 'Gallery');
       // formData.append('notes', 'Imported from device gallery');

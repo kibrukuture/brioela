@@ -274,7 +274,7 @@ export const Onboarding = () => {
             onPress={simulatePress}
             style={{ borderCurve: 'continuous' }}
             className="mx-20 mt-3 h-[40px] flex-row items-center justify-center gap-2 rounded-full bg-white">
-            <AntDesign name="apple1" size={24} color="black" />
+            <AntDesign name="apple" size={24} color="black" />
             <Text className="text-black">Continue with Apple</Text>
           </Pressable>
         </Animated.View>

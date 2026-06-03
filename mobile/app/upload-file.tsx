@@ -4,7 +4,6 @@ import { useNavigation } from 'expo-router';
 import * as DocumentPicker from 'expo-document-picker';
 import { Upload, PaperPlaneTilt, File } from 'phosphor-react-native';
 import { usePostLabWork } from '@/network/lab-work/use-post-lab-work';
-import { HealthRecordType } from '@brioela/shared/drizzle/schema/health-records.schema';
 import * as Burnt from 'burnt';
 export default function UploadFileScreen() {
   const navigation = useNavigation();
@@ -49,7 +48,7 @@ export default function UploadFileScreen() {
         type: mimeType,
       } as unknown as Blob);
 
-      const recordType: (typeof HealthRecordType.enumValues)[number] = 'lab_work';
+      const recordType = 'lab_work' as const;
       formData.append('recordType', recordType);
       formData.append('sourceName', 'File');
       // formData.append('notes', 'Imported from device gallery');

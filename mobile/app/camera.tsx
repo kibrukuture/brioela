@@ -4,7 +4,7 @@ import { View, Text, Pressable, StyleSheet, ActivityIndicator, Alert } from 'rea
 import { useNavigation } from 'expo-router';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated from 'react-native-reanimated';
-import * as FileSystem from 'expo-file-system';
+import { File, Directory, Paths } from 'expo-file-system';
 import useCameraManager from '@/features/camera/hooks/use-camera-manager';
 import useCameraAnimations from '@/features/camera/hooks/use-camera-animations';
 import {
@@ -16,11 +16,10 @@ import {
 import { useCapturedPhotosStore } from '@/stores/hardware/use-captured-photos-store';
 import ImageViewer from '@/features/camera/components/image-viewer';
 import { usePostLabWork } from '@/network/lab-work/use-post-lab-work';
-import { HealthRecordType } from '@brioela/shared/drizzle/schema/health-records.schema';
 import * as Burnt from 'burnt';
 import { optimizeImage } from '@/lib/files/optimize-image';
 
-const PERMANENT_IMAGE_DIRECTORY = FileSystem.documentDirectory + 'lab-work-photos/';
+const PERMANENT_IMAGE_DIRECTORY = new Directory(Paths.document, 'lab-work-photos');
 
 export default function AddPhotosScreen() {
   const navigation = useNavigation();
@@ -45,9 +44,8 @@ export default function AddPhotosScreen() {
     // On mount, we initialize our session state from the global store.
     // We do not pass permanent URIs to any hook.
     const initializeSession = async () => {
-      const dirInfo = await FileSystem.getInfoAsync(PERMANENT_IMAGE_DIRECTORY);
-      if (!dirInfo.exists) {
-        await FileSystem.makeDirectoryAsync(PERMANENT_IMAGE_DIRECTORY, { intermediates: true });
+      if (!PERMANENT_IMAGE_DIRECTORY.exists) {
+        PERMANENT_IMAGE_DIRECTORY.create();
       }
       const existingPhotos = useCapturedPhotosStore.getState().photos;
       setSessionImages(existingPhotos);
@@ -79,7 +77,7 @@ export default function AddPhotosScreen() {
           name: `image_${idx + 1}.jpg`,
           type: 'image/jpeg' } as unknown as Blob);
       });
-      const recordType: (typeof HealthRecordType.enumValues)[number] = 'lab_work';
+      const recordType = 'lab_work' as const;
       formData.append('recordType', recordType);
       formData.append('sourceName', 'Camera');
       // formData.append('notes', 'Imported from device gallery');
@@ -107,9 +105,9 @@ export default function AddPhotosScreen() {
       if (!imageToRemove) return;
 
       try {
-        const fileInfo = await FileSystem.getInfoAsync(imageToRemove.uri);
-        if (fileInfo.exists) {
-          await FileSystem.deleteAsync(imageToRemove.uri);
+        const file = new File(imageToRemove.uri);
+        if (file.exists) {
+          file.delete();
         }
       } catch (error) {
         console.error('Failed to delete file:', error);

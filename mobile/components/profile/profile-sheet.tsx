@@ -37,7 +37,7 @@ export default function ProfileSheet() {
         <Pressable
           onPress={() => {
             dismissSheet();
-            router.push('/tabs/payments');
+            // TODO: Brioela payments
           }}
           className={btnClass}>
           <View className="flex-row gap-4">

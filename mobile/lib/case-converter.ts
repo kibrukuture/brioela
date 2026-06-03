@@ -32,7 +32,7 @@ export function convertKeysToCamelCase<T extends object>(obj: T): KeysToCamelCas
     return Object.keys(obj).reduce((acc, key) => {
       const camelKey = camelCase(key);
       const value = (obj as Record<string, unknown>)[key];
-      (acc as Record<string, unknown>)[camelKey] = convertKeysToCamelCase(value);
+      (acc as Record<string, unknown>)[camelKey] = typeof value === 'object' && value !== null ? convertKeysToCamelCase(value as object) : value;
       return acc;
     }, {}) as KeysToCamelCase<T>;
   }

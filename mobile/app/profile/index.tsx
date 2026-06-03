@@ -237,7 +237,7 @@ export default function ProfileScreen() {
           title: 'Manage wallet',
           subtitle: 'View addresses and wallet options',
           onPress: () => {
-            router.push({ pathname: '/wallets' });
+            // TODO: Brioela wallet navigation
           },
         },
         {

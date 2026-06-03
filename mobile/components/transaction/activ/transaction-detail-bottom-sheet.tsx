@@ -11,7 +11,7 @@ import {
 import { Sheet, useSheetRef, BottomSheetView } from '@/components/ui/sheet';
 import * as Burnt from 'burnt';
 import * as DocumentPicker from 'expo-document-picker';
-import * as FileSystem from 'expo-file-system';
+import { File, Directory, Paths } from 'expo-file-system';
 import { shareAsync } from 'expo-sharing';
 import * as WebBrowser from 'expo-web-browser';
 import { X, FileText, EnvelopeSimple, Plus, UploadSimple } from 'phosphor-react-native';
@@ -157,12 +157,11 @@ export function TransactionDetailBottomSheet({
       });
 
       const fileName = `receipt-${localTransaction.id}.pdf`;
-      const fileUri = (FileSystem.documentDirectory ?? '') + fileName;
+      const file = new File(Paths.document, fileName);
+      file.create();
+      file.write(base64, { encoding: 'base64' });
 
-      await FileSystem.writeAsStringAsync(fileUri, base64, {
-        encoding: FileSystem.EncodingType.Base64 });
-
-      await shareAsync(fileUri, {
+      await shareAsync(file.uri, {
         mimeType: 'application/pdf',
         dialogTitle: 'Share Receipt' });
     } catch (error) {

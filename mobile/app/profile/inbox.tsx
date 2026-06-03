@@ -7,7 +7,7 @@ import { useInAppNotifications } from '@/network/in-app-notifications/use-in-app
 import { useUpdateInAppNotification } from '@/network/in-app-notifications/use-update-in-app-notification';
 import { useMarkAllInAppNotificationsRead } from '@/network/in-app-notifications/use-mark-all-in-app-notifications-read';
 import { useInAppNotificationsWebsocket } from '@/network/in-app-notifications/use-in-app-notifications-websocket';
-import { Swipeable } from 'react-native-gesture-handler';
+import Swipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
 import { useRouter } from 'expo-router';
 
 export default function ProfileInboxScreen(): React.JSX.Element {

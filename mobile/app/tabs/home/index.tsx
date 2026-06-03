@@ -176,9 +176,9 @@ export default function HomeScreen() {
     if (option === 'bank') {
       router.push('/add-money/bank-transfer');
     } else if (option === 'card') {
-      router.push('/add-money/card');
+      // TODO: Brioela add-money/card
     } else {
-      router.push('/add-money/crypto');
+      // TODO: Brioela add-money/crypto
     }
   };
 
