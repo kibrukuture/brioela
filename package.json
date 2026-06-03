@@ -1,12 +1,25 @@
 {
   "name": "brioela",
-  "module": "index.ts",
-  "type": "module",
   "private": true,
-  "devDependencies": {
-    "@types/bun": "latest"
+  "type": "module",
+  "scripts": {
+    "deploy:backend": "fly deploy -c backend/fly.toml",
+    "deploy:pdf-converter": "fly deploy -c pdf-converter/fly.toml",
+    "deploy:universal-file-converter": "fly deploy -c universal-file-converter/fly.toml",
+    "deploy": "bun run deploy:backend && bun run deploy:pdf-converter && bun run deploy:universal-file-converter",
+    "build:machine-bootstrap": "tsc -p scripts/tsconfig.json"
   },
-  "peerDependencies": {
-    "typescript": "^5"
+  "workspaces": [
+    "backend",
+    "shared",
+    "client",
+    "ext",
+    "pdf-converter",
+    "universal-file-converter"
+  ],
+  "packageManager": "bun@1.2.21",
+  "dependencies": {
+    "dotenv": "^17.3.1"
   }
+ 
 }
