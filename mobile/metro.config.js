@@ -24,12 +24,4 @@ const metroConfig = withNativeWind(config, { input: './global.css', inlineRem: 1
 metroConfig.resolver.unstable_enablePackageExports = true;
 metroConfig.resolver.unstable_conditionNames = ['react-native', 'browser', 'require', 'node'];
 
-metroConfig.resolver.extraNodeModules = {
-  '@brioela/shared': path.resolve(workspaceRoot, 'shared'),
-  zod: path.resolve(projectRoot, 'node_modules/zod'),
-  'drizzle-orm': path.resolve(projectRoot, 'node_modules/drizzle-orm'),
-  '@tolbel/align': path.resolve(projectRoot, 'node_modules/@tolbel/align'),
-  validator: path.resolve(projectRoot, 'node_modules/validator'),
-};
-
 module.exports = metroConfig;

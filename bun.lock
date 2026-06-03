@@ -215,7 +215,7 @@
       },
     },
     "shared": {
-      "name": "@schnl/shared",
+      "name": "@brioela/shared",
       "dependencies": {
         "@tolbel/align": "^1.2.7",
         "drizzle-kit": "^0.31.8",
@@ -448,6 +448,8 @@
     "@base-org/account": ["@base-org/account@2.5.0", "", { "dependencies": { "@coinbase/cdp-sdk": "^1.0.0", "brotli-wasm": "^3.0.0", "clsx": "1.2.1", "eventemitter3": "5.0.1", "idb-keyval": "6.2.1", "ox": "0.6.9", "preact": "10.24.2", "viem": "^2.31.7", "zustand": "5.0.3" } }, "sha512-cXFL3CHRHwgZ0NPhIeDRatwqaOiVP+EdwZj3qzflj8zQ9OWycybpJoiQ3DEDX8BHKbMZr9e2DzswS+fyal2iNA=="],
 
     "@bottom-tabs/react-navigation": ["@bottom-tabs/react-navigation@1.2.0", "", { "dependencies": { "color": "^5.0.0" }, "peerDependencies": { "@react-navigation/native": ">=7", "react": "*", "react-native": "*", "react-native-bottom-tabs": "*" } }, "sha512-gEnLP7q9Iai0KlVxHDIdlrDgkvJ5vwPzL2+2ucz5BdPWd++Cf5GO1jPq92R4/85PrioviCZnlAD91Wx8WxPOjA=="],
+
+    "@brioela/shared": ["@brioela/shared@workspace:shared"],
 
     "@callstack/react-theme-provider": ["@callstack/react-theme-provider@3.0.9", "", { "dependencies": { "deepmerge": "^3.2.0", "hoist-non-react-statics": "^3.3.0" }, "peerDependencies": { "react": ">=16.3.0" } }, "sha512-tTQ0uDSCL0ypeMa8T/E9wAZRGKWj8kXP7+6RYgPTfOPs9N07C9xM8P02GJ3feETap4Ux5S69D9nteq9mEj86NA=="],
 
@@ -1098,8 +1100,6 @@
     "@safe-global/safe-gateway-typescript-sdk": ["@safe-global/safe-gateway-typescript-sdk@3.23.1", "", {}, "sha512-6ORQfwtEJYpalCeVO21L4XXGSdbEMfyp2hEv6cP82afKXSwvse6d3sdelgaPWUxHIsFRkWvHDdzh8IyyKHZKxw=="],
 
     "@schnl/api": ["@schnl/api@workspace:backend"],
-
-    "@schnl/shared": ["@schnl/shared@workspace:shared"],
 
     "@scure/base": ["@scure/base@2.2.0", "", {}, "sha512-b8XEupJibegiXV+tDUseI8oLQc8ei3d/4Jkb2RpbHh3MfE054ov3uIz2dhFkB3FI8iwYkEh0gGCApkrYggkPNg=="],
 
