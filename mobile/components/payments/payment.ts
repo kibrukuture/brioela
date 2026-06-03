@@ -1,5 +1,5 @@
 // TODO: All types must come from the shared package. Correct this. this file shoud not exist here.  Remove this file.
-import type { SupportedCurrency } from '@schnl/shared/constants';
+import type { SupportedCurrency } from '@brioela/shared/constants';
 
 export interface Recipient {
   id: string;

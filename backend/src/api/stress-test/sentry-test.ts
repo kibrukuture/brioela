@@ -1,7 +1,7 @@
 import { AppContext } from '@/index';
 import { backendErrorReporter } from '@/lib/sentry.config';
 import { HTTPException } from 'hono/http-exception';
-import { ErrorCode } from '@schnl/shared/types/api';
+import { ErrorCode } from '@brioela/shared/types/api';
 
 export async function testSentry(c: AppContext) {
 	const { action } = c.req.query();

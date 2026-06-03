@@ -1,6 +1,6 @@
 import { getDb } from '@/core/database/client';
-import { bankingOfframpOutbox } from '@schnl/shared/drizzle/schema/banking-offramp-outbox.schema';
-import type { BankingOfframpOutbox, NewBankingOfframpOutbox } from '@schnl/shared/drizzle/schema/banking-offramp-outbox.schema';
+import { bankingOfframpOutbox } from '@brioela/shared/drizzle/schema/banking-offramp-outbox.schema';
+import type { BankingOfframpOutbox, NewBankingOfframpOutbox } from '@brioela/shared/drizzle/schema/banking-offramp-outbox.schema';
 import { getOfframpOutboxByDedupeKey } from '@/api/banking/helpers/offramp-outbox/get-offramp-outbox-by-dedupe-key';
 
 export async function insertOfframpOutbox(payload: NewBankingOfframpOutbox): Promise<BankingOfframpOutbox> {

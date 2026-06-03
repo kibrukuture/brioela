@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import type { FreezeCardResponse } from '@schnl/shared/validators/card.validator';
+import type { FreezeCardResponse } from '@brioela/shared/validators/card.validator';
 import * as cardsApi from '@/services/api/cards/cards.api';
 import { QUERY_KEYS } from '@/lib/query-keys';
 

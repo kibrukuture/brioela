@@ -1,10 +1,10 @@
 import { AppContext } from '@/index';
 import { getDb } from '@/core/database/client';
-import { bankingCards } from '@schnl/shared/drizzle/schema';
-import { and, eq } from '@schnl/shared/drizzle';
+import { bankingCards } from '@brioela/shared/drizzle/schema';
+import { and, eq } from '@brioela/shared/drizzle';
 import { HTTPException } from 'hono/http-exception';
-import { ErrorCode } from '@schnl/shared/types/api';
-import { cardIdParamSchema, freezeCardResponseSchema } from '@schnl/shared/validators/card.validator';
+import { ErrorCode } from '@brioela/shared/types/api';
+import { cardIdParamSchema, freezeCardResponseSchema } from '@brioela/shared/validators/card.validator';
 import dayjs from 'dayjs';
 
 export async function cancelCard(c: AppContext) {

@@ -1,5 +1,5 @@
-import type { CreateVirtualAccountResponse } from '@schnl/shared/validators/banking.validator';
-import { createVirtualAccountSchema } from '@schnl/shared/validators/banking.validator';
+import type { CreateVirtualAccountResponse } from '@brioela/shared/validators/banking.validator';
+import { createVirtualAccountSchema } from '@brioela/shared/validators/banking.validator';
 import { CURRENCY_OPTIONS } from '@/lib/banking/currency-options';
 import { formatAccountIdentifier } from '@/lib/banking/format-account-identifier';
 

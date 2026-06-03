@@ -1,8 +1,8 @@
 import type { AppContext } from '@/index';
 import { getDb } from '@/core/database/client';
-import { and, eq } from '@schnl/shared/drizzle';
-import { pushNotification } from '@schnl/shared/drizzle/schema/push-notification.schema';
-import { pushRegisterSchema, pushUnregisterSchema } from '@schnl/shared/validators/notifications.validator';
+import { and, eq } from '@brioela/shared/drizzle';
+import { pushNotification } from '@brioela/shared/drizzle/schema/push-notification.schema';
+import { pushRegisterSchema, pushUnregisterSchema } from '@brioela/shared/validators/notifications.validator';
 import Courier from '@trycourier/courier';
 import { HTTPException } from 'hono/http-exception';
 

@@ -1,11 +1,11 @@
 import { AppContext } from '@/index';
 import { getDb } from '@/core/database/client';
-import { bankingLimits } from '@schnl/shared/drizzle/schema';
-import { eq } from '@schnl/shared/drizzle';
-import { ErrorCode } from '@schnl/shared/types/api';
+import { bankingLimits } from '@brioela/shared/drizzle/schema';
+import { eq } from '@brioela/shared/drizzle';
+import { ErrorCode } from '@brioela/shared/types/api';
 import { HTTPException } from 'hono/http-exception';
-import { getBankingLimitsResponseSchema } from '@schnl/shared/validators/banking-limit.validator';
-import { bigintToString } from '@schnl/shared/utils/money';
+import { getBankingLimitsResponseSchema } from '@brioela/shared/validators/banking-limit.validator';
+import { bigintToString } from '@brioela/shared/utils/money';
 
 export async function getBankingLimits(c: AppContext) {
 	const user = c.get('user');

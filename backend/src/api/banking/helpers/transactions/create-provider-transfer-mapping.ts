@@ -1,8 +1,8 @@
 import type { Tx } from '@/api/banking/helpers/ledger/types';
-import { bankingProviderTransferMappings } from '@schnl/shared/drizzle/schema';
-import { and, eq } from '@schnl/shared/drizzle';
-import { BankingCurrency, BankingRail, BankingTransactionReferenceType } from '@schnl/shared/drizzle/schema/banking-enums.schema';
-import { ProviderTransferMappingStatus } from '@schnl/shared/drizzle/schema';
+import { bankingProviderTransferMappings } from '@brioela/shared/drizzle/schema';
+import { and, eq } from '@brioela/shared/drizzle';
+import { BankingCurrency, BankingRail, BankingTransactionReferenceType } from '@brioela/shared/drizzle/schema/banking-enums.schema';
+import { ProviderTransferMappingStatus } from '@brioela/shared/drizzle/schema';
 
 export async function createProviderTransferMapping(params: {
 	tx: Tx;

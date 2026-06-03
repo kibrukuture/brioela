@@ -1,5 +1,5 @@
 import { cors as honoCors } from 'hono/cors';
-import { ALLOWED_CORS_ORIGINS } from '@schnl/shared/api';
+import { ALLOWED_CORS_ORIGINS } from '@brioela/shared/api';
 
 export const createCors = () => {
 	return honoCors({

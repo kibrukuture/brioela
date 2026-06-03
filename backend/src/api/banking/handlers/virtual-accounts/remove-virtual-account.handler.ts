@@ -1,11 +1,11 @@
 import { AppContext } from '@/index';
 import { getDb } from '@/core/database/client';
-import { bankingVirtualAccounts } from '@schnl/shared/drizzle/schema';
-import { and, eq } from '@schnl/shared/drizzle';
-import { removeVirtualAccountSchema } from '@schnl/shared/validators/banking.validator';
-import { ErrorCode } from '@schnl/shared/types/api';
+import { bankingVirtualAccounts } from '@brioela/shared/drizzle/schema';
+import { and, eq } from '@brioela/shared/drizzle';
+import { removeVirtualAccountSchema } from '@brioela/shared/validators/banking.validator';
+import { ErrorCode } from '@brioela/shared/types/api';
 import { HTTPException } from 'hono/http-exception';
-import { users } from '@schnl/shared/drizzle/schema/user.schema';
+import { users } from '@brioela/shared/drizzle/schema/user.schema';
 import VirtualAccountRemovedTemplate from '@/core/email/templates/virtual-account-removed.template';
 import { renderToString } from 'hono/jsx/dom/server';
 import { sendEmail } from '@/core/email/send';

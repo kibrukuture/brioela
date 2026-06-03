@@ -1,12 +1,12 @@
 import { AppContext } from '@/index';
 import { getDb } from '@/core/database/client';
-import { bankingPayRequests } from '@schnl/shared/drizzle/schema';
-import { eq } from '@schnl/shared/drizzle';
-import { users } from '@schnl/shared/drizzle/schema/user.schema';
-import { ErrorCode } from '@schnl/shared/types/api';
+import { bankingPayRequests } from '@brioela/shared/drizzle/schema';
+import { eq } from '@brioela/shared/drizzle';
+import { users } from '@brioela/shared/drizzle/schema/user.schema';
+import { ErrorCode } from '@brioela/shared/types/api';
 import { HTTPException } from 'hono/http-exception';
-import { payRequestIdParamSchema } from '@schnl/shared/validators/pay-request.validator';
-import { bigintToString } from '@schnl/shared/utils/money';
+import { payRequestIdParamSchema } from '@brioela/shared/validators/pay-request.validator';
+import { bigintToString } from '@brioela/shared/utils/money';
 
 export async function getPayRequest(c: AppContext) {
 	const user = c.get('user');

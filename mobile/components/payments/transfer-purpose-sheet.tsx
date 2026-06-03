@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Pressable, Text, TextInput, View } from 'react-native';
 import { Sheet, BottomSheetView, useManagedSheetRef } from '@/components/ui/sheet';
-import { TRANSFER_PURPOSES, type TransferPurpose } from '@schnl/shared/constants';
+import { TRANSFER_PURPOSES, type TransferPurpose } from '@brioela/shared/constants';
 import { FlashList } from '@shopify/flash-list';
 
 const toSentenceCase = (input: string) => {

@@ -1,12 +1,12 @@
 import { AppContext } from '@/index';
 import { getDb } from '@/core/database/client';
-import { bankingLedgerHolds, bankingOfframpOutbox, bankingOutgoingPayouts, users } from '@schnl/shared/drizzle/schema';
-import { and, eq } from '@schnl/shared/drizzle';
+import { bankingLedgerHolds, bankingOfframpOutbox, bankingOutgoingPayouts, users } from '@brioela/shared/drizzle/schema';
+import { and, eq } from '@brioela/shared/drizzle';
 import { HTTPException } from 'hono/http-exception';
-import { ErrorCode } from '@schnl/shared/types/api';
+import { ErrorCode } from '@brioela/shared/types/api';
 import dayjs from 'dayjs';
-import { BANKING_LEDGER_HOLD_REFERENCE_TYPES } from '@schnl/shared/constants/banking-ledger-hold-reference-types';
-import { executeOutgoingPayoutJobSchema } from '@schnl/shared/validators/outgoing-payout.validator';
+import { BANKING_LEDGER_HOLD_REFERENCE_TYPES } from '@brioela/shared/constants/banking-ledger-hold-reference-types';
+import { executeOutgoingPayoutJobSchema } from '@brioela/shared/validators/outgoing-payout.validator';
 import { publishOfframpOutboxQueueJob } from '@/api/banking/helpers/offramp-outbox/publish-offramp-outbox-queue-job';
 
 export async function executeOutgoingPayoutJob(c: AppContext) {

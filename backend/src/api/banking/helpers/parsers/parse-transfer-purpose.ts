@@ -1,7 +1,7 @@
 import { HTTPException } from 'hono/http-exception';
-import { ErrorCode } from '@schnl/shared/types/api';
-import { z } from '@schnl/shared/zod';
-import { TRANSFER_PURPOSES } from '@schnl/shared/constants/transfer-purposes';
+import { ErrorCode } from '@brioela/shared/types/api';
+import { z } from '@brioela/shared/zod';
+import { TRANSFER_PURPOSES } from '@brioela/shared/constants/transfer-purposes';
 
 export function parseTransferPurpose(value: unknown) {
 	const parsed = z.enum(TRANSFER_PURPOSES).safeParse(value);

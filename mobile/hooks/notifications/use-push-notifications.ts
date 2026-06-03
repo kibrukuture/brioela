@@ -2,7 +2,7 @@ import { useMutation } from '@tanstack/react-query';
 import type {
   PushRegisterInput,
   PushUnregisterInput,
-} from '@schnl/shared/validators/notifications.validator';
+} from '@brioela/shared/validators/notifications.validator';
 import * as notificationsApi from '@/services/api/notifications/notifications.api';
 
 export function useRegisterPush() {

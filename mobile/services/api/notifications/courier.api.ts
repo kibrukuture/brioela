@@ -1,5 +1,5 @@
-import { API_ROUTES } from '@schnl/shared/api';
-import type { CourierMintJwtResponse } from '@schnl/shared/validators/notifications.validator';
+import { API_ROUTES } from '@brioela/shared/api';
+import type { CourierMintJwtResponse } from '@brioela/shared/validators/notifications.validator';
 import * as api from '@/services/api';
 
 export async function mintJwt(): Promise<CourierMintJwtResponse> {

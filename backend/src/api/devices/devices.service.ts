@@ -1,10 +1,10 @@
 import { AppContext } from '@/index';
-import { eq, and } from '@schnl/shared/drizzle';
-import { devices } from '@schnl/shared/drizzle/schema/devices.schema';
+import { eq, and } from '@brioela/shared/drizzle';
+import { devices } from '@brioela/shared/drizzle/schema/devices.schema';
 import { getDb } from '@/core/database/client';
-import { bindDeviceSchema, verifyDeviceSchema } from '@schnl/shared/validators/device.validator';
+import { bindDeviceSchema, verifyDeviceSchema } from '@brioela/shared/validators/device.validator';
 import { HTTPException } from 'hono/http-exception';
-import { ErrorCode } from '@schnl/shared/types/api';
+import { ErrorCode } from '@brioela/shared/types/api';
 
 export async function bindDevice(c: AppContext) {
 	const user = c.get('user');

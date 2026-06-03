@@ -1,6 +1,6 @@
 import { View, Text, Modal, Platform, TouchableOpacity, Linking } from 'react-native';
 import Animated from 'react-native-reanimated';
-import { OUR_COMPANY_EMAIL } from '@schnl/shared/constants';
+import { OUR_COMPANY_EMAIL } from '@brioela/shared/constants';
 
 interface SupportModalProps {
   visible: boolean;

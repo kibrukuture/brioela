@@ -1,4 +1,4 @@
-// import { ErrorCode, type ErrorCodeType } from '@schnl/shared/types/api';
+// import { ErrorCode, type ErrorCodeType } from '@brioela/shared/types/api';
 // import sanitizePgError from '@/core/errors/sanitize-pg-error';
 
 // function isPgError(error: unknown) {
@@ -46,7 +46,7 @@
 // 	};
 // }
 
-import { ErrorCode, type ErrorCodeType } from '@schnl/shared/types/api';
+import { ErrorCode, type ErrorCodeType } from '@brioela/shared/types/api';
 
 /**
  * Complete PostgreSQL Error Structure based on Protocol Documentation

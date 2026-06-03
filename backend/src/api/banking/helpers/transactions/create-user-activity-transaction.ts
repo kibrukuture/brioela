@@ -1,6 +1,6 @@
 import type { Tx } from '@/api/banking/helpers/ledger/types';
-import { bankingTransactions } from '@schnl/shared/drizzle/schema';
-import { and, eq } from '@schnl/shared/drizzle';
+import { bankingTransactions } from '@brioela/shared/drizzle/schema';
+import { and, eq } from '@brioela/shared/drizzle';
 import {
 	BankingCurrency,
 	BankingRail,
@@ -8,8 +8,8 @@ import {
 	TransactionDirection,
 	TransactionStatus,
 	TransactionType,
-} from '@schnl/shared/drizzle/schema/banking-enums.schema';
-import type { BankingTransactionCategory } from '@schnl/shared/validators/banking-transaction-category.validator';
+} from '@brioela/shared/drizzle/schema/banking-enums.schema';
+import type { BankingTransactionCategory } from '@brioela/shared/validators/banking-transaction-category.validator';
 
 export async function createUserActivityTransaction(params: {
 	tx: Tx;

@@ -12,7 +12,7 @@ import { useRouter } from 'expo-router';
 import { ArrowLeft } from 'lucide-react-native';
 import { useCreateVirtualAccount } from '@/hooks/banking/use-create-virtual-account';
 import { CURRENCY_OPTIONS } from '@/lib/banking/currency-options';
-import { createVirtualAccountSchema } from '@schnl/shared/validators/banking.validator';
+import { createVirtualAccountSchema } from '@brioela/shared/validators/banking.validator';
 
 type CurrencyOption = (typeof CURRENCY_OPTIONS)[number];
 

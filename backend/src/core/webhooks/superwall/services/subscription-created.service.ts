@@ -1,7 +1,7 @@
 import { SuperwallEventData } from '@/core/webhooks/superwall/types/superwall-events.types';
-import drizzle, { eq } from '@schnl/shared/drizzle';
-import { users } from '@schnl/shared/drizzle/schema/user.schema';
-import { SubscriptionPlatform } from '@schnl/shared/drizzle/schema/user.schema';
+import drizzle, { eq } from '@brioela/shared/drizzle';
+import { users } from '@brioela/shared/drizzle/schema/user.schema';
+import { SubscriptionPlatform } from '@brioela/shared/drizzle/schema/user.schema';
 
 type Store = (typeof SubscriptionPlatform.enumValues)[number];
 const StoreEnum = Object.fromEntries(SubscriptionPlatform.enumValues.map((value) => [value, value])) as Record<Store, Store>;

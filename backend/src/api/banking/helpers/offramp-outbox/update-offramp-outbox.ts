@@ -1,8 +1,8 @@
 import dayjs from 'dayjs';
 import { getDb } from '@/core/database/client';
-import { eq } from '@schnl/shared/drizzle';
-import { bankingOfframpOutbox } from '@schnl/shared/drizzle/schema/banking-offramp-outbox.schema';
-import type { BankingOfframpOutbox } from '@schnl/shared/drizzle/schema/banking-offramp-outbox.schema';
+import { eq } from '@brioela/shared/drizzle';
+import { bankingOfframpOutbox } from '@brioela/shared/drizzle/schema/banking-offramp-outbox.schema';
+import type { BankingOfframpOutbox } from '@brioela/shared/drizzle/schema/banking-offramp-outbox.schema';
 
 export async function updateOfframpOutbox(
 	id: string,

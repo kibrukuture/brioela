@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { QUERY_KEYS } from '@/lib/query-keys';
-import type { LocationSearchRequest } from '@schnl/shared/validators/location-search.validator';
+import type { LocationSearchRequest } from '@brioela/shared/validators/location-search.validator';
 import { locationSearch } from '@/services/api/maps/maps.api';
 
 export function useLocationSearch(request: LocationSearchRequest) {

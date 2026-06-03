@@ -1,10 +1,10 @@
 import { AppContext } from '@/index';
 import { getDb } from '@/core/database/client';
-import { bankingCustomerAddresses } from '@schnl/shared/drizzle/schema';
-import { eq } from '@schnl/shared/drizzle';
-import { ErrorCode } from '@schnl/shared/types/api';
+import { bankingCustomerAddresses } from '@brioela/shared/drizzle/schema';
+import { eq } from '@brioela/shared/drizzle';
+import { ErrorCode } from '@brioela/shared/types/api';
 import { HTTPException } from 'hono/http-exception';
-import { customerAddressResponseSchema } from '@schnl/shared/validators/customer-address.validator';
+import { customerAddressResponseSchema } from '@brioela/shared/validators/customer-address.validator';
 
 export async function getCustomerAddress(c: AppContext) {
 	const user = c.get('user');

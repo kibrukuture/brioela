@@ -13,10 +13,10 @@ import { getDb } from '@/core/database/client';
 import { createQStashClient, publishEmailJob } from '@/message-queue';
 import type { EmailJobPayload } from '@/message-queue/types';
 import { SuperwallEventEnum } from '@/core/webhooks/superwall/types/superwall-events.types';
-import { API_ROUTES } from '@schnl/shared/api';
-import { PRODUCTION_API_BASE_URL } from '@schnl/shared/constants';
+import { API_ROUTES } from '@brioela/shared/api';
+import { PRODUCTION_API_BASE_URL } from '@brioela/shared/constants';
 import { apiErrorResponse } from '@/lib/response';
-import { ErrorCode } from '@schnl/shared/types/api';
+import { ErrorCode } from '@brioela/shared/types/api';
 
 export async function handleSuperwallWebhook(c: AppContext) {
 	try {

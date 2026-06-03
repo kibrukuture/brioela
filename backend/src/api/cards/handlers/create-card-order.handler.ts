@@ -6,17 +6,17 @@ import {
 	bankingCards,
 	bankingCustomerKyc,
 	bankingCustomerAddresses,
-} from '@schnl/shared/drizzle/schema';
-import { createCardOrderRequestSchema } from '@schnl/shared/validators/card-order.validator';
+} from '@brioela/shared/drizzle/schema';
+import { createCardOrderRequestSchema } from '@brioela/shared/validators/card-order.validator';
 import { HTTPException } from 'hono/http-exception';
-import { ErrorCode } from '@schnl/shared/types/api';
+import { ErrorCode } from '@brioela/shared/types/api';
 import dayjs from 'dayjs';
 import { createHold } from '@/api/banking/helpers/ledger/holds';
-import { BANKING_LEDGER_HOLD_REFERENCE_TYPES } from '@schnl/shared/constants/banking-ledger-hold-reference-types';
+import { BANKING_LEDGER_HOLD_REFERENCE_TYPES } from '@brioela/shared/constants/banking-ledger-hold-reference-types';
 import { publishOfframpOutboxQueueJob } from '@/api/banking/helpers/offramp-outbox/publish-offramp-outbox-queue-job';
 import { getCardOrderFeeAmountAtomic } from '@/api/cards/helpers/get-card-order-fee-amount-atomic';
-import { eq } from '@schnl/shared/drizzle';
-import { createCardOrderResponseSchema } from '@schnl/shared/validators/card-order.validator';
+import { eq } from '@brioela/shared/drizzle';
+import { createCardOrderResponseSchema } from '@brioela/shared/validators/card-order.validator';
 import { createCardMetadata } from '@/api/cards/helpers/create-card-metadata';
 import { createUserActivityTransaction } from '@/api/banking/helpers/transactions/create-user-activity-transaction';
 

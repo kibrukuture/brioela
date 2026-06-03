@@ -11,7 +11,7 @@ import dayjs from 'dayjs';
 import { BackButton } from '@/components/ui/back-button';
 import { useGenerateStatement } from '@/hooks/statements/use-generate-statement';
 import { useForm } from 'react-hook-form';
-import { generateStatementRequestSchema } from '@schnl/shared/validators/statement.validator';
+import { generateStatementRequestSchema } from '@brioela/shared/validators/statement.validator';
 import { zodResolver } from '@/lib/forms/zod-resolver';
 
 const PRESET_MONTHS = [3, 6, 12] as const;

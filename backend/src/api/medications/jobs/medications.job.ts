@@ -4,7 +4,7 @@
 import { AppContext } from '@/index';
 import { handleExtractDataJob } from '@/api/medications/jobs/extract-data.job';
 import { apiErrorResponse } from '@/lib/response';
-import { ErrorCode } from '@schnl/shared/types/api';
+import { ErrorCode } from '@brioela/shared/types/api';
 
 export async function medicationsJobOrchestrator(c: AppContext) {
 	try {

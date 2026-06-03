@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import type { SupportedCurrencyCode, TransferPurpose } from '@schnl/shared/constants';
+import type { SupportedCurrencyCode, TransferPurpose } from '@brioela/shared/constants';
 
 export type AccountDetailsType = 'ach' | 'iban_sepa' | 'iban_single';
 

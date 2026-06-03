@@ -1,11 +1,11 @@
-import { API_ROUTES } from '@schnl/shared/api';
-import { User } from '@schnl/shared/drizzle/schema/user.schema';
-import { CheckSchnlTagResponse, KycLegalNameInput } from '@schnl/shared/validators/user.validator';
+import { API_ROUTES } from '@brioela/shared/api';
+import { User } from '@brioela/shared/drizzle/schema/user.schema';
+import { CheckSchnlTagResponse, KycLegalNameInput } from '@brioela/shared/validators/user.validator';
 import type {
   UserSearchRequest,
   UserSearchResponse,
-} from '@schnl/shared/validators/user-search.validator';
-import type { UpdateProfilePictureResponse } from '@schnl/shared/validators/profile-picture.validator';
+} from '@brioela/shared/validators/user-search.validator';
+import type { UpdateProfilePictureResponse } from '@brioela/shared/validators/profile-picture.validator';
 import * as api from '@/services/api';
 
 export async function deleteUser(id: string) {

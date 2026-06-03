@@ -1,5 +1,5 @@
 import { getDb } from '@/core/database/client';
-import { BankingCurrency } from '@schnl/shared/drizzle/schema/banking-enums.schema';
+import { BankingCurrency } from '@brioela/shared/drizzle/schema/banking-enums.schema';
 
 export type Db = ReturnType<typeof getDb>;
 

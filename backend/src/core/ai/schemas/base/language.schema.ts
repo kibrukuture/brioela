@@ -1,4 +1,4 @@
-import { z } from '@schnl/shared/zod';
+import { z } from '@brioela/shared/zod';
 import { ConfidenceSchema } from '@/core/ai/schemas/base/confidence.schema';
 
 export const LanguageCodeSchema = z

@@ -1,4 +1,4 @@
-import { z } from '@schnl/shared/zod';
+import { z } from '@brioela/shared/zod';
 import { ConfidenceSchema } from './confidence.schema';
 // import { LanguageDetectionSchema } from './language.schema';
 // base/extracted-text.schema.ts

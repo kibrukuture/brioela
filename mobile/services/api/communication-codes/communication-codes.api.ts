@@ -1,8 +1,8 @@
-import { API_ROUTES } from '@schnl/shared/api';
+import { API_ROUTES } from '@brioela/shared/api';
 import type {
   SetCommunicationCodeInput,
   CommunicationCodeResponse,
-} from '@schnl/shared/validators/communication-code.validator';
+} from '@brioela/shared/validators/communication-code.validator';
 import * as api from '@/services/api';
 
 export async function updateCommunicationCode(

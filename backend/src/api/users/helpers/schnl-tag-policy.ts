@@ -1,5 +1,5 @@
 import { RegExpMatcher, englishDataset, englishRecommendedTransformers } from 'obscenity';
-import { isReservedSchnlTag } from '@schnl/shared/utils/schnl-tag';
+import { isReservedSchnlTag } from '@brioela/shared/utils/schnl-tag';
 import { HTTPException } from 'hono/http-exception';
 
 const schnlTagProfanityMatcher = new RegExpMatcher({

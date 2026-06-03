@@ -5,7 +5,7 @@ import { FlashList } from '@shopify/flash-list';
 import {
   bankingTransactionCategoryValues,
   type BankingTransactionCategory,
-} from '@schnl/shared/validators/banking-transaction-category.validator';
+} from '@brioela/shared/validators/banking-transaction-category.validator';
 
 const toSentenceCase = (input: string) => {
   const trimmed = input.trim();

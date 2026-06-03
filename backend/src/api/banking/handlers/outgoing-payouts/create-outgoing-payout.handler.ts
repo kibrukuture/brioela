@@ -1,23 +1,23 @@
 import { AppContext } from '@/index';
 import { getDb } from '@/core/database/client';
-import { bankingOutgoingPayouts } from '@schnl/shared/drizzle/schema';
-import { eq } from '@schnl/shared/drizzle';
-import { createOutgoingPayoutSchema } from '@schnl/shared/validators/outgoing-payout.validator';
+import { bankingOutgoingPayouts } from '@brioela/shared/drizzle/schema';
+import { eq } from '@brioela/shared/drizzle';
+import { createOutgoingPayoutSchema } from '@brioela/shared/validators/outgoing-payout.validator';
 import { encryptWithAES256GCM } from '@/core/crypto/encrypt-with-aes-256-gcm';
 import { HTTPException } from 'hono/http-exception';
-import { ErrorCode } from '@schnl/shared/types/api';
+import { ErrorCode } from '@brioela/shared/types/api';
 import { createHold } from '@/api/banking/helpers/ledger/holds';
-import { BANKING_LEDGER_HOLD_REFERENCE_TYPES } from '@schnl/shared/constants/banking-ledger-hold-reference-types';
+import { BANKING_LEDGER_HOLD_REFERENCE_TYPES } from '@brioela/shared/constants/banking-ledger-hold-reference-types';
 import dayjs from 'dayjs';
 import { createQStashClient } from '@/message-queue';
 import { publishJob } from '@/message-queue/publish';
-import { PRODUCTION_API_BASE_URL } from '@schnl/shared/constants';
-import { QUEUE_ROUTES } from '@schnl/shared/api/queue.routes';
+import { PRODUCTION_API_BASE_URL } from '@brioela/shared/constants';
+import { QUEUE_ROUTES } from '@brioela/shared/api/queue.routes';
 import { requireBankingKycApproved } from '@/api/banking/helpers/outgoing-payouts/require-banking-kyc-approved';
 import { createOrGetExternalAccountId } from '@/api/banking/helpers/outgoing-payouts/create-or-get-external-account-id';
 import { createOutgoingPayoutRecord } from '@/api/banking/helpers/outgoing-payouts/create-outgoing-payout-record';
 import { createUserActivityTransaction } from '@/api/banking/helpers/transactions/create-user-activity-transaction';
-import { parseAmountAtomic } from '@schnl/shared/utils/money';
+import { parseAmountAtomic } from '@brioela/shared/utils/money';
 
 export async function createOutgoingPayout(c: AppContext) {
 	const user = c.get('user');

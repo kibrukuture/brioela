@@ -1,4 +1,4 @@
-import { API_ROUTES } from '@schnl/shared/api';
+import { API_ROUTES } from '@brioela/shared/api';
 import type {
   ListCardsResponse,
   FreezeCardResponse,
@@ -6,13 +6,13 @@ import type {
   SetCardLabelResponse,
   CardSpendingLimitsInput,
   CardSpendingLimitsResponse,
-} from '@schnl/shared/validators/card.validator';
-import type { CardWalletProvisioningResponse } from '@schnl/shared/validators/card-wallet-provisioning.validator';
+} from '@brioela/shared/validators/card.validator';
+import type { CardWalletProvisioningResponse } from '@brioela/shared/validators/card-wallet-provisioning.validator';
 import type {
   CreateCardOrderRequest,
   CreateCardOrderResponse,
   GetCardOrderResponse,
-} from '@schnl/shared/validators/card-order.validator';
+} from '@brioela/shared/validators/card-order.validator';
 import * as api from '@/services/api';
 
 export async function getCards() {

@@ -1,6 +1,6 @@
 import { Hono } from 'hono';
 import { createBillingPortalSession, createTopupIntent } from '@/api/payments/stripe/stripe.controller';
-import { PAYMENTS_ROUTE_PATTERNS } from '@schnl/shared/api/payments.routes';
+import { PAYMENTS_ROUTE_PATTERNS } from '@brioela/shared/api/payments.routes';
 
 const stripeRoutes = new Hono();
 

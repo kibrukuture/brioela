@@ -1,11 +1,11 @@
 import { HTTPException } from 'hono/http-exception';
-import { ErrorCode } from '@schnl/shared/types/api';
-import { and, eq } from '@schnl/shared/drizzle';
-import { bankingCustomerAddresses, bankingExternalAccounts } from '@schnl/shared/drizzle/schema';
-import { BANKING_PROVIDERS } from '@schnl/shared/constants/banking-providers';
+import { ErrorCode } from '@brioela/shared/types/api';
+import { and, eq } from '@brioela/shared/drizzle';
+import { bankingCustomerAddresses, bankingExternalAccounts } from '@brioela/shared/drizzle/schema';
+import { BANKING_PROVIDERS } from '@brioela/shared/constants/banking-providers';
 import type { Tx } from '@/api/banking/helpers/ledger/types';
-import type { CreateOutgoingPayoutInput } from '@schnl/shared/validators/outgoing-payout.validator';
-import { HolderType } from '@schnl/shared/drizzle/schema/banking-enums.schema';
+import type { CreateOutgoingPayoutInput } from '@brioela/shared/validators/outgoing-payout.validator';
+import { HolderType } from '@brioela/shared/drizzle/schema/banking-enums.schema';
 
 export async function createOrGetExternalAccountId(params: {
 	tx: Tx;

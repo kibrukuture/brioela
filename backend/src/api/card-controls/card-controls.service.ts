@@ -1,10 +1,10 @@
 import { AppContext } from '@/index';
-import { and, eq } from '@schnl/shared/drizzle';
-import { cardControls } from '@schnl/shared/drizzle/schema/card-controls.schema';
+import { and, eq } from '@brioela/shared/drizzle';
+import { cardControls } from '@brioela/shared/drizzle/schema/card-controls.schema';
 import { getDb } from '@/core/database/client';
-import { updateCardControlsSchema, cardControlKeys, type CardControlKey } from '@schnl/shared/validators/card-controls.validator';
+import { updateCardControlsSchema, cardControlKeys, type CardControlKey } from '@brioela/shared/validators/card-controls.validator';
 import { HTTPException } from 'hono/http-exception';
-import { ErrorCode } from '@schnl/shared/types/api';
+import { ErrorCode } from '@brioela/shared/types/api';
 
 async function findExisting(db: ReturnType<typeof getDb>, userId: string, cardId: string) {
 	const [existing] = await db

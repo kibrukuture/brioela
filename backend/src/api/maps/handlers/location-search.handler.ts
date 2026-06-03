@@ -1,11 +1,11 @@
 import type { AppContext } from '@/index';
 import { HTTPException } from 'hono/http-exception';
-import { ErrorCode } from '@schnl/shared/types/api';
+import { ErrorCode } from '@brioela/shared/types/api';
 import {
 	locationSearchRequestSchema,
 	locationSearchResponseSchema,
 	type LocationSearchResponse,
-} from '@schnl/shared/validators/location-search.validator';
+} from '@brioela/shared/validators/location-search.validator';
 import { locationSearch as locationSearchClient } from '@/core/clients/maps/client';
 
 export async function locationSearch(c: AppContext): Promise<LocationSearchResponse> {

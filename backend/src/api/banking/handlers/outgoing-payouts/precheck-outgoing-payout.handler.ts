@@ -1,14 +1,14 @@
 import { AppContext } from '@/index';
 import { getDb } from '@/core/database/client';
 import { HTTPException } from 'hono/http-exception';
-import { ErrorCode } from '@schnl/shared/types/api';
+import { ErrorCode } from '@brioela/shared/types/api';
 import {
 	outgoingPayoutPrecheckSchema,
 	type OutgoingPayoutPrecheckInput,
 	type OutgoingPayoutPrecheckResponse,
-} from '@schnl/shared/validators/outgoing-payout-precheck.validator';
+} from '@brioela/shared/validators/outgoing-payout-precheck.validator';
 import { requireBankingKycApproved } from '@/api/banking/helpers/outgoing-payouts/require-banking-kyc-approved';
-import { getBankDetailsTypeForCurrency } from '@schnl/shared/lib/banking/payments/get-bank-details-type-for-currency';
+import { getBankDetailsTypeForCurrency } from '@brioela/shared/lib/banking/payments/get-bank-details-type-for-currency';
 
 export async function precheckOutgoingPayout(c: AppContext) {
 	const user = c.get('user');

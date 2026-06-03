@@ -1,7 +1,7 @@
 import { AppContext } from '@/index';
 import { getDb } from '@/core/database/client';
-import { users } from '@schnl/shared/drizzle/schema/user.schema';
-import { eq } from '@schnl/shared/drizzle';
+import { users } from '@brioela/shared/drizzle/schema/user.schema';
+import { eq } from '@brioela/shared/drizzle';
 import { HTTPException } from 'hono/http-exception';
 
 export async function getUserById(c: AppContext) {

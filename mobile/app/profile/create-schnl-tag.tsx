@@ -8,10 +8,10 @@ import { useRouter } from 'expo-router';
 import * as Burnt from 'burnt';
 import { useCheckSchnlTag } from '@/hooks/users/use-check-schnl-tag';
 import { useSetSchnlTag } from '@/hooks/users/use-update-user';
-import { validateSchnlTag } from '@schnl/shared/utils/schnl-tag';
+import { validateSchnlTag } from '@brioela/shared/utils/schnl-tag';
 import { useDebounce } from 'use-debounce';
 import { TriangleAlert } from 'lucide-react-native';
-import { PLACEHOLDERS } from '@schnl/shared/constants';
+import { PLACEHOLDERS } from '@brioela/shared/constants';
 
 export default function CreateSchnlTagScreen() {
   const router = useRouter();

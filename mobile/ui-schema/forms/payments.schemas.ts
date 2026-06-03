@@ -1,5 +1,5 @@
-import { z } from '@schnl/shared/zod';
-import { isUiError, requireValidIban } from '@schnl/shared/lib';
+import { z } from '@brioela/shared/zod';
+import { isUiError, requireValidIban } from '@brioela/shared/lib';
 
 const email_format_invalid = `The email address you entered isn't valid.`;
 

@@ -1,12 +1,12 @@
 import dayjs from 'dayjs';
 import { HTTPException } from 'hono/http-exception';
-import { ErrorCode } from '@schnl/shared/types/api';
+import { ErrorCode } from '@brioela/shared/types/api';
 import getAlignClient from '@/core/clients/align';
 import { getDb } from '@/core/database/client';
-import { bankingKycEvents, users } from '@schnl/shared/drizzle/schema';
-import { eq } from '@schnl/shared/drizzle';
-import { BANKING_PROVIDERS } from '@schnl/shared/constants/banking-providers';
-import type { PollingJob } from '@schnl/shared/drizzle/schema/polling-jobs.schema';
+import { bankingKycEvents, users } from '@brioela/shared/drizzle/schema';
+import { eq } from '@brioela/shared/drizzle';
+import { BANKING_PROVIDERS } from '@brioela/shared/constants/banking-providers';
+import type { PollingJob } from '@brioela/shared/drizzle/schema/polling-jobs.schema';
 
 export async function syncAlignCustomerKycStatus(job: PollingJob) {
 	const db = getDb();

@@ -4,15 +4,15 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Controller, useForm } from 'react-hook-form';
-import { z } from '@schnl/shared/zod';
+import { z } from '@brioela/shared/zod';
 import { zodResolver } from '@/lib/forms/zod-resolver';
 import { useActionSheet } from '@expo/react-native-action-sheet';
-import { getBankDetailsTypeForCurrency } from '@schnl/shared/lib/banking/payments/get-bank-details-type-for-currency';
+import { getBankDetailsTypeForCurrency } from '@brioela/shared/lib/banking/payments/get-bank-details-type-for-currency';
 import { BackButton } from '@/components/ui/back-button';
 import { Camera } from 'lucide-react-native';
 import { IbanScanModal } from '@/components/payments/iban-scan-modal';
 import { useRecipientDraftStore } from '@/stores/recipients/use-recipient-draft-store';
-import { SUPPORTED_BANKING_CURRENCY_CODES, SUPPORTED_CURRENCIES } from '@schnl/shared/constants';
+import { SUPPORTED_BANKING_CURRENCY_CODES, SUPPORTED_CURRENCIES } from '@brioela/shared/constants';
 
 const currencies = SUPPORTED_BANKING_CURRENCY_CODES;
 

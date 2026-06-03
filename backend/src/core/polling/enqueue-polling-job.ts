@@ -1,9 +1,9 @@
 import dayjs from 'dayjs';
-import { DEFAULT_POLLING_MAX_ATTEMPTS, DEFAULT_POLLING_TTL_MS } from '@schnl/shared/constants/polling';
+import { DEFAULT_POLLING_MAX_ATTEMPTS, DEFAULT_POLLING_TTL_MS } from '@brioela/shared/constants/polling';
 import { insertPollingJob } from '@/core/polling/insert-polling-job';
 import { publishPollingCallback } from '@/core/polling/publish-polling-callback';
 import { HTTPException } from 'hono/http-exception';
-import { ErrorCode } from '@schnl/shared/types/api';
+import { ErrorCode } from '@brioela/shared/types/api';
 import type { EnqueuePollingJobInput } from '@/core/polling/types';
 
 export async function enqueuePollingJob({ input, url }: { input: EnqueuePollingJobInput; url: string }) {

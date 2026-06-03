@@ -7,20 +7,20 @@ import * as Burnt from 'burnt';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { CURRENCY_OPTIONS } from '@/lib/banking/currency-options';
-import { bankingCurrencyValues } from '@schnl/shared/drizzle/schema/banking-enums.schema';
-import type { BankingCurrencyCode } from '@schnl/shared/constants/banking-currency-decimals';
+import { bankingCurrencyValues } from '@brioela/shared/drizzle/schema/banking-enums.schema';
+import type { BankingCurrencyCode } from '@brioela/shared/constants/banking-currency-decimals';
 import {
   atomicToDecimalString,
   decimalStringToAtomicString,
   parseAmountAtomic,
-} from '@schnl/shared/utils/money';
+} from '@brioela/shared/utils/money';
 import { NativeSegmentedTabs } from '@/components/ui/native-segmented-tabs';
 import { useBankingLimits } from '@/hooks/banking/use-banking-limits';
 import { useUpdateBankingLimit } from '@/hooks/banking/use-update-banking-limit';
 import type {
   BankingLimitScope,
   BankingLimitPeriod,
-} from '@schnl/shared/validators/banking-limit.validator';
+} from '@brioela/shared/validators/banking-limit.validator';
 import { BackButton } from '@/components/ui/back-button';
 
 const PRESET_DECIMAL_VALUES = ['5', '100', '200', '500', '1000', '5000', '10000'] as const;

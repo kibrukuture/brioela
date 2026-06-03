@@ -1,4 +1,4 @@
-import type { CreateVirtualAccountResponse } from '@schnl/shared/validators/banking.validator';
+import type { CreateVirtualAccountResponse } from '@brioela/shared/validators/banking.validator';
 import { CURRENCIES } from '@/components/payments/currencies';
 
 export function getTransferDetails(

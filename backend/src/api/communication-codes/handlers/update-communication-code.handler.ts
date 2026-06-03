@@ -1,11 +1,11 @@
 import { AppContext } from '@/index';
 import { getDb } from '@/core/database/client';
-import { eq } from '@schnl/shared/drizzle';
-import { communicationCodes } from '@schnl/shared/drizzle/schema/communication-codes.schema';
+import { eq } from '@brioela/shared/drizzle';
+import { communicationCodes } from '@brioela/shared/drizzle/schema/communication-codes.schema';
 import { encryptWithAES256GCM } from '@/core/crypto/encrypt-with-aes-256-gcm';
-import { setCommunicationCodeSchema } from '@schnl/shared/validators/communication-code.validator';
+import { setCommunicationCodeSchema } from '@brioela/shared/validators/communication-code.validator';
 import { HTTPException } from 'hono/http-exception';
-import { ErrorCode } from '@schnl/shared/types/api';
+import { ErrorCode } from '@brioela/shared/types/api';
 
 export async function updateCommunicationCode(c: AppContext) {
 	const user = c.get('user');

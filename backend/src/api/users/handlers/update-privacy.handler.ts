@@ -1,10 +1,10 @@
 import { AppContext } from '@/index';
-import { eq } from '@schnl/shared/drizzle';
-import { users } from '@schnl/shared/drizzle/schema/user.schema';
+import { eq } from '@brioela/shared/drizzle';
+import { users } from '@brioela/shared/drizzle/schema/user.schema';
 import { getDb } from '@/core/database/client';
-import { updatePrivacySchema } from '@schnl/shared/validators/user.validator';
+import { updatePrivacySchema } from '@brioela/shared/validators/user.validator';
 import { HTTPException } from 'hono/http-exception';
-import { ErrorCode } from '@schnl/shared/types/api';
+import { ErrorCode } from '@brioela/shared/types/api';
 
 export async function updatePrivacySettings(c: AppContext) {
 	const body = await c.req.json();

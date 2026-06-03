@@ -12,7 +12,7 @@ import { ReviewPaymentStep } from '@/components/payments/review-payment-step';
 import { ReviewSchnlPaymentStep } from '@/components/payments/review-schnl-payment-step';
 import { PaymentConfirmation } from '@/components/payments/payment-confirmation';
 import type { PaymentFlow } from '@/components/payments/payment';
-import { SUPPORTED_CURRENCIES } from '@schnl/shared/constants';
+import { SUPPORTED_CURRENCIES } from '@brioela/shared/constants';
 
 export function SendPaymentFlow() {
   const navigation = useNavigation();

@@ -1,10 +1,10 @@
 import { AppContext } from '@/index';
 import { getDb } from '@/core/database/client';
-import { bankingLimits } from '@schnl/shared/drizzle/schema';
-import { ErrorCode } from '@schnl/shared/types/api';
+import { bankingLimits } from '@brioela/shared/drizzle/schema';
+import { ErrorCode } from '@brioela/shared/types/api';
 import { HTTPException } from 'hono/http-exception';
-import { updateBankingLimitInputSchema, updateBankingLimitResponseSchema } from '@schnl/shared/validators/banking-limit.validator';
-import { bigintToString, parseAmountAtomic } from '@schnl/shared/utils/money';
+import { updateBankingLimitInputSchema, updateBankingLimitResponseSchema } from '@brioela/shared/validators/banking-limit.validator';
+import { bigintToString, parseAmountAtomic } from '@brioela/shared/utils/money';
 
 export async function updateBankingLimit(c: AppContext) {
 	const user = c.get('user');

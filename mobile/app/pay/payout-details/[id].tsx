@@ -6,7 +6,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { usePayRequest } from '@/hooks/banking/use-pay-request';
 import { PayRequestPayoutDetailsForm } from '@/components/payments/pay-request-payout-details-form';
 import { BackButton } from '@/components/ui/back-button';
-import { atomicToDecimalString, parseAmountAtomic } from '@schnl/shared/utils/money';
+import { atomicToDecimalString, parseAmountAtomic } from '@brioela/shared/utils/money';
 
 export default function PayPayoutDetailsPage() {
   const params = useLocalSearchParams<{ id?: string }>();

@@ -1,12 +1,12 @@
 import { getDb } from '@/core/database/client';
-import { authSignatureChallenges } from '@schnl/shared/drizzle/schema/auth-signature-challenges.schema';
-import { eq } from '@schnl/shared/drizzle';
+import { authSignatureChallenges } from '@brioela/shared/drizzle/schema/auth-signature-challenges.schema';
+import { eq } from '@brioela/shared/drizzle';
 import dayjs from 'dayjs';
 import { getThirdWebClient } from '@/core/clients/third-web';
 import { verifySignature } from 'thirdweb/auth';
 import { polygon } from 'thirdweb/chains';
 import { HTTPException } from 'hono/http-exception';
-import { ErrorCode } from '@schnl/shared/types/api';
+import { ErrorCode } from '@brioela/shared/types/api';
 
 function assertChallengeValid(
 	challenge: {

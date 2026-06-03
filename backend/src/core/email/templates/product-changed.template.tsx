@@ -1,5 +1,5 @@
 import WrapperEmailTemplate from '@/core/email/templates/wrapper.template';
-import { OUR_COMPANY_EMAIL } from '@schnl/shared/constants';
+import { OUR_COMPANY_EMAIL } from '@brioela/shared/constants';
 
 export default function ProductChangedTemplate() {
 	const mailTo = `mailto:${OUR_COMPANY_EMAIL}`;

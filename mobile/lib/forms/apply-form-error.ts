@@ -1,4 +1,4 @@
-import { isUiError } from '@schnl/shared/lib';
+import { isUiError } from '@brioela/shared/lib';
 import type { FieldValues, Path, UseFormSetError } from 'react-hook-form';
 
 export function applyFormError<TFieldValues extends FieldValues>(

@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { setBankingTransactionNote } from '@/services/api/banking/banking.api';
 import { QUERY_KEYS } from '@/lib/query-keys';
-import type { SetBankingTransactionNoteInput } from '@schnl/shared/validators/banking-transaction-note-api.validator';
+import type { SetBankingTransactionNoteInput } from '@brioela/shared/validators/banking-transaction-note-api.validator';
 
 export function useSetBankingTransactionNote() {
   const queryClient = useQueryClient();

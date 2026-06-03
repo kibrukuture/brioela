@@ -1,7 +1,7 @@
 import { View, Text, TouchableOpacity } from 'react-native';
 import { ChevronDown } from 'lucide-react-native';
 import { CountryFlag } from './country-flag';
-import type { SupportedBankingCurrencyCode } from '@schnl/shared/constants';
+import type { SupportedBankingCurrencyCode } from '@brioela/shared/constants';
 
 interface CurrencySelectorProps {
   currency: SupportedBankingCurrencyCode;

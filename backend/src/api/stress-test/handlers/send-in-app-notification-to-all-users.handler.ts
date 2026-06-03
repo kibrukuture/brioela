@@ -1,8 +1,8 @@
 import { AppContext } from '@/index';
 import { apiErrorResponse, apiSuccessResponse } from '@/lib/response';
-import { ErrorCode } from '@schnl/shared/types/api';
+import { ErrorCode } from '@brioela/shared/types/api';
 import { getDb } from '@/core/database/client';
-import { users } from '@schnl/shared/drizzle/schema/user.schema';
+import { users } from '@brioela/shared/drizzle/schema/user.schema';
 import { sendInAppNotification } from '@/core/notifications/in-app-notifications/send-in-app-notification';
 import { parseSendInAppNotificationToAllUsersQuery } from '@/api/stress-test/helpers/parse-send-in-app-notification-to-all-users-query';
 

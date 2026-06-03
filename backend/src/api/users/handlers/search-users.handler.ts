@@ -1,10 +1,10 @@
 import type { AppContext } from '@/index';
-import { and, eq, ilike, not, or, isNull } from '@schnl/shared/drizzle';
-import { users } from '@schnl/shared/drizzle/schema/user.schema';
+import { and, eq, ilike, not, or, isNull } from '@brioela/shared/drizzle';
+import { users } from '@brioela/shared/drizzle/schema/user.schema';
 import { getDb } from '@/core/database/client';
-import { normalizeUserSearchQuery, userSearchRequestSchema, type UserSearchResponse } from '@schnl/shared/validators/user-search.validator';
+import { normalizeUserSearchQuery, userSearchRequestSchema, type UserSearchResponse } from '@brioela/shared/validators/user-search.validator';
 import { HTTPException } from 'hono/http-exception';
-import { ErrorCode } from '@schnl/shared/types/api';
+import { ErrorCode } from '@brioela/shared/types/api';
 
 export async function searchUsers(c: AppContext): Promise<UserSearchResponse> {
 	const queryParam = c.req.query('query') ?? '';

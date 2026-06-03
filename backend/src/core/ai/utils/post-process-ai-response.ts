@@ -1,5 +1,5 @@
 import { traverse } from 'object-traversal';
-import { z } from '@schnl/shared/zod';
+import { z } from '@brioela/shared/zod';
 
 /**
  * Post-process AI response to clean null/empty values

@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { createVirtualAccount } from '@/services/api/banking/banking.api';
 import { QUERY_KEYS } from '@/lib/query-keys';
-import type { CreateVirtualAccountInput } from '@schnl/shared/validators/banking.validator';
+import type { CreateVirtualAccountInput } from '@brioela/shared/validators/banking.validator';
 
 export function useCreateVirtualAccount() {
   const queryClient = useQueryClient();

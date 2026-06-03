@@ -1,8 +1,8 @@
-import { API_ROUTES } from '@schnl/shared/api';
+import { API_ROUTES } from '@brioela/shared/api';
 import { useAuthStore } from '@/stores/account/use-auth-store';
 import { createWsClient } from '@/services/ws/create-ws-client';
 import { post } from '@/services/api';
-import type { MintInAppNotificationsWsTicketResponse } from '@schnl/shared/validators/in-app-notifications-ws-ticket.validator';
+import type { MintInAppNotificationsWsTicketResponse } from '@brioela/shared/validators/in-app-notifications-ws-ticket.validator';
 
 type ConnectOptions = {
   onEvent: (event: unknown) => void;

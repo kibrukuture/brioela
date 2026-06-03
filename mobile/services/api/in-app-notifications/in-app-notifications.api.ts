@@ -1,10 +1,10 @@
-import { API_ROUTES } from '@schnl/shared/api';
+import { API_ROUTES } from '@brioela/shared/api';
 import type {
   ListInAppNotificationsResponse,
   UpdateInAppNotificationInput,
   UpdateInAppNotificationResponse,
   MarkAllInAppNotificationsReadResponse,
-} from '@schnl/shared/validators/in-app-notification.validator';
+} from '@brioela/shared/validators/in-app-notification.validator';
 import * as api from '@/services/api';
 
 export async function listInAppNotifications() {

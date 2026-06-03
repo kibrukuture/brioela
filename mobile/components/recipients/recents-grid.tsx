@@ -1,5 +1,5 @@
 import { View, Text, ScrollView } from 'react-native';
-import type { BankingRecipientListItem } from '@schnl/shared/validators/banking-recipient.validator';
+import type { BankingRecipientListItem } from '@brioela/shared/validators/banking-recipient.validator';
 import { RecentRecipientCard } from './recent-recipient-card';
 
 interface RecentsGridProps {

@@ -3,7 +3,7 @@ import { ActivityIndicator, View, Text, TouchableOpacity, ScrollView, Alert } fr
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { ArrowUp } from 'lucide-react-native';
-import type { BankingRecipientListItem } from '@schnl/shared/validators/banking-recipient.validator';
+import type { BankingRecipientListItem } from '@brioela/shared/validators/banking-recipient.validator';
 import { useRecipient } from '@/hooks/recipients/use-recipient';
 import { useDeleteRecipient } from '@/hooks/recipients/use-delete-recipient';
 import { Avatar } from '@/components/recipients/avatar';

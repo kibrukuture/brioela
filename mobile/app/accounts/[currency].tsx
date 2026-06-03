@@ -32,7 +32,7 @@ import { bankingBalances } from '@/lib/banking/banking-balances';
 import * as Burnt from 'burnt';
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@/lib/forms/zod-resolver';
-import { removeVirtualAccountSchema } from '@schnl/shared/validators/banking.validator';
+import { removeVirtualAccountSchema } from '@brioela/shared/validators/banking.validator';
 import { useRemoveVirtualAccount } from '@/hooks/banking/use-remove-virtual-account';
 
 const ActionButton: React.FC<{

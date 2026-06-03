@@ -1,23 +1,23 @@
 import dayjs from 'dayjs';
 import { HTTPException } from 'hono/http-exception';
-import { ErrorCode } from '@schnl/shared/types/api';
+import { ErrorCode } from '@brioela/shared/types/api';
 import { getDb } from '@/core/database/client';
 import getAlignClient from '@/core/clients/align';
-import { and, eq } from '@schnl/shared/drizzle';
-import { bankingCardOrders, bankingLedgerHolds, users } from '@schnl/shared/drizzle/schema';
-import { BANKING_LEDGER_HOLD_REFERENCE_TYPES } from '@schnl/shared/constants/banking-ledger-hold-reference-types';
-import { DEFAULT_ALIGN_DESTINATION_TOKEN, DEFAULT_WALLET_NETWORK } from '@schnl/shared/constants';
+import { and, eq } from '@brioela/shared/drizzle';
+import { bankingCardOrders, bankingLedgerHolds, users } from '@brioela/shared/drizzle/schema';
+import { BANKING_LEDGER_HOLD_REFERENCE_TYPES } from '@brioela/shared/constants/banking-ledger-hold-reference-types';
+import { DEFAULT_ALIGN_DESTINATION_TOKEN, DEFAULT_WALLET_NETWORK } from '@brioela/shared/constants';
 import type { FiatCurrency, PaymentRail, TransferPurpose } from '@tolbel/align';
-import { atomicToDecimalString } from '@schnl/shared/utils/money';
+import { atomicToDecimalString } from '@brioela/shared/utils/money';
 import { getOfframpDepositDetailsFromTransfer } from '@/api/banking/helpers/align/get-offramp-deposit-details-from-transfer';
 import { getActiveWalletSessionForUser } from '@/core/clients/thirdweb-utils/get-active-wallet-session-for-user';
 import { decimalStringToStableAtomic } from '@/core/clients/thirdweb-utils/decimal-string-to-usdc-atomic';
 import { sendErc20TransferWithSessionKey } from '@/core/clients/thirdweb-utils/send-erc20-transfer-with-session-key';
-import { CHAIN_IDS, USDC_BY_CHAIN } from '@schnl/shared/constants';
-import { SUPPORTED_STABLE_CURRENCIES } from '@schnl/shared/constants/supported-stable-currencies';
+import { CHAIN_IDS, USDC_BY_CHAIN } from '@brioela/shared/constants';
+import { SUPPORTED_STABLE_CURRENCIES } from '@brioela/shared/constants/supported-stable-currencies';
 import { createUserActivityTransaction } from '@/api/banking/helpers/transactions/create-user-activity-transaction';
 import { createProviderTransferMapping } from '@/api/banking/helpers/transactions/create-provider-transfer-mapping';
-import { BANKING_PROVIDERS } from '@schnl/shared/constants/banking-providers';
+import { BANKING_PROVIDERS } from '@brioela/shared/constants/banking-providers';
 import { createSchnlUsdDestinationBankAccount } from '@/api/cards/helpers/create-schnl-usd-destination-bank-account';
 
 export async function executeCardOrderOfframp(params: { orderId: string; payload: unknown }) {

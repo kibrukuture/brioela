@@ -1,6 +1,6 @@
 import { SuperwallEventData } from '@/core/webhooks/superwall/types/superwall-events.types';
-import drizzle, { eq } from '@schnl/shared/drizzle';
-import { users } from '@schnl/shared/drizzle/schema/user.schema';
+import drizzle, { eq } from '@brioela/shared/drizzle';
+import { users } from '@brioela/shared/drizzle/schema/user.schema';
 
 export async function handleSubscriptionCancelled(event: SuperwallEventData, db: ReturnType<typeof drizzle>) {
 	const { originalAppUserId, cancelReason, expirationAt } = event;

@@ -1,4 +1,4 @@
-import { z } from '@schnl/shared/zod';
+import { z } from '@brioela/shared/zod';
 import { DateTimeSchema } from '../base/date.schema';
 
 export const VitalSignSchema = z.object({

@@ -1,14 +1,14 @@
 import { AppContext } from '@/index';
 import { apiErrorResponse, apiSuccessResponse } from '@/lib/response';
-import { ErrorCode } from '@schnl/shared/types/api';
+import { ErrorCode } from '@brioela/shared/types/api';
 import getResendClient from '@/core/clients/resend';
 import StressTestEmailTemplate from '@/core/email/templates/stress-test-email.template';
 import { renderToString } from 'hono/jsx/dom/server';
-import { EMAIL_FROM } from '@schnl/shared/constants';
+import { EMAIL_FROM } from '@brioela/shared/constants';
 import { getUserCommunicationCode } from '@/core/email/helpers/get-user-communication-code';
 import { getDb } from '@/core/database/client';
-import { users } from '@schnl/shared/drizzle/schema/user.schema';
-import { eq } from '@schnl/shared/drizzle';
+import { users } from '@brioela/shared/drizzle/schema/user.schema';
+import { eq } from '@brioela/shared/drizzle';
 
 export async function testEmailSenderHandler(c: AppContext) {
 	const to = c.req.query('email');

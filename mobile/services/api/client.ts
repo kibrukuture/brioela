@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { useAuthStore } from '@/stores/account/use-auth-store';
-import { PUBLIC_URLS } from '@schnl/shared/constants';
-import ApiError, { ApiErrorResponse } from '@schnl/shared/types/api';
+import { PUBLIC_URLS } from '@brioela/shared/constants';
+import ApiError, { ApiErrorResponse } from '@brioela/shared/types/api';
 
 export const apiClient = axios.create({
   baseURL: PUBLIC_URLS.PUBLIC_API_BASE_URL,

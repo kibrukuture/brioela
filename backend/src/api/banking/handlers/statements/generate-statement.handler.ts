@@ -1,10 +1,10 @@
 import { AppContext } from '@/index';
 import { getDb } from '@/core/database/client';
-import { bankingTransactions } from '@schnl/shared/drizzle/schema';
-import { and, desc, eq, sql } from '@schnl/shared/drizzle';
-import { ErrorCode } from '@schnl/shared/types/api';
+import { bankingTransactions } from '@brioela/shared/drizzle/schema';
+import { and, desc, eq, sql } from '@brioela/shared/drizzle';
+import { ErrorCode } from '@brioela/shared/types/api';
 import { HTTPException } from 'hono/http-exception';
-import { generateStatementRequestSchema } from '@schnl/shared/validators/statement.validator';
+import { generateStatementRequestSchema } from '@brioela/shared/validators/statement.validator';
 import { generateStatementPDF } from '@/api/banking/handlers/statements/templates/statement-document';
 import dayjs from 'dayjs';
 

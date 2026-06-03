@@ -9,7 +9,7 @@ import {
 import * as Burnt from 'burnt';
 import { router } from 'expo-router';
 import { Controller, useForm } from 'react-hook-form';
-import { setCommunicationCodeSchema } from '@schnl/shared/validators/communication-code.validator';
+import { setCommunicationCodeSchema } from '@brioela/shared/validators/communication-code.validator';
 import { zodResolver } from '@/lib/forms/zod-resolver';
 
 export default function CommunicationCodeScreen() {

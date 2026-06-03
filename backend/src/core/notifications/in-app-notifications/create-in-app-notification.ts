@@ -1,6 +1,6 @@
 import { getDb } from '@/core/database/client';
-import { inAppNotifications } from '@schnl/shared/drizzle/schema/in-app-notification.schema';
-import type { CreateInAppNotificationInput } from '@schnl/shared/validators/in-app-notification.validator';
+import { inAppNotifications } from '@brioela/shared/drizzle/schema/in-app-notification.schema';
+import type { CreateInAppNotificationInput } from '@brioela/shared/validators/in-app-notification.validator';
 
 export async function createInAppNotification(input: CreateInAppNotificationInput) {
 	const db = getDb();

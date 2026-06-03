@@ -1,7 +1,7 @@
 import { View, Text, Modal, Platform, TouchableOpacity, Linking } from 'react-native';
 import ModalHandle from '@/components/ui/modal-handle';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { OUR_COMPANY_EMAIL } from '@schnl/shared/constants';
+import { OUR_COMPANY_EMAIL } from '@brioela/shared/constants';
 
 interface SupportModalProps {
   visible: boolean;

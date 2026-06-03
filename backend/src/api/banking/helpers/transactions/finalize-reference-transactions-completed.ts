@@ -1,7 +1,7 @@
 import type { Tx } from '@/api/banking/helpers/ledger/types';
-import { bankingTransactions } from '@schnl/shared/drizzle/schema';
-import { and, eq } from '@schnl/shared/drizzle';
-import { BankingTransactionReferenceType } from '@schnl/shared/drizzle/schema/banking-enums.schema';
+import { bankingTransactions } from '@brioela/shared/drizzle/schema';
+import { and, eq } from '@brioela/shared/drizzle';
+import { BankingTransactionReferenceType } from '@brioela/shared/drizzle/schema/banking-enums.schema';
 
 export async function finalizeReferenceTransactionsCompleted(params: {
 	tx: Tx;

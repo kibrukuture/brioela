@@ -1,10 +1,10 @@
-import { API_ROUTES } from '@schnl/shared/api';
+import { API_ROUTES } from '@brioela/shared/api';
 import type {
   PushRegisterInput,
   PushUnregisterInput,
   PushRegisterResponse,
   PushUnregisterResponse,
-} from '@schnl/shared/validators/notifications.validator';
+} from '@brioela/shared/validators/notifications.validator';
 import * as api from '@/services/api';
 
 export async function registerPush(input: PushRegisterInput): Promise<PushRegisterResponse> {

@@ -1,12 +1,12 @@
 import { AppContext } from '@/index';
 import { getDb } from '@/core/database/client';
-import { authSignatureChallenges } from '@schnl/shared/drizzle/schema/auth-signature-challenges.schema';
-import { eq } from '@schnl/shared/drizzle';
+import { authSignatureChallenges } from '@brioela/shared/drizzle/schema/auth-signature-challenges.schema';
+import { eq } from '@brioela/shared/drizzle';
 import dayjs from 'dayjs';
 import { nanoid } from 'nanoid';
-import { createActivationChallengeSchema, createActivationChallengeResponseSchema } from '@schnl/shared/validators/challenge.validator';
+import { createActivationChallengeSchema, createActivationChallengeResponseSchema } from '@brioela/shared/validators/challenge.validator';
 import { HTTPException } from 'hono/http-exception';
-import { ErrorCode } from '@schnl/shared/types/api';
+import { ErrorCode } from '@brioela/shared/types/api';
 
 export async function createActivationChallenge(c: AppContext) {
 	const user = c.get('user');

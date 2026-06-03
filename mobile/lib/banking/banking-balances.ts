@@ -1,7 +1,7 @@
-import type { ListBankingBalancesResponse } from '@schnl/shared/validators/banking-balance.validator';
-import { atomicToDecimalString, parseAmountAtomic } from '@schnl/shared/utils/money';
-import { bankingCurrencyValues } from '@schnl/shared/drizzle/schema/banking-enums.schema';
-import type { BankingCurrencyCode } from '@schnl/shared/constants/banking-currency-decimals';
+import type { ListBankingBalancesResponse } from '@brioela/shared/validators/banking-balance.validator';
+import { atomicToDecimalString, parseAmountAtomic } from '@brioela/shared/utils/money';
+import { bankingCurrencyValues } from '@brioela/shared/drizzle/schema/banking-enums.schema';
+import type { BankingCurrencyCode } from '@brioela/shared/constants/banking-currency-decimals';
 import { CURRENCY_OPTIONS } from '@/lib/banking/currency-options';
 
 export function bankingBalances(

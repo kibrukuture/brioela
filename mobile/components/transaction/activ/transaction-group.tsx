@@ -1,6 +1,6 @@
 import { View, Text } from 'react-native';
 import { TransactionListItem } from './transaction-list-item';
-import type { BankingTransactionListItem } from '@schnl/shared/validators/banking-transaction.validator';
+import type { BankingTransactionListItem } from '@brioela/shared/validators/banking-transaction.validator';
 
 interface TransactionGroupProps {
   date: string;

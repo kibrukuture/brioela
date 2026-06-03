@@ -2,12 +2,12 @@ import { View, Text, TextInput, TouchableOpacity } from 'react-native';
 import { Question, CaretDown } from 'phosphor-react-native';
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@/lib/forms/zod-resolver';
-import { z } from '@schnl/shared/zod';
+import { z } from '@brioela/shared/zod';
 import { usePaymentFlowStore } from '@/stores/payments/use-payment-flow-store';
 import { Sheet, useSheetRef } from '@/components/ui/sheet';
 import { useMemo, useState } from 'react';
 import { useActionSheet } from '@expo/react-native-action-sheet';
-import { PLACEHOLDERS } from '@schnl/shared/constants';
+import { PLACEHOLDERS } from '@brioela/shared/constants';
 
 const achAccountDetailsSchema = z.object({
   fullName: z.string().min(1, 'Full name is required'),

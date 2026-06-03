@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type {
   RemoveVirtualAccountInput,
   RemoveVirtualAccountResponse,
-} from '@schnl/shared/validators/banking.validator';
+} from '@brioela/shared/validators/banking.validator';
 import * as bankingApi from '@/services/api/banking/banking.api';
 import { QUERY_KEYS } from '@/lib/query-keys';
 

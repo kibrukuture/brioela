@@ -1,16 +1,16 @@
 import { AppContext } from '@/index';
 import { getDb } from '@/core/database/client';
-import { bankingWallets } from '@schnl/shared/drizzle/schema/banking-wallets.schema';
-import { bankingWalletSessions } from '@schnl/shared/drizzle/schema/banking-wallet-sessions.schema';
-import { eq, and } from '@schnl/shared/drizzle';
-import { registerSessionSchema } from '@schnl/shared/validators/banking.validator';
+import { bankingWallets } from '@brioela/shared/drizzle/schema/banking-wallets.schema';
+import { bankingWalletSessions } from '@brioela/shared/drizzle/schema/banking-wallet-sessions.schema';
+import { eq, and } from '@brioela/shared/drizzle';
+import { registerSessionSchema } from '@brioela/shared/validators/banking.validator';
 import { getThirdWebClient } from '@/core/clients/third-web';
-import { CHAIN_IDS } from '@schnl/shared/constants';
+import { CHAIN_IDS } from '@brioela/shared/constants';
 import { getContract } from 'thirdweb';
 import { polygon } from 'thirdweb/chains';
 import { getAllActiveSigners } from 'thirdweb/extensions/erc4337';
 import { HTTPException } from 'hono/http-exception';
-import { ErrorCode } from '@schnl/shared/types/api';
+import { ErrorCode } from '@brioela/shared/types/api';
 
 export async function registerSession(c: AppContext) {
 	const user = c.get('user');

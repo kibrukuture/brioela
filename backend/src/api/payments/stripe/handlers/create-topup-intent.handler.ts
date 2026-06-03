@@ -1,11 +1,11 @@
 import { AppContext } from '@/index';
 import { getDb } from '@/core/database/client';
 import { createStripeClient } from '@/core/clients/stripe';
-import { eq } from '@schnl/shared/drizzle';
-import { users } from '@schnl/shared/drizzle/schema/user.schema';
-import { createTopupIntentSchema } from '@schnl/shared/validators/stripe.validator';
+import { eq } from '@brioela/shared/drizzle';
+import { users } from '@brioela/shared/drizzle/schema/user.schema';
+import { createTopupIntentSchema } from '@brioela/shared/validators/stripe.validator';
 import { HTTPException } from 'hono/http-exception';
-import { ErrorCode } from '@schnl/shared/types/api';
+import { ErrorCode } from '@brioela/shared/types/api';
 
 type CreateTopupIntentResponse = {
 	paymentIntentClientSecret: string;

@@ -1,6 +1,6 @@
 import { Client } from '@upstash/qstash';
 import { HTTPException } from 'hono/http-exception';
-import { ErrorCode } from '@schnl/shared/types/api';
+import { ErrorCode } from '@brioela/shared/types/api';
 
 let qstashClient: Client | null = null;
 

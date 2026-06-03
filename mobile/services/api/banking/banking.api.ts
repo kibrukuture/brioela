@@ -1,4 +1,4 @@
-import { API_ROUTES } from '@schnl/shared/api';
+import { API_ROUTES } from '@brioela/shared/api';
 import {
   KycLinkResponse,
   CreateVirtualAccountInput,
@@ -13,7 +13,7 @@ import {
   RegisterSessionInput,
   RegisterSessionResponse,
   EmbeddedWalletResponse,
-} from '@schnl/shared/validators/banking.validator';
+} from '@brioela/shared/validators/banking.validator';
 import type {
   CreatePayRequestByEmailInput,
   CreatePayRequestByEmailResponse,
@@ -23,57 +23,57 @@ import type {
   CancelPayRequestResponse,
   SubmitPayRequestPayoutDetailsInput,
   SubmitPayRequestPayoutDetailsResponse,
-} from '@schnl/shared/validators/pay-request.validator';
-import { CreateActivationChallengeResponse } from '@schnl/shared/validators/challenge.validator';
+} from '@brioela/shared/validators/pay-request.validator';
+import { CreateActivationChallengeResponse } from '@brioela/shared/validators/challenge.validator';
 import type {
   CreateOutgoingPayoutInput,
   CreateOutgoingPayoutResponse,
-} from '@schnl/shared/validators/outgoing-payout.validator';
+} from '@brioela/shared/validators/outgoing-payout.validator';
 import type {
   CreatePeerToPeerTransferInput,
   CreatePeerToPeerTransferResponse,
-} from '@schnl/shared/validators/peer-to-peer-transfer.validator';
+} from '@brioela/shared/validators/peer-to-peer-transfer.validator';
 import type {
   PeerToPeerPrecheckInput,
   PeerToPeerPrecheckResponse,
-} from '@schnl/shared/validators/peer-to-peer-precheck.validator';
+} from '@brioela/shared/validators/peer-to-peer-precheck.validator';
 import type {
   OutgoingPayoutPrecheckInput,
   OutgoingPayoutPrecheckResponse,
-} from '@schnl/shared/validators/outgoing-payout-precheck.validator';
+} from '@brioela/shared/validators/outgoing-payout-precheck.validator';
 import type {
   PayRequestPayoutPrecheckInput,
   PayRequestPayoutPrecheckResponse,
-} from '@schnl/shared/validators/pay-request-precheck.validator';
-import type { ListBankingTransactionsResponse } from '@schnl/shared/validators/banking-transaction.validator';
+} from '@brioela/shared/validators/pay-request-precheck.validator';
+import type { ListBankingTransactionsResponse } from '@brioela/shared/validators/banking-transaction.validator';
 import type {
   SetBankingTransactionCategoryInput,
   SetBankingTransactionCategoryResponse,
-} from '@schnl/shared/validators/banking-transaction-category-api.validator';
+} from '@brioela/shared/validators/banking-transaction-category-api.validator';
 import type {
   SetBankingTransactionNoteInput,
   SetBankingTransactionNoteResponse,
-} from '@schnl/shared/validators/banking-transaction-note-api.validator';
+} from '@brioela/shared/validators/banking-transaction-note-api.validator';
 import type {
   UploadBankingTransactionAttachmentResponse,
   DeleteBankingTransactionAttachmentResponse,
   EmailBankingTransactionReceiptResponse,
-} from '@schnl/shared/validators/banking-transaction-attachment-api.validator';
+} from '@brioela/shared/validators/banking-transaction-attachment-api.validator';
 import type {
   ListBankingRecipientsResponse,
   GetBankingRecipientResponse,
   CreateBankingRecipientInput,
   CreateBankingRecipientResponse,
   DeleteBankingRecipientResponse,
-} from '@schnl/shared/validators/banking-recipient.validator';
-import type { ListBankingBalancesResponse } from '@schnl/shared/validators/banking-balance.validator';
+} from '@brioela/shared/validators/banking-recipient.validator';
+import type { ListBankingBalancesResponse } from '@brioela/shared/validators/banking-balance.validator';
 import type {
   GetBankingLimitsResponse,
   UpdateBankingLimitInput,
   UpdateBankingLimitResponse,
-} from '@schnl/shared/validators/banking-limit.validator';
-import type { GetBankingFxRateResponse } from '@schnl/shared/validators/banking-fx-rate.validator';
-import type { CustomerAddressResponse } from '@schnl/shared/validators/customer-address.validator';
+} from '@brioela/shared/validators/banking-limit.validator';
+import type { GetBankingFxRateResponse } from '@brioela/shared/validators/banking-fx-rate.validator';
+import type { CustomerAddressResponse } from '@brioela/shared/validators/customer-address.validator';
 import * as api from '@/services/api';
 
 export async function getKycLink() {

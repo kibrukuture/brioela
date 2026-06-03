@@ -1,8 +1,8 @@
 import dayjs from 'dayjs';
 import { getDb } from '@/core/database/client';
-import { and, eq, isNull, or, sql } from '@schnl/shared/drizzle';
-import { bankingOfframpOutbox } from '@schnl/shared/drizzle/schema/banking-offramp-outbox.schema';
-import { OFFRAMP_OUTBOX_LOCK_TTL_MINUTES } from '@schnl/shared/constants/offramp-outbox';
+import { and, eq, isNull, or, sql } from '@brioela/shared/drizzle';
+import { bankingOfframpOutbox } from '@brioela/shared/drizzle/schema/banking-offramp-outbox.schema';
+import { OFFRAMP_OUTBOX_LOCK_TTL_MINUTES } from '@brioela/shared/constants/offramp-outbox';
 
 type ClaimOfframpOutboxResult =
 	| { claimed: true; row: typeof bankingOfframpOutbox.$inferSelect }

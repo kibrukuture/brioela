@@ -1,7 +1,7 @@
 import { Text, TouchableOpacity, View } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import * as WebBrowser from 'expo-web-browser';
-import { OUR_COMPANY_PRIVACY_POLICY, OUR_COMPANY_TERMS_OF_SERVICE } from '@schnl/shared/constants';
+import { OUR_COMPANY_PRIVACY_POLICY, OUR_COMPANY_TERMS_OF_SERVICE } from '@brioela/shared/constants';
 
 export default function FooterLinks() {
   return (

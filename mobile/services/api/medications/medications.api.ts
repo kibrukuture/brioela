@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { API_ROUTES } from '@schnl/shared/api';
+import { API_ROUTES } from '@brioela/shared/api';
 
 export const medicationsApi = {
   getAll: () => axios.get(API_ROUTES.medications.getAll()),

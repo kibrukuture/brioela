@@ -8,8 +8,8 @@ import type {
   CardControlsState,
   CardControlKey,
   UpdateCardControlsInput,
-} from '@schnl/shared/validators/card-controls.validator';
-import { cardControlKeys } from '@schnl/shared/validators/card-controls.validator';
+} from '@brioela/shared/validators/card-controls.validator';
+import { cardControlKeys } from '@brioela/shared/validators/card-controls.validator';
 
 export default function CardControlsPage() {
   const router = useRouter();

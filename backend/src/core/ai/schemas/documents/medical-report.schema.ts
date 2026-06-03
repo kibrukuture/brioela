@@ -1,5 +1,5 @@
 // report by a doctor to patient.
-import { z } from '@schnl/shared/zod';
+import { z } from '@brioela/shared/zod';
 import { LanguageDetectionSchema } from '../base/language.schema';
 import { ConfidenceSchema } from '../base/confidence.schema';
 import { DateSchema } from '../base/date.schema';

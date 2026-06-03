@@ -1,4 +1,4 @@
-import { z } from '@schnl/shared/zod';
+import { z } from '@brioela/shared/zod';
 
 export const AIErrorSchema = z.object({
 	error_code: z.string().describe('Machine-readable error code'),

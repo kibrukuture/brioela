@@ -1,5 +1,5 @@
 import { Hono } from 'hono';
-import { API_ROUTE_PATTERNS } from '@schnl/shared/api';
+import { API_ROUTE_PATTERNS } from '@brioela/shared/api';
 import superwallRoutes from '@/core/webhooks/superwall/superwall.routes';
 import stripeRoutes from '@/api/payments/stripe/stripe.routes';
 import alignRoutes from '@/core/webhooks/align/align.routes';

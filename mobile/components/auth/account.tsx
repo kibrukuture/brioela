@@ -13,9 +13,9 @@ import AuthWithEmailModal from '@/components/auth/auth-with-email';
 import { forgotPasswordSchema, signInSchema, signUpSchema } from '@/ui-schema';
 
 import { useAuthFlowStore } from '@/stores/account/use-auth-flow-store';
-import { ZodError } from '@schnl/shared/zod';
+import { ZodError } from '@brioela/shared/zod';
 import { useTranslation } from 'react-i18next';
-import { OUR_COMPANY_PRIVACY_POLICY, OUR_COMPANY_TERMS_OF_SERVICE } from '@schnl/shared/constants';
+import { OUR_COMPANY_PRIVACY_POLICY, OUR_COMPANY_TERMS_OF_SERVICE } from '@brioela/shared/constants';
 
 WebBrowser.maybeCompleteAuthSession();
 

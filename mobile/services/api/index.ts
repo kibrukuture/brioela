@@ -1,5 +1,5 @@
 import { apiClient } from '@/services/api/client';
-import ApiError, { ApiSuccessResponse, ApiErrorResponse } from '@schnl/shared/types/api';
+import ApiError, { ApiSuccessResponse, ApiErrorResponse } from '@brioela/shared/types/api';
 import type { AxiosResponse } from 'axios';
 
 /**

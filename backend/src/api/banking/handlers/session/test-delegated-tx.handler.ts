@@ -1,14 +1,14 @@
 import { AppContext } from '@/index';
 import { getDb } from '@/core/database/client';
-import { bankingWallets } from '@schnl/shared/drizzle/schema/banking-wallets.schema';
-import { bankingWalletSessions } from '@schnl/shared/drizzle/schema/banking-wallet-sessions.schema';
-import { eq, and } from '@schnl/shared/drizzle';
+import { bankingWallets } from '@brioela/shared/drizzle/schema/banking-wallets.schema';
+import { bankingWalletSessions } from '@brioela/shared/drizzle/schema/banking-wallet-sessions.schema';
+import { eq, and } from '@brioela/shared/drizzle';
 import { getThirdWebClient } from '@/core/clients/third-web';
-import { CHAIN_IDS, USDC_BY_CHAIN } from '@schnl/shared/constants';
+import { CHAIN_IDS, USDC_BY_CHAIN } from '@brioela/shared/constants';
 import { polygon } from 'thirdweb/chains';
 import { Engine, getContract, prepareContractCall, sendAndConfirmTransaction } from 'thirdweb';
 import { HTTPException } from 'hono/http-exception';
-import { ErrorCode } from '@schnl/shared/types/api';
+import { ErrorCode } from '@brioela/shared/types/api';
 
 export async function testDelegatedTx(c: AppContext) {
 	const user = c.get('user');

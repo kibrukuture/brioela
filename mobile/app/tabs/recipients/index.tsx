@@ -5,7 +5,7 @@ import { useRouter } from 'expo-router';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { UsersThree } from 'phosphor-react-native';
 
-import type { BankingRecipientListItem } from '@schnl/shared/validators/banking-recipient.validator';
+import type { BankingRecipientListItem } from '@brioela/shared/validators/banking-recipient.validator';
 import { useRecipients } from '@/hooks/recipients/use-recipients';
 import { RecentsGrid } from '@/components/recipients/recents-grid';
 import { RecipientListItem } from '@/components/recipients/recipient-list-item';

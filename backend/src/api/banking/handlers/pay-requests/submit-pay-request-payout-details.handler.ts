@@ -1,19 +1,19 @@
 import { AppContext } from '@/index';
 import { getDb } from '@/core/database/client';
-import { bankingPayRequests, bankingLedgerHolds } from '@schnl/shared/drizzle/schema';
-import { and, eq } from '@schnl/shared/drizzle';
-import { submitPayRequestPayoutDetailsSchema } from '@schnl/shared/validators/pay-request.validator';
-import { users } from '@schnl/shared/drizzle/schema/user.schema';
+import { bankingPayRequests, bankingLedgerHolds } from '@brioela/shared/drizzle/schema';
+import { and, eq } from '@brioela/shared/drizzle';
+import { submitPayRequestPayoutDetailsSchema } from '@brioela/shared/validators/pay-request.validator';
+import { users } from '@brioela/shared/drizzle/schema/user.schema';
 import { encryptWithAES256GCM } from '@/core/crypto/encrypt-with-aes-256-gcm';
-import { ErrorCode } from '@schnl/shared/types/api';
+import { ErrorCode } from '@brioela/shared/types/api';
 import { HTTPException } from 'hono/http-exception';
-import { payRequestIdParamSchema } from '@schnl/shared/validators/pay-request.validator';
-import { BANKING_LEDGER_HOLD_REFERENCE_TYPES } from '@schnl/shared/constants/banking-ledger-hold-reference-types';
+import { payRequestIdParamSchema } from '@brioela/shared/validators/pay-request.validator';
+import { BANKING_LEDGER_HOLD_REFERENCE_TYPES } from '@brioela/shared/constants/banking-ledger-hold-reference-types';
 import dayjs from 'dayjs';
 import { createQStashClient } from '@/message-queue';
 import { publishJob } from '@/message-queue/publish';
-import { PRODUCTION_API_BASE_URL } from '@schnl/shared/constants';
-import { QUEUE_ROUTES } from '@schnl/shared/api/queue.routes';
+import { PRODUCTION_API_BASE_URL } from '@brioela/shared/constants';
+import { QUEUE_ROUTES } from '@brioela/shared/api/queue.routes';
 
 export async function submitPayRequestPayoutDetails(c: AppContext) {
 	const user = c.get('user');

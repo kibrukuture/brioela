@@ -6,14 +6,14 @@ import {
 	bankingCustomerKycRailApprovals,
 	bankingKycEvents,
 	users,
-} from '@schnl/shared/drizzle/schema';
-import { eq } from '@schnl/shared/drizzle';
+} from '@brioela/shared/drizzle/schema';
+import { eq } from '@brioela/shared/drizzle';
 import type { WebhookEvent } from '@tolbel/align';
-import { alignCustomerSchema } from '@schnl/shared/validators/align-customer.validator';
+import { alignCustomerSchema } from '@brioela/shared/validators/align-customer.validator';
 import dayjs from 'dayjs';
 import { HTTPException } from 'hono/http-exception';
-import { ErrorCode } from '@schnl/shared/types/api';
-import { BANKING_PROVIDERS } from '@schnl/shared/constants/banking-providers';
+import { ErrorCode } from '@brioela/shared/types/api';
+import { BANKING_PROVIDERS } from '@brioela/shared/constants/banking-providers';
 
 export async function onCustomerKycsUpdated(event: WebhookEvent) {
 	const db = getDb();

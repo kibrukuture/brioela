@@ -1,13 +1,13 @@
 import { HTTPException } from 'hono/http-exception';
-import { ErrorCode } from '@schnl/shared/types/api';
+import { ErrorCode } from '@brioela/shared/types/api';
 
 import { AppContext } from '@/index';
 import { getDb } from '@/core/database/client';
 import { uploadFile, deleteFile } from '@/core/storage/services/s3.service';
-import { users } from '@schnl/shared/drizzle/schema/user.schema';
-import { eq } from '@schnl/shared/drizzle';
-import type { UpdateProfilePictureResponse } from '@schnl/shared/validators/profile-picture.validator';
-import { PUBLIC_S3_URL } from '@schnl/shared/constants';
+import { users } from '@brioela/shared/drizzle/schema/user.schema';
+import { eq } from '@brioela/shared/drizzle';
+import type { UpdateProfilePictureResponse } from '@brioela/shared/validators/profile-picture.validator';
+import { PUBLIC_S3_URL } from '@brioela/shared/constants';
 const ALLOWED_CONTENT_TYPES = new Set<string>(['image/jpeg', 'image/png', 'image/webp']);
 
 // Optimized avatars should be small. Keep a strict server-side cap anyway.

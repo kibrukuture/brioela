@@ -1,5 +1,5 @@
 import * as Sentry from '@sentry/node';
-import { ErrorReporter, ErrorContext, ErrorSeverity } from '@schnl/shared/error-handlers/sentry';
+import { ErrorReporter, ErrorContext, ErrorSeverity } from '@brioela/shared/error-handlers/sentry';
 
 // Backend-specific error reporter
 export const backendErrorReporter: ErrorReporter = {

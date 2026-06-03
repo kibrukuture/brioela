@@ -1,6 +1,6 @@
 import crypto from 'crypto';
 import { HTTPException } from 'hono/http-exception';
-import { ErrorCode } from '@schnl/shared/types/api';
+import { ErrorCode } from '@brioela/shared/types/api';
 
 /**
  * Decrypts AES-256-GCM encrypted data.

@@ -1,7 +1,7 @@
 import { HTTPException } from 'hono/http-exception';
 import type { AppContext } from '@/index';
 import { getInAppNotificationsWsTicketStore } from '@/core/realtime/in-app-notifications/get-in-app-notifications-ws-ticket-store';
-import { mintInAppNotificationsWsTicketResponseSchema } from '@schnl/shared/validators/in-app-notifications-ws-ticket.validator';
+import { mintInAppNotificationsWsTicketResponseSchema } from '@brioela/shared/validators/in-app-notifications-ws-ticket.validator';
 
 export async function mintInAppNotificationsWsTicketHandler(c: AppContext) {
 	const user = c.get('user');

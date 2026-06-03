@@ -1,7 +1,7 @@
 import getAlignClient from '@/core/clients/align';
-import { and, eq } from '@schnl/shared/drizzle';
-import { bankingLedgerHolds, bankingPayRequests, users } from '@schnl/shared/drizzle/schema';
-import { BANKING_LEDGER_HOLD_REFERENCE_TYPES } from '@schnl/shared/constants/banking-ledger-hold-reference-types';
+import { and, eq } from '@brioela/shared/drizzle';
+import { bankingLedgerHolds, bankingPayRequests, users } from '@brioela/shared/drizzle/schema';
+import { BANKING_LEDGER_HOLD_REFERENCE_TYPES } from '@brioela/shared/constants/banking-ledger-hold-reference-types';
 import { captureHold, releaseHold } from '@/api/banking/helpers/ledger';
 import type { Tx } from '@/api/banking/helpers/ledger/types';
 import dayjs from 'dayjs';

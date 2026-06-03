@@ -1,7 +1,7 @@
 import { Context, Next } from 'hono';
 import { getSupabaseAdmin } from '@/core/database/supabase-admin-client';
 import { apiErrorResponse } from '@/lib/response';
-import { ErrorCode } from '@schnl/shared/types/api';
+import { ErrorCode } from '@brioela/shared/types/api';
 
 interface AuthMiddlewareOptions {
 	skipRoutes?: string[]; // routes to skip authentication

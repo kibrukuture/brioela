@@ -1,6 +1,6 @@
 import type { AppContext } from '@/index';
 import { apiErrorResponse, apiSuccessResponse } from '@/lib/response';
-import { ErrorCode } from '@schnl/shared/types/api';
+import { ErrorCode } from '@brioela/shared/types/api';
 import Stripe from 'stripe';
 import { handlePaymentFailed } from '@/core/webhooks/stripe/services/payment-failed.service';
 import { handleSubscriptionUpdated } from '@/core/webhooks/stripe/services/subscription-updated.service';

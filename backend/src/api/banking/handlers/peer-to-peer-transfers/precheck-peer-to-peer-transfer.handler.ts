@@ -1,15 +1,15 @@
 import { AppContext } from '@/index';
 import { getDb } from '@/core/database/client';
-import { bankingVirtualAccounts } from '@schnl/shared/drizzle/schema';
-import { and, eq } from '@schnl/shared/drizzle';
+import { bankingVirtualAccounts } from '@brioela/shared/drizzle/schema';
+import { and, eq } from '@brioela/shared/drizzle';
 import { HTTPException } from 'hono/http-exception';
-import { ErrorCode } from '@schnl/shared/types/api';
+import { ErrorCode } from '@brioela/shared/types/api';
 import {
 	peerToPeerPrecheckSchema,
 	type PeerToPeerPrecheckInput,
 	type PeerToPeerPrecheckResponse,
-} from '@schnl/shared/validators/peer-to-peer-precheck.validator';
-import { users } from '@schnl/shared/drizzle/schema/user.schema';
+} from '@brioela/shared/validators/peer-to-peer-precheck.validator';
+import { users } from '@brioela/shared/drizzle/schema/user.schema';
 
 export async function precheckPeerToPeerTransfer(c: AppContext) {
 	const user = c.get('user');

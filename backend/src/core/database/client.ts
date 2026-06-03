@@ -1,6 +1,6 @@
-import drizzle from '@schnl/shared/drizzle';
+import drizzle from '@brioela/shared/drizzle';
 import { Pool } from 'node_modules/@types/pg';
-import { schema } from '@schnl/shared/drizzle/schema';
+import { schema } from '@brioela/shared/drizzle/schema';
 
 /**
  * Create database client with optimized connection pool configuration

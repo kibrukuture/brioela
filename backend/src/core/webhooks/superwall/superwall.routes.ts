@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
 import { handleSuperwallWebhook } from '@/core/webhooks/superwall/superwall.controller';
 import { verifySuperwallWebhook } from '@/core/webhooks/superwall/middleware/verify-superwall-signature';
-import { WEBHOOK_ROUTE_PATTERNS } from '@schnl/shared/api/webhooks.routes';
+import { WEBHOOK_ROUTE_PATTERNS } from '@brioela/shared/api/webhooks.routes';
 
 const superwallRoutes = new Hono();
 

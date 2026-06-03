@@ -1,7 +1,7 @@
 import { HTTPException } from 'hono/http-exception';
-import { ErrorCode } from '@schnl/shared/types/api';
+import { ErrorCode } from '@brioela/shared/types/api';
 import type { FiatCurrency } from '@tolbel/align';
-import type { BankingPayRequest } from '@schnl/shared/drizzle/schema/banking-pay-requests.schema';
+import type { BankingPayRequest } from '@brioela/shared/drizzle/schema/banking-pay-requests.schema';
 
 export function getPayRequestOfframpDestinationCurrency(req: BankingPayRequest): FiatCurrency {
 	switch (req.payoutCurrency) {

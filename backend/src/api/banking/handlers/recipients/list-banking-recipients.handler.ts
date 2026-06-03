@@ -1,10 +1,10 @@
 import { AppContext } from '@/index';
 import { getDb } from '@/core/database/client';
-import { bankingExternalAccounts } from '@schnl/shared/drizzle/schema';
-import { desc, eq } from '@schnl/shared/drizzle';
-import { ErrorCode } from '@schnl/shared/types/api';
+import { bankingExternalAccounts } from '@brioela/shared/drizzle/schema';
+import { desc, eq } from '@brioela/shared/drizzle';
+import { ErrorCode } from '@brioela/shared/types/api';
 import { HTTPException } from 'hono/http-exception';
-import { listBankingRecipientsResponseSchema } from '@schnl/shared/validators/banking-recipient.validator';
+import { listBankingRecipientsResponseSchema } from '@brioela/shared/validators/banking-recipient.validator';
 import dayjs from 'dayjs';
 
 export async function listBankingRecipients(c: AppContext) {

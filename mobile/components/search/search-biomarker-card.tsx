@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, Pressable } from 'react-native';
-import type { UserSearchResult } from '@schnl/shared/validators/user-search.validator';
+import type { UserSearchResult } from '@brioela/shared/validators/user-search.validator';
 
 type SearchBiomarkerCardProps = {
   result: UserSearchResult;

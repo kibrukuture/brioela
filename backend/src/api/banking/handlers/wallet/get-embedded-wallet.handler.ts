@@ -1,9 +1,9 @@
 import { AppContext } from '@/index';
 import { getThirdWebClient } from '@/core/clients/third-web';
-import { embeddedWalletResponseSchema } from '@schnl/shared/validators/banking.validator';
+import { embeddedWalletResponseSchema } from '@brioela/shared/validators/banking.validator';
 import { getUser } from 'thirdweb/wallets';
 import { HTTPException } from 'hono/http-exception';
-import { ErrorCode } from '@schnl/shared/types/api';
+import { ErrorCode } from '@brioela/shared/types/api';
 
 export async function getEmbeddedWallet(c: AppContext) {
 	const user = c.get('user');

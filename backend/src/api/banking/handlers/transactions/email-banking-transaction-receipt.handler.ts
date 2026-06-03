@@ -1,15 +1,15 @@
 import { AppContext } from '@/index';
 import { getDb } from '@/core/database/client';
-import { bankingTransactions } from '@schnl/shared/drizzle/schema';
-import { and, eq } from '@schnl/shared/drizzle';
-import { ErrorCode } from '@schnl/shared/types/api';
+import { bankingTransactions } from '@brioela/shared/drizzle/schema';
+import { and, eq } from '@brioela/shared/drizzle';
+import { ErrorCode } from '@brioela/shared/types/api';
 import { HTTPException } from 'hono/http-exception';
 import dayjs from 'dayjs';
 import getResendClient from '@/core/clients/resend';
-import { EMAIL_FROM } from '@schnl/shared/constants';
+import { EMAIL_FROM } from '@brioela/shared/constants';
 import { generateTransactionReceiptPDF } from '@/api/banking/handlers/transactions/templates/transaction-receipt-document';
-import { emailBankingTransactionReceiptResponseSchema } from '@schnl/shared/validators/banking-transaction-attachment-api.validator';
-import { bankingTransactionIdParamSchema } from '@schnl/shared/validators/banking-transaction-note-api.validator';
+import { emailBankingTransactionReceiptResponseSchema } from '@brioela/shared/validators/banking-transaction-attachment-api.validator';
+import { bankingTransactionIdParamSchema } from '@brioela/shared/validators/banking-transaction-note-api.validator';
 
 export async function emailBankingTransactionReceipt(c: AppContext) {
 	const user = c.get('user');

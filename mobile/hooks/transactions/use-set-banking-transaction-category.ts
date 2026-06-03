@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { setBankingTransactionCategory } from '@/services/api/banking/banking.api';
-import type { SetBankingTransactionCategoryInput } from '@schnl/shared/validators/banking-transaction-category-api.validator';
+import type { SetBankingTransactionCategoryInput } from '@brioela/shared/validators/banking-transaction-category-api.validator';
 import { QUERY_KEYS } from '@/lib/query-keys';
 
 export function useSetBankingTransactionCategory() {

@@ -1,4 +1,4 @@
-import { z } from '@schnl/shared/zod';
+import { z } from '@brioela/shared/zod';
 const email_format_invalid = `The email address you entered isn't valid.`;
 
 export const signInSchema = z.object({

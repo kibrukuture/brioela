@@ -1,7 +1,7 @@
-import { SCHNL_USD_BANK_ACCOUNT } from '@schnl/shared/constants/schnl-usd-bank-account';
+import { SCHNL_USD_BANK_ACCOUNT } from '@brioela/shared/constants/schnl-usd-bank-account';
 import { createOfframpDestinationBankAccount } from '@/api/banking/helpers/payout/create-offramp-destination-bank-account';
 import type { DestinationBankAccount } from '@tolbel/align';
-import type { PayRequestBankDetails } from '@schnl/shared/validators/pay-request.validator';
+import type { PayRequestBankDetails } from '@brioela/shared/validators/pay-request.validator';
 
 export function createSchnlUsdDestinationBankAccount(): DestinationBankAccount {
 	const bankDetails: PayRequestBankDetails = {

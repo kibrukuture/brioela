@@ -1,10 +1,10 @@
 import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
 import type { PaymentFlow } from '@/components/payments/payment';
 import { BackButton } from '@/components/ui/back-button';
-import { formatIbanForDisplay } from '@schnl/shared/lib';
+import { formatIbanForDisplay } from '@brioela/shared/lib';
 import { usePaymentFlowStore } from '@/stores/payments/use-payment-flow-store';
-import type { CreateOutgoingPayoutInput } from '@schnl/shared/validators/outgoing-payout.validator';
-import { decimalStringToAtomicString } from '@schnl/shared/utils/money';
+import type { CreateOutgoingPayoutInput } from '@brioela/shared/validators/outgoing-payout.validator';
+import { decimalStringToAtomicString } from '@brioela/shared/utils/money';
 import { useCreateOutgoingPayout } from '@/hooks/banking/use-create-outgoing-payout';
 import { usePrecheckOutgoingPayout } from '@/hooks/banking/use-precheck-outgoing-payout';
 import * as Burnt from 'burnt';

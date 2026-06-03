@@ -1,5 +1,5 @@
 // Superwall webhook event types based on official documentation
-import { SubscriptionPlatform } from '@schnl/shared/drizzle/schema/user.schema';
+import { SubscriptionPlatform } from '@brioela/shared/drizzle/schema/user.schema';
 export const SuperwallEventEnum = {
 	initial_purchase: 'initial_purchase',
 	renewal: 'renewal',

@@ -1,5 +1,5 @@
 import { Hono } from 'hono';
-import { API_ROUTE_PATTERNS } from '@schnl/shared/api';
+import { API_ROUTE_PATTERNS } from '@brioela/shared/api';
 import { onUpdateCommunicationCode, onGetCommunicationCode } from '@/api/communication-codes/communication-code.controller';
 
 const communicationCodeRoutes = new Hono();

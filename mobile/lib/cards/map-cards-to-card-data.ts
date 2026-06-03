@@ -1,4 +1,4 @@
-import type { Card } from '@schnl/shared/validators/card.validator';
+import type { Card } from '@brioela/shared/validators/card.validator';
 import type { CardData } from '@/components/cards/types';
 
 export function mapCardsToCardData(input: { cards: readonly Card[] }): readonly CardData[] {

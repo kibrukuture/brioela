@@ -1,7 +1,7 @@
 import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
 import dayjs from 'dayjs';
-import { atomicToDecimalString } from '@schnl/shared/utils/money';
-import type { BankingCurrencyCode } from '@schnl/shared/constants/banking-currency-decimals';
+import { atomicToDecimalString } from '@brioela/shared/utils/money';
+import type { BankingCurrencyCode } from '@brioela/shared/constants/banking-currency-decimals';
 
 interface TransactionReceiptPDFProps {
 	transaction: {

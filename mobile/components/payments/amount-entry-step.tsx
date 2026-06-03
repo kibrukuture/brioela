@@ -3,7 +3,7 @@
 import { View, Text, TextInput, TouchableOpacity } from 'react-native';
 import type { PaymentFlow } from '@/components/payments/payment';
 import { BackButton } from '@/components/ui/back-button';
-import { SUPPORTED_CURRENCIES } from '@schnl/shared/constants';
+import { SUPPORTED_CURRENCIES } from '@brioela/shared/constants';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { Controller, useForm, type SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@/lib/forms/zod-resolver';

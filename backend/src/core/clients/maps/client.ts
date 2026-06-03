@@ -1,10 +1,10 @@
 import { HTTPException } from 'hono/http-exception';
-import { ErrorCode } from '@schnl/shared/types/api';
+import { ErrorCode } from '@brioela/shared/types/api';
 import {
 	locationSearchResponseSchema,
 	type LocationSearchRequest,
 	type LocationSearchResponse,
-} from '@schnl/shared/validators/location-search.validator';
+} from '@brioela/shared/validators/location-search.validator';
 
 type LocationIqAutocompleteRow = {
 	place_id?: string;

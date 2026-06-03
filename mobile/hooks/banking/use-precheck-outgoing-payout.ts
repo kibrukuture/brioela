@@ -2,7 +2,7 @@ import { useMutation } from '@tanstack/react-query';
 import type {
   OutgoingPayoutPrecheckInput,
   OutgoingPayoutPrecheckResponse,
-} from '@schnl/shared/validators/outgoing-payout-precheck.validator';
+} from '@brioela/shared/validators/outgoing-payout-precheck.validator';
 import { precheckOutgoingPayout } from '@/services/api/banking/banking.api';
 
 export function usePrecheckOutgoingPayout() {

@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { updateInAppNotification } from '@/services/api/in-app-notifications/in-app-notifications.api';
 import { QUERY_KEYS } from '@/lib/query-keys';
-import type { UpdateInAppNotificationInput } from '@schnl/shared/validators/in-app-notification.validator';
+import type { UpdateInAppNotificationInput } from '@brioela/shared/validators/in-app-notification.validator';
 
 export const useUpdateInAppNotification = () => {
   const queryClient = useQueryClient();

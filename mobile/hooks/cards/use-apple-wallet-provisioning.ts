@@ -1,5 +1,5 @@
 import { useMutation } from '@tanstack/react-query';
-import type { CardWalletProvisioningResponse } from '@schnl/shared/validators/card-wallet-provisioning.validator';
+import type { CardWalletProvisioningResponse } from '@brioela/shared/validators/card-wallet-provisioning.validator';
 import * as cardsApi from '@/services/api/cards/cards.api';
 
 export function useAppleWalletProvisioning() {

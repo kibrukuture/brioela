@@ -1,4 +1,4 @@
-import { z } from '@schnl/shared/zod';
+import { z } from '@brioela/shared/zod';
 export const StandardizedUnitSchema = z.object({
 	value: z.number().describe('Standardized numeric value'),
 	unit: z.string().describe('Standardized unit of measurement'),

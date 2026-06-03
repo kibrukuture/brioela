@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
 import { verifyQStashSignature } from '@/message-queue/verify';
 import { emailsJobOrchestrator } from '@/api/emails/jobs/emails.job';
-import { API_ROUTE_PATTERNS } from '@schnl/shared/api';
+import { API_ROUTE_PATTERNS } from '@brioela/shared/api';
 
 import { alignPollingRouter } from '@/message-queue/align/polling.route';
 import { expirePayRequestJob } from '@/api/banking/jobs/expire-pay-request.job';

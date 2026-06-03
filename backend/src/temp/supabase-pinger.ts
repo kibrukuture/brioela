@@ -1,5 +1,5 @@
 import { getDb } from '@/core/database/client';
-import { dbPingers } from '@schnl/shared/drizzle/schema/db-pinger.schema';
+import { dbPingers } from '@brioela/shared/drizzle/schema/db-pinger.schema';
 
 export async function pingSupabase(): Promise<void> {
 	try {

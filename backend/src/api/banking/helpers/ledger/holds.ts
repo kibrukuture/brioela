@@ -1,9 +1,9 @@
-import { and, eq } from '@schnl/shared/drizzle';
-import { bankingLedgerAccounts, bankingLedgerEntries, bankingLedgerHolds } from '@schnl/shared/drizzle/schema';
-import { parseAmountAtomic } from '@schnl/shared/utils/money';
+import { and, eq } from '@brioela/shared/drizzle';
+import { bankingLedgerAccounts, bankingLedgerEntries, bankingLedgerHolds } from '@brioela/shared/drizzle/schema';
+import { parseAmountAtomic } from '@brioela/shared/utils/money';
 import type { BankingCurrencyCode, Tx } from '@/api/banking/helpers/ledger/types';
 import { HTTPException } from 'hono/http-exception';
-import { ErrorCode } from '@schnl/shared/types/api';
+import { ErrorCode } from '@brioela/shared/types/api';
 
 function assertNonNegativeAtomic(value: bigint, message: string) {
 	if (value < 0n) throw new HTTPException(ErrorCode.PRECONDITION_FAILED, { message });

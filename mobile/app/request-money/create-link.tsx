@@ -6,7 +6,7 @@ import { LinkSimple, Copy, ShareNetwork } from 'phosphor-react-native';
 import * as Clipboard from 'expo-clipboard';
 import * as Haptics from 'expo-haptics';
 import { BackButton } from '@/components/ui/back-button';
-import { SUPPORTED_CURRENCIES, type SupportedCurrency } from '@schnl/shared/constants';
+import { SUPPORTED_CURRENCIES, type SupportedCurrency } from '@brioela/shared/constants';
 import { NativeSegmentedTabs } from '@/components/ui/native-segmented-tabs';
 
 export default function CreateRequestLinkScreen(): React.ReactElement {

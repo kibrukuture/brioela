@@ -2,7 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import type {
   SetCommunicationCodeInput,
   CommunicationCodeResponse,
-} from '@schnl/shared/validators/communication-code.validator';
+} from '@brioela/shared/validators/communication-code.validator';
 import * as communicationCodesApi from '@/services/api/communication-codes/communication-codes.api';
 import { QUERY_KEYS } from '@/lib/query-keys';
 

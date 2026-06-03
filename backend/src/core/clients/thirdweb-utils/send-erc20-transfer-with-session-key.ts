@@ -1,9 +1,9 @@
 import { getThirdWebClient } from '@/core/clients/third-web';
-import { CHAIN_IDS } from '@schnl/shared/constants/chains';
+import { CHAIN_IDS } from '@brioela/shared/constants/chains';
 import { Engine, getContract, prepareContractCall, sendAndConfirmTransaction } from 'thirdweb';
 import { polygon } from 'thirdweb/chains';
 import { HTTPException } from 'hono/http-exception';
-import { ErrorCode } from '@schnl/shared/types/api';
+import { ErrorCode } from '@brioela/shared/types/api';
 import { ethers } from '@tolbel/align';
 
 export async function sendErc20TransferWithSessionKey(params: {

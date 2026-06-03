@@ -1,7 +1,7 @@
 import { AppContext } from '@/index';
 import { getDb } from '@/core/database/client';
-import { eq } from '@schnl/shared/drizzle';
-import { communicationCodes } from '@schnl/shared/drizzle/schema/communication-codes.schema';
+import { eq } from '@brioela/shared/drizzle';
+import { communicationCodes } from '@brioela/shared/drizzle/schema/communication-codes.schema';
 import { decryptWithAES256GCM } from '@/core/crypto/decrypt-with-aes-256-gcm';
 
 export async function getCommunicationCode(c: AppContext) {

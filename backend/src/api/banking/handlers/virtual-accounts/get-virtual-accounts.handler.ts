@@ -1,9 +1,9 @@
 import { AppContext } from '@/index';
 import { getDb } from '@/core/database/client';
-import { bankingVirtualAccounts } from '@schnl/shared/drizzle/schema';
-import { eq, desc } from '@schnl/shared/drizzle';
+import { bankingVirtualAccounts } from '@brioela/shared/drizzle/schema';
+import { eq, desc } from '@brioela/shared/drizzle';
 import { HTTPException } from 'hono/http-exception';
-import { ErrorCode } from '@schnl/shared/types/api';
+import { ErrorCode } from '@brioela/shared/types/api';
 
 export async function getVirtualAccounts(c: AppContext) {
 	const user = c.get('user');

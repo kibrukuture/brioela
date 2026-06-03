@@ -1,7 +1,7 @@
 import { HTTPException } from 'hono/http-exception';
-import { ErrorCode } from '@schnl/shared/types/api';
-import { z } from '@schnl/shared/zod';
-import { payRequestBankDetailsSchema } from '@schnl/shared/validators/pay-request.validator';
+import { ErrorCode } from '@brioela/shared/types/api';
+import { z } from '@brioela/shared/zod';
+import { payRequestBankDetailsSchema } from '@brioela/shared/validators/pay-request.validator';
 
 export function parsePayoutBankDetails(value: unknown) {
 	const bankDetailsContainerSchema = z

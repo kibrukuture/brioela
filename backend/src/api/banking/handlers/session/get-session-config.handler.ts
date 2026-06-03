@@ -1,9 +1,9 @@
 import { AppContext } from '@/index';
 import dayjs from 'dayjs';
-import { sessionConfigResponseSchema } from '@schnl/shared/validators/banking.validator';
-import { USDC_BY_CHAIN, CHAIN_IDS } from '@schnl/shared/constants';
+import { sessionConfigResponseSchema } from '@brioela/shared/validators/banking.validator';
+import { USDC_BY_CHAIN, CHAIN_IDS } from '@brioela/shared/constants';
 import { HTTPException } from 'hono/http-exception';
-import { ErrorCode } from '@schnl/shared/types/api';
+import { ErrorCode } from '@brioela/shared/types/api';
 
 export async function getSessionConfig(c: AppContext) {
 	const user = c.get('user');

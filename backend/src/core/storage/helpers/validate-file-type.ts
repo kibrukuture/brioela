@@ -1,4 +1,4 @@
-import { ALLOWED_FILE_TYPES } from '@schnl/shared/constants';
+import { ALLOWED_FILE_TYPES } from '@brioela/shared/constants';
 export function isValidFileType(mimeType: string): boolean {
 	return (ALLOWED_FILE_TYPES as readonly string[]).includes(mimeType);
 }

@@ -1,6 +1,6 @@
 import getAlignClient from '@/core/clients/align';
-import { API_ROUTES } from '@schnl/shared/api';
-import { PUBLIC_URLS } from '@schnl/shared/constants';
+import { API_ROUTES } from '@brioela/shared/api';
+import { PUBLIC_URLS } from '@brioela/shared/constants';
 import { AppContext } from '@/index';
 
 export default async function onAlignWebhooks(c: AppContext) {

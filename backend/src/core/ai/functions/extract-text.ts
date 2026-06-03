@@ -7,10 +7,10 @@ import { getGeminiClient } from '@/core/ai/clients';
 import { getExtractTextPrompt } from '@/core/ai/prompts';
 import { ExtractedTextSchema } from '@/core/ai/schemas';
 import { HTTPException } from 'hono/http-exception';
-import { ErrorCode } from '@schnl/shared/types/api';
+import { ErrorCode } from '@brioela/shared/types/api';
 import { AI_FUNCTION_MODELS } from '@/core/ai/config/ai-models.config';
 import type { AppContext } from '@/index';
-import type { z } from '@schnl/shared/zod';
+import type { z } from '@brioela/shared/zod';
 
 type ExtractedText = z.infer<typeof ExtractedTextSchema>;
 

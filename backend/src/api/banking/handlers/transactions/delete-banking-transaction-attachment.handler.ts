@@ -1,13 +1,13 @@
 import { HTTPException } from 'hono/http-exception';
-import { ErrorCode } from '@schnl/shared/types/api';
+import { ErrorCode } from '@brioela/shared/types/api';
 
 import { AppContext } from '@/index';
 import { getDb } from '@/core/database/client';
 import { deleteFile } from '@/core/storage/services/s3.service';
-import { bankingTransactions } from '@schnl/shared/drizzle/schema';
-import { and, eq } from '@schnl/shared/drizzle';
-import { deleteBankingTransactionAttachmentResponseSchema } from '@schnl/shared/validators/banking-transaction-attachment-api.validator';
-import { bankingTransactionAttachmentParamsSchema } from '@schnl/shared/validators/banking-transaction-attachment-api.validator';
+import { bankingTransactions } from '@brioela/shared/drizzle/schema';
+import { and, eq } from '@brioela/shared/drizzle';
+import { deleteBankingTransactionAttachmentResponseSchema } from '@brioela/shared/validators/banking-transaction-attachment-api.validator';
+import { bankingTransactionAttachmentParamsSchema } from '@brioela/shared/validators/banking-transaction-attachment-api.validator';
 
 export async function deleteBankingTransactionAttachment(c: AppContext) {
 	const user = c.get('user');

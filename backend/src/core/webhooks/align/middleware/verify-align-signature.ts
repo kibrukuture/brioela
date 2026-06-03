@@ -2,7 +2,7 @@ import { Next } from 'hono';
 import type { AppContext } from '@/index';
 import getAlignClient from '@/core/clients/align';
 import { apiErrorResponse } from '@/lib/response';
-import { ErrorCode } from '@schnl/shared/types/api';
+import { ErrorCode } from '@brioela/shared/types/api';
 import { logWebhookEventToFile } from '@/core/webhooks/helpers/log-webhook-event';
 
 export async function verifyAlignSignature(c: AppContext, next: Next) {

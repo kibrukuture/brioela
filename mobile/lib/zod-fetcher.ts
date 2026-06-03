@@ -1,4 +1,4 @@
-import { z } from '@schnl/shared/zod';
+import { z } from '@brioela/shared/zod';
 
 /**
  * Creates a generic, type-safe fetcher function.

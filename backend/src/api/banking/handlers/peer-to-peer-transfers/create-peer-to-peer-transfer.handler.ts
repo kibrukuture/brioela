@@ -1,17 +1,17 @@
 import { AppContext } from '@/index';
 import { getDb } from '@/core/database/client';
-import { bankingPeerToPeerTransfers } from '@schnl/shared/drizzle/schema';
+import { bankingPeerToPeerTransfers } from '@brioela/shared/drizzle/schema';
 import { HTTPException } from 'hono/http-exception';
-import { ErrorCode } from '@schnl/shared/types/api';
-import { createPeerToPeerTransferSchema } from '@schnl/shared/validators/peer-to-peer-transfer.validator';
+import { ErrorCode } from '@brioela/shared/types/api';
+import { createPeerToPeerTransferSchema } from '@brioela/shared/validators/peer-to-peer-transfer.validator';
 import dayjs from 'dayjs';
 import { createHold } from '@/api/banking/helpers/ledger';
-import { BANKING_LEDGER_HOLD_REFERENCE_TYPES } from '@schnl/shared/constants/banking-ledger-hold-reference-types';
+import { BANKING_LEDGER_HOLD_REFERENCE_TYPES } from '@brioela/shared/constants/banking-ledger-hold-reference-types';
 import { createQStashClient } from '@/message-queue';
 import { publishJob } from '@/message-queue/publish';
-import { PRODUCTION_API_BASE_URL } from '@schnl/shared/constants';
-import { QUEUE_ROUTES } from '@schnl/shared/api/queue.routes';
-import { parseAmountAtomic } from '@schnl/shared/utils/money';
+import { PRODUCTION_API_BASE_URL } from '@brioela/shared/constants';
+import { QUEUE_ROUTES } from '@brioela/shared/api/queue.routes';
+import { parseAmountAtomic } from '@brioela/shared/utils/money';
 import { createUserActivityTransaction } from '@/api/banking/helpers/transactions/create-user-activity-transaction';
 
 export async function createPeerToPeerTransfer(c: AppContext) {

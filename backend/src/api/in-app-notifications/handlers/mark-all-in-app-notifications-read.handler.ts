@@ -1,9 +1,9 @@
 import { HTTPException } from 'hono/http-exception';
 import type { AppContext } from '@/index';
 import { getDb } from '@/core/database/client';
-import { and, eq } from '@schnl/shared/drizzle';
-import { inAppNotifications } from '@schnl/shared/drizzle/schema/in-app-notification.schema';
-import { markAllInAppNotificationsReadResponseSchema } from '@schnl/shared/validators/in-app-notification.validator';
+import { and, eq } from '@brioela/shared/drizzle';
+import { inAppNotifications } from '@brioela/shared/drizzle/schema/in-app-notification.schema';
+import { markAllInAppNotificationsReadResponseSchema } from '@brioela/shared/validators/in-app-notification.validator';
 import { broadcastInAppNotificationEvent } from '@/core/realtime/in-app-notifications/broadcast-in-app-notification-event';
 
 export async function markAllInAppNotificationsReadHandler(c: AppContext) {

@@ -1,14 +1,14 @@
 import { AppContext } from '@/index';
 import { getDb } from '@/core/database/client';
-import { bankingTransactions } from '@schnl/shared/drizzle/schema';
-import { eq, and } from '@schnl/shared/drizzle';
-import { ErrorCode } from '@schnl/shared/types/api';
+import { bankingTransactions } from '@brioela/shared/drizzle/schema';
+import { eq, and } from '@brioela/shared/drizzle';
+import { ErrorCode } from '@brioela/shared/types/api';
 import { HTTPException } from 'hono/http-exception';
 import {
 	setBankingTransactionCategoryInputSchema,
 	setBankingTransactionCategoryResponseSchema,
 	bankingTransactionIdParamSchema,
-} from '@schnl/shared/validators/banking-transaction-category-api.validator';
+} from '@brioela/shared/validators/banking-transaction-category-api.validator';
 
 export async function setBankingTransactionCategory(c: AppContext) {
 	const user = c.get('user');

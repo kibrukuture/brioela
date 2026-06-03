@@ -1,8 +1,8 @@
-import { API_ROUTES } from '@schnl/shared/api';
+import { API_ROUTES } from '@brioela/shared/api';
 import type {
   UpdateCardControlsInput,
   CardControlsState,
-} from '@schnl/shared/validators/card-controls.validator';
+} from '@brioela/shared/validators/card-controls.validator';
 import * as api from '@/services/api';
 
 export async function getCardControls(cardId: string): Promise<CardControlsState> {

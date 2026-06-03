@@ -1,4 +1,4 @@
-import { PUBLIC_URLS } from '@schnl/shared/constants';
+import { PUBLIC_URLS } from '@brioela/shared/constants';
 
 type WsClientOptions<TMessage> = {
   path: string;

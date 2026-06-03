@@ -1,10 +1,10 @@
 import { AppContext } from '@/index';
 import getAlignClient from '@/core/clients/align';
 import { getDb } from '@/core/database/client';
-import { users } from '@schnl/shared/drizzle/schema/user.schema';
-import { eq } from '@schnl/shared/drizzle';
+import { users } from '@brioela/shared/drizzle/schema/user.schema';
+import { eq } from '@brioela/shared/drizzle';
 import { HTTPException } from 'hono/http-exception';
-import { ErrorCode } from '@schnl/shared/types/api';
+import { ErrorCode } from '@brioela/shared/types/api';
 
 export async function getKycLink(c: AppContext) {
 	const user = c.get('user');

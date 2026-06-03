@@ -1,11 +1,11 @@
 import { AppContext } from '@/index';
 import { getDb } from '@/core/database/client';
-import { bankingCards, bankingLimits } from '@schnl/shared/drizzle/schema';
-import { and, eq } from '@schnl/shared/drizzle';
+import { bankingCards, bankingLimits } from '@brioela/shared/drizzle/schema';
+import { and, eq } from '@brioela/shared/drizzle';
 import { HTTPException } from 'hono/http-exception';
-import { ErrorCode } from '@schnl/shared/types/api';
-import { parseAmountAtomic, bigintToString } from '@schnl/shared/utils/money';
-import { cardIdParamSchema, cardSpendingLimitsSchema, cardSpendingLimitsResponseSchema } from '@schnl/shared/validators/card.validator';
+import { ErrorCode } from '@brioela/shared/types/api';
+import { parseAmountAtomic, bigintToString } from '@brioela/shared/utils/money';
+import { cardIdParamSchema, cardSpendingLimitsSchema, cardSpendingLimitsResponseSchema } from '@brioela/shared/validators/card.validator';
 import dayjs from 'dayjs';
 
 export async function updateCardSpendingLimits(c: AppContext) {

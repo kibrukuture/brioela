@@ -1,18 +1,18 @@
 import dayjs from 'dayjs';
 import { HTTPException } from 'hono/http-exception';
-import { ErrorCode } from '@schnl/shared/types/api';
+import { ErrorCode } from '@brioela/shared/types/api';
 import { getDb } from '@/core/database/client';
 import getAlignClient from '@/core/clients/align';
-import { and, eq } from '@schnl/shared/drizzle';
-import { bankingCustomerAddresses, bankingCustomerKyc, bankingLedgerHolds, bankingPayRequests, users } from '@schnl/shared/drizzle/schema';
-import { BANKING_LEDGER_HOLD_REFERENCE_TYPES } from '@schnl/shared/constants/banking-ledger-hold-reference-types';
-import { DEFAULT_ALIGN_DESTINATION_TOKEN, DEFAULT_WALLET_NETWORK } from '@schnl/shared/constants';
-import { BANKING_PROVIDERS } from '@schnl/shared/constants/banking-providers';
+import { and, eq } from '@brioela/shared/drizzle';
+import { bankingCustomerAddresses, bankingCustomerKyc, bankingLedgerHolds, bankingPayRequests, users } from '@brioela/shared/drizzle/schema';
+import { BANKING_LEDGER_HOLD_REFERENCE_TYPES } from '@brioela/shared/constants/banking-ledger-hold-reference-types';
+import { DEFAULT_ALIGN_DESTINATION_TOKEN, DEFAULT_WALLET_NETWORK } from '@brioela/shared/constants';
+import { BANKING_PROVIDERS } from '@brioela/shared/constants/banking-providers';
 import type { DestinationBankAccount, FiatCurrency, PaymentRail, TransferPurpose } from '@tolbel/align';
-import { BankingCurrency } from '@schnl/shared/drizzle/schema/banking-enums.schema';
+import { BankingCurrency } from '@brioela/shared/drizzle/schema/banking-enums.schema';
 import { decryptWithAES256GCM } from '@/core/crypto/decrypt-with-aes-256-gcm';
-import { payRequestBankDetailsSchema } from '@schnl/shared/validators/pay-request.validator';
-import { atomicToDecimalString } from '@schnl/shared/utils/money';
+import { payRequestBankDetailsSchema } from '@brioela/shared/validators/pay-request.validator';
+import { atomicToDecimalString } from '@brioela/shared/utils/money';
 import { parseTransferPurpose } from '@/api/banking/helpers/parsers/parse-transfer-purpose';
 import { createOfframpDestinationBankAccount } from '@/api/banking/helpers/payout/create-offramp-destination-bank-account';
 import { getPayRequestOfframpPaymentRail } from '@/api/banking/helpers/offramp-outbox/pay-requests/get-pay-request-offramp-payment-rail';
@@ -21,11 +21,11 @@ import { getOfframpDepositDetailsFromTransfer } from '@/api/banking/helpers/alig
 import { getActiveWalletSessionForUser } from '@/core/clients/thirdweb-utils/get-active-wallet-session-for-user';
 import { decimalStringToStableAtomic } from '@/core/clients/thirdweb-utils/decimal-string-to-usdc-atomic';
 import { sendErc20TransferWithSessionKey } from '@/core/clients/thirdweb-utils/send-erc20-transfer-with-session-key';
-import { CHAIN_IDS, USDC_BY_CHAIN } from '@schnl/shared/constants';
-import { SUPPORTED_STABLE_CURRENCIES } from '@schnl/shared/constants/supported-stable-currencies';
+import { CHAIN_IDS, USDC_BY_CHAIN } from '@brioela/shared/constants';
+import { SUPPORTED_STABLE_CURRENCIES } from '@brioela/shared/constants/supported-stable-currencies';
 import { createUserActivityTransaction } from '@/api/banking/helpers/transactions/create-user-activity-transaction';
 import { createProviderTransferMapping } from '@/api/banking/helpers/transactions/create-provider-transfer-mapping';
-import { payRequestOfframpOutboxPayloadSchema } from '@schnl/shared/validators/offramp-outbox-payloads.validator';
+import { payRequestOfframpOutboxPayloadSchema } from '@brioela/shared/validators/offramp-outbox-payloads.validator';
 
 export async function executePayRequestOfframp(params: { payRequestId: string; payload: unknown }) {
 	const db = getDb();

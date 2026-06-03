@@ -1,9 +1,9 @@
 import { getDb } from '@/core/database/client';
-import { bankingWalletSessions } from '@schnl/shared/drizzle/schema/banking-wallet-sessions.schema';
-import { bankingWallets } from '@schnl/shared/drizzle/schema/banking-wallets.schema';
-import { and, eq } from '@schnl/shared/drizzle';
+import { bankingWalletSessions } from '@brioela/shared/drizzle/schema/banking-wallet-sessions.schema';
+import { bankingWallets } from '@brioela/shared/drizzle/schema/banking-wallets.schema';
+import { and, eq } from '@brioela/shared/drizzle';
 import { HTTPException } from 'hono/http-exception';
-import { ErrorCode } from '@schnl/shared/types/api';
+import { ErrorCode } from '@brioela/shared/types/api';
 import { ethers } from '@tolbel/align';
 
 export async function getActiveWalletSessionForUser(input: { userId: string }): Promise<{

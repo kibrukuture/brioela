@@ -1,18 +1,18 @@
 import { AppContext } from '@/index';
 import { getDb } from '@/core/database/client';
 import { HTTPException } from 'hono/http-exception';
-import { ErrorCode } from '@schnl/shared/types/api';
+import { ErrorCode } from '@brioela/shared/types/api';
 import {
 	payRequestPayoutPrecheckParamsSchema,
 	payRequestPayoutPrecheckSchema,
 	type PayRequestPayoutPrecheckInput,
 	type PayRequestPayoutPrecheckResponse,
-} from '@schnl/shared/validators/pay-request-precheck.validator';
-import { bankingLedgerHolds, bankingPayRequests } from '@schnl/shared/drizzle/schema';
-import { and, eq } from '@schnl/shared/drizzle';
-import { users } from '@schnl/shared/drizzle/schema/user.schema';
-import { BANKING_LEDGER_HOLD_REFERENCE_TYPES } from '@schnl/shared/constants/banking-ledger-hold-reference-types';
-import { getBankDetailsTypeForCurrency } from '@schnl/shared/lib/banking/payments/get-bank-details-type-for-currency';
+} from '@brioela/shared/validators/pay-request-precheck.validator';
+import { bankingLedgerHolds, bankingPayRequests } from '@brioela/shared/drizzle/schema';
+import { and, eq } from '@brioela/shared/drizzle';
+import { users } from '@brioela/shared/drizzle/schema/user.schema';
+import { BANKING_LEDGER_HOLD_REFERENCE_TYPES } from '@brioela/shared/constants/banking-ledger-hold-reference-types';
+import { getBankDetailsTypeForCurrency } from '@brioela/shared/lib/banking/payments/get-bank-details-type-for-currency';
 
 export async function precheckPayRequestPayout(c: AppContext) {
 	const user = c.get('user');

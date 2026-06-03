@@ -1,11 +1,11 @@
 import { AppContext } from '@/index';
 import { getDb } from '@/core/database/client';
-import { bankingCardOrders } from '@schnl/shared/drizzle/schema';
-import { and, eq } from '@schnl/shared/drizzle';
+import { bankingCardOrders } from '@brioela/shared/drizzle/schema';
+import { and, eq } from '@brioela/shared/drizzle';
 import { HTTPException } from 'hono/http-exception';
-import { ErrorCode } from '@schnl/shared/types/api';
-import { getCardOrderResponseSchema } from '@schnl/shared/validators/card-order.validator';
-import { cardOrderIdParamSchema } from '@schnl/shared/validators/card.validator';
+import { ErrorCode } from '@brioela/shared/types/api';
+import { getCardOrderResponseSchema } from '@brioela/shared/validators/card-order.validator';
+import { cardOrderIdParamSchema } from '@brioela/shared/validators/card.validator';
 
 export async function getCardOrder(c: AppContext) {
 	const user = c.get('user');

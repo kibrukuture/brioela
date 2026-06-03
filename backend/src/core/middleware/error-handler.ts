@@ -1,6 +1,6 @@
 import { HTTPException } from 'hono/http-exception';
 import { apiErrorResponse } from '@/lib/response';
-import { ErrorCode } from '@schnl/shared/types/api';
+import { ErrorCode } from '@brioela/shared/types/api';
 import { normalizeUnknownError } from '@/core/errors/normalize-unknown-error';
 
 function jsonErrorResponse(payload: unknown, status: number): Response {

@@ -1,5 +1,5 @@
-import { and, eq } from '@schnl/shared/drizzle';
-import { bankingLedgerAccounts } from '@schnl/shared/drizzle/schema';
+import { and, eq } from '@brioela/shared/drizzle';
+import { bankingLedgerAccounts } from '@brioela/shared/drizzle/schema';
 import type { BankingCurrencyCode, Tx } from '@/api/banking/helpers/ledger/types';
 
 export async function ensureLedgerAccount(params: { tx: Tx; userId: string; currency: BankingCurrencyCode }) {

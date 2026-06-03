@@ -1,9 +1,9 @@
 import { HTTPException } from 'hono/http-exception';
-import { ErrorCode } from '@schnl/shared/types/api';
-import { bankingOutgoingPayouts } from '@schnl/shared/drizzle/schema/banking-outgoing-payouts.schema';
+import { ErrorCode } from '@brioela/shared/types/api';
+import { bankingOutgoingPayouts } from '@brioela/shared/drizzle/schema/banking-outgoing-payouts.schema';
 import type { Tx } from '@/api/banking/helpers/ledger/types';
-import type { CreateOutgoingPayoutInput } from '@schnl/shared/validators/outgoing-payout.validator';
-import { parseAmountAtomic } from '@schnl/shared/utils/money';
+import type { CreateOutgoingPayoutInput } from '@brioela/shared/validators/outgoing-payout.validator';
+import { parseAmountAtomic } from '@brioela/shared/utils/money';
 
 export async function createOutgoingPayoutRecord(params: {
 	tx: Tx;

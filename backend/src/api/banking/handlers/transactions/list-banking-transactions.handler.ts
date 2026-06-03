@@ -1,14 +1,14 @@
 import { AppContext } from '@/index';
 import { getDb } from '@/core/database/client';
-import { bankingTransactions } from '@schnl/shared/drizzle/schema';
-import { and, desc, eq, sql } from '@schnl/shared/drizzle';
-import { ErrorCode } from '@schnl/shared/types/api';
+import { bankingTransactions } from '@brioela/shared/drizzle/schema';
+import { and, desc, eq, sql } from '@brioela/shared/drizzle';
+import { ErrorCode } from '@brioela/shared/types/api';
 import { HTTPException } from 'hono/http-exception';
 import {
 	listBankingTransactionsQuerySchema,
 	listBankingTransactionsResponseSchema,
-} from '@schnl/shared/validators/banking-transaction.validator';
-import { bigintToString } from '@schnl/shared/utils/money';
+} from '@brioela/shared/validators/banking-transaction.validator';
+import { bigintToString } from '@brioela/shared/utils/money';
 import dayjs from 'dayjs';
 
 export async function listBankingTransactions(c: AppContext) {

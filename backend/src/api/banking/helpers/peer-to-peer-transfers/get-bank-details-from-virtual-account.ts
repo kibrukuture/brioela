@@ -1,7 +1,7 @@
 import { HTTPException } from 'hono/http-exception';
-import { ErrorCode } from '@schnl/shared/types/api';
-import type { BankingVirtualAccount } from '@schnl/shared/drizzle/schema/banking-virtual-accounts.schema';
-import type { PayRequestBankDetails } from '@schnl/shared/validators/pay-request.validator';
+import { ErrorCode } from '@brioela/shared/types/api';
+import type { BankingVirtualAccount } from '@brioela/shared/drizzle/schema/banking-virtual-accounts.schema';
+import type { PayRequestBankDetails } from '@brioela/shared/validators/pay-request.validator';
 
 export function getBankDetailsFromVirtualAccount(params: { virtualAccount: BankingVirtualAccount }): PayRequestBankDetails {
 	const bankName = params.virtualAccount.bankName ?? '';

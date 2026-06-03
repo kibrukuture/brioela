@@ -1,6 +1,6 @@
 import { AppContext } from '@/index';
 import { apiSuccessResponse, apiErrorResponse } from '@/lib/response';
-import { ErrorCode } from '@schnl/shared/types/api';
+import { ErrorCode } from '@brioela/shared/types/api';
 import getAlignClient from '@/core/clients/align';
 
 const customerId = 'fea6053e-fbb7-44c5-8649-2141ae9c0051';

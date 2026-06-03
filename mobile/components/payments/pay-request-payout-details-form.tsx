@@ -4,12 +4,12 @@ import * as Burnt from 'burnt';
 import { Controller, useForm, type SubmitHandler } from 'react-hook-form';
 import { router } from 'expo-router';
 import { zodResolver } from '@/lib/forms/zod-resolver';
-import { z } from '@schnl/shared/zod';
-import { isValidIban } from '@schnl/shared/lib/banking/payments/iban';
+import { z } from '@brioela/shared/zod';
+import { isValidIban } from '@brioela/shared/lib/banking/payments/iban';
 import { useSubmitPayRequestPayoutDetails } from '@/hooks/banking/use-submit-pay-request-payout-details';
 import { usePrecheckPayRequestPayout } from '@/hooks/banking/use-precheck-pay-request-payout';
 import { IbanInput } from '@/components/payments/iban-input';
-import { TRANSFER_PURPOSES } from '@schnl/shared/constants';
+import { TRANSFER_PURPOSES } from '@brioela/shared/constants';
 import { TransferPurposeSheet } from '@/components/payments/transfer-purpose-sheet';
 
 type PayRequestCurrency = 'usd' | 'eur' | 'aed';

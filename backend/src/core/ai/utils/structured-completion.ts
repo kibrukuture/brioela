@@ -1,11 +1,11 @@
 import type { AppContext } from '@/index';
 import type OpenAI from 'openai';
 import { LengthFinishReasonError, ContentFilterFinishReasonError } from 'openai/error';
-import { z } from '@schnl/shared/zod';
+import { z } from '@brioela/shared/zod';
 import { getOpenAIClient } from '@/core/ai/clients';
 import { postProcessAIResponse } from '@/core/ai/utils/post-process-ai-response';
 import { HTTPException } from 'hono/http-exception';
-import { ErrorCode } from '@schnl/shared/types/api';
+import { ErrorCode } from '@brioela/shared/types/api';
 
 // ============================================================================
 // TYPES

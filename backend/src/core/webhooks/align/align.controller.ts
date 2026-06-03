@@ -5,7 +5,7 @@ import { onOfframpTransferStatusUpdated } from '@/core/webhooks/align/handlers/o
 import { onOnrampTransferStatusUpdated } from '@/core/webhooks/align/handlers/onramp-transfer-status-updated.handler';
 import { logUnhandledAlignEvent } from '@/core/webhooks/align/handlers/log-unhandled-event.handler';
 import { apiErrorResponse, apiSuccessResponse } from '@/lib/response';
-import { ErrorCode } from '@schnl/shared/types/api';
+import { ErrorCode } from '@brioela/shared/types/api';
 import { logWebhookEventToFile } from '@/core/webhooks/helpers/log-webhook-event';
 
 export async function onAlignWebhook(c: AppContext) {

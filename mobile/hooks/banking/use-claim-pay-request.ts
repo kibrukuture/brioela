@@ -2,7 +2,7 @@ import { useMutation } from '@tanstack/react-query';
 import type {
   ClaimPayRequestInput,
   ClaimPayRequestResponse,
-} from '@schnl/shared/validators/pay-request.validator';
+} from '@brioela/shared/validators/pay-request.validator';
 import { claimPayRequest } from '@/services/api/banking/banking.api';
 
 export function useClaimPayRequest() {

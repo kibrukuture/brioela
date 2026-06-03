@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
 import * as notifController from '@/api/notifications/notif.controller';
 import * as courierController from '@/api/notifications/courier.controller';
-import { API_ROUTE_PATTERNS } from '@schnl/shared/api';
+import { API_ROUTE_PATTERNS } from '@brioela/shared/api';
 
 const notificationsRoutes = new Hono();
 

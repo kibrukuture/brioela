@@ -1,5 +1,5 @@
-import { ApiSuccessResponse, ApiPaginatedResponse, ApiErrorResponse, ErrorCodeType, ErrorCode } from '@schnl/shared/types/api';
-import { ZodError } from '@schnl/shared/zod';
+import { ApiSuccessResponse, ApiPaginatedResponse, ApiErrorResponse, ErrorCodeType, ErrorCode } from '@brioela/shared/types/api';
+import { ZodError } from '@brioela/shared/zod';
 
 // Generate unique request ID
 function generateRequestId(): string {

@@ -1,8 +1,8 @@
 import { HTTPException } from 'hono/http-exception';
-import { ErrorCode } from '@schnl/shared/types/api';
-import { getBankingCurrencyDecimals } from '@schnl/shared/constants/banking-currency-decimals';
+import { ErrorCode } from '@brioela/shared/types/api';
+import { getBankingCurrencyDecimals } from '@brioela/shared/constants/banking-currency-decimals';
 import { ethers } from '@tolbel/align';
-import type { SupportedStableCurrency } from '@schnl/shared/constants/supported-stable-currencies';
+import type { SupportedStableCurrency } from '@brioela/shared/constants/supported-stable-currencies';
 
 export function decimalStringToStableAtomic(input: { amountDecimal: string; currency: SupportedStableCurrency }) {
 	if (!input.amountDecimal) {

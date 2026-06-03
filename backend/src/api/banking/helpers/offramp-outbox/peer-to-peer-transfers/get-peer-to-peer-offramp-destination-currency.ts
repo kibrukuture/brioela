@@ -1,7 +1,7 @@
 import { HTTPException } from 'hono/http-exception';
-import { ErrorCode } from '@schnl/shared/types/api';
+import { ErrorCode } from '@brioela/shared/types/api';
 import type { FiatCurrency } from '@tolbel/align';
-import type { BankingPeerToPeerTransfer } from '@schnl/shared/drizzle/schema/banking-peer-to-peer-transfers.schema';
+import type { BankingPeerToPeerTransfer } from '@brioela/shared/drizzle/schema/banking-peer-to-peer-transfers.schema';
 
 export function getPeerToPeerOfframpDestinationCurrency(transfer: BankingPeerToPeerTransfer): FiatCurrency {
 	switch (transfer.currency) {

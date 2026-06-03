@@ -16,7 +16,7 @@ import {
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import { useSearch } from '@/hooks/search/use-search';
 import { useDebounce } from 'use-debounce';
-import type { UserSearchResult } from '@schnl/shared/validators/user-search.validator';
+import type { UserSearchResult } from '@brioela/shared/validators/user-search.validator';
 
 export const SearchResultsList = () => {
   const insets = useSafeAreaInsets();

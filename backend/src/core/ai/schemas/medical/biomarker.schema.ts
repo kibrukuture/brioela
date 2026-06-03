@@ -1,4 +1,4 @@
-import { z } from '@schnl/shared/zod';
+import { z } from '@brioela/shared/zod';
 export const BiomarkerSchema = z.object({
 	name: z.string().min(1).describe('Biomarker name as written in the lab report'),
 

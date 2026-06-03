@@ -1,7 +1,7 @@
 import type { EmailJobPayload } from '@/message-queue/types';
 import { getDb } from '@/core/database/client';
-import { users } from '@schnl/shared/drizzle/schema';
-import { eq } from '@schnl/shared/drizzle';
+import { users } from '@brioela/shared/drizzle/schema';
+import { eq } from '@brioela/shared/drizzle';
 import { AppContext } from '@/index';
 import { sendEmail } from '@/core/email/send';
 import PaymentFailedTemplate from '@/core/email/templates/payment-failed.template';
@@ -12,9 +12,9 @@ import SubscriptionExpiredTemplate from '@/core/email/templates/subscription-exp
 import ProductChangedTemplate from '@/core/email/templates/product-changed.template';
 import { renderToString } from 'hono/jsx/dom/server';
 
-import { EMAIL_FROM } from '@schnl/shared/constants';
+import { EMAIL_FROM } from '@brioela/shared/constants';
 import { apiErrorResponse, apiSuccessResponse } from '@/lib/response';
-import { ErrorCode } from '@schnl/shared/types/api';
+import { ErrorCode } from '@brioela/shared/types/api';
 
 export async function emailsJobOrchestrator(c: AppContext) {
 	try {

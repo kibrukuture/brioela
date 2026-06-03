@@ -1,5 +1,5 @@
 import { HTTPException } from 'hono/http-exception';
-import { ErrorCode } from '@schnl/shared/types/api';
+import { ErrorCode } from '@brioela/shared/types/api';
 import { Transfer } from '@tolbel/align';
 
 export function getOfframpDepositDetailsFromTransfer(transfer: Transfer): {

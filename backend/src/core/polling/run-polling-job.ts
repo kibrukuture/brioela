@@ -5,7 +5,7 @@ import { markPollingJob } from '@/core/polling/mark-polling-job';
 import { publishPollingCallback } from '@/core/polling/publish-polling-callback';
 import { updatePollingJob } from '@/core/polling/update-polling-job';
 import { HTTPException } from 'hono/http-exception';
-import { ErrorCode } from '@schnl/shared/types/api';
+import { ErrorCode } from '@brioela/shared/types/api';
 import type { ResolvePollingOperation } from '@/core/polling/types';
 
 export async function runPollingJob({

@@ -1,9 +1,9 @@
 import type { AppContext } from '@/index';
 import { apiErrorResponse, apiSuccessResponse } from '@/lib/response';
-import { ErrorCode } from '@schnl/shared/types/api';
+import { ErrorCode } from '@brioela/shared/types/api';
 import { getDb } from '@/core/database/client';
-import { eq } from '@schnl/shared/drizzle';
-import { users } from '@schnl/shared/drizzle/schema';
+import { eq } from '@brioela/shared/drizzle';
+import { users } from '@brioela/shared/drizzle/schema';
 import Stripe from 'stripe';
 
 export async function handleSubscriptionCreated(c: AppContext, event: Stripe.Event) {

@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import type { CancelPayRequestResponse } from '@schnl/shared/validators/pay-request.validator';
+import type { CancelPayRequestResponse } from '@brioela/shared/validators/pay-request.validator';
 import { cancelPayRequest } from '@/services/api/banking/banking.api';
 import { QUERY_KEYS } from '@/lib/query-keys';
 

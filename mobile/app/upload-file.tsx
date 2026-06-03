@@ -4,7 +4,7 @@ import { useNavigation } from 'expo-router';
 import * as DocumentPicker from 'expo-document-picker';
 import { Upload, PaperPlaneTilt, File } from 'phosphor-react-native';
 import { usePostLabWork } from '@/hooks/lab-work/use-post-lab-work';
-import { HealthRecordType } from '@schnl/shared/drizzle/schema/health-records.schema';
+import { HealthRecordType } from '@brioela/shared/drizzle/schema/health-records.schema';
 import * as Burnt from 'burnt';
 export default function UploadFileScreen() {
   const navigation = useNavigation();

@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type {
   UpdateCardControlsInput,
   CardControlsState,
-} from '@schnl/shared/validators/card-controls.validator';
+} from '@brioela/shared/validators/card-controls.validator';
 import * as cardControlsApi from '@/services/api/card-controls/card-controls.api';
 import { QUERY_KEYS } from '@/lib/query-keys';
 

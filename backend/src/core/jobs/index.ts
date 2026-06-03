@@ -1,4 +1,4 @@
-import { CRON_TIMES } from '@schnl/shared/constants';
+import { CRON_TIMES } from '@brioela/shared/constants';
 import { ScheduledController } from '@cloudflare/workers-types';
 import { pingUpstash } from '@/temp/upstash-pinger';
 import { pingSupabase } from '@/temp/supabase-pinger';

@@ -1,12 +1,12 @@
 import { AppContext } from '@/index';
 import getAlignClient from '@/core/clients/align';
-import { eq } from '@schnl/shared/drizzle';
-import { users } from '@schnl/shared/drizzle/schema/user.schema';
+import { eq } from '@brioela/shared/drizzle';
+import { users } from '@brioela/shared/drizzle/schema/user.schema';
 import { getDb } from '@/core/database/client';
-import { kycLegalNameSchema } from '@schnl/shared/validators/user.validator';
+import { kycLegalNameSchema } from '@brioela/shared/validators/user.validator';
 import { generateMembershipNumber } from '@/lib/membership-number';
 import { HTTPException } from 'hono/http-exception';
-import { ErrorCode } from '@schnl/shared/types/api';
+import { ErrorCode } from '@brioela/shared/types/api';
 
 export async function kycLegalName(c: AppContext) {
 	const body = await c.req.json();

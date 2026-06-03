@@ -1,6 +1,6 @@
 import type { AppContext } from '@/index';
 import { apiSuccessResponse, apiErrorResponse } from '@/lib/response';
-import { ErrorCode } from '@schnl/shared/types/api';
+import { ErrorCode } from '@brioela/shared/types/api';
 
 export async function pingUpstash(c: AppContext) {
 	try {

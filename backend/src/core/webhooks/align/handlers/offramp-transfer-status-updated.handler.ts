@@ -1,8 +1,8 @@
 import { getDb } from '@/core/database/client';
 import type { WebhookEvent } from '@tolbel/align';
-import { and, eq } from '@schnl/shared/drizzle';
-import { bankingProviderTransferMappings } from '@schnl/shared/drizzle/schema';
-import { BANKING_PROVIDERS } from '@schnl/shared/constants/banking-providers';
+import { and, eq } from '@brioela/shared/drizzle';
+import { bankingProviderTransferMappings } from '@brioela/shared/drizzle/schema';
+import { BANKING_PROVIDERS } from '@brioela/shared/constants/banking-providers';
 import { finalizePayRequestOfframpTransfer } from '@/core/webhooks/align/helpers/finalize-pay-request-offramp-transfer';
 import { finalizeOutgoingPayoutOfframpTransfer } from '@/core/webhooks/align/helpers/finalize-outgoing-payout-offramp-transfer';
 import { finalizePeerToPeerOfframpTransfer } from '@/core/webhooks/align/helpers/finalize-peer-to-peer-offramp-transfer';

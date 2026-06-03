@@ -3,7 +3,7 @@
 import '@/core/config/env';
 import { Hono, Context } from 'hono';
 import { userRouter } from '@/api/users/user.route';
-import { API_ROUTES, ENDPOINTS_WITH_NO_AUTH_MIDDLEWARE, HEALTH_CHECK_ROUTES } from '@schnl/shared/api';
+import { API_ROUTES, ENDPOINTS_WITH_NO_AUTH_MIDDLEWARE, HEALTH_CHECK_ROUTES } from '@brioela/shared/api';
 import { authMiddleware } from '@/core/middleware/auth';
 import { errorHandlerMiddleware } from '@/core/middleware/error-handler';
 // import { createRateLimiter } from '@/core/middleware/rate-limiter';

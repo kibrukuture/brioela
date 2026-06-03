@@ -1,8 +1,8 @@
 import { AppContext } from '@/index';
 import { getDb } from '@/core/database/client';
 import { HTTPException } from 'hono/http-exception';
-import { ErrorCode } from '@schnl/shared/types/api';
-import { createBankingRecipientSchema, createBankingRecipientResponseSchema } from '@schnl/shared/validators/banking-recipient.validator';
+import { ErrorCode } from '@brioela/shared/types/api';
+import { createBankingRecipientSchema, createBankingRecipientResponseSchema } from '@brioela/shared/validators/banking-recipient.validator';
 import { requireBankingKycApproved } from '@/api/banking/helpers/outgoing-payouts/require-banking-kyc-approved';
 import { createOrGetExternalAccountId } from '@/api/banking/helpers/outgoing-payouts/create-or-get-external-account-id';
 

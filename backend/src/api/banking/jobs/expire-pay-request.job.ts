@@ -1,13 +1,13 @@
 import { AppContext } from '@/index';
 import { getDb } from '@/core/database/client';
 import dayjs from 'dayjs';
-import { and, eq } from '@schnl/shared/drizzle';
-import { bankingLedgerHolds, bankingPayRequests } from '@schnl/shared/drizzle/schema';
+import { and, eq } from '@brioela/shared/drizzle';
+import { bankingLedgerHolds, bankingPayRequests } from '@brioela/shared/drizzle/schema';
 import { releaseHold } from '@/api/banking/helpers/ledger';
 import { HTTPException } from 'hono/http-exception';
-import { ErrorCode } from '@schnl/shared/types/api';
-import { expirePayRequestJobPayloadSchema } from '@schnl/shared/validators/pay-request.validator';
-import { BANKING_LEDGER_HOLD_REFERENCE_TYPES } from '@schnl/shared/constants/banking-ledger-hold-reference-types';
+import { ErrorCode } from '@brioela/shared/types/api';
+import { expirePayRequestJobPayloadSchema } from '@brioela/shared/validators/pay-request.validator';
+import { BANKING_LEDGER_HOLD_REFERENCE_TYPES } from '@brioela/shared/constants/banking-ledger-hold-reference-types';
 
 export async function expirePayRequestJob(c: AppContext) {
 	const body = await c.req.json();

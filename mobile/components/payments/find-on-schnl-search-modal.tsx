@@ -11,7 +11,7 @@ import { MagnifyingGlass, X, CaretRight } from 'phosphor-react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Controller, type Control } from 'react-hook-form';
-import type { UserSearchResponse } from '@schnl/shared/validators/user-search.validator';
+import type { UserSearchResponse } from '@brioela/shared/validators/user-search.validator';
 import { useMemo, useRef } from 'react';
 
 interface FindOnSchnlSearchModalProps {

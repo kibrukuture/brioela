@@ -1,8 +1,8 @@
 import { AppContext } from '@/index';
 import dayjs from 'dayjs';
 import { HTTPException } from 'hono/http-exception';
-import { ErrorCode } from '@schnl/shared/types/api';
-import { runOfframpOutboxQueueJobSchema } from '@schnl/shared/validators/offramp-outbox.validator';
+import { ErrorCode } from '@brioela/shared/types/api';
+import { runOfframpOutboxQueueJobSchema } from '@brioela/shared/validators/offramp-outbox.validator';
 import { getOfframpOutboxById } from '@/api/banking/helpers/offramp-outbox/get-offramp-outbox-by-id';
 import { getOfframpOutboxRetryDelayMs } from '@/api/banking/helpers/offramp-outbox/get-offramp-outbox-retry-delay-ms';
 import { claimOfframpOutbox } from '@/api/banking/helpers/offramp-outbox/claim-offramp-outbox';

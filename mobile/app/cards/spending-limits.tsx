@@ -10,7 +10,7 @@ import {
   atomicToDecimalString,
   decimalStringToAtomicString,
   parseAmountAtomic,
-} from '@schnl/shared/utils/money';
+} from '@brioela/shared/utils/money';
 import { BackButton } from '@/components/ui/back-button';
 import { NativeSegmentedTabs } from '@/components/ui/native-segmented-tabs';
 import { useCardSpendingLimits } from '@/hooks/cards/use-card-spending-limits';

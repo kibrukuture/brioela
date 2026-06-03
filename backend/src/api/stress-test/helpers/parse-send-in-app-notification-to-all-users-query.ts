@@ -1,4 +1,4 @@
-import { z } from '@schnl/shared/zod';
+import { z } from '@brioela/shared/zod';
 
 const querySchema = z.object({
 	limit: z.coerce.number().int().positive().max(500).default(50),

@@ -1,6 +1,6 @@
 import { getDb } from '@/core/database/client';
 import { apiErrorResponse, apiSuccessResponse } from '@/lib/response';
-import { ErrorCode } from '@schnl/shared/types/api';
+import { ErrorCode } from '@brioela/shared/types/api';
 import { AppContext } from '@/index';
 import { HTTPException } from 'hono/http-exception';
 

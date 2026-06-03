@@ -3,11 +3,11 @@ import { apiSuccessResponse } from '@/lib/response';
 import { runPollingJob } from '@/core/polling/run-polling-job';
 import type { ResolvePollingOperation } from '@/core/polling/types';
 import { syncAlignCustomerKycStatus } from '@/message-queue/align/helpers/sync-align-customer-kyc-status';
-import { pollingJobPayloadSchema } from '@schnl/shared/validators/polling-job.validator';
+import { pollingJobPayloadSchema } from '@brioela/shared/validators/polling-job.validator';
 import { HTTPException } from 'hono/http-exception';
-import { ErrorCode } from '@schnl/shared/types/api';
-import { API_ROUTES } from '@schnl/shared/api';
-import { PUBLIC_URLS } from '@schnl/shared/constants/urls';
+import { ErrorCode } from '@brioela/shared/types/api';
+import { API_ROUTES } from '@brioela/shared/api';
+import { PUBLIC_URLS } from '@brioela/shared/constants/urls';
 
 const resolvePollingOperation: ResolvePollingOperation = (job) => {
 	const key = `${job.provider}:${job.operation}`;

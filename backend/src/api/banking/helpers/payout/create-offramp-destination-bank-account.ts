@@ -1,5 +1,5 @@
 import type { CustomerAddress, DestinationBankAccount } from '@tolbel/align';
-import type { PayRequestBankDetails } from '@schnl/shared/validators/pay-request.validator';
+import type { PayRequestBankDetails } from '@brioela/shared/validators/pay-request.validator';
 
 export function createOfframpDestinationBankAccount(params: {
 	bankDetails: PayRequestBankDetails;

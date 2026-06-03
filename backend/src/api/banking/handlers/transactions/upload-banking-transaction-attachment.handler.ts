@@ -1,16 +1,16 @@
 import { HTTPException } from 'hono/http-exception';
-import { ErrorCode } from '@schnl/shared/types/api';
+import { ErrorCode } from '@brioela/shared/types/api';
 
 import { AppContext } from '@/index';
 import { getDb } from '@/core/database/client';
 import { uploadFile } from '@/core/storage/services/s3.service';
-import { bankingTransactions } from '@schnl/shared/drizzle/schema';
-import { and, eq } from '@schnl/shared/drizzle';
-import { PUBLIC_S3_URL } from '@schnl/shared/constants';
+import { bankingTransactions } from '@brioela/shared/drizzle/schema';
+import { and, eq } from '@brioela/shared/drizzle';
+import { PUBLIC_S3_URL } from '@brioela/shared/constants';
 import { nanoid } from 'nanoid';
 import dayjs from 'dayjs';
-import { uploadBankingTransactionAttachmentResponseSchema } from '@schnl/shared/validators/banking-transaction-attachment-api.validator';
-import { bankingTransactionIdParamSchema } from '@schnl/shared/validators/banking-transaction-note-api.validator';
+import { uploadBankingTransactionAttachmentResponseSchema } from '@brioela/shared/validators/banking-transaction-attachment-api.validator';
+import { bankingTransactionIdParamSchema } from '@brioela/shared/validators/banking-transaction-note-api.validator';
 
 const ALLOWED_CONTENT_TYPES = new Set<string>(['application/pdf', 'image/jpeg', 'image/png', 'image/webp']);
 

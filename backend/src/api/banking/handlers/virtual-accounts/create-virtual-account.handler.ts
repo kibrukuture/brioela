@@ -1,18 +1,18 @@
 import { AppContext } from '@/index';
 import getAlignClient from '@/core/clients/align';
 import { getDb } from '@/core/database/client';
-import { bankingVirtualAccounts, bankingWallets } from '@schnl/shared/drizzle/schema';
-import { and, eq } from '@schnl/shared/drizzle';
-import { createVirtualAccountSchema } from '@schnl/shared/validators/banking.validator';
+import { bankingVirtualAccounts, bankingWallets } from '@brioela/shared/drizzle/schema';
+import { and, eq } from '@brioela/shared/drizzle';
+import { createVirtualAccountSchema } from '@brioela/shared/validators/banking.validator';
 import {
 	isIBANAccountDetails,
 	isInternationalWireAccountDetails,
 	isUSAccountDetails,
 	type CreateVirtualAccountRequest,
 } from '@tolbel/align';
-import { DEFAULT_ALIGN_DESTINATION_TOKEN, DEFAULT_WALLET_NETWORK } from '@schnl/shared/constants';
+import { DEFAULT_ALIGN_DESTINATION_TOKEN, DEFAULT_WALLET_NETWORK } from '@brioela/shared/constants';
 import assertUserKycApproved from '@/api/banking/helpers/virtual-accounts';
-import { ErrorCode } from '@schnl/shared/types/api';
+import { ErrorCode } from '@brioela/shared/types/api';
 import { HTTPException } from 'hono/http-exception';
 
 export async function createVirtualAccount(c: AppContext) {

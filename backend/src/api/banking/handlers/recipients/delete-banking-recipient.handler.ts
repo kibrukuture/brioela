@@ -1,10 +1,10 @@
 import { AppContext } from '@/index';
 import { getDb } from '@/core/database/client';
-import { bankingExternalAccounts } from '@schnl/shared/drizzle/schema';
-import { and, eq } from '@schnl/shared/drizzle';
-import { ErrorCode } from '@schnl/shared/types/api';
+import { bankingExternalAccounts } from '@brioela/shared/drizzle/schema';
+import { and, eq } from '@brioela/shared/drizzle';
+import { ErrorCode } from '@brioela/shared/types/api';
 import { HTTPException } from 'hono/http-exception';
-import { bankingRecipientIdParamSchema, deleteBankingRecipientResponseSchema } from '@schnl/shared/validators/banking-recipient.validator';
+import { bankingRecipientIdParamSchema, deleteBankingRecipientResponseSchema } from '@brioela/shared/validators/banking-recipient.validator';
 
 export async function deleteBankingRecipient(c: AppContext) {
 	const user = c.get('user');

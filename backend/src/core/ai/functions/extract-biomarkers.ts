@@ -1,4 +1,4 @@
-import { z } from '@schnl/shared/zod';
+import { z } from '@brioela/shared/zod';
 import { AppContext } from '@/index';
 import { makeStructuredCompletion } from '@/core/ai/utils/structured-completion';
 import { BiomarkerSchema } from '@/core/ai/schemas';

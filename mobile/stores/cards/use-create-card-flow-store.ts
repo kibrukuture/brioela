@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import type { ShippingAddress } from '@schnl/shared/validators/card-order.validator';
+import type { ShippingAddress } from '@brioela/shared/validators/card-order.validator';
 
 export type CreateCardType = 'virtual' | 'physical';
 

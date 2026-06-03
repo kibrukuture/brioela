@@ -1,16 +1,16 @@
 import { AppContext } from '@/index';
-import { eq } from '@schnl/shared/drizzle';
-import { users } from '@schnl/shared/drizzle/schema/user.schema';
+import { eq } from '@brioela/shared/drizzle';
+import { users } from '@brioela/shared/drizzle/schema/user.schema';
 import { getSupabaseAdmin } from '@/core/database/supabase-admin-client';
 import AccountDeletedTemplate from '@/core/email/templates/account-deleted.template';
 import { renderToString } from 'hono/jsx/dom/server';
-import { EMAIL_FROM } from '@schnl/shared/constants';
+import { EMAIL_FROM } from '@brioela/shared/constants';
 import getResendClient from '@/core/clients/resend';
 import { getDb } from '@/core/database/client';
 import { HTTPException } from 'hono/http-exception';
-import { ErrorCode } from '@schnl/shared/types/api';
-import { bankingLedgerAccounts } from '@schnl/shared/drizzle/schema';
-import { sql } from '@schnl/shared/drizzle';
+import { ErrorCode } from '@brioela/shared/types/api';
+import { bankingLedgerAccounts } from '@brioela/shared/drizzle/schema';
+import { sql } from '@brioela/shared/drizzle';
 
 export async function deleteUser(c: AppContext) {
 	const id = c.req.param('id');

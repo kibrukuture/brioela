@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import type { ListCardsResponse } from '@schnl/shared/validators/card.validator';
+import type { ListCardsResponse } from '@brioela/shared/validators/card.validator';
 import * as cardsApi from '@/services/api/cards/cards.api';
 import { QUERY_KEYS } from '@/lib/query-keys';
 

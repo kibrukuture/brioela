@@ -4,14 +4,14 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Controller, useForm } from 'react-hook-form';
-import { z } from '@schnl/shared/zod';
+import { z } from '@brioela/shared/zod';
 import { zodResolver } from '@/lib/forms/zod-resolver';
 import { BackButton } from '@/components/ui/back-button';
 import { useCreateCardFlowStore } from '@/stores/cards/use-create-card-flow-store';
 import { useLocationSearch } from '@/hooks/maps/use-location-search';
 import { useDebounce } from 'use-debounce';
 import { useCustomerAddress } from '@/hooks/banking/use-customer-address';
-import type { CustomerAddressResponse } from '@schnl/shared/validators/customer-address.validator';
+import type { CustomerAddressResponse } from '@brioela/shared/validators/customer-address.validator';
 
 type CreateCardAddressFormProps = {
   kycCountry: string;

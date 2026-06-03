@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type {
   CreateCardOrderRequest,
   CreateCardOrderResponse,
-} from '@schnl/shared/validators/card-order.validator';
+} from '@brioela/shared/validators/card-order.validator';
 import * as cardsApi from '@/services/api/cards/cards.api';
 import { QUERY_KEYS } from '@/lib/query-keys';
 

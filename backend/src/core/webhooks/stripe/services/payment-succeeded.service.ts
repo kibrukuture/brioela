@@ -1,9 +1,9 @@
 import type { AppContext } from '@/index';
 import { apiErrorResponse, apiSuccessResponse } from '@/lib/response';
-import { ErrorCode } from '@schnl/shared/types/api';
+import { ErrorCode } from '@brioela/shared/types/api';
 import { SuperwallEventData } from '@/core/webhooks/superwall/types/superwall-events.types';
-import { eq } from '@schnl/shared/drizzle';
-import { users } from '@schnl/shared/drizzle/schema/user.schema';
+import { eq } from '@brioela/shared/drizzle';
+import { users } from '@brioela/shared/drizzle/schema/user.schema';
 import { getDb } from '@/core/database/client';
 import Stripe from 'stripe';
 

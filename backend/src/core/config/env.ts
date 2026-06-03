@@ -1,6 +1,6 @@
-import { z } from '@schnl/shared/zod';
+import { z } from '@brioela/shared/zod';
 import { HTTPException } from 'hono/http-exception';
-import { ErrorCode } from '@schnl/shared/types/api';
+import { ErrorCode } from '@brioela/shared/types/api';
 
 const envSchema = z.object({
 	// Database

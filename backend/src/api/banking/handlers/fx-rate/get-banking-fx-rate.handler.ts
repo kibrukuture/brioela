@@ -1,7 +1,7 @@
 import { AppContext } from '@/index';
-import { ErrorCode } from '@schnl/shared/types/api';
+import { ErrorCode } from '@brioela/shared/types/api';
 import { HTTPException } from 'hono/http-exception';
-import { getBankingFxRateQuerySchema } from '@schnl/shared/validators/banking-fx-rate.validator';
+import { getBankingFxRateQuerySchema } from '@brioela/shared/validators/banking-fx-rate.validator';
 
 export async function getBankingFxRate(c: AppContext) {
 	const user = c.get('user');

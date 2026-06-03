@@ -1,5 +1,5 @@
 import { HTTPException } from 'hono/http-exception';
-import { ErrorCode } from '@schnl/shared/types/api';
+import { ErrorCode } from '@brioela/shared/types/api';
 
 export function assertNonNegativeAtomic(value: bigint, message: string) {
 	if (value < 0n) {

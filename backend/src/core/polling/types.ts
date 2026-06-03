@@ -1,4 +1,4 @@
-import type { PollingJob } from '@schnl/shared/drizzle/schema/polling-jobs.schema';
+import type { PollingJob } from '@brioela/shared/drizzle/schema/polling-jobs.schema';
 
 export type PollingOperationResult = {
 	done: boolean;

@@ -1,6 +1,6 @@
 import { createQStashClient } from '@/message-queue/upstash-client';
-import { API_ROUTES } from '@schnl/shared/api';
-import { PRODUCTION_API_BASE_URL } from '@schnl/shared/constants';
+import { API_ROUTES } from '@brioela/shared/api';
+import { PRODUCTION_API_BASE_URL } from '@brioela/shared/constants';
 
 export async function pingUpstash(): Promise<void> {
 	try {

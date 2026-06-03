@@ -1,6 +1,6 @@
 import { Hono } from 'hono';
 import * as controller from '@/api/in-app-notifications/in-app-notification.controller';
-import { API_ROUTE_PATTERNS } from '@schnl/shared/api';
+import { API_ROUTE_PATTERNS } from '@brioela/shared/api';
 import { upgradeWebSocket } from 'hono/cloudflare-workers';
 import type { AppContext } from '@/index';
 import type { WSContext } from 'hono/ws';

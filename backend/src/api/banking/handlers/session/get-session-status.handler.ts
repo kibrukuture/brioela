@@ -1,12 +1,12 @@
 import { AppContext } from '@/index';
 import { getDb } from '@/core/database/client';
-import { bankingWallets } from '@schnl/shared/drizzle/schema/banking-wallets.schema';
-import { bankingWalletSessions } from '@schnl/shared/drizzle/schema/banking-wallet-sessions.schema';
-import { and, eq } from '@schnl/shared/drizzle';
+import { bankingWallets } from '@brioela/shared/drizzle/schema/banking-wallets.schema';
+import { bankingWalletSessions } from '@brioela/shared/drizzle/schema/banking-wallet-sessions.schema';
+import { and, eq } from '@brioela/shared/drizzle';
 import dayjs from 'dayjs';
-import { sessionStatusResponseSchema } from '@schnl/shared/validators/banking.validator';
+import { sessionStatusResponseSchema } from '@brioela/shared/validators/banking.validator';
 import { HTTPException } from 'hono/http-exception';
-import { ErrorCode } from '@schnl/shared/types/api';
+import { ErrorCode } from '@brioela/shared/types/api';
 
 export async function getSessionStatus(c: AppContext) {
 	const user = c.get('user');

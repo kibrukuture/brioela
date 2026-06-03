@@ -7,8 +7,8 @@ import { useState } from 'react';
 import { useCreatePeerToPeerTransfer } from '@/hooks/banking/use-create-peer-to-peer-transfer';
 import { usePrecheckPeerToPeerTransfer } from '@/hooks/banking/use-precheck-peer-to-peer-transfer';
 import * as Burnt from 'burnt';
-import { decimalStringToAtomicString } from '@schnl/shared/utils/money';
-import type { CreatePeerToPeerTransferInput } from '@schnl/shared/validators/peer-to-peer-transfer.validator';
+import { decimalStringToAtomicString } from '@brioela/shared/utils/money';
+import type { CreatePeerToPeerTransferInput } from '@brioela/shared/validators/peer-to-peer-transfer.validator';
 
 interface ReviewSchnlPaymentStepProps {
   paymentFlow: PaymentFlow;

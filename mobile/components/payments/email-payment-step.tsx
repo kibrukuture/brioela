@@ -8,8 +8,8 @@ import { zodResolver } from '@/lib/forms/zod-resolver';
 import { emailPaymentSchema } from '@/ui-schema';
 import * as Burnt from 'burnt';
 import { useCreatePayRequestByEmail } from '@/hooks/banking/use-create-pay-request-by-email';
-import { decimalStringToAtomicString } from '@schnl/shared/utils/money';
-import { PAYOUT_CURRENCIES } from '@schnl/shared/constants';
+import { decimalStringToAtomicString } from '@brioela/shared/utils/money';
+import { PAYOUT_CURRENCIES } from '@brioela/shared/constants';
 import { AccountDetails } from '@/components/payments/payment';
 
 interface EmailPaymentStepProps {

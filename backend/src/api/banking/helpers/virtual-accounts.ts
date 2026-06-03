@@ -1,7 +1,7 @@
 import { getDb } from '@/core/database/client';
-import { users } from '@schnl/shared/drizzle/schema';
-import { eq } from '@schnl/shared/drizzle';
-import { ErrorCode } from '@schnl/shared/types/api';
+import { users } from '@brioela/shared/drizzle/schema';
+import { eq } from '@brioela/shared/drizzle';
+import { ErrorCode } from '@brioela/shared/types/api';
 import { HTTPException } from 'hono/http-exception';
 
 export default async function assertUserKycApproved(db: ReturnType<typeof getDb>, userId: string) {

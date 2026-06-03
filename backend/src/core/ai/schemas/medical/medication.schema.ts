@@ -1,4 +1,4 @@
-import { z } from '@schnl/shared/zod';
+import { z } from '@brioela/shared/zod';
 import { DateSchema } from '../base/date.schema';
 
 // medical/medication.schema.ts

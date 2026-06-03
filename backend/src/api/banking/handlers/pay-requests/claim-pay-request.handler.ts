@@ -1,14 +1,14 @@
 import { AppContext } from '@/index';
 import { getDb } from '@/core/database/client';
-import { users } from '@schnl/shared/drizzle/schema/user.schema';
-import { bankingPayRequests, challenges } from '@schnl/shared/drizzle/schema';
-import { and, eq } from '@schnl/shared/drizzle';
+import { users } from '@brioela/shared/drizzle/schema/user.schema';
+import { bankingPayRequests, challenges } from '@brioela/shared/drizzle/schema';
+import { and, eq } from '@brioela/shared/drizzle';
 import dayjs from 'dayjs';
 import { sha256Hex } from '@/core/crypto/sha256';
-import { claimPayRequestSchema } from '@schnl/shared/validators/pay-request.validator';
-import { ErrorCode } from '@schnl/shared/types/api';
+import { claimPayRequestSchema } from '@brioela/shared/validators/pay-request.validator';
+import { ErrorCode } from '@brioela/shared/types/api';
 import { HTTPException } from 'hono/http-exception';
-import { BANKING_PAY_REQUEST_CLAIM_CHALLENGE } from '@schnl/shared/constants/banking-pay-request-claim-challenge';
+import { BANKING_PAY_REQUEST_CLAIM_CHALLENGE } from '@brioela/shared/constants/banking-pay-request-claim-challenge';
 
 export async function claimPayRequest(c: AppContext) {
 	const user = c.get('user');

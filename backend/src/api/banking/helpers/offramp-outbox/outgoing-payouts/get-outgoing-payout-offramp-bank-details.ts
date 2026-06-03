@@ -1,12 +1,12 @@
 import { HTTPException } from 'hono/http-exception';
-import { ErrorCode } from '@schnl/shared/types/api';
-import type { BankingOutgoingPayout } from '@schnl/shared/drizzle/schema/banking-outgoing-payouts.schema';
+import { ErrorCode } from '@brioela/shared/types/api';
+import type { BankingOutgoingPayout } from '@brioela/shared/drizzle/schema/banking-outgoing-payouts.schema';
 import type { Tx } from '@/api/banking/helpers/ledger/types';
-import { bankingExternalAccounts } from '@schnl/shared/drizzle/schema/banking-external-accounts.schema';
-import { eq } from '@schnl/shared/drizzle';
+import { bankingExternalAccounts } from '@brioela/shared/drizzle/schema/banking-external-accounts.schema';
+import { eq } from '@brioela/shared/drizzle';
 import { decryptWithAES256GCM } from '@/core/crypto/decrypt-with-aes-256-gcm';
 import { parsePayoutBankDetails } from '@/api/banking/helpers/parsers/parse-payout-bank-details';
-import type { PayRequestBankDetails } from '@schnl/shared/validators/pay-request.validator';
+import type { PayRequestBankDetails } from '@brioela/shared/validators/pay-request.validator';
 
 export async function getOutgoingPayoutOfframpBankDetails(params: {
 	tx: Tx;

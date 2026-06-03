@@ -1,5 +1,5 @@
-import { API_ROUTES } from '@schnl/shared/api';
-import { UserDocument } from '@schnl/shared/drizzle/schema/user-documents.schema';
+import { API_ROUTES } from '@brioela/shared/api';
+import { UserDocument } from '@brioela/shared/drizzle/schema/user-documents.schema';
 import * as api from '@/services/api';
 
 export type PostLabWork = {

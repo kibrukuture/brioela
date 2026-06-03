@@ -1,8 +1,8 @@
-import { API_ROUTES } from '@schnl/shared/api';
+import { API_ROUTES } from '@brioela/shared/api';
 import type {
   LocationSearchRequest,
   LocationSearchResponse,
-} from '@schnl/shared/validators/location-search.validator';
+} from '@brioela/shared/validators/location-search.validator';
 import * as api from '@/services/api';
 
 export async function locationSearch(

@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import type { CreateBankingRecipientInput } from '@schnl/shared/validators/banking-recipient.validator';
+import type { CreateBankingRecipientInput } from '@brioela/shared/validators/banking-recipient.validator';
 
 interface RecipientDraftState {
   draft: CreateBankingRecipientInput | null;

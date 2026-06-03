@@ -1,7 +1,7 @@
 import { View, Text, TouchableOpacity } from 'react-native';
 import { TransactionAvatar } from './transaction-avatar';
-import type { BankingTransactionListItem } from '@schnl/shared/validators/banking-transaction.validator';
-import { formatBankingAmount } from '@schnl/shared/utils/format-banking-amount';
+import type { BankingTransactionListItem } from '@brioela/shared/validators/banking-transaction.validator';
+import { formatBankingAmount } from '@brioela/shared/utils/format-banking-amount';
 
 interface TransactionListItemProps {
   transaction: BankingTransactionListItem;

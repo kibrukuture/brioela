@@ -1,14 +1,14 @@
 import { AppContext } from '@/index';
 import { getDb } from '@/core/database/client';
-import { bankingWallets } from '@schnl/shared/drizzle/schema/banking-wallets.schema';
-import { eq, and } from '@schnl/shared/drizzle';
-import { activateWalletSchema } from '@schnl/shared/validators/banking.validator';
+import { bankingWallets } from '@brioela/shared/drizzle/schema/banking-wallets.schema';
+import { eq, and } from '@brioela/shared/drizzle';
+import { activateWalletSchema } from '@brioela/shared/validators/banking.validator';
 import dayjs from 'dayjs';
-import { DEFAULT_WALLET_NETWORK } from '@schnl/shared/constants';
+import { DEFAULT_WALLET_NETWORK } from '@brioela/shared/constants';
 import { ethers } from '@tolbel/align';
 import { verifyAndConsumeActivationChallenge } from '@/api/banking/helpers/wallet/activation';
 import { HTTPException } from 'hono/http-exception';
-import { ErrorCode } from '@schnl/shared/types/api';
+import { ErrorCode } from '@brioela/shared/types/api';
 
 export async function activateWallet(c: AppContext) {
 	const user = c.get('user');

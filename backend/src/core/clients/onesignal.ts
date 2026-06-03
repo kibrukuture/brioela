@@ -1,6 +1,6 @@
 import * as OneSignal from '@onesignal/node-onesignal';
 import { HTTPException } from 'hono/http-exception';
-import { ErrorCode } from '@schnl/shared/types/api';
+import { ErrorCode } from '@brioela/shared/types/api';
 
 let onesignalClient: OneSignal.DefaultApi | null = null;
 function createOneSignal() {

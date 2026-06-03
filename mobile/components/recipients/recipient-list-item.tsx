@@ -1,6 +1,6 @@
 import { View, Text, TouchableOpacity } from 'react-native';
 import { ChevronRight } from 'lucide-react-native';
-import type { BankingRecipientListItem } from '@schnl/shared/validators/banking-recipient.validator';
+import type { BankingRecipientListItem } from '@brioela/shared/validators/banking-recipient.validator';
 import { Avatar } from './avatar';
 
 interface RecipientListItemProps {

@@ -1,7 +1,7 @@
 import { getDb } from '@/core/database/client';
-import { bankingKycEvents } from '@schnl/shared/drizzle/schema';
+import { bankingKycEvents } from '@brioela/shared/drizzle/schema';
 import type { WebhookEvent } from '@tolbel/align';
-import { BANKING_PROVIDERS } from '@schnl/shared/constants/banking-providers';
+import { BANKING_PROVIDERS } from '@brioela/shared/constants/banking-providers';
 
 export async function logUnhandledAlignEvent(event: WebhookEvent) {
 	const db = getDb();
