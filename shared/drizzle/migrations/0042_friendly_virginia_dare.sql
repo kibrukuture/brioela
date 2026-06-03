@@ -1,1 +1,0 @@
-ALTER TYPE "schnl"."holder_type" ADD VALUE 'corporate';

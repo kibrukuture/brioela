@@ -1,9 +1,9 @@
-import { schnlSchema } from "@brioela/shared/drizzle/schema/schnl";
+import { brioelaSchema } from "@brioela/shared/drizzle/schema/brioela";
 import { users } from "@brioela/shared/drizzle/schema/user.schema";
 import { text, timestamp, uuid, check } from "drizzle-orm/pg-core";
 import { sql } from "@brioela/shared/drizzle";
 
-export const authSignatureChallenges = schnlSchema
+export const authSignatureChallenges = brioelaSchema
   .table(
     "auth_signature_challenges",
     {

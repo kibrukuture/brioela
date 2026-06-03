@@ -1,2 +1,0 @@
-ALTER TABLE "schnl"."banking_kyc_events" ALTER COLUMN "user_id" DROP NOT NULL;--> statement-breakpoint
-CREATE UNIQUE INDEX "banking_virtual_accounts_one_per_user_currency" ON "schnl"."banking_virtual_accounts" USING btree ("user_id","currency");

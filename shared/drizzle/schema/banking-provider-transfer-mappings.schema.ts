@@ -1,5 +1,5 @@
 import { sql } from "@brioela/shared/drizzle";
-import { schnlSchema } from "@brioela/shared/drizzle/schema/schnl";
+import { brioelaSchema } from "@brioela/shared/drizzle/schema/brioela";
 import {
   bigint,
   jsonb,
@@ -22,12 +22,12 @@ export const providerTransferMappingStatusValues = [
   "failed",
 ] as const;
 
-export const ProviderTransferMappingStatus = schnlSchema.enum(
+export const ProviderTransferMappingStatus = brioelaSchema.enum(
   "banking_provider_transfer_mapping_status",
   providerTransferMappingStatusValues
 );
 
-export const bankingProviderTransferMappings = schnlSchema
+export const bankingProviderTransferMappings = brioelaSchema
   .table(
     "banking_provider_transfer_mappings",
     {

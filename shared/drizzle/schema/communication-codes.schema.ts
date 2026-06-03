@@ -1,8 +1,8 @@
 import { text, timestamp, uuid } from "drizzle-orm/pg-core";
-import { schnlSchema } from "@brioela/shared/drizzle/schema/schnl";
+import { brioelaSchema } from "@brioela/shared/drizzle/schema/brioela";
 import { users } from "@brioela/shared/drizzle/schema/user.schema";
 
-export const communicationCodes = schnlSchema
+export const communicationCodes = brioelaSchema
   .table("communication_codes", {
     id: uuid("id").defaultRandom().primaryKey(),
     userId: uuid("user_id")

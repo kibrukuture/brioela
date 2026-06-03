@@ -1,7 +1,7 @@
 import { text, timestamp } from "drizzle-orm/pg-core";
-import { schnlSchema } from "@brioela/shared/drizzle/schema/schnl";
+import { brioelaSchema } from "@brioela/shared/drizzle/schema/brioela";
 
-export const verifications = schnlSchema
+export const verifications = brioelaSchema
   .table("verification", {
     id: text("id").primaryKey(),
     identifier: text("identifier").notNull(),

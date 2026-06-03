@@ -1,8 +1,8 @@
 import { boolean, jsonb, text, timestamp, uuid } from "drizzle-orm/pg-core";
-import { schnlSchema } from "@brioela/shared/drizzle/schema/schnl";
+import { brioelaSchema } from "@brioela/shared/drizzle/schema/brioela";
 import { users } from "@brioela/shared/drizzle/schema/user.schema";
 
-export const devices = schnlSchema
+export const devices = brioelaSchema
   .table("devices", {
     id: uuid("id").defaultRandom().primaryKey(),
     userId: uuid("user_id")

@@ -7,13 +7,13 @@ import {
   numeric,
   uniqueIndex,
 } from "drizzle-orm/pg-core";
-import { schnlSchema } from "@brioela/shared/drizzle/schema/schnl";
+import { brioelaSchema } from "@brioela/shared/drizzle/schema/brioela";
 import { sql } from "@brioela/shared/drizzle";
-import { users } from "./user.schema";
-import { bankingWallets } from "./banking-wallets.schema";
-import { SessionStatus } from "./banking-enums.schema";
+import { users } from "@brioela/shared/drizzle/schema/user.schema";
+import { bankingWallets } from "@brioela/shared/drizzle/schema/banking-wallets.schema";
+import { SessionStatus } from "@brioela/shared/drizzle/schema/banking-enums.schema";
 
-export const bankingWalletSessions = schnlSchema
+export const bankingWalletSessions = brioelaSchema
   .table(
     "banking_wallet_sessions",
     {

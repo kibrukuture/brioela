@@ -1,10 +1,10 @@
 import { text, timestamp, uuid } from "drizzle-orm/pg-core";
-import { schnlSchema } from "@brioela/shared/drizzle/schema/schnl";
+import { brioelaSchema } from "@brioela/shared/drizzle/schema/brioela";
 import { users } from "@brioela/shared/drizzle/schema/user.schema";
 
-import { BankingCurrency } from "./banking-enums.schema";
+import { BankingCurrency } from "@brioela/shared/drizzle/schema/banking-enums.schema";
 
-export const bankingCryptoContacts = schnlSchema
+export const bankingCryptoContacts = brioelaSchema
   .table("banking_crypto_contacts", {
     id: uuid("id").defaultRandom().primaryKey(),
     userId: uuid("user_id")

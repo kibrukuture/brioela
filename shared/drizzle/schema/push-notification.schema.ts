@@ -1,14 +1,14 @@
 import { boolean, text, timestamp, uuid } from "drizzle-orm/pg-core";
-import { schnlSchema } from "@brioela/shared/drizzle/schema/schnl";
+import { brioelaSchema } from "@brioela/shared/drizzle/schema/brioela";
 import { users } from "@brioela/shared/drizzle/schema/user.schema";
 
-export const NotificationProvider = schnlSchema.enum("notification_provider", [
+export const NotificationProvider = brioelaSchema.enum("notification_provider", [
   "expo",
   "apns",
   "fcm",
 ]);
 
-export const pushNotification = schnlSchema
+export const pushNotification = brioelaSchema
   .table("push_notification", {
     id: uuid("id").defaultRandom().primaryKey(),
     userId: uuid("user_id")

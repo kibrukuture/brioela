@@ -1,2 +1,0 @@
-ALTER TABLE "schnl"."banking_wallet_sessions" DROP CONSTRAINT "banking_wallet_sessions_session_key_address_unique";--> statement-breakpoint
-ALTER TABLE "schnl"."banking_wallet_sessions" ALTER COLUMN "native_token_limit_per_transaction" SET DATA TYPE numeric(78, 0);

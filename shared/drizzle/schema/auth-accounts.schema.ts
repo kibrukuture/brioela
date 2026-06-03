@@ -1,8 +1,8 @@
 import { text, timestamp, uuid } from "drizzle-orm/pg-core";
-import { schnlSchema } from "@brioela/shared/drizzle/schema/schnl";
+import { brioelaSchema } from "@brioela/shared/drizzle/schema/brioela";
 import { users } from "@brioela/shared/drizzle/schema/user.schema";
 
-export const accounts = schnlSchema
+export const accounts = brioelaSchema
   .table("account", {
     id: text("id").primaryKey(),
     userId: uuid("user_id")

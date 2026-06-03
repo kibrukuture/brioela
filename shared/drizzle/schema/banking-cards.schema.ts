@@ -1,14 +1,14 @@
 import { text, timestamp, uuid, integer } from "drizzle-orm/pg-core";
-import { schnlSchema } from "@brioela/shared/drizzle/schema/schnl";
+import { brioelaSchema } from "@brioela/shared/drizzle/schema/brioela";
 import { users } from "@brioela/shared/drizzle/schema/user.schema";
 import {
   CardType,
   CardStatus,
   CardBrand,
   BankingCurrency,
-} from "./banking-enums.schema";
+} from "@brioela/shared/drizzle/schema/banking-enums.schema";
 
-export const bankingCards = schnlSchema
+export const bankingCards = brioelaSchema
   .table("banking_cards", {
     id: uuid("id").defaultRandom().primaryKey(),
     userId: uuid("user_id")

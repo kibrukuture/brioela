@@ -1,10 +1,10 @@
 import { text, timestamp, uuid, uniqueIndex } from "drizzle-orm/pg-core";
-import { schnlSchema } from "@brioela/shared/drizzle/schema/schnl";
+import { brioelaSchema } from "@brioela/shared/drizzle/schema/brioela";
 import { users } from "@brioela/shared/drizzle/schema/user.schema";
-import { HolderType } from "./banking-enums.schema";
-import { BankingKycStatus } from "./user.schema";
+import { HolderType } from "@brioela/shared/drizzle/schema/banking-enums.schema";
+import { BankingKycStatus } from "@brioela/shared/drizzle/schema/user.schema";
 
-export const bankingCustomerKyc = schnlSchema
+export const bankingCustomerKyc = brioelaSchema
   .table(
     "banking_customer_kyc",
     {

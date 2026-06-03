@@ -7,17 +7,17 @@ import {
   boolean,
   check,
 } from "drizzle-orm/pg-core";
-import { schnlSchema } from "@brioela/shared/drizzle/schema/schnl";
+import { brioelaSchema } from "@brioela/shared/drizzle/schema/brioela";
 import { sql } from "@brioela/shared/drizzle";
 
 // Create the enum type
-export const AccountAccessStatus = schnlSchema.enum("account_access_status", [
+export const AccountAccessStatus = brioelaSchema.enum("account_access_status", [
   "blocked",
   "unblocked",
 ]);
 
 // payment status enum.
-export const PaymentStatus = schnlSchema.enum("payment_status", [
+export const PaymentStatus = brioelaSchema.enum("payment_status", [
   "active", // Paid and active
   "trialing", // In free trial
   "past_due", // Payment failed, in grace period
@@ -31,7 +31,7 @@ export const PaymentStatus = schnlSchema.enum("payment_status", [
   "incomplete", // Payment incomplete
 ]);
 
-export const SubscriptionPlatform = schnlSchema.enum("subscription_platform", [
+export const SubscriptionPlatform = brioelaSchema.enum("subscription_platform", [
   "APP_STORE", // iOS (Superwall calls it "APP_STORE")
   "PLAY_STORE", // Android (Superwall calls it "PLAY_STORE")
   "STRIPE", // Web/Stripe
@@ -39,21 +39,21 @@ export const SubscriptionPlatform = schnlSchema.enum("subscription_platform", [
 ]);
 
 // tier : monthly, yearly, lifetime, weekly
-export const SubscriptionTier = schnlSchema.enum("subscription_tier", [
+export const SubscriptionTier = brioelaSchema.enum("subscription_tier", [
   "monthly",
   "yearly",
   "lifetime",
   "weekly",
 ]);
 
-export const BankingKycStatus = schnlSchema.enum("banking_kyc_status", [
+export const BankingKycStatus = brioelaSchema.enum("banking_kyc_status", [
   "not_started",
   "pending",
   "approved",
   "rejected",
 ]);
 
-export const users = schnlSchema
+export const users = brioelaSchema
   .table(
     "users",
     {

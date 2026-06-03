@@ -1,2 +1,0 @@
-ALTER TABLE "schnl"."banking_peer_to_peer_transfers" ALTER COLUMN "sender_user_id" SET NOT NULL;--> statement-breakpoint
-ALTER TABLE "schnl"."banking_peer_to_peer_transfers" ALTER COLUMN "recipient_user_id" SET NOT NULL;

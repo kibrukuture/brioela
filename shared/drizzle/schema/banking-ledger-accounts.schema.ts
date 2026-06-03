@@ -1,4 +1,4 @@
-import { schnlSchema } from "@brioela/shared/drizzle/schema/schnl";
+import { brioelaSchema } from "@brioela/shared/drizzle/schema/brioela";
 import { users } from "@brioela/shared/drizzle/schema/user.schema";
 import { BankingCurrency } from "@brioela/shared/drizzle/schema/banking-enums.schema";
 import { sql } from "@brioela/shared/drizzle";
@@ -7,7 +7,7 @@ import { bigint, timestamp, uuid, uniqueIndex } from "drizzle-orm/pg-core";
 // “Balance sheet snapshot” ( the main one. )
 // This table is basically the current balances per user per currency.
 // one row per (userId, currency)
-export const bankingLedgerAccounts = schnlSchema
+export const bankingLedgerAccounts = brioelaSchema
   .table(
     "banking_ledger_accounts",
     {

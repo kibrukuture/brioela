@@ -8,7 +8,7 @@ export default defineConfig({
     url: process.env.DATABASE_URL as string,
     ssl: true,
   },
-  schemaFilter: ["schnl"],
+  schemaFilter: [ "brioela"],
   verbose: true,
   strict: true,
 });

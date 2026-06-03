@@ -1,9 +1,9 @@
-import { schnlSchema } from "@brioela/shared/drizzle/schema/schnl";
+import { brioelaSchema } from "@brioela/shared/drizzle/schema/brioela";
 import { users } from "@brioela/shared/drizzle/schema/user.schema";
 import { BankingCurrency } from "@brioela/shared/drizzle/schema/banking-enums.schema";
 import { text, timestamp, uuid, bigint } from "drizzle-orm/pg-core";
 
-export const PayRequestStatus = schnlSchema.enum("banking_pay_request_status", [
+export const PayRequestStatus = brioelaSchema.enum("banking_pay_request_status", [
   "created",
   "waiting_for_claim",
   "claimed",
@@ -15,7 +15,7 @@ export const PayRequestStatus = schnlSchema.enum("banking_pay_request_status", [
   "failed",
 ]);
 
-export const bankingPayRequests = schnlSchema
+export const bankingPayRequests = brioelaSchema
   .table("banking_pay_requests", {
     id: uuid("id").defaultRandom().primaryKey(),
 

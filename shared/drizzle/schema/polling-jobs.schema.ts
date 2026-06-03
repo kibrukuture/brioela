@@ -1,7 +1,7 @@
 import { integer, jsonb, text, timestamp, uuid } from "drizzle-orm/pg-core";
-import { schnlSchema } from "@brioela/shared/drizzle/schema/schnl";
+import { brioelaSchema } from "@brioela/shared/drizzle/schema/brioela";
 
-export const PollingJobStatus = schnlSchema.enum("polling_job_status", [
+export const PollingJobStatus = brioelaSchema.enum("polling_job_status", [
   "pending",
   "in_progress",
   "done",
@@ -9,7 +9,7 @@ export const PollingJobStatus = schnlSchema.enum("polling_job_status", [
   "expired",
 ]);
 
-export const pollingJobs = schnlSchema
+export const pollingJobs = brioelaSchema
   .table("polling_jobs", {
     id: uuid("id").defaultRandom().primaryKey(),
 

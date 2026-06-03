@@ -6,10 +6,10 @@ import {
   integer,
   jsonb,
 } from "drizzle-orm/pg-core";
-import { schnlSchema } from "@brioela/shared/drizzle/schema/schnl";
+import { brioelaSchema } from "@brioela/shared/drizzle/schema/brioela";
 import { users } from "@brioela/shared/drizzle/schema/user.schema";
-import { bankingCards } from "./banking-cards.schema";
-import { bankingVirtualAccounts } from "./banking-virtual-accounts.schema";
+import { bankingCards } from "@brioela/shared/drizzle/schema/banking-cards.schema";
+import { bankingVirtualAccounts } from "@brioela/shared/drizzle/schema/banking-virtual-accounts.schema";
 import type { BankingTransactionDisplayMetadata } from "@brioela/shared/validators/banking-transaction.validator";
 import type { BankingTransactionAttachment } from "@brioela/shared/validators/banking-transaction-attachment.validator";
 import {
@@ -19,9 +19,9 @@ import {
   BankingRail,
   BankingCurrency,
   BankingTransactionReferenceType,
-} from "./banking-enums.schema";
+} from "@brioela/shared/drizzle/schema/banking-enums.schema";
 
-export const bankingTransactions = schnlSchema
+export const bankingTransactions = brioelaSchema
   .table("banking_transactions", {
     id: uuid("id").defaultRandom().primaryKey(),
     userId: uuid("user_id")

@@ -1,5 +1,5 @@
 import { sql } from "@brioela/shared/drizzle";
-import { schnlSchema } from "@brioela/shared/drizzle/schema/schnl";
+import { brioelaSchema } from "@brioela/shared/drizzle/schema/brioela";
 import {
   integer,
   jsonb,
@@ -10,12 +10,12 @@ import {
 } from "drizzle-orm/pg-core";
 import { BankingTransactionReferenceType } from "@brioela/shared/drizzle/schema/banking-enums.schema";
 
-export const OfframpOutboxStatus = schnlSchema.enum(
+export const OfframpOutboxStatus = brioelaSchema.enum(
   "banking_offramp_outbox_status",
   ["pending", "in_progress", "done", "failed"]
 );
 
-export const bankingOfframpOutbox = schnlSchema
+export const bankingOfframpOutbox = brioelaSchema
   .table(
     "banking_offramp_outbox",
     {

@@ -1,4 +1,4 @@
-import { schnlSchema } from "@brioela/shared/drizzle/schema/schnl";
+import { brioelaSchema } from "@brioela/shared/drizzle/schema/brioela";
 import { users } from "@brioela/shared/drizzle/schema/user.schema";
 import {
   CardType,
@@ -6,12 +6,12 @@ import {
 } from "@brioela/shared/drizzle/schema/banking-enums.schema";
 import { bigint, text, timestamp, uuid, jsonb } from "drizzle-orm/pg-core";
 
-export const BankingCardOrderStatus = schnlSchema.enum(
+export const BankingCardOrderStatus = brioelaSchema.enum(
   "banking_card_order_status",
   ["created", "processing", "preparing", "shipped", "completed", "failed"]
 );
 
-export const BankingCardOrderFeeType = schnlSchema.enum(
+export const BankingCardOrderFeeType = brioelaSchema.enum(
   "banking_card_order_fee_type",
   ["virtual_creation", "physical_shipping"]
 );
@@ -25,7 +25,7 @@ export type BankingCardOrderShippingAddress = {
   country: string;
 } | null;
 
-export const bankingCardOrders = schnlSchema
+export const bankingCardOrders = brioelaSchema
   .table("banking_card_orders", {
     id: uuid("id").defaultRandom().primaryKey(),
 

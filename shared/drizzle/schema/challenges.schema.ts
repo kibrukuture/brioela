@@ -1,8 +1,8 @@
-import { schnlSchema } from "@brioela/shared/drizzle/schema/schnl";
+import { brioelaSchema } from "@brioela/shared/drizzle/schema/brioela";
 import { users } from "@brioela/shared/drizzle/schema/user.schema";
 import { integer, text, timestamp, uuid } from "drizzle-orm/pg-core";
 
-export const challenges = schnlSchema
+export const challenges = brioelaSchema
   .table("challenges", {
     id: uuid("id").defaultRandom().primaryKey(),
 

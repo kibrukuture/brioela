@@ -1,21 +1,21 @@
 import { sql } from "@brioela/shared/drizzle";
 import { bigint, timestamp, uuid, uniqueIndex } from "drizzle-orm/pg-core";
-import { schnlSchema } from "@brioela/shared/drizzle/schema/schnl";
+import { brioelaSchema } from "@brioela/shared/drizzle/schema/brioela";
 import { users } from "@brioela/shared/drizzle/schema/user.schema";
 import { BankingCurrency } from "@brioela/shared/drizzle/schema/banking-enums.schema";
 
-export const BankingLimitScope = schnlSchema.enum("banking_limit_scope", [
+export const BankingLimitScope = brioelaSchema.enum("banking_limit_scope", [
   "card",
   "transfer",
 ]);
 
-export const BankingLimitPeriod = schnlSchema.enum("banking_limit_period", [
+export const BankingLimitPeriod = brioelaSchema.enum("banking_limit_period", [
   "daily",
   "weekly",
   "monthly",
 ]);
 
-export const bankingLimits = schnlSchema
+export const bankingLimits = brioelaSchema
   .table(
     "banking_limits",
     {

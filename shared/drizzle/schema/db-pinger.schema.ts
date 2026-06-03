@@ -1,8 +1,8 @@
 // this is only used to ping the supabase database to keep it alive.
 import { timestamp, uuid } from "drizzle-orm/pg-core";
-import { schnlSchema } from "./schnl";
+import { brioelaSchema } from "@brioela/shared/drizzle/schema/brioela";
 
-export const dbPingers = schnlSchema
+export const dbPingers = brioelaSchema
   .table("db_pingers", {
     id: uuid("id").defaultRandom().primaryKey(),
 

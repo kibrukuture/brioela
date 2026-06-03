@@ -1,14 +1,14 @@
 import { sql } from "@brioela/shared/drizzle";
 import { text, timestamp, uuid, check, uniqueIndex } from "drizzle-orm/pg-core";
-import { schnlSchema } from "@brioela/shared/drizzle/schema/schnl";
+import { brioelaSchema } from "@brioela/shared/drizzle/schema/brioela";
 import { users } from "@brioela/shared/drizzle/schema/user.schema";
 import {
   BankAccountType,
   HolderType,
   BankingCurrency,
-} from "./banking-enums.schema";
+} from "@brioela/shared/drizzle/schema/banking-enums.schema";
 
-export const bankingExternalAccounts = schnlSchema
+export const bankingExternalAccounts = brioelaSchema
   .table(
     "banking_external_accounts",
     {

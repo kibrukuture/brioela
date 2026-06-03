@@ -1,17 +1,17 @@
-import { schnlSchema } from "@brioela/shared/drizzle/schema/schnl";
+import { brioelaSchema } from "@brioela/shared/drizzle/schema/brioela";
 import { users } from "@brioela/shared/drizzle/schema/user.schema";
 import { bankingLedgerAccounts } from "@brioela/shared/drizzle/schema/banking-ledger-accounts.schema";
 import { BankingCurrency } from "@brioela/shared/drizzle/schema/banking-enums.schema";
 import { bigint, text, timestamp, uuid } from "drizzle-orm/pg-core";
 
-export const LedgerEntryType = schnlSchema.enum("banking_ledger_entry_type", [
+export const LedgerEntryType = brioelaSchema.enum("banking_ledger_entry_type", [
   "credit",
   "debit",
   "hold",
   "release",
 ]);
 
-export const bankingLedgerEntries = schnlSchema
+export const bankingLedgerEntries = brioelaSchema
   .table("banking_ledger_entries", {
     id: uuid("id").defaultRandom().primaryKey(),
 

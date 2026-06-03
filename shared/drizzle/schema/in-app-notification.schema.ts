@@ -6,10 +6,10 @@ import {
   jsonb,
   index,
 } from "drizzle-orm/pg-core";
-import { schnlSchema } from "@brioela/shared/drizzle/schema/schnl";
+import { brioelaSchema } from "@brioela/shared/drizzle/schema/brioela";
 import { users } from "@brioela/shared/drizzle/schema/user.schema";
 
-export const InAppNotificationType = schnlSchema.enum(
+export const InAppNotificationType = brioelaSchema.enum(
   "in_app_notification_type",
   [
     "payment",
@@ -21,7 +21,7 @@ export const InAppNotificationType = schnlSchema.enum(
   ]
 );
 
-export const inAppNotifications = schnlSchema
+export const inAppNotifications = brioelaSchema
   .table(
     "in_app_notifications",
     {

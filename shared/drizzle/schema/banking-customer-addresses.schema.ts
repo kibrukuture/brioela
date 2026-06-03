@@ -1,8 +1,8 @@
 import { text, timestamp, uuid, uniqueIndex } from "drizzle-orm/pg-core";
-import { schnlSchema } from "@brioela/shared/drizzle/schema/schnl";
+import { brioelaSchema } from "@brioela/shared/drizzle/schema/brioela";
 import { users } from "@brioela/shared/drizzle/schema/user.schema";
 
-export const bankingCustomerAddresses = schnlSchema
+export const bankingCustomerAddresses = brioelaSchema
   .table(
     "banking_customer_addresses",
     {

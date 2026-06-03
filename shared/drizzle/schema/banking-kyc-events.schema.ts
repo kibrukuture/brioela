@@ -1,8 +1,8 @@
 import { uuid, text, timestamp, jsonb } from "drizzle-orm/pg-core";
-import { schnlSchema } from "@brioela/shared/drizzle/schema/schnl";
+import { brioelaSchema } from "@brioela/shared/drizzle/schema/brioela";
 import { users } from "@brioela/shared/drizzle/schema/user.schema";
 
-export const bankingKycEvents = schnlSchema
+export const bankingKycEvents = brioelaSchema
   .table("banking_kyc_events", {
     id: uuid("id").defaultRandom().primaryKey(),
     userId: uuid("user_id").references(() => users.id, {

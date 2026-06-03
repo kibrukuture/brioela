@@ -1,1 +1,0 @@
-ALTER TABLE "schnl"."banking_virtual_accounts" ADD COLUMN "banking_rails" "schnl"."banking_rail"[] DEFAULT '{}'::"schnl"."banking_rail"[];

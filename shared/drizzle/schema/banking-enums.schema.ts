@@ -1,6 +1,6 @@
-import { schnlSchema } from "@brioela/shared/drizzle/schema/schnl";
+import { brioelaSchema } from "@brioela/shared/drizzle/schema/brioela";
 
-export const BankingRail = schnlSchema.enum("banking_rail", [
+export const BankingRail = brioelaSchema.enum("banking_rail", [
   "ach",
   "wire",
   "sepa",
@@ -8,47 +8,47 @@ export const BankingRail = schnlSchema.enum("banking_rail", [
   "uaefts",
 ]);
 
-export const BankAccountType = schnlSchema.enum("bank_account_type", [
+export const BankAccountType = brioelaSchema.enum("bank_account_type", [
   "checking",
   "savings",
 ]);
 
-export const HolderType = schnlSchema.enum("holder_type", [
+export const HolderType = brioelaSchema.enum("holder_type", [
   "individual",
   "business",
   "corporate",
 ]);
 
-export const CardStatus = schnlSchema.enum("banking_card_status", [
+export const CardStatus = brioelaSchema.enum("banking_card_status", [
   "active",
   "frozen",
   "cancelled",
   "pending",
 ]);
 
-export const CardType = schnlSchema.enum("banking_card_type", [
+export const CardType = brioelaSchema.enum("banking_card_type", [
   "virtual",
   "physical",
 ]);
 
-export const CardBrand = schnlSchema.enum("banking_card_brand", [
+export const CardBrand = brioelaSchema.enum("banking_card_brand", [
   "mastercard",
   "visa",
 ]);
 
-export const TransactionStatus = schnlSchema.enum("banking_txn_status", [
+export const TransactionStatus = brioelaSchema.enum("banking_txn_status", [
   "pending",
   "completed",
   "failed",
   "declined",
 ]);
 
-export const TransactionDirection = schnlSchema.enum("banking_txn_direction", [
+export const TransactionDirection = brioelaSchema.enum("banking_txn_direction", [
   "credit",
   "debit",
 ]);
 
-export const TransactionType = schnlSchema.enum("banking_txn_type", [
+export const TransactionType = brioelaSchema.enum("banking_txn_type", [
   "deposit",
   "withdrawal",
   "card_payment",
@@ -57,7 +57,7 @@ export const TransactionType = schnlSchema.enum("banking_txn_type", [
   "fee",
 ]);
 
-export const AccountStatus = schnlSchema.enum("banking_account_status", [
+export const AccountStatus = brioelaSchema.enum("banking_account_status", [
   "active",
   "inactive",
   "suspended",
@@ -86,12 +86,12 @@ export const bankingCurrencyValues = [
   "eth",
 ] as const;
 
-export const BankingCurrency = schnlSchema.enum(
+export const BankingCurrency = brioelaSchema.enum(
   "banking_currency",
   bankingCurrencyValues
 );
 
-export const CryptoNetwork = schnlSchema.enum("crypto_network", [
+export const CryptoNetwork = brioelaSchema.enum("crypto_network", [
   "ethereum",
   "polygon",
   "base",
@@ -100,19 +100,19 @@ export const CryptoNetwork = schnlSchema.enum("crypto_network", [
   "arbitrum",
 ]);
 
-export const SessionStatus = schnlSchema.enum("session_status", [
+export const SessionStatus = brioelaSchema.enum("session_status", [
   "active",
   "revoked",
   "expired",
 ]);
 
-export const DepositMethod = schnlSchema.enum("deposit_method", [
+export const DepositMethod = brioelaSchema.enum("deposit_method", [
   "card",
   "crypto",
   "bank_transfer",
 ]);
 
-export const PayoutStatus = schnlSchema.enum("payout_status", [
+export const PayoutStatus = brioelaSchema.enum("payout_status", [
   "created",
   "in_flight",
   "processing",
@@ -121,7 +121,7 @@ export const PayoutStatus = schnlSchema.enum("payout_status", [
   "canceled",
 ]);
 
-export const PeerToPeerTransferStatus = schnlSchema.enum(
+export const PeerToPeerTransferStatus = brioelaSchema.enum(
   "banking_peer_to_peer_transfer_status",
   ["created", "in_flight", "processing", "completed", "failed"]
 );
@@ -136,7 +136,7 @@ export const bankingTransactionReferenceTypeValues = [
   "bank_transfer",
 ] as const;
 
-export const BankingTransactionReferenceType = schnlSchema.enum(
+export const BankingTransactionReferenceType = brioelaSchema.enum(
   "banking_txn_reference_type",
   bankingTransactionReferenceTypeValues
 );

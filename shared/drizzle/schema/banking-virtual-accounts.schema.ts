@@ -1,11 +1,11 @@
 import { sql } from "@brioela/shared/drizzle";
 import { text, timestamp, uuid, check, uniqueIndex } from "drizzle-orm/pg-core";
-import { schnlSchema } from "@brioela/shared/drizzle/schema/schnl";
+import { brioelaSchema } from "@brioela/shared/drizzle/schema/brioela";
 import { users } from "@brioela/shared/drizzle/schema/user.schema";
-import { BankingCurrency, AccountStatus } from "./banking-enums.schema";
-import { BankingRail } from "./banking-enums.schema";
+import { BankingCurrency, AccountStatus } from "@brioela/shared/drizzle/schema/banking-enums.schema";
+import { BankingRail } from "@brioela/shared/drizzle/schema/banking-enums.schema";
 
-export const bankingVirtualAccounts = schnlSchema
+export const bankingVirtualAccounts = brioelaSchema
   .table(
     "banking_virtual_accounts",
     {

@@ -1,10 +1,10 @@
 import { sql } from "@brioela/shared/drizzle";
 import { text, timestamp, uuid, boolean, check } from "drizzle-orm/pg-core";
-import { schnlSchema } from "@brioela/shared/drizzle/schema/schnl";
+import { brioelaSchema } from "@brioela/shared/drizzle/schema/brioela";
 import { users } from "@brioela/shared/drizzle/schema/user.schema";
-import { CryptoNetwork } from "./banking-enums.schema";
+import { CryptoNetwork } from "@brioela/shared/drizzle/schema/banking-enums.schema";
 
-export const bankingWallets = schnlSchema
+export const bankingWallets = brioelaSchema
   .table(
     "banking_wallets",
     {
