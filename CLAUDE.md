@@ -110,6 +110,10 @@ bun --hot ./index.ts
 
 For more information, read the Bun API docs in `node_modules/bun-types/docs/**.md`.
 
+## Research Rule — Always Apply First
+- **Always default to web search** before making any assumption about an API, package version, compatibility, or behavior
+- Never guess — check the official docs or source on the web first, every time
+
 ## Hard Rules — Always Apply
 
 ### Effect Hooks
