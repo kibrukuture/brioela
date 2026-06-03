@@ -23,8 +23,8 @@ export function PostHogProvider({ children }: PostHogProviderProps) {
       //
       // ✅ THIS enables auto-tracking of screens and touches
       autocapture={{
-        captureScreens: true, // Auto-track screen views
-        captureTouches: true, // Auto-track button taps/touches
+        captureScreens: false, // handled by PostHogScreenTracker inside the navigator
+        captureTouches: true,
       }}
       //
     >

@@ -17,7 +17,7 @@ export async function checkSchnlTagAvailability(c: AppContext): Promise<CheckSch
 	assertSchnlTagAllowed(tagAvailabilityValidation.data.tag);
 
 	const db = getDb();
-	const [existing] = await db.select().from(users).where(eq(users.schnlTag, tagAvailabilityValidation.data.tag)).limit(1);
+	const [existing] = await db.select().from(users).where(eq(users.brioelaTag, tagAvailabilityValidation.data.tag)).limit(1);
 
 	return { available: !existing };
 }
