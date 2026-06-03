@@ -119,6 +119,8 @@ For more information, read the Bun API docs in `node_modules/bun-types/docs/**.m
 - When blocked or uncertain: say so clearly and ask — do not invent a workaround.
 - Never report a task done without hard proof (confirmed file contents, test output, etc.).
 - **Never invent examples, numbers, or illustrations not present in the spec or code.** If the spec does not say it, say "the spec does not say" — never fill the gap with a made-up value. This actively confuses the user.
+- **When asked to "add examples", never delete existing content.** Add below what is already there. "Add" means append, never replace.
+- **When asked for user-facing examples, write what the user actually sees** — the notification, the message, the surface moment. Not a technical definition of how it works.
 
 ## Research Rule — Always Apply First
 - **Always default to web search** before making any assumption about an API, package version, compatibility, or behavior
