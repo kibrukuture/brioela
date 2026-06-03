@@ -50,7 +50,6 @@
         {
           "android": {
             "minSdkVersion": 26,
-            "kotlinJvmTarget": "17",
             "extraGradleProperties": {
               "kotlin.compiler.jvmTarget": "17",
               "kotlin.daemon.jvmargs": "-Xmx2048M",
