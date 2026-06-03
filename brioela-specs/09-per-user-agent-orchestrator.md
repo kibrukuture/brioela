@@ -189,8 +189,41 @@ skills: name, description, content (markdown), tags (JSON), source (system|user)
 - `description` is one line — this is the only part shown in the index (cheap, always injected).
 - `content` is full markdown — only loaded when the AI calls `skill_view(name)`.
 - `use_count` increments on every load — the foundation of skill evolution.
-- `source`: `system` = bundled skills Brioela ships with (cooking coach, allergy detection, illness detective, etc.); `user` = skills the agent created itself from conversations. The Curator only ever touches `user` skills. System skills are never modified or archived automatically.
+- `source`: `system` = bundled skills Brioela ships with; `user` = skills the agent created itself from conversations. The Curator only ever touches `user` skills. System skills are never modified or archived automatically.
 - `status`: three states — `active` (in the index), `stale` (Curator flagged it as long-unused, still in index but deprioritized), `archived` (excluded from the index entirely).
+
+### Skill Name Enforcement — Zod at the Tool Boundary
+
+Skill names follow the same enforcement discipline as `user_memory` namespaces — fully validated by Zod at the tool boundary before anything touches SQLite. The difference: skill names are flat. No dots, no hierarchy.
+
+```typescript
+const SkillNameSchema = z.string()
+  .regex(/^[a-z][a-z0-9-]*$/)
+  // enforces: lowercase only, hyphens allowed, no dots, no spaces, no uppercase
+  // allows:   "cooking-coach", "ethiopian-spice-layering", "medication-awareness"
+  // rejects:  "Cooking Coach" (uppercase), "cooking.coach" (dot), "cooking coach" (space)
+  .max(64)
+```
+
+This matters because `skill_view(name)` does an exact string match against the name column. A name mismatch means not found. Enforcement at the write boundary prevents the AI from creating a skill it can never reliably retrieve.
+
+### System Skills — The Starting Library
+
+System skills are the skills Brioela ships with at deploy time. They are seeded into the `skills` table on first DO initialization with `source = 'system'`. The Curator never touches them. They are permanent.
+
+**Current system skills (complete list):**
+- `cooking-coach` — Step-by-step voice cooking methodology with intervention logic
+- `allergy-detection` — Behavioral inference workflow for detecting and confirming allergens
+- `illness-detective` — Food history analysis procedure for foodborne illness investigation
+- `recipe-reconstruction` — Multi-speaker session technique for capturing grandma-style recipes
+- `medication-awareness` — Drug-food interaction checking workflow
+
+**Rules for adding a system skill:**
+- A system skill is only added when a core product feature consistently needs a reusable procedure that the AI cannot reliably improvise on its own.
+- It must be seeded via code — not created via `skill_create` at runtime.
+- It must follow the same Zod name constraint above.
+- If a system skill is broken or missing a capability, it is updated in code and reseeded — not patched at runtime.
+- User-created skills (`source = 'user'`) are never promoted to system skills.
 
 ### Skill Selection: Index-Then-Load
 
