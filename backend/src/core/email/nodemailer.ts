@@ -39,7 +39,7 @@ function createNodemailerTransporter() {
 	return transporter;
 }
 
-const DEFAULT_FROM = 'hello@schnl.com';
+const DEFAULT_FROM = 'hello@brioela.com';
 
 export default async function sendEmailViaNodemailer(options: NodemailerEmailOptions): Promise<NodemailerResult> {
 	const client = createNodemailerTransporter();

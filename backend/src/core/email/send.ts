@@ -9,7 +9,7 @@ import type {
 	ZeptoEmailAddress,
 } from '@/core/email/types';
 
-const DEFAULT_FROM = 'hello@schnl.com';
+const DEFAULT_FROM = 'hello@brioela.com';
 
 function toAddress(address: string | { name: string; address: string } | undefined): ZeptoEmailAddress {
 	if (!address) return { address: DEFAULT_FROM, name: 'Schnl' };
