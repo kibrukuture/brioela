@@ -2,6 +2,9 @@ import React from 'react';
 import { NativeTabs } from 'expo-router/unstable-native-tabs';
 import { useProtectedRoute } from '@/features/auth/hooks/use-protected-route';
 
+// SDK 56: use Expo Router's native tab layout instead of old React Navigation-based tab wrappers.
+// See mobile/SDK56-NAVIGATION-NOTES.md before changing this back to JavaScript/custom tabs.
+
 export default function TabsLayout() {
   useProtectedRoute();
 

@@ -6,6 +6,8 @@ import '../global.css';
 import 'expo-dev-client';
 import { ActionSheetProvider } from '@expo/react-native-action-sheet';
 import { SheetProvider } from '@/components/ui/sheet-provider';
+// SDK 56: ThemeProvider must come from Expo Router's navigation entry point, not old RN navigation glue.
+// See mobile/SDK56-NAVIGATION-NOTES.md for the migration notes and docs links.
 import { Stack, ThemeProvider as NavThemeProvider } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';

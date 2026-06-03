@@ -3,6 +3,8 @@ import type { Theme } from 'expo-router/react-navigation';
 
 import { COLORS } from './colors';
 
+// SDK 56: these theme objects are consumed by Expo Router's ThemeProvider in app/_layout.tsx.
+// Keep runtime theme imports on `expo-router`; see mobile/SDK56-NAVIGATION-NOTES.md.
 const NAV_THEME: { light: Theme; dark: Theme } = {
   light: {
     dark: false,
