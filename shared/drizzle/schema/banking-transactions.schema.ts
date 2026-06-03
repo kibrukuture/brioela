@@ -6,12 +6,12 @@ import {
   integer,
   jsonb,
 } from "drizzle-orm/pg-core";
-import { schnlSchema } from "@schnl/shared/drizzle/schema/schnl";
-import { users } from "@schnl/shared/drizzle/schema/user.schema";
+import { schnlSchema } from "@brioela/shared/drizzle/schema/schnl";
+import { users } from "@brioela/shared/drizzle/schema/user.schema";
 import { bankingCards } from "./banking-cards.schema";
 import { bankingVirtualAccounts } from "./banking-virtual-accounts.schema";
-import type { BankingTransactionDisplayMetadata } from "@schnl/shared/validators/banking-transaction.validator";
-import type { BankingTransactionAttachment } from "@schnl/shared/validators/banking-transaction-attachment.validator";
+import type { BankingTransactionDisplayMetadata } from "@brioela/shared/validators/banking-transaction.validator";
+import type { BankingTransactionAttachment } from "@brioela/shared/validators/banking-transaction-attachment.validator";
 import {
   TransactionType,
   TransactionDirection,

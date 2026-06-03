@@ -1,6 +1,6 @@
-import { z } from "@schnl/shared/zod";
-import { payRequestIdParamSchema } from "@schnl/shared/validators/pay-request.validator";
-import { submitPayRequestPayoutDetailsSchema } from "@schnl/shared/validators/pay-request.validator";
+import { z } from "@brioela/shared/zod";
+import { payRequestIdParamSchema } from "@brioela/shared/validators/pay-request.validator";
+import { submitPayRequestPayoutDetailsSchema } from "@brioela/shared/validators/pay-request.validator";
 
 export const payRequestPayoutPrecheckParamsSchema = payRequestIdParamSchema;
 

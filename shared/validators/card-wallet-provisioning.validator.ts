@@ -1,4 +1,4 @@
-import { z } from "@schnl/shared/zod";
+import { z } from "@brioela/shared/zod";
 
 export const cardWalletPlatformSchema = z.enum(["apple_wallet", "google_pay"]);
 export type CardWalletPlatform = z.infer<typeof cardWalletPlatformSchema>;

@@ -1,5 +1,5 @@
-import { z } from "@schnl/shared/zod";
-import { bankingCurrencyValues } from "@schnl/shared/drizzle/schema/banking-enums.schema";
+import { z } from "@brioela/shared/zod";
+import { bankingCurrencyValues } from "@brioela/shared/drizzle/schema/banking-enums.schema";
 
 export const bankingLimitScopeSchema = z.enum(["card", "transfer"]);
 export type BankingLimitScope = z.infer<typeof bankingLimitScopeSchema>;

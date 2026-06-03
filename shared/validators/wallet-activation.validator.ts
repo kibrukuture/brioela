@@ -1,4 +1,4 @@
-import { z } from "@schnl/shared/zod";
+import { z } from "@brioela/shared/zod";
 
 export const walletActivationFormSchema = z.object({
   code: z

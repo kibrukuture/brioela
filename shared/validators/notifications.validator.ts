@@ -1,4 +1,4 @@
-import { z } from "@schnl/shared/zod";
+import { z } from "@brioela/shared/zod";
 
 export const pushRegisterSchema = z.object({
   device_id: z.string().min(1),

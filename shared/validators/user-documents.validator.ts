@@ -1,6 +1,6 @@
-import { z } from "@schnl/shared/zod";
-import { MAX_FILE_SIZE, ALLOWED_FILE_TYPES } from "@schnl/shared/constants";
-import { QUEUE_ROUTES } from "@schnl/shared/api/queue.routes";
+import { z } from "@brioela/shared/zod";
+import { MAX_FILE_SIZE, ALLOWED_FILE_TYPES } from "@brioela/shared/constants";
+import { QUEUE_ROUTES } from "@brioela/shared/api/queue.routes";
 
 // Runtime array for Zod
 const QUEUE_ROUTE_VALUES = Object.values(QUEUE_ROUTES);

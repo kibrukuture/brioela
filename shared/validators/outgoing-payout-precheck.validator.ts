@@ -1,5 +1,5 @@
-import { z } from "@schnl/shared/zod";
-import { createOutgoingPayoutSchema } from "@schnl/shared/validators/outgoing-payout.validator";
+import { z } from "@brioela/shared/zod";
+import { createOutgoingPayoutSchema } from "@brioela/shared/validators/outgoing-payout.validator";
 
 export const outgoingPayoutPrecheckSchema = createOutgoingPayoutSchema;
 

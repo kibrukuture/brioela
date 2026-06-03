@@ -1,10 +1,10 @@
-import { z } from "@schnl/shared/zod";
+import { z } from "@brioela/shared/zod";
 import {
   BankingCurrency,
   PayoutStatus,
-} from "@schnl/shared/drizzle/schema/banking-enums.schema";
-import { payRequestBankDetailsSchema } from "@schnl/shared/validators/pay-request.validator";
-import { TRANSFER_PURPOSES } from "@schnl/shared/constants/transfer-purposes";
+} from "@brioela/shared/drizzle/schema/banking-enums.schema";
+import { payRequestBankDetailsSchema } from "@brioela/shared/validators/pay-request.validator";
+import { TRANSFER_PURPOSES } from "@brioela/shared/constants/transfer-purposes";
 
 export const amountAtomicSchema = z
   .string()

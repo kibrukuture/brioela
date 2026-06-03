@@ -1,5 +1,5 @@
-import { z } from "@schnl/shared/zod";
-import { sanitizeSchnlTag } from "@schnl/shared/utils/schnl-tag";
+import { z } from "@brioela/shared/zod";
+import { sanitizeSchnlTag } from "@brioela/shared/utils/schnl-tag";
 
 export const userSearchRequestSchema = z.object({
   query: z

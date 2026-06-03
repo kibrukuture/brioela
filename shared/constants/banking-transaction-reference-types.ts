@@ -1,1 +1,1 @@
-export type { BankingTransactionReferenceType } from "@schnl/shared/types/banking-transaction-reference-type";
+export type { BankingTransactionReferenceType } from "@brioela/shared/types/banking-transaction-reference-type";

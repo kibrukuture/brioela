@@ -1,5 +1,5 @@
 import { text, timestamp } from "drizzle-orm/pg-core";
-import { schnlSchema } from "@schnl/shared/drizzle/schema/schnl";
+import { schnlSchema } from "@brioela/shared/drizzle/schema/schnl";
 
 export const verifications = schnlSchema
   .table("verification", {

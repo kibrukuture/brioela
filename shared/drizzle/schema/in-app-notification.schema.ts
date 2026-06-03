@@ -6,8 +6,8 @@ import {
   jsonb,
   index,
 } from "drizzle-orm/pg-core";
-import { schnlSchema } from "@schnl/shared/drizzle/schema/schnl";
-import { users } from "@schnl/shared/drizzle/schema/user.schema";
+import { schnlSchema } from "@brioela/shared/drizzle/schema/schnl";
+import { users } from "@brioela/shared/drizzle/schema/user.schema";
 
 export const InAppNotificationType = schnlSchema.enum(
   "in_app_notification_type",

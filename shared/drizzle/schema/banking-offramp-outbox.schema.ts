@@ -1,5 +1,5 @@
-import { sql } from "@schnl/shared/drizzle";
-import { schnlSchema } from "@schnl/shared/drizzle/schema/schnl";
+import { sql } from "@brioela/shared/drizzle";
+import { schnlSchema } from "@brioela/shared/drizzle/schema/schnl";
 import {
   integer,
   jsonb,
@@ -8,7 +8,7 @@ import {
   uuid,
   uniqueIndex,
 } from "drizzle-orm/pg-core";
-import { BankingTransactionReferenceType } from "@schnl/shared/drizzle/schema/banking-enums.schema";
+import { BankingTransactionReferenceType } from "@brioela/shared/drizzle/schema/banking-enums.schema";
 
 export const OfframpOutboxStatus = schnlSchema.enum(
   "banking_offramp_outbox_status",

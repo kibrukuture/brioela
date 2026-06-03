@@ -1,7 +1,7 @@
-import { sql } from "@schnl/shared/drizzle";
+import { sql } from "@brioela/shared/drizzle";
 import { bigint, text, timestamp, uuid, check } from "drizzle-orm/pg-core";
-import { schnlSchema } from "@schnl/shared/drizzle/schema/schnl";
-import { users } from "@schnl/shared/drizzle/schema/user.schema";
+import { schnlSchema } from "@brioela/shared/drizzle/schema/schnl";
+import { users } from "@brioela/shared/drizzle/schema/user.schema";
 import { bankingExternalAccounts } from "./banking-external-accounts.schema";
 import { BankingCurrency, PayoutStatus } from "./banking-enums.schema";
 

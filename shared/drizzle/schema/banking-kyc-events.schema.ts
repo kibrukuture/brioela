@@ -1,6 +1,6 @@
 import { uuid, text, timestamp, jsonb } from "drizzle-orm/pg-core";
-import { schnlSchema } from "@schnl/shared/drizzle/schema/schnl";
-import { users } from "@schnl/shared/drizzle/schema/user.schema";
+import { schnlSchema } from "@brioela/shared/drizzle/schema/schnl";
+import { users } from "@brioela/shared/drizzle/schema/user.schema";
 
 export const bankingKycEvents = schnlSchema
   .table("banking_kyc_events", {

@@ -1,5 +1,5 @@
-import { z } from "@schnl/shared/zod";
-import { cardTypeSchema } from "@schnl/shared/validators/card.validator";
+import { z } from "@brioela/shared/zod";
+import { cardTypeSchema } from "@brioela/shared/validators/card.validator";
 
 export const cardOrderStatusSchema = z.enum([
   "created",

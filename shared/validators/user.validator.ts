@@ -1,8 +1,8 @@
-import { z } from "@schnl/shared/zod";
+import { z } from "@brioela/shared/zod";
 import {
   validateSchnlTag,
   sanitizeSchnlTag,
-} from "@schnl/shared/utils/schnl-tag";
+} from "@brioela/shared/utils/schnl-tag";
 
 export const setSchnlTagSchema = z.object({
   schnlTag: z

@@ -7,8 +7,8 @@ import {
   numeric,
   uniqueIndex,
 } from "drizzle-orm/pg-core";
-import { schnlSchema } from "@schnl/shared/drizzle/schema/schnl";
-import { sql } from "@schnl/shared/drizzle";
+import { schnlSchema } from "@brioela/shared/drizzle/schema/schnl";
+import { sql } from "@brioela/shared/drizzle";
 import { users } from "./user.schema";
 import { bankingWallets } from "./banking-wallets.schema";
 import { SessionStatus } from "./banking-enums.schema";

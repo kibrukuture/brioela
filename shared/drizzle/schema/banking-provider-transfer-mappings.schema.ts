@@ -1,5 +1,5 @@
-import { sql } from "@schnl/shared/drizzle";
-import { schnlSchema } from "@schnl/shared/drizzle/schema/schnl";
+import { sql } from "@brioela/shared/drizzle";
+import { schnlSchema } from "@brioela/shared/drizzle/schema/schnl";
 import {
   bigint,
   jsonb,
@@ -8,12 +8,12 @@ import {
   uuid,
   uniqueIndex,
 } from "drizzle-orm/pg-core";
-import { users } from "@schnl/shared/drizzle/schema/user.schema";
+import { users } from "@brioela/shared/drizzle/schema/user.schema";
 import {
   BankingCurrency,
   BankingRail,
   BankingTransactionReferenceType,
-} from "@schnl/shared/drizzle/schema/banking-enums.schema";
+} from "@brioela/shared/drizzle/schema/banking-enums.schema";
 
 export const providerTransferMappingStatusValues = [
   "pending",

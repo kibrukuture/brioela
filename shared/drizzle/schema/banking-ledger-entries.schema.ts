@@ -1,7 +1,7 @@
-import { schnlSchema } from "@schnl/shared/drizzle/schema/schnl";
-import { users } from "@schnl/shared/drizzle/schema/user.schema";
-import { bankingLedgerAccounts } from "@schnl/shared/drizzle/schema/banking-ledger-accounts.schema";
-import { BankingCurrency } from "@schnl/shared/drizzle/schema/banking-enums.schema";
+import { schnlSchema } from "@brioela/shared/drizzle/schema/schnl";
+import { users } from "@brioela/shared/drizzle/schema/user.schema";
+import { bankingLedgerAccounts } from "@brioela/shared/drizzle/schema/banking-ledger-accounts.schema";
+import { BankingCurrency } from "@brioela/shared/drizzle/schema/banking-enums.schema";
 import { bigint, text, timestamp, uuid } from "drizzle-orm/pg-core";
 
 export const LedgerEntryType = schnlSchema.enum("banking_ledger_entry_type", [

@@ -1,5 +1,5 @@
-import { z } from "@schnl/shared/zod";
-import { bankingTransactionAttachmentSchema } from "@schnl/shared/validators/banking-transaction-attachment.validator";
+import { z } from "@brioela/shared/zod";
+import { bankingTransactionAttachmentSchema } from "@brioela/shared/validators/banking-transaction-attachment.validator";
 
 export const bankingTransactionAttachmentParamsSchema = z.object({
   id: z.uuid(),

@@ -1,8 +1,8 @@
-import { z } from "@schnl/shared/zod";
+import { z } from "@brioela/shared/zod";
 import {
   bankingTransactionCategorySchema,
   bankingTransactionCategoryValues,
-} from "@schnl/shared/validators/banking-transaction-category.validator";
+} from "@brioela/shared/validators/banking-transaction-category.validator";
 
 export const bankingTransactionIdParamSchema = z.object({
   id: z.uuid(),

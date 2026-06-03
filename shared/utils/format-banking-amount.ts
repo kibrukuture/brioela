@@ -1,9 +1,9 @@
-import { SUPPORTED_CURRENCIES } from "@schnl/shared/constants/currencies";
-import type { BankingCurrencyCode } from "@schnl/shared/constants/banking-currency-decimals";
+import { SUPPORTED_CURRENCIES } from "@brioela/shared/constants/currencies";
+import type { BankingCurrencyCode } from "@brioela/shared/constants/banking-currency-decimals";
 import {
   atomicToDecimalString,
   parseAmountAtomic,
-} from "@schnl/shared/utils/money";
+} from "@brioela/shared/utils/money";
 
 export function formatBankingAmount(params: {
   amountAtomic: bigint | string;

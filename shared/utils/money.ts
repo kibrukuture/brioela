@@ -1,7 +1,7 @@
 import {
   getBankingCurrencyDecimals,
   type BankingCurrencyCode,
-} from "@schnl/shared/constants/banking-currency-decimals";
+} from "@brioela/shared/constants/banking-currency-decimals";
 
 export function parseAmountAtomic(amountAtomic: string): bigint {
   if (!/^-?\d+$/.test(amountAtomic)) {

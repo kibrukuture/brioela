@@ -1,5 +1,5 @@
 import { integer, jsonb, text, timestamp, uuid } from "drizzle-orm/pg-core";
-import { schnlSchema } from "@schnl/shared/drizzle/schema/schnl";
+import { schnlSchema } from "@brioela/shared/drizzle/schema/schnl";
 
 export const PollingJobStatus = schnlSchema.enum("polling_job_status", [
   "pending",

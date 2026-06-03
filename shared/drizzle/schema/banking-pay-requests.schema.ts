@@ -1,6 +1,6 @@
-import { schnlSchema } from "@schnl/shared/drizzle/schema/schnl";
-import { users } from "@schnl/shared/drizzle/schema/user.schema";
-import { BankingCurrency } from "@schnl/shared/drizzle/schema/banking-enums.schema";
+import { schnlSchema } from "@brioela/shared/drizzle/schema/schnl";
+import { users } from "@brioela/shared/drizzle/schema/user.schema";
+import { BankingCurrency } from "@brioela/shared/drizzle/schema/banking-enums.schema";
 import { text, timestamp, uuid, bigint } from "drizzle-orm/pg-core";
 
 export const PayRequestStatus = schnlSchema.enum("banking_pay_request_status", [

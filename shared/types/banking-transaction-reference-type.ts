@@ -1,4 +1,4 @@
-import { bankingTransactionReferenceTypeValues } from "@schnl/shared/drizzle/schema/banking-enums.schema";
+import { bankingTransactionReferenceTypeValues } from "@brioela/shared/drizzle/schema/banking-enums.schema";
 
 export type BankingTransactionReferenceType =
   (typeof bankingTransactionReferenceTypeValues)[number];

@@ -1,4 +1,4 @@
-import { BankingCurrency } from "@schnl/shared/drizzle/schema/banking-enums.schema";
+import { BankingCurrency } from "@brioela/shared/drizzle/schema/banking-enums.schema";
 
 export function getBankDetailsTypeForCurrency(
   currency: (typeof BankingCurrency.enumValues)[number]

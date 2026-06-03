@@ -1,6 +1,6 @@
-import { z } from "@schnl/shared/zod";
-import { BankingCurrency } from "@schnl/shared/drizzle/schema/banking-enums.schema";
-import { BankingTransactionReferenceType } from "@schnl/shared/drizzle/schema/banking-enums.schema";
+import { z } from "@brioela/shared/zod";
+import { BankingCurrency } from "@brioela/shared/drizzle/schema/banking-enums.schema";
+import { BankingTransactionReferenceType } from "@brioela/shared/drizzle/schema/banking-enums.schema";
 import { bankingTransactionCategorySchema } from "./banking-transaction-category.validator";
 import { bankingTransactionAttachmentSchema } from "./banking-transaction-attachment.validator";
 

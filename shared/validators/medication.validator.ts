@@ -1,5 +1,5 @@
 // shared/validators/medication.ts
-import { z } from "@schnl/shared/zod";
+import { z } from "@brioela/shared/zod";
 
 export const MedicationSchema = z.object({
   name: z.string(),

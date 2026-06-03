@@ -1,4 +1,4 @@
-import { z } from "@schnl/shared/zod";
+import { z } from "@brioela/shared/zod";
 
 /**
  * Response payload for updating a user's public profile picture URL.

@@ -1,5 +1,5 @@
-import { z } from "@schnl/shared/zod";
-import { TRANSFER_PURPOSES } from "@schnl/shared/constants/transfer-purposes";
+import { z } from "@brioela/shared/zod";
+import { TRANSFER_PURPOSES } from "@brioela/shared/constants/transfer-purposes";
 
 export const outgoingPayoutOfframpOutboxPayloadSchema = z
   .object({

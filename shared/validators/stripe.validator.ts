@@ -1,4 +1,4 @@
-import { z } from "@schnl/shared/zod";
+import { z } from "@brioela/shared/zod";
 
 export const createBillingPortalSchema = z.object({
   // Add any additional fields if needed, or keep empty if none required

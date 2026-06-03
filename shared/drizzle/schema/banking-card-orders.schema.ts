@@ -1,9 +1,9 @@
-import { schnlSchema } from "@schnl/shared/drizzle/schema/schnl";
-import { users } from "@schnl/shared/drizzle/schema/user.schema";
+import { schnlSchema } from "@brioela/shared/drizzle/schema/schnl";
+import { users } from "@brioela/shared/drizzle/schema/user.schema";
 import {
   CardType,
   BankingCurrency,
-} from "@schnl/shared/drizzle/schema/banking-enums.schema";
+} from "@brioela/shared/drizzle/schema/banking-enums.schema";
 import { bigint, text, timestamp, uuid, jsonb } from "drizzle-orm/pg-core";
 
 export const BankingCardOrderStatus = schnlSchema.enum(

@@ -1,7 +1,7 @@
-import { sql } from "@schnl/shared/drizzle";
+import { sql } from "@brioela/shared/drizzle";
 import { text, timestamp, uuid, check, uniqueIndex } from "drizzle-orm/pg-core";
-import { schnlSchema } from "@schnl/shared/drizzle/schema/schnl";
-import { users } from "@schnl/shared/drizzle/schema/user.schema";
+import { schnlSchema } from "@brioela/shared/drizzle/schema/schnl";
+import { users } from "@brioela/shared/drizzle/schema/user.schema";
 import { BankingCurrency, AccountStatus } from "./banking-enums.schema";
 import { BankingRail } from "./banking-enums.schema";
 

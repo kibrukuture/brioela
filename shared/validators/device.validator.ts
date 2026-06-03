@@ -1,4 +1,4 @@
-import { z } from "@schnl/shared/zod";
+import { z } from "@brioela/shared/zod";
 
 export const bindDeviceSchema = z.object({
   deviceId: z.string().min(1, "deviceId is required"),

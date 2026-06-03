@@ -1,4 +1,4 @@
-import { z } from "@schnl/shared/zod";
+import { z } from "@brioela/shared/zod";
 
 export const runOfframpOutboxQueueJobSchema = z.object({
   type: z.literal("banking.offramp_outbox_process"),

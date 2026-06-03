@@ -1,4 +1,4 @@
-import { schnlSchema } from "@schnl/shared/drizzle/schema/schnl";
+import { schnlSchema } from "@brioela/shared/drizzle/schema/schnl";
 
 export const BankingRail = schnlSchema.enum("banking_rail", [
   "ach",

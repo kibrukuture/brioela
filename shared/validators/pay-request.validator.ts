@@ -1,8 +1,8 @@
-import { z } from "@schnl/shared/zod";
-import { BankingCurrency } from "@schnl/shared/drizzle/schema/banking-enums.schema";
-import { PayRequestStatus } from "@schnl/shared/drizzle/schema/banking-pay-requests.schema";
-import { TRANSFER_PURPOSES } from "@schnl/shared/constants/transfer-purposes";
-import { PAYOUT_CURRENCIES } from "@schnl/shared/constants";
+import { z } from "@brioela/shared/zod";
+import { BankingCurrency } from "@brioela/shared/drizzle/schema/banking-enums.schema";
+import { PayRequestStatus } from "@brioela/shared/drizzle/schema/banking-pay-requests.schema";
+import { TRANSFER_PURPOSES } from "@brioela/shared/constants/transfer-purposes";
+import { PAYOUT_CURRENCIES } from "@brioela/shared/constants";
 
 export const bankingCurrencySchema = z.enum(BankingCurrency.enumValues);
 export type BankingCurrencyCode = z.infer<typeof bankingCurrencySchema>;

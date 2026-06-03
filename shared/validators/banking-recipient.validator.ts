@@ -1,7 +1,7 @@
-import { z } from "@schnl/shared/zod";
-import { SUPPORTED_BANKING_CURRENCY_CODES } from "@schnl/shared/constants";
-import { BankingCurrency } from "@schnl/shared/drizzle/schema/banking-enums.schema";
-import { payRequestBankDetailsSchema } from "@schnl/shared/validators/pay-request.validator";
+import { z } from "@brioela/shared/zod";
+import { SUPPORTED_BANKING_CURRENCY_CODES } from "@brioela/shared/constants";
+import { BankingCurrency } from "@brioela/shared/drizzle/schema/banking-enums.schema";
+import { payRequestBankDetailsSchema } from "@brioela/shared/validators/pay-request.validator";
 
 const supportedBankingCurrencySchema = z.enum(SUPPORTED_BANKING_CURRENCY_CODES);
 

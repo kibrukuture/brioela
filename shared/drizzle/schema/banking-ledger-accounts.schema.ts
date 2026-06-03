@@ -1,7 +1,7 @@
-import { schnlSchema } from "@schnl/shared/drizzle/schema/schnl";
-import { users } from "@schnl/shared/drizzle/schema/user.schema";
-import { BankingCurrency } from "@schnl/shared/drizzle/schema/banking-enums.schema";
-import { sql } from "@schnl/shared/drizzle";
+import { schnlSchema } from "@brioela/shared/drizzle/schema/schnl";
+import { users } from "@brioela/shared/drizzle/schema/user.schema";
+import { BankingCurrency } from "@brioela/shared/drizzle/schema/banking-enums.schema";
+import { sql } from "@brioela/shared/drizzle";
 import { bigint, timestamp, uuid, uniqueIndex } from "drizzle-orm/pg-core";
 
 // “Balance sheet snapshot” ( the main one. )

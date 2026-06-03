@@ -3,7 +3,7 @@ import {
   friendlyFormatIBAN,
   isValidIBAN,
 } from "ibantools";
-import { UiError } from "@schnl/shared/lib/ui/errors";
+import { UiError } from "@brioela/shared/lib/ui/errors";
 
 export function formatIbanForDisplay(input: string): string {
   const electronic = electronicFormatIBAN(input) ?? "";

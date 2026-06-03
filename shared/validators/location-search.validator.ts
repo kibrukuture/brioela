@@ -1,4 +1,4 @@
-import { z } from "@schnl/shared/zod";
+import { z } from "@brioela/shared/zod";
 
 export const locationSearchRequestSchema = z.object({
   query: z.string().min(1, "query is required"),

@@ -1,5 +1,5 @@
-import { z } from "@schnl/shared/zod";
-import { BankingCurrency } from "@schnl/shared/drizzle/schema/banking-enums.schema";
+import { z } from "@brioela/shared/zod";
+import { BankingCurrency } from "@brioela/shared/drizzle/schema/banking-enums.schema";
 
 export const peerToPeerPrecheckSchema = z.object({
   recipientUserId: z.uuid(),

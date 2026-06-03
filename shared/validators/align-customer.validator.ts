@@ -1,10 +1,10 @@
-import { z } from "@schnl/shared/zod";
+import { z } from "@brioela/shared/zod";
 import {
   BankingCurrency,
   BankingRail,
   HolderType,
-} from "@schnl/shared/drizzle/schema/banking-enums.schema";
-import { BankingKycStatus } from "@schnl/shared/drizzle/schema/user.schema";
+} from "@brioela/shared/drizzle/schema/banking-enums.schema";
+import { BankingKycStatus } from "@brioela/shared/drizzle/schema/user.schema";
 
 export const alignCustomerSchema = z.object({
   customer_id: z.string().min(1),

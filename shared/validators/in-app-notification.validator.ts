@@ -1,5 +1,5 @@
-import { z } from "@schnl/shared/zod";
-import { InAppNotificationType } from "@schnl/shared/drizzle/schema/in-app-notification.schema";
+import { z } from "@brioela/shared/zod";
+import { InAppNotificationType } from "@brioela/shared/drizzle/schema/in-app-notification.schema";
 
 export const inAppNotificationTypeSchema = z.enum(
   InAppNotificationType.enumValues

@@ -7,8 +7,8 @@ import {
   boolean,
   check,
 } from "drizzle-orm/pg-core";
-import { schnlSchema } from "@schnl/shared/drizzle/schema/schnl";
-import { sql } from "@schnl/shared/drizzle";
+import { schnlSchema } from "@brioela/shared/drizzle/schema/schnl";
+import { sql } from "@brioela/shared/drizzle";
 
 // Create the enum type
 export const AccountAccessStatus = schnlSchema.enum("account_access_status", [
