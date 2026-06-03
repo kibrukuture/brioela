@@ -99,12 +99,6 @@
         }
       ],
       [
-        "expo-av",
-        {
-          "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone."
-        }
-      ],
-      [
         "expo-splash-screen",
         {
           "backgroundColor": "#FFFFFF",
