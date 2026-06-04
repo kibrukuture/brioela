@@ -37,7 +37,7 @@ Confirmation is earned through real interactions, not through a form the user fi
 
 ## Decision: evidence points to memory_event IDs here, not user_memory IDs
 
-Unlike `user_personality` where evidence points to `user_memory` entries, constraint evidence points to `memory_event` IDs. Reason: constraints are proposed from raw behavioral events — a scan event, a receipt event, a place_visited event. The Curator never proposes constraints (the agent does, via `propose_constraint` tool). The agent infers directly from events, not from derived facts. The evidence trail must point back to the raw events that triggered the inference.
+Unlike `user_personality` where evidence points to `user_memory` entries, constraint evidence points to `memory_event` IDs. Reason: constraints are proposed from raw behavioral events — a scan event, a receipt event, a place_visited event. The Curator never proposes constraints (the agent does, via `propose_user_constraint` tool). The agent infers directly from events, not from derived facts. The evidence trail must point back to the raw events that triggered the inference.
 
 ## Decision: Curator never touches this table
 
@@ -172,8 +172,8 @@ CREATE INDEX idx_constraints_surfaced     ON constraints (last_surfaced_at) WHER
 
 ## Write Rules
 
-- `propose_constraint` tool — agent only. Inserts a new row with `status = 'proposed'`. Zod validates all fields. At least one `memory_event` ID required in evidence.
-- `confirm_constraint` tool — called after user explicitly confirms in conversation. Sets `status = 'confirmed'`, `confirmation_source = 'user_explicit'`, `confirmed_at = now`.
+- `propose_user_constraint` tool — agent only. Inserts a new row with `status = 'proposed'`. Zod validates all fields. At least one `memory_event` ID required in evidence.
+- `confirm_user_constraint` tool — called after user explicitly confirms in conversation. Sets `status = 'confirmed'`, `confirmation_source = 'user_explicit'`, `confirmed_at = now`.
 - Auto-confirmation — agent logic sets `status = 'auto_confirmed'`, `confirmation_source = 'behavioral_threshold'`, `confirmed_at = now`. Only for eligible constraint types.
 - Rejection — agent sets `status = 'rejected'` when user says no. Row preserved.
 - `surfaced_count` increments and `last_surfaced_at` updates every time the agent surfaces this constraint for confirmation.

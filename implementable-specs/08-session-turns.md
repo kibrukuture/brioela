@@ -12,7 +12,7 @@ Without `session_turns`, there is no conversation history, no turn-level token t
 
 ## Decision: tool calls and tool results are turns
 
-A tool call (`skill_view`, `propose_constraint`, `memory_write`) is part of the conversation. It consumes tokens. It produces a result. The result is part of context. Storing tool calls and results as turn rows gives a complete picture of what the agent actually did during a session — not just what it said.
+A tool call (`view_user_skill`, `propose_user_constraint`, `memory_write`) is part of the conversation. It consumes tokens. It produces a result. The result is part of context. Storing tool calls and results as turn rows gives a complete picture of what the agent actually did during a session — not just what it said.
 
 ## Decision: turn_number is an ordered integer, not derived from rowid
 
@@ -85,7 +85,7 @@ Not derived from `rowid` or `created_at`. Explicit, monotonic, stable. Starts at
 Tool calls and results are first-class turns. They consume tokens and are part of context.
 
 **`content` — always populated**
-For `user` and `assistant` turns: the message text. For `tool_call` turns: a human-readable description of what was called (e.g. "Called skill_view('cooking-coach')"). For `tool_result` turns: the result text. `content` is always present — it is what FTS5 indexes.
+For `user` and `assistant` turns: the message text. For `tool_call` turns: a human-readable description of what was called (e.g. "Called view_user_skill('cooking-coach')"). For `tool_result` turns: the result text. `content` is always present — it is what FTS5 indexes.
 
 **`tool_name`, `tool_input`, `tool_result` — nullable, set only for tool turns**
 `tool_name` and `tool_input` are set when `role = 'tool_call'`. `tool_result` is set when `role = 'tool_result'`. NULL for `user` and `assistant` turns. `tool_input` is stored as a JSON string — the raw arguments passed to the tool.

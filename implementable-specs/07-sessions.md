@@ -40,7 +40,7 @@ Hermes tracks all of this per session. We must too. These columns go on the sess
 
 ## Decision: outcome_summary is agent-written at session end
 
-When a session ends (cooking finished, user closed app, alarm completed), the agent writes a short summary: what happened, what facts were extracted to `user_memory`, what constraints were proposed, what skills were created or updated. This is what gets read by the next session to understand what the previous session produced. It is also what `recall_session_context` searches via FTS5 when the user asks "what did we cook last time."
+When a session ends (cooking finished, user closed app, alarm completed), the agent writes a short summary: what happened, what facts were extracted to `user_memory`, what constraints were proposed, what skills were created or updated. This is what gets read by the next session to understand what the previous session produced. It is also what `search_session_history` searches via FTS5 when the user asks "what did we cook last time."
 
 ## CREATE TABLE
 
@@ -124,7 +124,7 @@ Only set for `alarm` sessions. Values match the alarm types in `scheduled_alarms
 - `abandoned`: session ended without a proper close (app crash, connection drop, timeout)
 
 **`outcome_summary` — NULL while active, agent-written at end**
-A short paragraph the agent writes when the session closes. What happened, what was learned, what was written to memory. This is what `recall_session_context` FTS5-searches when the user asks about past sessions. Empty sessions (alarm ran, nothing notable) get a minimal summary. Rich cooking sessions get a full summary including recipe notes, techniques observed, grandma-style details captured.
+A short paragraph the agent writes when the session closes. What happened, what was learned, what was written to memory. This is what `search_session_history` FTS5-searches when the user asks about past sessions. Empty sessions (alarm ran, nothing notable) get a minimal summary. Rich cooking sessions get a full summary including recipe notes, techniques observed, grandma-style details captured.
 
 **`model` — which model ran this session**
 `claude-sonnet-4-6` for chat and alarm sessions. `gemini-live` for voice cooking sessions. Knowing the model is essential for cost calculation and for understanding performance differences between session types.
@@ -168,8 +168,8 @@ CREATE INDEX idx_sessions_active         ON sessions (status) WHERE status = 'ac
 
 ## Read Rules
 
-- Read by `get_session_context()` to load the previous session's `outcome_summary` for continuity.
-- Read by `recall_session_context` FTS5 search path — `outcome_summary` is indexed in `sessions_fts` and `sessions_fts_trigram`.
+- Read by `load_session_context()` to load the previous session's `outcome_summary` for continuity.
+- Read by `search_session_history` FTS5 search path — `outcome_summary` is indexed in `sessions_fts` and `sessions_fts_trigram`.
 - Read by token monitoring to check per-user spend.
 - Read by recipe history queries: all sessions for a given `recipe_id`.
 - Never bulk-loaded into prompts — only the most recent session's `outcome_summary` is injected.
@@ -223,7 +223,7 @@ Trigram tokenizer. Splits text into overlapping 3-character sequences — no wor
 
 ### Search Path
 
-When `recall_session_context` runs:
+When `search_session_history` runs:
 - Latin-script query → search `sessions_fts` with `MATCH`
 - Non-Latin query (detected by script range) → search `sessions_fts_trigram` with `MATCH`
 - Results are session rowids → join back to `sessions` to get the full row

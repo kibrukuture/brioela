@@ -58,7 +58,7 @@ Tools are the ONLY interface between the agent's language model and the DO's SQL
 | Tool | Status |
 |---|---|
 | `log_memory_event` | ✓ DONE |
-| `write_user_memory` | OPEN |
+| `write_user_memory` | ✓ DONE |
 | `read_user_memory` | OPEN |
 | `create_user_skill` | OPEN |
 | `update_user_skill` | OPEN |

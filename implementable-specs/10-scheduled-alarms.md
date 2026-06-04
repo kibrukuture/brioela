@@ -12,7 +12,7 @@ Not all autonomous agent work is time-based. There are two fundamentally differe
 
 **Path A — Time-based (this table)**
 ```
-agent calls schedule_alarm(type, scheduled_for, payload)
+agent calls schedule_user_alarm(type, scheduled_for, payload)
 → row inserted into scheduled_alarms with status = 'pending'
 → DO alarm slot set to MIN(scheduled_for) across all pending rows
 → DO sleeps until that timestamp
@@ -54,7 +54,7 @@ A product recall notification fires the moment the condition is detected — not
 ## The DO Alarm Pattern (Path A detail)
 
 ```
-1. Agent calls schedule_alarm(type, scheduled_for, payload)
+1. Agent calls schedule_user_alarm(type, scheduled_for, payload)
 2. Row inserted into scheduled_alarms with status = 'pending'
 3. DO alarm slot set to MIN(scheduled_for) across all pending rows
 4. DO sleeps
@@ -172,9 +172,9 @@ CREATE INDEX idx_alarms_type_status  ON scheduled_alarms (alarm_type, status);
 
 ## Write Rules
 
-- `schedule_alarm` tool — agent only. Inserts with `status = 'pending'`. After insert, calls `this.ctx.storage.setAlarm(MIN scheduled_for)` to update the DO slot.
+- `schedule_user_alarm` tool — agent only. Inserts with `status = 'pending'`. After insert, calls `this.ctx.storage.setAlarm(MIN scheduled_for)` to update the DO slot.
 - DO alarm handler — sets `status = 'processing'` before handling. Sets `status = 'completed'` or `status = 'failed'` after. Increments `attempts` on each attempt. After all rows processed, re-reads `MIN(scheduled_for)` of remaining pending rows and resets DO alarm slot.
-- `cancel_alarm` tool — agent only. Sets `status = 'cancelled'`. After cancel, re-reads `MIN(scheduled_for)` and resets DO alarm slot.
+- `cancel_user_alarm` tool — agent only. Sets `status = 'cancelled'`. After cancel, re-reads `MIN(scheduled_for)` and resets DO alarm slot.
 - Never deleted. History of all past alarms stays in the table permanently.
 
 ## Read Rules

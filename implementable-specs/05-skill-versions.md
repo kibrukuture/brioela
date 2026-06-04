@@ -2,7 +2,7 @@
 
 ## Why This Table Exists
 
-Every time `skill_update` is called, the current skill content is overwritten. Without history, a bad Curator pass or a poorly-reasoned agent update permanently destroys a skill that took months of real sessions to build. There is no undo.
+Every time `update_user_skill` is called, the current skill content is overwritten. Without history, a bad Curator pass or a poorly-reasoned agent update permanently destroys a skill that took months of real sessions to build. There is no undo.
 
 `skill_versions` is the undo. Before every overwrite, the old content is archived here as a row. The `skills` table always has the current state. This table has every previous state — full content, the description at that version, who made the change, and why.
 
@@ -12,11 +12,11 @@ The agent has no `restore_skill_version` tool. Rollback is a developer-only acti
 
 ## Decision: no hard foreign key to skills.name
 
-`skill_versions.skill_name` references `skills.name` logically but not with a hard SQL foreign key constraint. Reason: `skill_delete` permanently removes a row from `skills`. If a hard foreign key with CASCADE DELETE existed, deleting a skill would cascade-delete all its version history — destroying the only record of what the skill contained. Without the hard constraint, version history survives skill deletion. The relationship is preserved logically; the data is preserved physically.
+`skill_versions.skill_name` references `skills.name` logically but not with a hard SQL foreign key constraint. Reason: `delete_user_skill` permanently removes a row from `skills`. If a hard foreign key with CASCADE DELETE existed, deleting a skill would cascade-delete all its version history — destroying the only record of what the skill contained. Without the hard constraint, version history survives skill deletion. The relationship is preserved logically; the data is preserved physically.
 
 ## Decision: store both content AND description per version
 
-Description can change between `skill_update` calls — the agent may refine the one-line description along with the content. If only `content` is archived, the old description is lost. Both must be stored per version to make the history complete and rollback-safe.
+Description can change between `update_user_skill` calls — the agent may refine the one-line description along with the content. If only `content` is archived, the old description is lost. Both must be stored per version to make the history complete and rollback-safe.
 
 ## CREATE TABLE
 
@@ -28,8 +28,8 @@ CREATE TABLE skill_versions (
   version       INTEGER NOT NULL,   -- the version number at the time this was archived (matches skills.version before the update)
   content       TEXT NOT NULL,      -- full markdown content of this version
   description   TEXT NOT NULL,      -- description at this version — may differ from current
-  updated_by    TEXT NOT NULL,      -- 'agent' | 'curator' — who triggered the skill_update that replaced this version
-  update_reason TEXT NOT NULL,      -- reason string passed to skill_update(name, content, reason) — required, never empty
+  updated_by    TEXT NOT NULL,      -- 'agent' | 'curator' — who triggered the update_user_skill that replaced this version
+  update_reason TEXT NOT NULL,      -- reason string passed to update_user_skill(name, content, reason) — required, never empty
   archived_at   INTEGER NOT NULL    -- unix timestamp ms — when this version was replaced by the next one
 );
 ```
@@ -64,7 +64,7 @@ Logical reference to the skill. Hard FK with CASCADE DELETE would destroy histor
 Same reason as all other tables. Rows must be self-describing outside the DO.
 
 **`version` — integer matching skills.version before the update**
-When `skill_update` fires: the current `skills.version` (e.g. 3) is written here, then `skills.version` is incremented to 4. This means `skill_versions` row with `version = 3` holds what the skill looked like at version 3, and `skills` now holds version 4. The version numbers are continuous and auditable.
+When `update_user_skill` fires: the current `skills.version` (e.g. 3) is written here, then `skills.version` is incremented to 4. This means `skill_versions` row with `version = 3` holds what the skill looked like at version 3, and `skills` now holds version 4. The version numbers are continuous and auditable.
 
 **`content` — full markdown of the old version**
 The complete previous content. Nothing truncated. This is the rollback material.
@@ -76,10 +76,10 @@ Archived alongside content because description can change between updates. A com
 Tells you who decided to rewrite the skill. An agent rewrite means the agent found a better approach mid-conversation. A Curator rewrite means the scheduled maintenance pass made a consolidation or improvement decision. Different accountability.
 
 **`update_reason` — required, never empty**
-The reason string from `skill_update(name, content, reason)`. Zod enforces `.min(1)` on reason in the `SkillUpdateSchema` — no silent rewrites allowed. The reason is permanently stored here so future developers and the Curator know why each version was replaced.
+The reason string from `update_user_skill(name, content, reason)`. Zod enforces `.min(1)` on reason in the `SkillUpdateSchema` — no silent rewrites allowed. The reason is permanently stored here so future developers and the Curator know why each version was replaced.
 
 **`archived_at` — when this version was replaced**
-The timestamp of the `skill_update` call that replaced this version. Combined with `version`, gives a complete timeline of when each rewrite happened.
+The timestamp of the `update_user_skill` call that replaced this version. Combined with `version`, gives a complete timeline of when each rewrite happened.
 
 ## Indexes
 
@@ -94,8 +94,8 @@ CREATE INDEX idx_skill_versions_user    ON skill_versions (user_id);
 
 ## Write Rules
 
-- Written ONLY by the `skill_update` execution path — never written directly by any other code.
-- One row inserted per `skill_update` call, before the content is overwritten in `skills`.
+- Written ONLY by the `update_user_skill` execution path — never written directly by any other code.
+- One row inserted per `update_user_skill` call, before the content is overwritten in `skills`.
 - `archived_at` is always `Date.now()` at write time, set by the system, never passed in.
 - `id` is always `crypto.randomUUID()`, generated at insert time.
 - Never updated after insert. Never deleted (even when the parent skill is deleted).

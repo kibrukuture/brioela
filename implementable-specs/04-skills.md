@@ -11,11 +11,11 @@ Examples:
 - `illness-detective` — food history analysis procedure for foodborne illness investigation
 - `ethiopian-spice-layering` — technique for building berbere-style spice depth in three stages (agent-created after a grandma session)
 
-The agent does not pre-load all skills into every prompt. It reads a compact index (one line per skill: `name: description`) injected into every system prompt, recognizes which skill is relevant, and calls `skill_view(name)` to load the full content only when needed. The full content costs tokens only when actually used.
+The agent does not pre-load all skills into every prompt. It reads a compact index (one line per skill: `name: description`) injected into every system prompt, recognizes which skill is relevant, and calls `view_user_skill(name)` to load the full content only when needed. The full content costs tokens only when actually used.
 
 ## Decision: name is the primary key, not UUID
 
-Unlike `user_personality` where the Curator can refine trait names, skill names are never renamed. `skill_update(name, content, reason)` changes content only — the name is the stable address. `skill_view(name)` does exact string match on the primary key. A UUID primary key would add a layer of indirection that `skill_view` has to work around for no benefit. Name as primary key is correct here, backed directly by how the tool works — spec 09, line 148.
+Unlike `user_personality` where the Curator can refine trait names, skill names are never renamed. `update_user_skill(name, content, reason)` changes content only — the name is the stable address. `view_user_skill(name)` does exact string match on the primary key. A UUID primary key would add a layer of indirection that `view_user_skill` has to work around for no benefit. Name as primary key is correct here, backed directly by how the tool works — spec 09, line 148.
 
 ## Decision: description has a hard 120-char cap
 
@@ -27,7 +27,7 @@ Tags could theoretically serve skill discovery. But skill selection in this syst
 
 ## Decision: version integer + separate skill_versions table
 
-`skill_update` rewrites content. Without history, a bad Curator pass or a bad agent update permanently destroys a skill that took months of real sessions to build. `version` increments on every update. The full previous content is archived to `skill_versions` before every overwrite. Rollback is a developer action — the agent has no rollback tool. See `05-skill-versions.md`.
+`update_user_skill` rewrites content. Without history, a bad Curator pass or a bad agent update permanently destroys a skill that took months of real sessions to build. `version` increments on every update. The full previous content is archived to `skill_versions` before every overwrite. Rollback is a developer action — the agent has no rollback tool. See `05-skill-versions.md`.
 
 ## Decision: system skills are never touched by the Curator
 
@@ -37,17 +37,17 @@ Tags could theoretically serve skill discovery. But skill selection in this syst
 
 ```sql
 CREATE TABLE skills (
-  name            TEXT PRIMARY KEY,   -- flat, lowercase, hyphens only, max 64 chars — the exact string used in skill_view(name)
+  name            TEXT PRIMARY KEY,   -- flat, lowercase, hyphens only, max 64 chars — the exact string used in view_user_skill(name)
   user_id         TEXT NOT NULL,      -- owner — self-describing for export and Data Studio
   description     TEXT NOT NULL,      -- one line, max 120 chars — the ONLY part shown in the index
-  content         TEXT NOT NULL,      -- full markdown procedure — only loaded on skill_view()
+  content         TEXT NOT NULL,      -- full markdown procedure — only loaded on view_user_skill()
   tags            TEXT NOT NULL DEFAULT '[]', -- JSON array of strings — Curator metadata only, not used in index
   source          TEXT NOT NULL,      -- 'system' | 'user'
   status          TEXT NOT NULL DEFAULT 'active', -- 'active' | 'stale' | 'archived'
-  version         INTEGER NOT NULL DEFAULT 1,     -- increments on every skill_update
-  use_count       INTEGER NOT NULL DEFAULT 0,     -- increments on every skill_view call
-  last_used_at    INTEGER,            -- unix timestamp ms of last skill_view call — NULL until first use
-  archived_reason TEXT,               -- reason passed to skill_archive() — NULL if not archived
+  version         INTEGER NOT NULL DEFAULT 1,     -- increments on every update_user_skill
+  use_count       INTEGER NOT NULL DEFAULT 0,     -- increments on every view_user_skill call
+  last_used_at    INTEGER,            -- unix timestamp ms of last view_user_skill call — NULL until first use
+  archived_reason TEXT,               -- reason passed to archive_user_skill() — NULL if not archived
   created_at      INTEGER NOT NULL,   -- unix timestamp ms — when this skill was first created
   updated_at      INTEGER NOT NULL    -- unix timestamp ms — when this row last changed
 );
@@ -78,7 +78,7 @@ export const skills = sqliteTable('skills', {
 ## Column Decisions
 
 **`name` — primary key, Zod-constrained**
-The exact string `skill_view(name)` matches against. Constraint: `/^[a-z][a-z0-9-]*$/`, max 64 chars. Lowercase, hyphens only. Same discipline as `user_memory` namespaces — flat, no dots. Enforced by Zod at `skill_create` boundary. Never changes after creation.
+The exact string `view_user_skill(name)` matches against. Constraint: `/^[a-z][a-z0-9-]*$/`, max 64 chars. Lowercase, hyphens only. Same discipline as `user_memory` namespaces — flat, no dots. Enforced by Zod at `create_user_skill` boundary. Never changes after creation.
 
 **`user_id` — kept**
 Same reason as all other tables. Rows must be self-describing outside the DO.
@@ -87,30 +87,30 @@ Same reason as all other tables. Rows must be self-describing outside the DO.
 This is the entire basis on which the model decides to load a skill. It must be specific enough to distinguish this skill from all others, and short enough that 20+ skills in the index don't overwhelm the prompt. Zod enforces `.max(120)`.
 
 **`content` — full markdown, never preloaded**
-The actual procedure. Can be long. Only pulled into context when the agent explicitly calls `skill_view(name)`. Token cost is zero until that call happens. No size cap enforced in SQL — but practically, content that exceeds ~4000 tokens becomes a context burden and the Curator should flag it.
+The actual procedure. Can be long. Only pulled into context when the agent explicitly calls `view_user_skill(name)`. Token cost is zero until that call happens. No size cap enforced in SQL — but practically, content that exceeds ~4000 tokens becomes a context burden and the Curator should flag it.
 
 **`tags` — JSON array, Curator-only**
 Example: `["food", "health", "detection"]`. Used by the Curator to detect overlapping skills (two skills tagged `["allergy", "detection"]` might be consolidation candidates). Never injected into the system prompt index. Never used for skill selection.
 
 **`source` — 'system' or 'user'**
-System skills are seeded at DO initialization. User skills are created by the agent at runtime via `skill_create`. The Curator only ever touches user skills. This column is the gate.
+System skills are seeded at DO initialization. User skills are created by the agent at runtime via `create_user_skill`. The Curator only ever touches user skills. This column is the gate.
 
 **`status` — three states**
 - `active`: in the index, visible to the agent
 - `stale`: Curator flagged as long-unused, still in index but deprioritized (shown last)
 - `archived`: excluded from the index entirely, content preserved in table
 
-**`version` — integer, increments on every skill_update**
-Starting at 1. Every call to `skill_update` increments this before archiving the old content to `skill_versions`. Tells the Curator how many times this skill has been rewritten — a high version count with low `use_count` means the skill keeps getting rewritten but never actually used.
+**`version` — integer, increments on every update_user_skill**
+Starting at 1. Every call to `update_user_skill` increments this before archiving the old content to `skill_versions`. Tells the Curator how many times this skill has been rewritten — a high version count with low `use_count` means the skill keeps getting rewritten but never actually used.
 
-**`use_count` — increments on every skill_view call**
+**`use_count` — increments on every view_user_skill call**
 The foundation of skill evolution. The index is ordered by `use_count DESC` — most-used skills appear first, reducing how far the model has to scan. Curator uses this for stale detection: low `use_count` + old `last_used_at` = candidate for `stale` status.
 
 **`last_used_at` — nullable**
 NULL until the skill is used for the first time. A system skill that has never been used has `last_used_at = NULL` — this is valid and expected for newly seeded skills.
 
 **`archived_reason` — nullable**
-NULL for active and stale skills. Set when `skill_archive(name, reason)` is called. The reason is stored here permanently so the Curator and developers know why a skill was archived.
+NULL for active and stale skills. Set when `archive_user_skill(name, reason)` is called. The reason is stored here permanently so the Curator and developers know why a skill was archived.
 
 ## Zod Schema (Tool Boundary Enforcement)
 
@@ -164,17 +164,17 @@ CREATE INDEX idx_skills_last_used     ON skills (last_used_at DESC) WHERE status
 
 ## Write Rules
 
-- `skill_create` — agent only. Inserts a new row. Zod validates name and description before insert. System skills inserted by DO initialization code, not by the agent.
-- `skill_update` — agent or Curator. Before overwriting `content`, archives current version to `skill_versions`. Increments `version`. Updates `content`, `description` (if changed), `updated_at`.
-- `skill_archive` — agent or Curator. Sets `status = 'archived'`, sets `archived_reason`. Never deletes.
-- `skill_delete` — agent only, irreversible. Removes row from `skills`. `skill_versions` rows for this skill are NOT deleted — history survives.
-- `skill_view` — increments `use_count` and sets `last_used_at` as a side effect of every read.
+- `create_user_skill` — agent only. Inserts a new row. Zod validates name and description before insert. System skills inserted by DO initialization code, not by the agent.
+- `update_user_skill` — agent or Curator. Before overwriting `content`, archives current version to `skill_versions`. Increments `version`. Updates `content`, `description` (if changed), `updated_at`.
+- `archive_user_skill` — agent or Curator. Sets `status = 'archived'`, sets `archived_reason`. Never deletes.
+- `delete_user_skill` — agent only, irreversible. Removes row from `skills`. `skill_versions` rows for this skill are NOT deleted — history survives.
+- `view_user_skill` — increments `use_count` and sets `last_used_at` as a side effect of every read.
 - Curator NEVER writes to rows where `source = 'system'`.
 
 ## Read Rules
 
 - Index injection: every session prompt includes all `status = 'active'` or `status = 'stale'` skills, ordered by `use_count DESC`, format: `name: description`.
-- `skill_view(name)` loads full `content` into context on demand.
+- `view_user_skill(name)` loads full `content` into context on demand.
 - Curator reads all `source = 'user'` skills on its maintenance pass to evaluate stale/archive candidates and detect overlaps via tags.
 
 ## What Is NOT Stored Here

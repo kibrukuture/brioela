@@ -65,7 +65,7 @@ Unlike skills, recipe edits are user-driven refinements — grandma corrected a 
 
 ## Design Decision: No FTS Virtual Table for Recipes
 
-A user will have at most tens to low hundreds of recipes — never thousands. All recipe titles fit in the agent's context comfortably. Pattern: inject title list into prompt, agent calls `recipe_view(id)` to load full content on demand. Same pattern as skills. FTS is not needed at this scale.
+A user will have at most tens to low hundreds of recipes — never thousands. All recipe titles fit in the agent's context comfortably. Pattern: inject title list into prompt, agent calls `view_user_recipe(id)` to load full content on demand. Same pattern as skills. FTS is not needed at this scale.
 
 ## CREATE TABLE
 
@@ -120,10 +120,10 @@ Sessions reference recipes via `sessions.recipe_id`. Stable cross-table identity
 A user can have "Doro Wat", "Grandma's Doro Wat", "Doro Wat — lighter version". No uniqueness constraint. UUID is the identity.
 
 **`content` — full markdown, no size cap**
-Grandma's voice, cultural context, technique notes, exact phrasing — all preserved. A reconstructed grandma recipe can be long. The agent loads this only when needed via `recipe_view(id)`, never preloaded into every prompt.
+Grandma's voice, cultural context, technique notes, exact phrasing — all preserved. A reconstructed grandma recipe can be long. The agent loads this only when needed via `view_user_recipe(id)`, never preloaded into every prompt.
 
 **`ingredients` — JSON array of strings, kept in sync with content**
-Exists only for constraint checking. When the agent checks "is this recipe safe for this user," it reads `ingredients` and matches against `constraints`. It does not parse `content` for safety checks — that would be unreliable. Every `recipe_update` that changes content must re-extract and update `ingredients` in the same transaction.
+Exists only for constraint checking. When the agent checks "is this recipe safe for this user," it reads `ingredients` and matches against `constraints`. It does not parse `content` for safety checks — that would be unreliable. Every `update_user_recipe` that changes content must re-extract and update `ingredients` in the same transaction.
 
 **`source` — free text, known values are suggestions**
 `session`: captured from a CookingAgent session. `reconstructed`: agent rebuilt from memory_event fragments after the fact. `user_created`: user dictated it directly. New sources added without schema change.
@@ -160,13 +160,13 @@ CREATE INDEX idx_recipes_source      ON recipes (source_session_id) WHERE source
 
 - New row inserted by CookingAgent at session end, only after passing the session-end decision tree. Never inserted automatically without the check.
 - `cook_count` and `last_cooked_at` updated at the end of every cooking session that uses this recipe — fire and forget, never awaited.
-- `recipe_update` — agent rewrites `content`. Must re-extract and update `ingredients` in the same write. `updated_at` always updated.
-- `recipe_archive` — sets `active = 0`. Never deletes.
+- `update_user_recipe` — agent rewrites `content`. Must re-extract and update `ingredients` in the same write. `updated_at` always updated.
+- `archive_user_recipe` — sets `active = 0`. Never deletes.
 - Curator does NOT write to this table. Recipe lifecycle is agent-driven and user-confirmed.
 
 ## Read Rules
 
-- Title index injected into every session prompt: `id: title` for all active recipes. Agent calls `recipe_view(id)` to load full content on demand.
+- Title index injected into every session prompt: `id: title` for all active recipes. Agent calls `view_user_recipe(id)` to load full content on demand.
 - Read by constraint checker before a cooking session starts: `ingredients` checked against user's active constraints.
 - Read by `sessions` queries: "show me all sessions where we cooked this recipe" via `sessions.recipe_id`.
 - Read by the agent when the user asks about past cooking: "when did we last make doro wat."

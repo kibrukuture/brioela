@@ -16,7 +16,7 @@ Hermes has `SOUL.md` — a document defining who the agent is: its values, voice
 
 ### 2. No Tool Definitions Spec
 
-Every table references tools: `log_memory_event`, `memory_update`, `skill_create`, `propose_constraint`, `schedule_alarm`, `recall_session_context`, `recipe_view`, `memory_read`. None of these are formally specified anywhere — no input schema, no output schema, no error handling, no side effects defined. The Zod schemas in the table specs are partial but not complete tool contracts. This needs its own spec file.
+Every table references tools: `log_memory_event`, `write_user_memory`, `create_user_skill`, `propose_user_constraint`, `schedule_user_alarm`, `search_session_history`, `view_user_recipe`, `read_user_memory`. None of these are formally specified anywhere — no input schema, no output schema, no error handling, no side effects defined. The Zod schemas in the table specs are partial but not complete tool contracts. This needs its own spec file.
 
 **Status**: OPEN
 
@@ -107,7 +107,7 @@ The vector layer is architecturally described in `00-overview.md` but missing:
 
 ### 12. Namespace Auto-Discovery Mechanism Not Defined
 
-`02-user-memory.md` says "the AI sees the existing namespace list before writing and extends what exists rather than inventing new ones." But HOW does it see this list? Injected into the system prompt? Via a `memory_read` tool call? When — once per session or on every write? Token cost of injecting the full namespace list not addressed.
+`02-user-memory.md` says "the AI sees the existing namespace list before writing and extends what exists rather than inventing new ones." But HOW does it see this list? Injected into the system prompt? Via a `read_user_memory` tool call? When — once per session or on every write? Token cost of injecting the full namespace list not addressed.
 
 **Status**: OPEN
 

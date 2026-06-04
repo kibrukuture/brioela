@@ -39,7 +39,7 @@ The Curator never touches `memory_event`. It reads `user_memory`. So evidence mu
 
 ## Decision: trait names follow the same Zod constraint as skills
 
-The spec says "AI-decided name" — correct, the developer defines zero valid traits. But the AI must follow a naming format. Reason: `trait` is the primary key and `skill_view`-style exact lookups depend on consistent naming. If the AI writes `Stress Eater` once and `stress-eater` next time, they are two different primary keys — two rows for the same trait, neither complete.
+The spec says "AI-decided name" — correct, the developer defines zero valid traits. But the AI must follow a naming format. Reason: `trait` is the primary key and `view_user_skill`-style exact lookups depend on consistent naming. If the AI writes `Stress Eater` once and `stress-eater` next time, they are two different primary keys — two rows for the same trait, neither complete.
 
 Constraint: `/^[a-z][a-z0-9-]*$/`, max 64 chars. Lowercase, hyphens only. Same as skills. Enforced by Zod at the tool boundary.
 
@@ -169,7 +169,7 @@ CREATE INDEX idx_user_personality_seen     ON user_personality (last_seen_at DES
 
 ## Read Rules
 
-- Loaded into session context by `get_session_context()` — active traits only, ordered by `strength DESC`.
+- Loaded into session context by `load_session_context()` — active traits only, ordered by `strength DESC`.
 - Read by the Curator on its maintenance pass — reads all active traits, re-evaluates evidence, updates strength.
 - Used by recommendation engine to personalize suggestions (a `stress-eater` trait triggers different recommendations than a `meal-planner` trait).
 - NEVER loaded in bulk into every prompt — only the top N strongest active traits are injected to avoid context bloat.

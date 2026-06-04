@@ -18,7 +18,7 @@ Each file covers one SQLite table (or virtual table group) in the BrioelOrchestr
 2. [user_memory](./02-user-memory.md) — structured declarative facts (40 namespace cap)
 3. [user_personality](./03-user-personality.md) — synthesized personality traits with strength decay
 4. [skills](./04-skills.md) — reusable procedural instruction sets
-5. [skill_versions](./05-skill-versions.md) — full content history before every skill_update
+5. [skill_versions](./05-skill-versions.md) — full content history before every update_user_skill
 6. [constraints](./06-constraints.md) — allergies, intolerances, dislikes, dietary identity, boycotts
 7. [sessions](./07-sessions.md) — session metadata, token costs, compression chains
 8. [session_turns](./08-session-turns.md) — conversation turns per session (+ session_turns_fts + session_turns_fts_trigram)
@@ -68,9 +68,9 @@ Cloudflare Vectorize limits (Workers Paid): 50,000 namespaces per index, 50,000 
 
 **`brioela-sessions-{shard}`** — embeddings of `sessions.outcome_summary`. Used for meaning-based session recall: "when did something like this happen before." A user with years of sessions has thousands of outcome_summaries — they cannot all be loaded into context. FTS5 handles keyword-based session search; Vectorize handles intent-based recall over unbounded history. This is the only place volume grows unbounded and meaning-based recall cannot be solved by loading everything into context.
 
-**Why not `skills`**: The full skill index (name + description for every active skill) is already injected into every prompt. The agent sees all existing skills before calling `skill_create` and can judge semantic overlap itself. Volume is also tiny — a user has at most tens of skills, never millions. No external vector service needed.
+**Why not `skills`**: The full skill index (name + description for every active skill) is already injected into every prompt. The agent sees all existing skills before calling `create_user_skill` and can judge semantic overlap itself. Volume is also tiny — a user has at most tens of skills, never millions. No external vector service needed.
 
-**Why not `user_memory`**: Already organized by namespace. `get_session_context()` loads relevant namespaces directly — no semantic search needed. Total volume is bounded (40 namespaces) and loaded wholesale into context.
+**Why not `user_memory`**: Already organized by namespace. `load_session_context()` loads relevant namespaces directly — no semantic search needed. Total volume is bounded (40 namespaces) and loaded wholesale into context.
 
 ### Hybrid Search
 
@@ -92,7 +92,7 @@ Every table exists because data must persist and be queried. If something can be
 | user_memory | Agent (fact extraction from events) |
 | user_personality | Curator only |
 | skills | Agent (create/update/archive) + Curator (update/archive) |
-| skill_versions | skill_update execution path only |
+| skill_versions | update_user_skill execution path only |
 | constraints | Agent only (propose/confirm/reject) |
 | sessions | BrioelOrchestrator + CookingAgent (each owns its own row) |
 | session_turns | Agent (during active session) |

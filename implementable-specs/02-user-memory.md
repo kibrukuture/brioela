@@ -12,7 +12,7 @@ Examples of what lives here:
 - "User lived in Addis Ababa for 10 years" → `life.places : addis_ababa`
 - "User prefers to cook without oil" → `diet.preferences : no_oil`
 
-Facts are derived from events (a scan, a photo, a conversation) by the agent calling `memory_update`. They accumulate over time. They get merged — not overwritten — when new evidence arrives. They can be deactivated but never deleted.
+Facts are derived from events (a scan, a photo, a conversation) by the agent calling `write_user_memory`. They accumulate over time. They get merged — not overwritten — when new evidence arrives. They can be deactivated but never deleted.
 
 ## Decision: Why one table for all facts, not one table per domain?
 
@@ -130,7 +130,7 @@ const MemoryEntrySchema = z.object({
 
 The 40-cap is a hard ceiling on distinct namespace strings — NOT on rows. One namespace can have unlimited keys and rows. The cap prevents the AI from fragmenting memory into hundreds of micro-namespaces that are never reused.
 
-Enforcement runs inside `memory_update` before every write:
+Enforcement runs inside `write_user_memory` before every write:
 
 ```typescript
 // count distinct namespaces
@@ -222,7 +222,7 @@ CREATE INDEX idx_user_memory_source      ON user_memory (source);
 
 ## Write Rules
 
-- Written ONLY by the `memory_update` tool.
+- Written ONLY by the `write_user_memory` tool.
 - No other code path writes to this table directly.
 - Every write goes through Zod validation first, then namespace cap check, then merge, then upsert.
 - `updated_at` is always `Date.now()` at write time, set by the tool, never by the caller.
@@ -232,7 +232,7 @@ CREATE INDEX idx_user_memory_source      ON user_memory (source);
 ## Read Rules
 
 - Passively loaded into every session prompt via `loadMemoryForPrompt()` — `read_count` increments as a side effect.
-- Explicitly read by `memory_read(namespace, key?)` tool when the AI needs to check a specific fact mid-conversation.
+- Explicitly read by `read_user_memory(namespace, key?)` tool when the AI needs to check a specific fact mid-conversation.
 - Read by the Curator on its maintenance pass to identify stale, low-value, or duplicate entries.
 - Active entries only (`active = 1`) are loaded into prompts. Deactivated entries are invisible to the AI during sessions.
 
