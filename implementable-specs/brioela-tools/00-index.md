@@ -67,10 +67,10 @@ Tools are the ONLY interface between the agent's language model and the DO's SQL
 | `delete_user_skill` | ✓ DONE |
 | `propose_user_constraint` | ✓ DONE |
 | `confirm_user_constraint` | ✓ DONE |
-| `schedule_user_alarm` | OPEN |
-| `cancel_user_alarm` | OPEN |
-| `view_user_recipe` | OPEN |
-| `update_user_recipe` | OPEN |
-| `archive_user_recipe` | OPEN |
-| `load_session_context` | OPEN |
-| `search_session_history` | OPEN |
+| `schedule_user_alarm` | ✓ DONE |
+| `cancel_user_alarm` | ✓ DONE |
+| `view_user_recipe` | ✓ DONE |
+| `update_user_recipe` | ✓ DONE |
+| `archive_user_recipe` | ✓ DONE |
+| `load_session_context` | ✓ DONE |
+| `search_session_history` | ✓ DONE |
