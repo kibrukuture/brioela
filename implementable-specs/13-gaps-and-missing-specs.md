@@ -125,7 +125,7 @@ SQLite does not support `IF NOT EXISTS` for triggers. The `CREATE TRIGGER` state
 
 `09-recipes.md` edge cases section explicitly leaves this open: one cooking session produces two dishes. The `recipe-reconstruction` skill runs once per session — does it segment the transcript and produce two recipe rows? How does it detect the boundary between dishes? No implementation strategy defined.
 
-**Status**: OPEN
+**Status**: CLOSED → `09-recipes.md` — agent reads transcript and uses judgment; confident identification of two named dishes → two rows; ambiguous → one row plus outcome_summary note; no mechanical segmentation required
 
 ---
 
@@ -133,7 +133,7 @@ SQLite does not support `IF NOT EXISTS` for triggers. The `CREATE TRIGGER` state
 
 `09-recipes.md` edge cases section explicitly leaves this open: a family member adapts grandma's recipe for dietary restrictions mid-session. Does this produce a new row (named variant) or update the existing row? No decision made.
 
-**Status**: OPEN
+**Status**: CLOSED → `09-recipes.md` — same cook refining their own recipe → update existing row; different person or different purpose (including dietary adaptation) → new row, original untouched, "variant of [original title]" noted in content
 
 ---
 
@@ -182,3 +182,5 @@ These are not implementation details — they need their own spec documents:
 | 9 | Vectorize embedding details | `18-vectorize.md` — Cohere multilingual, 768 dims, FNV-1a sharding |
 | 6 | WAL checkpoint strategy | `12-schema-version.md` — autocheckpoint=1000, Curator TRUNCATE checkpoint weekly |
 | 13 | FTS5 triggers — no `IF NOT EXISTS` | `12-schema-version.md` — triggers in migration files only, startup sequence banned |
+| 14 | Multi-dish cooking session | `09-recipes.md` — agent judgment from transcript; two confident dishes → two rows; ambiguous → one row + note |
+| 15 | Recipe variant vs update | `09-recipes.md` — same cook refining → update; different person/purpose → new row, original preserved |

@@ -36,16 +36,32 @@ This is the most important decision in this file. At the end of a cooking sessio
 
 The `recipe-reconstruction` system skill runs only at step 4. It is not a default that fires at every cooking session end.
 
-### Edge Cases — Still Open
+### Edge Cases
 
-The decision tree above handles the known cases. Edge cases not yet fully resolved:
+**Multi-dish session** — grandma makes two dishes in one session.
 
-- **Multi-dish session**: grandma makes two dishes in one session. Does the agent create two recipe rows? Currently unclear — reconstruction skill would need to segment the transcript by dish.
-- **Recipe correction across sessions**: user cooked a recipe, session 1 captured it. Session 2 grandma says "no, I did it wrong last time, here is the real way." Which version is canonical?
-- **Collaborative variation**: family member adapts grandma's recipe for dietary restrictions mid-session. Is this a variant row or an update to the original?
-- **Implicit recipe**: no one says "we are making X" — they just start cooking. Agent must infer dish identity from ingredients and technique. Confidence threshold for this inference is not yet defined.
+The agent reads the full session transcript and uses judgment. If it can confidently identify two distinct dishes (different names, different ingredients, different techniques discussed as separate cooking acts), it creates two recipe rows — one per dish. There is no mechanical transcript segmentation required; the agent reasons from context.
 
-These edge cases are documented here so they are not forgotten. They will be resolved in the implementation layer, not in this schema.
+If the transcript is ambiguous (one pot, multiple proteins, unclear if this is one dish or two), the agent creates one row for the primary dish and notes the secondary elements in `outcome_summary`. The rule: confident identification of two named dishes → two rows. Ambiguity → one row plus a note.
+
+**Recipe correction across sessions** — session 2 grandma says "I did it wrong last time, here is the real way."
+
+Not yet resolved. Documented here so it is not forgotten.
+
+**Collaborative variation** — family member adapts grandma's recipe for dietary restrictions.
+
+The original recipe row is never modified or deleted. The adapted recipe is a new row.
+
+The deciding question is: same cook refining their own recipe, or someone else adapting it for a different purpose?
+
+- Same cook, same session, refining their own recipe → `update_user_recipe` on the existing row. The dish is the same dish, the row should stay current.
+- Different person, different purpose, or dietary adaptation → new recipe row. The original is preserved untouched. The new row's `content` includes a note: "variant of [original title]". Both rows coexist. A grandmother's original recipe has cultural and historical value — overwriting it with a dietary adaptation would lose it permanently.
+
+Dietary restriction adaptations always fall in the second category. Even if the change is minor (remove one ingredient), the original belongs to grandma. The adapted version belongs to whoever needs it.
+
+**Implicit recipe** — no one explicitly names the dish; agent must infer from ingredients and technique.
+
+Confidence threshold for dish identity inference not yet defined. Documented here so it is not forgotten.
 
 ## Design Decision: Hybrid Storage — Markdown Content + Extracted Ingredients
 
