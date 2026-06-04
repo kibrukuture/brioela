@@ -144,3 +144,14 @@ For more information, read the Bun API docs in `node_modules/bun-types/docs/**.m
 - No `any`, `as unknown as`, or fake coercions — ever, including old/dead code
 - No legacy APIs — if an API is legacy, find and use the current replacement
 - New Brioela code must be fully typed. Old Schnl dead code: fix to compile, do not over-engineer
+
+## Compact Instructions
+
+When compacting, preserve the following in order of priority:
+1. **All hard rules and assistant behavior guidelines** — usehooks-ts rule, no wild dog behavior, no invented examples, web-first research rule, code quality rules
+2. **Active task context** — what the user is currently building or fixing, the feature/bug being worked on, any decisions made about approach or architecture
+3. **Key code findings** — specific file paths, line numbers, function names, and patterns discovered during the session
+4. **User preferences expressed in conversation** — any corrections, feedback, or "do it this way" instructions the user gave during the session
+5. **What was tried and rejected** — approaches that didn't work, so they are not re-attempted
+
+Do NOT discard: user corrections, file paths with important findings, decisions about which libraries or patterns to use, and any context about why something was done a certain way.
