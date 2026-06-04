@@ -52,7 +52,7 @@ The Curator is mentioned 40+ times across every file. It writes to `user_persona
 
 WAL mode is set in `00-overview.md` but WAL files grow unbounded without checkpointing. No `PRAGMA wal_autocheckpoint` value defined, no periodic checkpoint call documented. On a heavily used user DO this becomes a cold-start performance problem over time.
 
-**Status**: OPEN
+**Status**: CLOSED → `12-schema-version.md` — autocheckpoint=1000 pages always on; Curator runs PRAGMA wal_checkpoint(TRUNCATE) at end of every pass; result logged to agent_state
 
 ---
 
@@ -180,3 +180,4 @@ These are not implementation details — they need their own spec documents:
 | 5 | Session abandoned detection | `17-session-lifecycle.md` — session_watchdog alarm |
 | 7 | Compression trigger + CompressorAgent | `17-session-lifecycle.md` — full lifecycle spec |
 | 9 | Vectorize embedding details | `18-vectorize.md` — Cohere multilingual, 768 dims, FNV-1a sharding |
+| 6 | WAL checkpoint strategy | `12-schema-version.md` — autocheckpoint=1000, Curator TRUNCATE checkpoint weekly |
