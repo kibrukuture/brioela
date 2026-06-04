@@ -16,7 +16,7 @@ Hermes has `SOUL.md` — a document defining who the agent is: its values, voice
 
 ### 2. No Tool Definitions Spec
 
-Every table references tools: `memory_update`, `skill_create`, `propose_constraint`, `schedule_alarm`, `record_outcome`, `recall_session_context`, `recipe_view`, `memory_read`. None of these are formally specified anywhere — no input schema, no output schema, no error handling, no side effects defined. The Zod schemas in the table specs are partial but not complete tool contracts. This needs its own spec file.
+Every table references tools: `log_memory_event`, `memory_update`, `skill_create`, `propose_constraint`, `schedule_alarm`, `recall_session_context`, `recipe_view`, `memory_read`. None of these are formally specified anywhere — no input schema, no output schema, no error handling, no side effects defined. The Zod schemas in the table specs are partial but not complete tool contracts. This needs its own spec file.
 
 **Status**: OPEN
 
