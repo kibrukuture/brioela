@@ -126,6 +126,46 @@ const MemoryEntrySchema = z.object({
 })
 ```
 
+## Namespace Auto-Discovery — How the Agent Knows What Exists
+
+Before writing any fact, the agent must know what namespaces already exist so it extends them rather than inventing duplicates. This is how it knows:
+
+**`load_session_context` returns `memory_namespaces`** — a list of all distinct active namespace strings — as part of its standard response at every session start. The agent holds this list in context for the entire session.
+
+```json
+"memory_namespaces": ["diet", "diet.preferences", "family", "health", "health.medications", "life.places"]
+```
+
+**The agent's decision rule before every `write_user_memory` call:**
+
+```
+1. Does an existing namespace cover this fact?
+   → "User takes metformin" → "health.medications" exists → write there
+   → "User prefers no oil" → "diet.preferences" exists → write there
+
+2. Is there a parent namespace that is close enough?
+   → "User's grandmother is named Tigist" → "family" exists → write to "family" with key "grandma"
+
+3. Nothing fits → create a new namespace
+   → Check: is the count < 40? (enforced by write_user_memory at write time)
+   → Add the new namespace name to the in-context list for this session
+   → Subsequent writes this session use the new name consistently
+```
+
+**Why at session start and not on demand:**
+The agent must see the namespace list from turn 1 — before it writes its first fact. A mid-session tool call to discover namespaces means the agent may have already written a fact under a wrong namespace in an earlier turn. Session-start injection prevents this entirely.
+
+**What happens when the agent creates a new namespace mid-session:**
+The in-context `memory_namespaces` list is updated immediately in the agent's context. If it creates `cooking.techniques` in turn 5, all subsequent turns in this session that need to write technique facts write to `cooking.techniques` — not to a second invented name. Consistency within a session is agent-maintained; consistency across sessions is guaranteed by the session-start injection of the current state.
+
+**Index that makes this cheap:**
+
+```sql
+CREATE INDEX idx_user_memory_namespace ON user_memory (namespace, active);
+```
+
+`SELECT DISTINCT namespace WHERE active = 1` runs against this index. At 40-namespace cap it is trivial — never more than 40 distinct values to return.
+
 ## Namespace Cap Enforcement (40 distinct namespaces)
 
 The 40-cap is a hard ceiling on distinct namespace strings — NOT on rows. One namespace can have unlimited keys and rows. The cap prevents the AI from fragmenting memory into hundreds of micro-namespaces that are never reused.

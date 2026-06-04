@@ -112,7 +112,26 @@ const pendingAlarms = db.select({
 
 The agent uses this to surface active reminders: "you have a sickness followup set for tomorrow morning."
 
-### 4. Last Abandoned Session Warning
+### 4. Active Memory Namespaces
+
+All distinct `namespace` values currently in `user_memory` for this user. This is how the agent knows what namespaces already exist before writing any new fact.
+
+```typescript
+const namespaces = db.selectDistinct({ namespace: userMemory.namespace })
+  .from(userMemory)
+  .where(eq(userMemory.active, 1))
+  .orderBy(asc(userMemory.namespace))
+  .all()
+  .map(r => r.namespace)
+
+// Result: ["diet", "diet.preferences", "family", "health", "health.medications", "life.places"]
+```
+
+Only active namespaces (`active = 1`) are returned. Deactivated entries belong to stale namespaces that may no longer be relevant. The agent should not write new facts into a namespace where all entries are deactivated.
+
+This query is cheap — it is a single `SELECT DISTINCT` with an index on `(active, namespace)` and the result is at most 40 strings.
+
+### 5. Last Abandoned Session Warning
 
 If the most recent session has `status = 'abandoned'`, flag it — the user may not know their last session ended unexpectedly:
 
@@ -164,7 +183,8 @@ If `lastAbandoned.endedAt` is recent (within 24 hours), the agent should acknowl
       "payload": { "destination": "Addis Ababa" }
     }
   ],
-  "last_abandoned_session": null
+  "last_abandoned_session": null,
+  "memory_namespaces": ["diet", "diet.preferences", "family", "health", "health.medications", "life.places"]
 }
 ```
 
@@ -179,7 +199,8 @@ After receiving the response, the agent:
 1. Reads `last_session.outcome_summary` — incorporates this into the system prompt context for the current session (or opens with an acknowledgment of what happened last time)
 2. Reads `pending_alarms` — surfaces relevant alarms to the user if they are upcoming and worth mentioning
 3. If `last_abandoned_session` is recent — acknowledges the unexpected end, offers to continue
-4. Does NOT read `session_turns` for the previous session unless the user or a specific tool use requires it — outcome_summary is the summary, not the transcript
+4. Reads `memory_namespaces` — holds this list in context for the entire session. Every time it calls `write_user_memory`, it checks this list first. If a suitable namespace already exists, it writes there. If it creates a new namespace, it adds that name to its in-context list so subsequent writes in the same session remain consistent.
+5. Does NOT read `session_turns` for the previous session unless the user or a specific tool use requires it — outcome_summary is the summary, not the transcript
 
 ## Side Effects
 

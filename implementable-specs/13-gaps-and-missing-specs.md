@@ -109,7 +109,7 @@ The vector layer is architecturally described in `00-overview.md` but missing:
 
 `02-user-memory.md` says "the AI sees the existing namespace list before writing and extends what exists rather than inventing new ones." But HOW does it see this list? Injected into the system prompt? Via a `read_user_memory` tool call? When — once per session or on every write? Token cost of injecting the full namespace list not addressed.
 
-**Status**: OPEN
+**Status**: CLOSED → `load_session_context` returns `memory_namespaces` (distinct active namespaces) at session start. Agent holds list in context all session. `02-user-memory.md` documents the decision rule and the supporting index.
 
 ---
 
