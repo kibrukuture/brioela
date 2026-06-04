@@ -10,7 +10,7 @@ This file documents everything missing from the current implementable specs. Ite
 
 Hermes has `SOUL.md` — a document defining who the agent is: its values, voice, personality, how it handles conflict, what it cares about. Brioela has no equivalent. Without this, the agent has no consistent identity across sessions. Every session it starts fresh with no sense of self. This is not a SQLite table — it is a document that lives in the system prompt. It needs to be designed.
 
-**Status**: OPEN
+**Status**: CLOSED → `16-agent-identity.md`
 
 ---
 
@@ -162,7 +162,7 @@ These are not implementation details — they need their own spec documents:
 |---|---|
 | `14-tools.md` | Formal definition of every tool the agent can call — input schema, output schema, side effects, error handling |
 | `15-curator.md` | The Curator process — what it does, in what order, frequency, failure handling, race condition handling, trait inference algorithm |
-| `16-agent-identity.md` | Who Brioela is — voice, values, personality, how it handles conflict, what it cares about. The SOUL equivalent. |
+| `16-agent-identity.md` | ✓ DONE — Who Brioela is — voice, values, personality, how it handles conflict, what it cares about. |
 
 ---
 
