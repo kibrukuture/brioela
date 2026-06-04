@@ -64,6 +64,16 @@ The rule: migrations are append-only. If a mistake was made in migration 003, wr
 
 Drizzle migration files must be bundled into the Cloudflare Worker deployment package. They are not fetched from an external source at runtime. Reason: the DO has no outbound network access during its startup sequence that would be reliable enough for fetching migration files. They travel with the code.
 
+## Decision: FTS5 Triggers Must Live in Migrations, Not the Startup Sequence
+
+SQLite does not support `CREATE TRIGGER IF NOT EXISTS`. Every other DDL statement accepts `IF NOT EXISTS` — `CREATE TABLE`, `CREATE INDEX`, `CREATE VIRTUAL TABLE` — but not triggers. This makes trigger creation non-idempotent: the first DO boot succeeds, every subsequent cold start crashes with "trigger already exists."
+
+The four FTS5 sync triggers (two for `sessions_fts`, two for `session_turns_fts`) must therefore live inside a Drizzle migration file. The Drizzle migrator runs each migration file exactly once per DO instance — it tracks applied files via `__drizzle_migrations` and skips them on subsequent startups. This is the only path to idempotent trigger creation.
+
+**Hard rule**: all DDL — tables, indexes, virtual tables, and triggers — lives in Drizzle migration files. None of it belongs in the startup sequence or application code. The startup sequence calls the Drizzle migrator at step 1 and trusts it to handle all DDL.
+
+The workaround of `DROP TRIGGER IF EXISTS` then `CREATE TRIGGER` on every cold start is explicitly banned: it introduces a brief window per boot where the trigger does not exist, during which a write to `sessions` or `session_turns` would leave the FTS5 virtual table silently out of sync.
+
 ## Write Rules
 
 - Written ONLY by the Drizzle migrator at DO startup.

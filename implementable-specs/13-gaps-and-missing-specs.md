@@ -117,7 +117,7 @@ The vector layer is architecturally described in `00-overview.md` but missing:
 
 SQLite does not support `IF NOT EXISTS` for triggers. The `CREATE TRIGGER` statements in `07-sessions.md` and `08-session-turns.md` will fail on the second run if executed on every DO startup. Triggers must be created exactly once inside a migration, not in the startup sequence. This needs to be explicitly documented in the migration strategy.
 
-**Status**: OPEN
+**Status**: CLOSED → `12-schema-version.md` — "FTS5 Triggers Must Live in Migrations" section: SQLite has no `CREATE TRIGGER IF NOT EXISTS`; all four triggers must be in a Drizzle migration file, never in the startup sequence; `DROP + CREATE` workaround explicitly banned
 
 ---
 
@@ -181,3 +181,4 @@ These are not implementation details — they need their own spec documents:
 | 7 | Compression trigger + CompressorAgent | `17-session-lifecycle.md` — full lifecycle spec |
 | 9 | Vectorize embedding details | `18-vectorize.md` — Cohere multilingual, 768 dims, FNV-1a sharding |
 | 6 | WAL checkpoint strategy | `12-schema-version.md` — autocheckpoint=1000, Curator TRUNCATE checkpoint weekly |
+| 13 | FTS5 triggers — no `IF NOT EXISTS` | `12-schema-version.md` — triggers in migration files only, startup sequence banned |
