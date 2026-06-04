@@ -169,10 +169,64 @@ CREATE INDEX idx_sessions_active         ON sessions (status) WHERE status = 'ac
 ## Read Rules
 
 - Read by `get_session_context()` to load the previous session's `outcome_summary` for continuity.
-- Read by `recall_session_context` FTS5 search path — `outcome_summary` is indexed in `session_turns_fts` alongside turn content.
+- Read by `recall_session_context` FTS5 search path — `outcome_summary` is indexed in `sessions_fts` and `sessions_fts_trigram`.
 - Read by token monitoring to check per-user spend.
 - Read by recipe history queries: all sessions for a given `recipe_id`.
 - Never bulk-loaded into prompts — only the most recent session's `outcome_summary` is injected.
+
+## FTS5 Virtual Tables for outcome_summary
+
+`sessions.outcome_summary` is the agent-written summary of what happened each session. It is the primary target when the user asks "what did we cook last time" or "when did I last feel sick after eating out." Two FTS5 virtual tables cover it — one per tokenizer.
+
+### sessions_fts
+
+```sql
+CREATE VIRTUAL TABLE sessions_fts USING fts5(
+  outcome_summary,
+  content='sessions',
+  content_rowid='rowid',
+  tokenize='unicode61'
+);
+```
+
+Default unicode61 tokenizer. Works for English and all Latin-script languages. Backed by the `sessions` real table — `sessions_fts` is a search interface, not a storage table. Truth stays in `sessions.outcome_summary`.
+
+Triggers to keep it in sync:
+
+```sql
+CREATE TRIGGER sessions_fts_ai AFTER INSERT ON sessions BEGIN
+  INSERT INTO sessions_fts(rowid, outcome_summary) VALUES (new.rowid, new.outcome_summary);
+END;
+
+CREATE TRIGGER sessions_fts_au AFTER UPDATE ON sessions BEGIN
+  INSERT INTO sessions_fts(sessions_fts, rowid, outcome_summary) VALUES ('delete', old.rowid, old.outcome_summary);
+  INSERT INTO sessions_fts(rowid, outcome_summary) VALUES (new.rowid, new.outcome_summary);
+END;
+
+CREATE TRIGGER sessions_fts_ad AFTER DELETE ON sessions BEGIN
+  INSERT INTO sessions_fts(sessions_fts, rowid, outcome_summary) VALUES ('delete', old.rowid, old.outcome_summary);
+END;
+```
+
+### sessions_fts_trigram
+
+```sql
+CREATE VIRTUAL TABLE sessions_fts_trigram USING fts5(
+  outcome_summary,
+  content='sessions',
+  content_rowid='rowid',
+  tokenize='trigram'
+);
+```
+
+Trigram tokenizer. Splits text into overlapping 3-character sequences — no word boundaries needed. Required for Arabic, Amharic, Japanese, and any script where the default tokenizer produces nothing. Same trigger pattern as `sessions_fts`.
+
+### Search Path
+
+When `recall_session_context` runs:
+- Latin-script query → search `sessions_fts` with `MATCH`
+- Non-Latin query (detected by script range) → search `sessions_fts_trigram` with `MATCH`
+- Results are session rowids → join back to `sessions` to get the full row
 
 ## What Is NOT Stored Here
 
