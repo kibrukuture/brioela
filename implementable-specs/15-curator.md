@@ -114,8 +114,28 @@ const TOOL_PERMISSIONS: Record<string, string[]> = {
     'view_user_recipe',
     'propose_user_constraint',
     'schedule_user_alarm',
+    'search_web',
   ],
-  // ... other sub-agents
+  chat: [
+    'write_user_memory',
+    'read_user_memory',
+    'log_memory_event',
+    'propose_user_constraint',
+    'confirm_user_constraint',
+    'create_user_skill',
+    'update_user_skill',
+    'archive_user_skill',
+    'schedule_user_alarm',
+    'cancel_user_alarm',
+    'search_session_history',
+    'search_web',
+  ],
+  product_scan: [
+    'log_memory_event',
+    'write_user_memory',
+    'propose_user_constraint',
+    'search_web',
+  ],
 }
 
 function isToolAllowed(caller: string, tool: string): boolean {

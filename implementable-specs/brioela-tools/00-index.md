@@ -53,6 +53,12 @@ Tools are the ONLY interface between the agent's language model and the DO's SQL
 | [16-load-session-context.md](./16-load-session-context.md) | `load_session_context` | `sessions` + related | Load previous session outcome and relevant context at session start |
 | [17-search-session-history.md](./17-search-session-history.md) | `search_session_history` | `sessions` via FTS5 | Search past sessions by keyword or meaning |
 
+## Web Tools
+
+| File | Tool | Table | One Line |
+|---|---|---|---|
+| [18-search-web.md](./18-search-web.md) | `search_web` | external (Tavily / Exa) | Search the live web for factual lookups or open research questions |
+
 ## Status
 
 | Tool | Status |
@@ -74,3 +80,4 @@ Tools are the ONLY interface between the agent's language model and the DO's SQL
 | `archive_user_recipe` | ✓ DONE |
 | `load_session_context` | ✓ DONE |
 | `search_session_history` | ✓ DONE |
+| `search_web` | ✓ DONE |
