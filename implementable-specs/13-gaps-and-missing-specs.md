@@ -44,7 +44,7 @@ The Curator is mentioned 40+ times across every file. It writes to `user_persona
 
 `status = 'abandoned'` is defined in `07-sessions.md` but nothing detects it. Who notices that an app crashed? A heartbeat timeout alarm? A DO alarm that fires if a session has been `active` for too long with no new turns? This needs a concrete mechanism.
 
-**Status**: OPEN
+**Status**: CLOSED → `17-session-lifecycle.md` — session_watchdog alarm type, fires at 2h (chat) / 8h (cooking), marks abandoned if inactivity threshold exceeded
 
 ---
 
@@ -60,7 +60,7 @@ WAL mode is set in `00-overview.md` but WAL files grow unbounded without checkpo
 
 Session compression via `parent_session_id` chains is described in `07-sessions.md` and `08-session-turns.md`. But WHEN compression triggers is not defined. After N turns? After X tokens? After Y minutes? Nobody can implement compression without this threshold.
 
-**Status**: OPEN
+**Status**: CLOSED → `17-session-lifecycle.md` — chat: 40 turns / 60k tokens; cooking: 80 turns / 100k tokens; CompressorAgent produces four-field summary; last 10 turns kept verbatim
 
 ---
 
@@ -177,3 +177,5 @@ These are not implementation details — they need their own spec documents:
 | 8 | First Curator run scheduling | `15-curator.md` — DO init seeds both alarms |
 | 10 | Auto-confirm time windows | `15-curator.md` — dislike 90d, intolerance 60d, boycott 120d |
 | 11 | Stale skill thresholds | `15-curator.md` Pass 1 — use_count < 3, last_used > 30d/60d |
+| 5 | Session abandoned detection | `17-session-lifecycle.md` — session_watchdog alarm |
+| 7 | Compression trigger + CompressorAgent | `17-session-lifecycle.md` — full lifecycle spec |
