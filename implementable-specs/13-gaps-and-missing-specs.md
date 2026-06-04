@@ -18,7 +18,7 @@ Hermes has `SOUL.md` — a document defining who the agent is: its values, voice
 
 Every table references tools: `log_memory_event`, `write_user_memory`, `create_user_skill`, `propose_user_constraint`, `schedule_user_alarm`, `search_session_history`, `view_user_recipe`, `read_user_memory`. None of these are formally specified anywhere — no input schema, no output schema, no error handling, no side effects defined. The Zod schemas in the table specs are partial but not complete tool contracts. This needs its own spec file.
 
-**Status**: OPEN
+**Status**: CLOSED → `brioela-tools/` folder — all 17 tools fully specced (01–17)
 
 ---
 
@@ -26,7 +26,7 @@ Every table references tools: `log_memory_event`, `write_user_memory`, `create_u
 
 The Curator is mentioned 40+ times across every file. It writes to `user_personality`, manages `skills`, reads `constraints`, triggers from `scheduled_alarms`. But there is no single document that says: what does the Curator actually do, in what order, how often, what happens if it fails halfway through, how does it avoid race conditions with an active agent session.
 
-**Status**: OPEN
+**Status**: CLOSED → `15-curator.md`
 
 ---
 
@@ -34,7 +34,7 @@ The Curator is mentioned 40+ times across every file. It writes to `user_persona
 
 `user_personality` table is fully defined. But HOW the Curator actually infers a trait is nowhere documented. What does it read, what model pass does it run, what is the threshold for "this is a real pattern vs noise." Without this, nobody can implement the Curator's personality pass.
 
-**Status**: OPEN
+**Status**: CLOSED → `15-curator.md` Pass 3 — LLM sub-call prompt, evidence requirements, strength rules, dedup guard
 
 ---
 
@@ -68,7 +68,7 @@ Session compression via `parent_session_id` chains is described in `07-sessions.
 
 The `curator_run` alarm type exists in `10-scheduled-alarms.md`. But who inserts the first row into `scheduled_alarms`? The DO initialization sequence in `12-schema-version.md` does not mention it. Without this, the Curator never runs for any user until someone manually triggers it.
 
-**Status**: OPEN
+**Status**: CLOSED → `15-curator.md` — DO initialization seeds both `curator_run` (7 days) and `pattern_detection` (3 days) on first boot
 
 ---
 
@@ -93,7 +93,7 @@ The vector layer is architecturally described in `00-overview.md` but missing:
 
 `06-constraints.md` lines 154–156 define thresholds ("5+ avoidance events", "3+ negative outcome events", "7+ scan or receipt events") but over what time period? Ever? Last 90 days? Last 30 days? Without a time window, old irrelevant behavior counts forever.
 
-**Status**: OPEN
+**Status**: CLOSED → `15-curator.md` — dislike: 90 days, intolerance: 60 days, boycott: 120 days
 
 ---
 
@@ -101,7 +101,7 @@ The vector layer is architecturally described in `00-overview.md` but missing:
 
 `04-skills.md` says "low use_count + old last_used_at = stale candidate" but never defines what "low" or "old" means numerically. The Curator cannot implement stale detection without these numbers.
 
-**Status**: OPEN
+**Status**: CLOSED → `15-curator.md` Pass 1 — use_count < 3 AND last_used > 30d → stale; stale AND last_used > 60d → archive
 
 ---
 
@@ -158,14 +158,22 @@ The one thing Hermes has that Brioela genuinely lacks is a defined agent identit
 
 These are not implementation details — they need their own spec documents:
 
-| File | What it covers |
-|---|---|
-| `14-tools.md` | Formal definition of every tool the agent can call — input schema, output schema, side effects, error handling |
-| `15-curator.md` | The Curator process — what it does, in what order, frequency, failure handling, race condition handling, trait inference algorithm |
-| `16-agent-identity.md` | ✓ DONE — Who Brioela is — voice, values, personality, how it handles conflict, what it cares about. |
+| File | What it covers | Status |
+|---|---|---|
+| `brioela-tools/01–17` | Formal definition of all 17 tools — input schema, output schema, side effects, error handling | ✓ DONE |
+| `15-curator.md` | The Curator process — what it does, in what order, frequency, failure handling, race condition handling, trait inference algorithm | OPEN |
+| `16-agent-identity.md` | Who Brioela is — voice, values, personality, how it handles conflict, what it cares about | ✓ DONE |
 
 ---
 
 ## Closed Items
 
-*(Nothing closed yet — all items above are open)*
+| Item | What | Where |
+|---|---|---|
+| 1 | Agent identity / SOUL | `16-agent-identity.md` |
+| 2 | Tool definitions (all 17 tools) | `brioela-tools/01–17` |
+| 3 | Curator + PatternDetection spec | `15-curator.md` |
+| 4 | Trait inference algorithm | `15-curator.md` Pass 3 |
+| 8 | First Curator run scheduling | `15-curator.md` — DO init seeds both alarms |
+| 10 | Auto-confirm time windows | `15-curator.md` — dislike 90d, intolerance 60d, boycott 120d |
+| 11 | Stale skill thresholds | `15-curator.md` Pass 1 — use_count < 3, last_used > 30d/60d |
