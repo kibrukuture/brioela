@@ -83,7 +83,7 @@ The vector layer is architecturally described in `00-overview.md` but missing:
 - Exact hash function used for shard calculation (`hash(userId) % SHARD_COUNT` — which hash?)
 - How to add a 21st shard when needed (rehashing strategy)
 
-**Status**: OPEN
+**Status**: CLOSED → `18-vectorize.md` — Cohere embed-multilingual-v2.0 (768 dims), FNV-1a sharding, 20 shards, fire-and-forget at session close, full query + failure handling
 
 ---
 
@@ -179,3 +179,4 @@ These are not implementation details — they need their own spec documents:
 | 11 | Stale skill thresholds | `15-curator.md` Pass 1 — use_count < 3, last_used > 30d/60d |
 | 5 | Session abandoned detection | `17-session-lifecycle.md` — session_watchdog alarm |
 | 7 | Compression trigger + CompressorAgent | `17-session-lifecycle.md` — full lifecycle spec |
+| 9 | Vectorize embedding details | `18-vectorize.md` — Cohere multilingual, 768 dims, FNV-1a sharding |
