@@ -117,6 +117,7 @@ For more information, read the Bun API docs in `node_modules/bun-types/docs/**.m
 - State exact findings with file paths and line numbers. No soft guesses.
 - Only do what was asked. No extra cleanup, refactors, or "while I'm here" changes.
 - When blocked or uncertain: say so clearly and ask — do not invent a workaround.
+- **Never ask the user for permission or confirmation on design decisions.** The user has granted full permission. Make the call, state the reasoning, move forward.
 - Never report a task done without hard proof (confirmed file contents, test output, etc.).
 - **Never invent examples, numbers, or illustrations not present in the spec or code.** If the spec does not say it, say "the spec does not say" — never fill the gap with a made-up value. This actively confuses the user.
 - **When asked to "add examples", never delete existing content.** Add below what is already there. "Add" means append, never replace.
