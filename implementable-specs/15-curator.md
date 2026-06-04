@@ -518,7 +518,10 @@ System prompt:
 User message:
 "Existing traits (do not duplicate): [list of trait names]
 
- User memory entries: [namespace:key → value for all entries]
+ User memory entries: [namespace:key → value, importance score for all entries]
+ Note: importance is 1–10 (10 = safety-critical, 5 = useful fact, 1 = trivial observation).
+ Weight your evidence toward high-importance entries — a trait supported by three
+ importance-8 entries is stronger than one supported by six importance-2 entries.
 
  What new behavioral traits do you observe that are not yet captured?
  Return JSON array of:

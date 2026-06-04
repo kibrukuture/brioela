@@ -80,6 +80,24 @@ FTS5 and Vectorize are complementary, not competing:
 
 For any recall query, run both, merge results, deduplicate by entry_id, rank by combined score.
 
+## Prefix Cache Contract — System Prompt Ordering
+
+Anthropic's prefix caching reduces token cost by caching the static portion of the system prompt across turns. Every turn in a session re-sends the full system prompt — without prefix caching, the cost is linear in turns. With prefix caching, the static prefix is computed once and cached; only the conversation turns cost tokens on subsequent calls.
+
+**The contract**: static context must always appear BEFORE conversation turns in the system prompt. If any dynamic content appears before the static block, the cache prefix is invalidated on every turn and caching is lost entirely.
+
+Static context (order matters — most stable to least stable):
+1. Agent identity (from `16-agent-identity.md` — never changes per session)
+2. Active constraints injected wholesale (changes only when Curator runs — stable per session)
+3. Skills index — name + description of all active skills (stable per session)
+4. User personality traits (stable per session)
+5. User memory for relevant namespaces (stable per session — loaded once at session start)
+6. Session context from `load_session_context` — last session summary, pending alarms, memory namespaces (stable per session — loaded once)
+
+Conversation turns come after all of the above. Never interleave dynamic content (tool results, turn-by-turn updates) into the static prefix block.
+
+**Why this matters**: A Brioela chat session can run 40 turns before compression. Without prefix caching, the static system prompt (which can be 4–8k tokens) is billed at full cost 40 times. With prefix caching, it is billed once. The implementation choice of loading everything at session start (not on demand mid-session) is what makes this possible — `load_session_context` is called once, the result is injected into the system prompt, and the prefix never changes for the lifetime of the session.
+
 ## Core Design Principle
 
 Every table exists because data must persist and be queried. If something can be computed at runtime or derived from another table, it does not get its own table. Each table has one clear owner — one thing that writes to it. Shared write ownership is a bug waiting to happen.

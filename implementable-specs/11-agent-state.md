@@ -42,6 +42,20 @@ Value: unix timestamp ms as string. Same purpose as `curator.last_run` but for t
 **`active_session_id`**
 Value: session UUID string or `""` (empty = no active session). Which session is currently open. Set when a session starts, cleared when it ends. Lets the DO answer "is there a live session right now" without querying `sessions WHERE status = 'active'`. Used as a guard before starting a new session.
 
+**`memory.write_failure.{session_id}`**
+Value: JSON string `{ namespace, key, error, ts }`. Written when `write_user_memory` fails after passing Zod validation — meaning the SQLite write itself failed. This is a silent failure mode: the agent believes it wrote a fact, the user sees a normal response, but the fact was never persisted. Logging to `agent_state` creates a diagnostic trail. Key is per-session so failures from multiple sessions do not overwrite each other. The Curator reads all `memory.write_failure.*` keys on its pass and logs them to a summary for developer inspection.
+
+**`memory.empty_read.{session_id}`**
+Value: JSON string `{ namespace, key_attempted, ts }`. Written when `read_user_memory` is called with a namespace that exists in the user's namespace list but returns zero active entries. This indicates a namespace where all entries have been deactivated — possibly over-aggressive Curator pruning. Not an error on its own, but repeated occurrences across sessions signal a pruning calibration problem.
+
+**`curator.anomaly.{run_id}`**
+Value: JSON string `{ type, detail, ts }`. Written when the Curator detects unexpected state during its pass:
+- `type: "namespace_cap_reached"` — user is at exactly 40 namespaces, agent cannot create any new ones
+- `type: "mass_deactivation"` — Curator deactivated more than 10 entries in a single pass (suggests aggressive pruning or a data quality problem)
+- `type: "high_importance_stale"` — a fact with `importance >= 7` has `last_read` older than 90 days (important fact that is never being loaded — possible namespace misclassification)
+
+These keys are never read during normal operation. They exist purely as a diagnostic trail for developers. The Curator does not act on them — it only writes them.
+
 ## CREATE TABLE
 
 ```sql

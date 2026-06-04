@@ -40,6 +40,7 @@ CREATE TABLE user_memory (
   confidence  REAL NOT NULL DEFAULT 1.0,  -- 0.0 to 1.0 — how certain this fact is
   source      TEXT NOT NULL,        -- 'image' | 'conversation' | 'inferred' | 'cron'
   active      INTEGER NOT NULL DEFAULT 1, -- 1 = active, 0 = deactivated (soft delete only)
+  importance  INTEGER NOT NULL DEFAULT 5,  -- 1–10, LLM-assessed at write time — how much this fact matters
   read_count  INTEGER NOT NULL DEFAULT 0, -- times this entry was injected into a prompt
   write_count INTEGER NOT NULL DEFAULT 0, -- times this entry was written or updated
   last_read   INTEGER,              -- unix timestamp ms of last prompt injection
@@ -62,6 +63,7 @@ export const userMemory = sqliteTable('user_memory', {
   confidence: real('confidence').notNull().default(1.0),
   source:     text('source').notNull(),          // free text — Zod enforces known values at tool boundary
   active:     integer('active').notNull().default(1),
+  importance: integer('importance').notNull().default(5),
   readCount:  integer('read_count').notNull().default(0),
   writeCount: integer('write_count').notNull().default(0),
   lastRead:   integer('last_read'),
@@ -96,6 +98,14 @@ Known values: `'image' | 'conversation' | 'inferred' | 'cron'`. New sources can 
 **`active` — integer 0/1, not a delete**
 Facts are never deleted. A user says "I'm not lactose intolerant anymore" — the fact is deactivated (`active = 0`), not removed. Deactivated facts are excluded from prompts but preserved in the table. Reason: if the user comes back and says "actually I was wrong, it does affect me" — the history is still there, confidence can be updated, no data is lost.
 
+**`importance` — 1–10, LLM-assessed at write time**
+Not the same as `confidence`. `confidence` answers "how certain is this fact true?" `importance` answers "how much does this fact matter for this user's context?" They are orthogonal:
+- Medication allergy stated directly → `confidence: 1.0, importance: 9`
+- One-time observation that user preferred green tea once → `confidence: 0.9, importance: 3`
+- Agent inferred a dislike from 2 scans → `confidence: 0.6, importance: 4`
+
+The LLM self-assesses `importance` at write time using the context it just learned. Scale: 1 = trivial observation, 5 = useful fact worth keeping, 9–10 = safety-critical or identity-defining (allergy, medication, religious restriction). The Curator uses `importance` alongside `read_count` when choosing pruning candidates — a high-importance, low-read fact is never a candidate for deactivation regardless of age; a low-importance, low-read, old fact is the first to go.
+
 **`read_count` vs `write_count` — two different Curator signals**
 These are not symmetric and the Curator uses them differently:
 - High `read_count`, low `write_count` → core stable memory. A medication entry written once from one photo, read in every health conversation. Never touch this.
@@ -122,6 +132,7 @@ const MemoryEntrySchema = z.object({
     .max(64),
   value: z.record(z.string(), z.unknown()), // JSON object — AI writes the content, we enforce the shape
   confidence: z.number().min(0).max(1).default(1.0),
+  importance: z.number().int().min(1).max(10).default(5),
   source: z.enum(['image', 'conversation', 'inferred', 'cron']),
 })
 ```
