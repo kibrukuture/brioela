@@ -61,9 +61,9 @@ Tools are the ONLY interface between the agent's language model and the DO's SQL
 | `write_user_memory` | ✓ DONE |
 | `read_user_memory` | ✓ DONE |
 | `create_user_skill` | ✓ DONE |
-| `update_user_skill` | OPEN |
-| `view_user_skill` | OPEN |
-| `archive_user_skill` | OPEN |
+| `update_user_skill` | ✓ DONE |
+| `view_user_skill` | ✓ DONE |
+| `archive_user_skill` | ✓ DONE |
 | `delete_user_skill` | OPEN |
 | `propose_user_constraint` | OPEN |
 | `confirm_user_constraint` | OPEN |
