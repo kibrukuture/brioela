@@ -17,7 +17,7 @@ Core product philosophy and feature specs. These are the "what and why" layer.
 |---|---|---|
 | [ ] | `00-product-philosophy-and-ux.md` | Core product philosophy, UX principles — read FIRST before any build-guide |
 | [ ] | `01-product-health-scanning.md` | Product barcode scanning, health data, constraint check at scan time |
-| [ ] | `02-recipe-ingestion-from-shared-content.md` | Parsing recipes from shared links, screenshots, social content |
+| [~] | `02-recipe-ingestion-from-shared-content.md` | Parsing recipes from shared links, screenshots, social content |
 | [ ] | `03-hyperlocal-community-notes.md` | **DEPRECATED** — superseded by spec 35 (Ground). Read for context only. |
 | [ ] | `04-healthy-food-map.md` | Map layer showing healthy food locations — overlays with Ground |
 | [ ] | `05-origin-supply-chain-and-boycott-filters.md` | Country-of-origin tracking, supply chain, user boycott enforcement |

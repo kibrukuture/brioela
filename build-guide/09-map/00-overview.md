@@ -1,7 +1,7 @@
 # Map — Overview
 
 ## What This Folder Covers
-The healthy food map — location-aware discovery of nearby healthy food options, products, and trusted businesses. Separate from Ground (which is the community intelligence layer). The map shows curated health data about places; Ground shows real-time community observations. Both render on the same Mapbox base map with independent layer toggles. Also covers: product sightings, place health scoring, hyperlocal price alerts, and pre-trip food intelligence (map pre-loads for travel destinations).
+The healthy food map — location-aware discovery of nearby healthy food options, products, and trusted businesses. Separate from Ground (which is the community intelligence layer). The map shows curated health data about places; Ground shows real-time community observations. Both render on the same Mapbox base map with independent layer toggles. Also covers: product sightings, place health scoring, and hyperlocal price alerts. Note: pre-trip food intelligence (spec 22) is owned by `15-ambient-intelligence` — that feature writes geo-cached map data that this folder displays when the user arrives at their destination.
 
 ## Status
 [ ] not started
@@ -9,7 +9,7 @@ The healthy food map — location-aware discovery of nearby healthy food options
 ## Specs This Folder Draws From
 - `brioela-specs/04-healthy-food-map.md` — map places, health scoring, product availability overlays, Ground integration
 - `brioela-specs/15-hyperlocal-price-and-availability-alerts.md` — price sightings, alert logic, throttling
-- `brioela-specs/22-pre-trip-food-intelligence.md` — travel intent detection, destination pre-load, local database priority switch
+- *(pre-trip food intelligence is `15-ambient-intelligence`'s spec — it pre-loads geo-cached data this folder displays on arrival)*
 
 ## Key Decisions From Specs
 - Same Mapbox base map as Ground — both layers render together with toggles

@@ -1,7 +1,7 @@
 # Scanner — Overview
 
 ## What This Folder Covers
-The core product loop: point camera at a product, get a verdict in under 3 seconds. Barcode decode (on-device), product resolution (Open Food Facts + gov DBs), constraint check against the user's Orchestrator DO, scan result UI (generative). Also covers OCR fallback when no barcode, boycott filter enforcement, origin/supply chain display, restaurant menu scanning, and receipt scanning. Scanning is always free — never paywalled.
+The core product loop: point camera at a product, get a verdict in under 3 seconds. Barcode decode (on-device), product resolution (Open Food Facts + gov DBs), constraint check against the user's Orchestrator DO, scan result UI (generative). Also covers OCR fallback when no barcode, boycott filter enforcement, and origin/supply chain display. Scanning is always free — never paywalled. Note: restaurant menu scanning has its own folder (14-menu-scanning) and uses this folder's OCR pipeline as a dependency.
 
 ## Status
 [ ] not started
@@ -10,7 +10,7 @@ The core product loop: point camera at a product, get a verdict in under 3 secon
 - `brioela-specs/01-product-health-scanning.md` — scan flow, 3s latency target, verdict structure, API surface
 - `brioela-specs/05-origin-supply-chain-and-boycott-filters.md` — boycott rules, origin display, per-user resolution
 - `brioela-specs/07-allergy-dislike-and-dietary-guardrails.md` — hard allergy interrupt, soft dislike ranking, dietary identity filter
-- `brioela-specs/27-restaurant-menu-scanning.md` — menu photo OCR, per-dish verdict, waiter script generation
+- *(restaurant menu scanning is `14-menu-scanning`'s spec — that folder uses this one's OCR pipeline)*
 - `brioela-specs/19-pricing-and-tiers.md` — scanning is ALWAYS free, unlimited, non-negotiable
 
 ## Key Decisions From Specs
