@@ -195,6 +195,7 @@ user_find_history (
 
 ## Relationship to Other Specs
 
+- **Spec 35b (Ground Finds — Deep Design)**: The UX and design depth for Ground lives in `35b-ground-finds-deep-design.md`. That file covers: what Ground and Find mean precisely, personalized map rendering, AI-drafted finds from scan context, haptic walking discovery, find-to-cooking-session triggers, and the full pulse animation spec. Read both files before implementing any Ground feature.
 - **Spec 04 (Healthy Food Map)**: Ground signals overlay the same map used for the healthy food map. They are different data layers on the same base map. The food map shows curated health data; Ground shows real-time community observations. Both visible simultaneously with layer toggles.
 - **Spec 03 (Hyperlocal Community Notes)**: Ground supersedes spec 03. Spec 03 described a generic community note system. Ground is the fully designed, privacy-first, authenticity-gated replacement. Spec 03 should be treated as deprecated in favor of this spec.
 - **Spec 26 (Recall Alerts)**: health signal type finds (red) are visually consistent with recall alert styling. A recall match surfaces in the same red color family on the map. They are different data sources but the same visual vocabulary.
