@@ -10,6 +10,23 @@ API endpoint: `wss://generativelanguage.googleapis.com/ws/google.ai.generativela
 
 ---
 
+## Proactive Speech — How Gemini Speaks Without Being Asked
+
+Gemini does not have a native proactive decision loop. By default it is reactive — it speaks when the user speaks. The ProactiveSpeechEngine (see `proactive-speech-engine/`) implements this behavior by sending Gemini periodic `client_content` observation prompts when the conditions are right.
+
+**The mechanism:**
+1. The CookingAgent DO calls `speechEngine.tick()` every second
+2. If the engine returns an `ObservationRequest`, the DO sends it to Gemini as `turn_complete: true`
+3. Gemini responds — either with a real observation or with "ok"
+4. The response filter discards "ok" (audio never reaches mobile)
+5. Real observations are classified as urgent or advisory and forwarded to mobile
+
+This is NOT a constant interrogation of Gemini. The engine suppresses most ticks based on silence duration, visual change, recent speech, and cooking phase. In a 45-minute session, Gemini may make 10–20 proactive observations. Each one earns its place.
+
+Human-like behaviors built on top of this engine are documented in `10-human-behaviors.md`.
+
+---
+
 ## Opening the Session
 
 ```typescript
