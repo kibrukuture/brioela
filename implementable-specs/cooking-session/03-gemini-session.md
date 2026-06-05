@@ -4,7 +4,21 @@
 
 `gemini-3.1-flash-live-preview`
 
-Chosen because it is the only globally available API model that natively handles audio in + video frames in + audio out in a single model, with ~960ms first response latency and full duplex (barge-in). Status: Preview (not GA). Swap path documented in `00-overview.md`.
+Chosen because it is the only globally available API model that natively handles audio in + video frames in + audio out in a single model. Status: Preview (not GA). Swap path documented in `00-overview.md`.
+
+This is the same model powering the Gemini consumer app's voice feature ("Gemini Live") — confirmed by Google's official launch blog post. The human-like feeling users experience in the Gemini app comes from this exact model.
+
+**Latency reality (from production developer reports, not marketing):**
+
+| Turn | Latency | Source |
+|---|---|---|
+| First turn — cold WebSocket | ~3 seconds | GitHub google-gemini/cookbook issue #1197 |
+| Subsequent turns — warm session | ~500ms | Same source, Google Dev Forum |
+| First WebSocket connect | 5–15 seconds | Google Dev Forum |
+
+The cold-start 3-second first-turn is the known production problem. It is mitigated by pre-warming — see `02-cooking-agent.md` CAUTION note. After the first turn, ~500ms feels natural in conversation.
+
+**CAUTION — test first-turn latency in production before assuming pre-warming solves it.** The cold-start cost may be internal to the model, not just the WebSocket setup time. See `02-cooking-agent.md` for fallback options if pre-warming is insufficient.
 
 API endpoint: `wss://generativelanguage.googleapis.com/ws/google.ai.generativelanguage.v1beta.GenerativeService.BidiGenerateContent`
 

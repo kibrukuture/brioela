@@ -105,7 +105,24 @@ private async handleInit(request: Request): Promise<Response> {
   // Load user context from Orchestrator DO for Gemini system instruction
   const context = await this.loadUserContext(userId)
 
-  // Open Gemini Live session
+  // Open Gemini Live session BEFORE mobile joins the room — pre-warming
+  // CAUTION: This pre-warming is designed to eliminate the ~3s cold-start
+  // first-turn latency that Gemini Live API shows in production (documented
+  // by developers on GitHub issue #1197 and Google Dev Forum). The theory:
+  // by the time the user speaks their first word, the WebSocket is already
+  // open and warm, so the first response comes back in ~500ms instead of ~3s.
+  //
+  // TEST THIS IN PRODUCTION before treating it as solved. Pre-warming may
+  // not fully eliminate the dead air — Gemini's cold-start cost may be
+  // internal to the model, not just the WebSocket setup. If dead air persists
+  // after pre-warming, fallback options to test:
+  //   Option B: Send Gemini a silent "session ready" ping immediately on open
+  //             to force model warm-up before user speaks
+  //   Option C: Play a short audio greeting from a pre-recorded clip while
+  //             the model warms up ("Starting your cooking session...")
+  //   Option D: Accept the first-turn delay and set user expectation in the
+  //             UI ("Connecting to your cooking companion...")
+  // Do not implement Options B/C/D now — test A (pre-warming) first.
   await this.openGeminiSession(context)
 
   // Update agent_state: turn counter starts at 0
