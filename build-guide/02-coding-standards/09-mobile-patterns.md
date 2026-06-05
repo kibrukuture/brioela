@@ -87,6 +87,141 @@ export function useScanner() {
 
 ---
 
+## The Network Layer — `src/network/`
+
+All server state lives in `src/network/` — one folder per API domain. Features never call `fetch` directly and never import from `@brioela/shared/routes` themselves. They import from network hooks.
+
+```
+network/
+├── core/
+│   ├── client.ts          — fetch-based HTTP client: auth headers, retry, error parsing
+│   ├── query.keys.ts      — QUERY_KEYS: all TanStack query key arrays in one place
+│   └── index.ts
+└── scan/
+    ├── scan.api.ts        — pure async fetch functions, uses API_ROUTES.scan.* from shared
+    ├── use.create.scan.hook.ts
+    ├── use.scan.hook.ts
+    ├── use.scan.history.hook.ts
+    └── index.ts
+```
+
+**`{domain}.api.ts`** — raw fetch functions, uses typed route paths, returns typed data:
+
+```ts
+// mobile/src/network/scan/scan.api.ts
+import { API_ROUTES } from '@brioela/shared/routes'
+import type { Scan, CreateScan } from '@brioela/shared'
+import * as api from '@/network/core'
+
+export async function createScan(body: CreateScan): Promise<Scan> {
+  return api.post<Scan>(API_ROUTES.scan.create(), body)
+}
+
+export async function getScan(id: string): Promise<Scan> {
+  return api.get<Scan>(API_ROUTES.scan.getById(id))
+}
+
+export async function listScanHistory(): Promise<Scan[]> {
+  return api.get<Scan[]>(API_ROUTES.scan.listHistory())
+}
+```
+
+**`use.{action}.hook.ts`** — one hook per query or mutation, one file per hook:
+
+```ts
+// mobile/src/network/scan/use.create.scan.hook.ts
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { createScan } from './scan.api'
+import { QUERY_KEYS } from '@/network/core'
+
+export function useCreateScan() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: createScan,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.SCAN.HISTORY })
+    },
+  })
+}
+```
+
+```ts
+// mobile/src/network/scan/use.scan.history.hook.ts
+import { useQuery } from '@tanstack/react-query'
+import { listScanHistory } from './scan.api'
+import { QUERY_KEYS } from '@/network/core'
+
+export function useScanHistory() {
+  return useQuery({
+    queryKey: QUERY_KEYS.SCAN.HISTORY,
+    queryFn:  listScanHistory,
+  })
+}
+```
+
+**`query.keys.ts`** — all query keys in one place, typed as `const`:
+
+```ts
+// mobile/src/network/core/query.keys.ts
+export const QUERY_KEYS = {
+  SCAN: {
+    HISTORY:  ['scan', 'history'] as const,
+    BY_ID:    (id: string) => ['scan', id] as const,
+  },
+  RECIPE: {
+    LIST:     ['recipe', 'list'] as const,
+    BY_ID:    (id: string) => ['recipe', id] as const,
+  },
+  GROUND: {
+    FINDS:    (geohash: string) => ['ground', 'finds', geohash] as const,
+  },
+} as const
+```
+
+**`client.ts`** — typed fetch wrapper, never axios:
+
+```ts
+// mobile/src/network/core/client.ts
+import { useAuthStore } from '@/stores/auth/use.auth.store'
+import { AppError } from '@brioela/shared/types'
+
+const BASE_URL = process.env.EXPO_PUBLIC_API_URL
+
+async function request<T>(
+  method: string,
+  url: string,
+  options?: { body?: unknown; params?: Record<string, string> }
+): Promise<T> {
+  const token = useAuthStore.getState().session?.accessToken
+  const fullUrl = new URL(BASE_URL + url)
+  if (options?.params) {
+    Object.entries(options.params).forEach(([k, v]) => fullUrl.searchParams.set(k, v))
+  }
+  const res = await fetch(fullUrl.toString(), {
+    method,
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+    ...(options?.body ? { body: JSON.stringify(options.body) } : {}),
+  })
+  const json = await res.json()
+  if (!res.ok) throw new AppError(json.error, json.message, res.status)
+  return json.data as T
+}
+
+export const api = {
+  get:    <T>(url: string, params?: Record<string, string>) => request<T>('GET', url, { params }),
+  post:   <T>(url: string, body?: unknown) => request<T>('POST', url, { body }),
+  put:    <T>(url: string, body?: unknown) => request<T>('PUT', url, { body }),
+  del:    <T>(url: string) => request<T>('DELETE', url),
+}
+```
+
+The `features/` folder's `_hooks/` contains UI state hooks that **import from network hooks** — they are not network hooks themselves. The network layer is always the source of server data.
+
+---
+
 ## TanStack Query for All Server State
 
 All API calls go through TanStack Query. No `useEffect` + `fetch`. No `useState` for server data.

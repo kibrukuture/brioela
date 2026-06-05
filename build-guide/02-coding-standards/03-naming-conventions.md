@@ -12,18 +12,24 @@ Every file has a suffix that declares its role. The suffix comes after the descr
 
 | Suffix | Role | Example |
 |---|---|---|
-| `.route.ts` | Hono route definition | `scan.route.ts` |
-| `.handler.ts` | Single endpoint handler function | `create.scan.handler.ts` |
-| `.helper.ts` | Pure utility function | `build.verdict.response.helper.ts` |
+| `.route.ts` | Hono router — registers paths, imports controller | `scan.route.ts` |
+| `.controller.ts` | Thin HTTP layer — on{Action}() wraps handler + c.json | `scan.controller.ts` |
+| `.handler.ts` | Pure business logic — returns data, never c.json | `create.scan.handler.ts` |
+| `.helper.ts` | Pure utility function | `build.verdict.helper.ts` |
 | `.middleware.ts` | Hono middleware | `auth.middleware.ts` |
 | `.agent.ts` | Durable Object class | `orchestrator.agent.ts` |
 | `.tool.ts` | AI-callable tool function | `write.user.memory.tool.ts` |
-| `.schema.ts` | Drizzle table definition | `products.schema.ts` |
+| `.schema.ts` | Drizzle table definition (backend `db/` and `_schema/`) — or Zod entity/input schema (shared `validator/`) | `products.schema.ts`, `scan.schema.ts` |
+| `.type.ts` | Pure TypeScript type declarations — only when not derivable from a Zod schema | `user.id.type.ts` |
+| `.event.ts` | Domain event schemas (shared `validator/`) | `scan.event.ts` |
+| `.job.ts` | Queue job schemas (shared `validator/`) | `import.recipe.job.ts` |
+| `.routes.ts` | Shared route definitions — ROUTES + ROUTE_PATTERNS | `scan.routes.ts` |
 | `.lib.ts` | Feature business logic | `resolve.product.lib.ts` |
-| `.type.ts` | Local TypeScript type declarations | `branded.type.ts` |
 | `.constant.ts` | Shared constant values | `verdict.constant.ts` |
-| `.store.ts` | Zustand store (mobile) | `ambient.store.ts` |
+| `.store.ts` | Zustand store (mobile) | `use.ambient.store.ts` |
 | `.hook.ts` | Custom React hook (mobile) | `use.scanner.hook.ts` |
+| `.api.ts` | Raw fetch functions for one domain (mobile network layer) | `scan.api.ts` |
+| `.client.ts` | Third-party service client instance | `gemini.client.ts` |
 | `.feature.tsx` | Feature root component (mobile) | `scanner.feature.tsx` |
 | `.variants.ts` | CVA variant definition (mobile) | `button.variants.ts` |
 | `.glsl.ts` | SkSL shader source string | `ambient.glsl.ts` |
@@ -81,7 +87,6 @@ Valid underscore folder names:
 - `_types/` — local TypeScript type files
 - `_hooks/` — custom React hooks (mobile features)
 - `_components/` — feature-scoped UI components (mobile features)
-- `_api/` — feature-specific API call files (mobile features)
 
 Every underscore folder has an `index.ts`. Consuming code imports from the folder (`from './_handlers'`), never from individual files inside it.
 
@@ -99,12 +104,22 @@ One component per file. A file named `Button.tsx` contains exactly one exported 
 
 ### Schema Files
 
-Zod schema files are `kebab-case` named after the domain they describe:
+Zod schema files live in `shared/validator/{scope}/`. The suffix after the domain name is always a **category word** — never a domain noun. Each scope folder has an `index.ts` barrel. Files can import from each other within the same scope — no duplicate truth.
+
+| Suffix | Category |
+|---|---|
+| `.schema.ts` | Zod entity or input schemas + inferred types |
+| `.type.ts` | Pure TypeScript types — only when not derivable from Zod |
+| `.event.ts` | Domain event schemas |
+| `.job.ts` | Queue job schemas |
 
 ```
-scan.ts           → ScanEventSchema, ScanVerdictSchema, ScanResultSchema
-recipe.ts         → RecipeSchema, CreateRecipeSchema, RecipeIngredientSchema
-constraint.ts     → ConstraintSchema, AllergySchema, DietaryRuleSchema
+scan.schema.ts           → ScanEventSchema, ScanVerdictSchema, VerdictLevelSchema + types
+create.scan.schema.ts    → CreateScanSchema, type CreateScan
+recipe.schema.ts         → RecipeSchema, type Recipe
+import.recipe.schema.ts  → ImportRecipeSchema, type ImportRecipe
+import.recipe.job.ts     → ImportRecipeJobSchema, type ImportRecipeJob
+user.id.type.ts          → UserId, RecipeId, OrderId + as*() constructors
 ```
 
 ### Shader Files

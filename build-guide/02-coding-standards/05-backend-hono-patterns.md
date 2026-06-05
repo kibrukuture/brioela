@@ -2,171 +2,220 @@
 
 ## App Root
 
-`backend/src/index.ts` is the Hono app root and the Cloudflare Worker entry point. It does two things only: mounts routes and exports DO classes. No logic.
+`backend/src/index.ts` is the Hono app root and the Cloudflare Worker entry point. It mounts all routes using `API_ROUTES.{feature}.base` from shared — no raw URL strings ever. It also exports all DO classes (required by Cloudflare).
 
 ```ts
 // backend/src/index.ts
-import { Hono } from 'hono'
-import { cors } from 'hono/cors'
-import { errorMiddleware } from './middleware/error'
-import { authMiddleware } from './middleware/auth'
-import { mountRoutes } from './routes/index'
+import { Hono, type Context } from 'hono'
+import { API_ROUTES } from '@brioela/shared/routes'
+import { corsMiddleware } from '@/core/middleware/cors.middleware'
+import { authMiddleware } from '@/core/middleware/auth.middleware'
+import { errorMiddleware } from '@/core/middleware/error.middleware'
 
 // DO exports — CF requires all DO classes exported from the worker entry point
-export { BrioelOrchestrator } from './agents/orchestrator/index'
-export { CookingAgent } from './agents/cooking/index'
+export { BrioelOrchestrator } from './agents/orchestrator'
+export { CookingAgent } from './agents/cooking'
 
-const app = new Hono<{ Bindings: Env }>()
+export const app = new Hono<{
+  Variables: {
+    userId: UserId
+    requestId: string
+  }
+}>()
 
-app.use('*', cors())
-app.use('*', errorMiddleware)
+app.use('*', corsMiddleware)
+app.onError(errorMiddleware)
 app.use('/api/*', authMiddleware)
 
-mountRoutes(app)
+// All routes mounted via typed API_ROUTES — never raw strings
+app.route(API_ROUTES.scan.base,          scanRouter)
+app.route(API_ROUTES.recipes.base,       recipesRouter)
+app.route(API_ROUTES.ground.base,        groundRouter)
+app.route(API_ROUTES.map.base,           mapRouter)
+app.route(API_ROUTES.bela.base,          belaRouter)
+app.route(API_ROUTES.recall.base,        recallRouter)
+app.route(API_ROUTES.auth.base,          authRouter)
+app.route(API_ROUTES.notifications.base, notificationsRouter)
 
 export default app
+export type AppContext = typeof app extends Hono<infer E> ? Context<E> : never
+```
+
+---
+
+## The Three-Layer Stack
+
+Every feature endpoint flows through three layers. Each layer has exactly one job.
+
+```
+scan.route.ts        — registers the path from ROUTE_PATTERNS, points to controller
+scan.controller.ts   — on{Action}(): calls handler, wraps result in apiSuccessResponse
+_handlers/create.scan.handler.ts — pure logic: reads context, hits DB/DO, returns data
 ```
 
 ---
 
 ## Route Files
 
-Each feature has its own folder under `routes/`. The folder contains a `.route.ts` file (the Hono instance) and underscore-scoped subfolders for handlers and helpers. The route file imports handlers from `_handlers/index.ts` — it never contains handler logic itself.
+Route files register paths using `API_ROUTE_PATTERNS` from shared — never raw strings. All handler logic is in the controller, never in the route file.
 
 ```ts
-// backend/src/routes/scan/scan.route.ts
+// backend/src/api/scan/scan.route.ts
 import { Hono } from 'hono'
-import { createScan, getScan, listScanHistory } from './_handlers'
+import { API_ROUTE_PATTERNS } from '@brioela/shared/routes'
+import * as controller from './scan.controller'
+import type { AppContext } from '@/index'
 
-const scan = new Hono<{ Bindings: Env }>()
+const scanRouter = new Hono<AppContext>()
 
-scan.post('/',        createScan)
-scan.get('/:scanId',  getScan)
-scan.get('/history',  listScanHistory)
+// Paths come from shared — never written as raw strings
+scanRouter.post(API_ROUTE_PATTERNS.scan.create,      controller.onCreateScan)
+scanRouter.get(API_ROUTE_PATTERNS.scan.getById,       controller.onGetScan)
+scanRouter.get(API_ROUTE_PATTERNS.scan.listHistory,   controller.onListScanHistory)
 
-export default scan
+export default scanRouter
 ```
 
-```ts
-// backend/src/routes/scan/_handlers/create.scan.handler.ts
-import { zValidator } from '@hono/zod-validator'
-import { ScanRequestSchema } from '@brioela/shared'
-import type { Context } from 'hono'
-import type { Env } from '../../../types'
+---
 
-export const createScan = [
-  zValidator('json', ScanRequestSchema),
-  async (c: Context<{ Bindings: Env }>) => {
-    const { upc } = c.req.valid('json')
-    const userId = c.get('userId')
+## Controller Files
 
-    const id = c.env.ORCHESTRATOR.idFromName(userId)
-    const orchestrator = c.env.ORCHESTRATOR.get(id)
-    return orchestrator.fetch(c.req.raw)
-  },
-]
-```
+Controllers are the HTTP layer. Each `on{Action}` function does exactly one thing: call the handler and return `c.json(apiSuccessResponse(result))`. No business logic lives here.
 
 ```ts
-// backend/src/routes/scan/_handlers/index.ts
-export { createScan } from './create.scan.handler'
-export { getScan } from './get.scan.handler'
-export { listScanHistory } from './list.scan.handler'
-```
+// backend/src/api/scan/scan.controller.ts
+import type { AppContext } from '@/index'
+import * as handlers from './_handlers'
+import { apiSuccessResponse } from '@/core/response'
 
-```ts
-// backend/src/routes/index.ts
-import type { Hono } from 'hono'
-import type { Env } from '../types'
-import scan from './scan'
-import recipes from './recipes'
-import ground from './ground'
-import order from './bela'
-import map from './map'
-import recall from './recall'
-import auth from './auth'
+export async function onCreateScan(c: AppContext) {
+  const result = await handlers.createScan(c)
+  return c.json(apiSuccessResponse(result), 201)
+}
 
-export function mountRoutes(app: Hono<{ Bindings: Env }>) {
-  app.route('/api/scan', scan)
-  app.route('/api/recipes', recipes)
-  app.route('/api/ground', ground)
-  app.route('/api/bela', order)
-  app.route('/api/map', map)
-  app.route('/api/recall', recall)
-  app.route('/api/auth', auth)
+export async function onGetScan(c: AppContext) {
+  const result = await handlers.getScan(c)
+  return c.json(apiSuccessResponse(result))
+}
+
+export async function onListScanHistory(c: AppContext) {
+  const result = await handlers.listScanHistory(c)
+  return c.json(apiSuccessResponse(result))
 }
 ```
 
 ---
 
-## Hono Context Type Extension
+## Handler Files
 
-The Hono context carries typed state injected by middleware. Declare it once and it flows through all handlers:
+Handlers contain all business logic. They receive `AppContext`, do the work, and **return plain data** — never `c.json`. The controller handles response formatting.
 
 ```ts
-// backend/src/types.ts
-import type { UserId } from '@brioela/shared'
+// backend/src/api/scan/_handlers/create.scan.handler.ts
+import { zValidator } from '@hono/zod-validator'
+import { CreateScanSchema } from '@brioela/shared'
+import type { AppContext } from '@/index'
 
-export type Env = {
-  Bindings: CloudflareBindings  // from wrangler-generated worker-configuration.d.ts
+export async function createScan(c: AppContext) {
+  const userId = c.get('userId')
+  const body   = await c.req.json()
+
+  const { upc } = CreateScanSchema.parse(body)
+
+  const id = c.env.ORCHESTRATOR.idFromName(userId)
+  const orchestrator = c.env.ORCHESTRATOR.get(id)
+  const scan = await orchestrator.fetch(c.req.raw).then(r => r.json())
+
+  // return plain data — controller wraps in apiSuccessResponse
+  return { scan }
+}
+```
+
+```ts
+// backend/src/api/scan/_handlers/index.ts
+export { createScan }       from './create.scan.handler'
+export { getScan }          from './get.scan.handler'
+export { listScanHistory }  from './list.scan.handler'
+```
+
+---
+
+## Shared Route Definitions
+
+Route paths are defined once in `shared/src/routes/{feature}.routes.ts` and imported everywhere. Two objects per file:
+
+```ts
+// shared/src/routes/scan.routes.ts
+export const SCAN_ROUTES = {
+  base:        '/api/scan',
+  create:      () => '/api/scan',
+  getById:     (id: string) => `/api/scan/${id}`,
+  listHistory: () => '/api/scan/history',
+} as const
+
+// ROUTE_PATTERNS use Hono :param syntax — mounted on the router after base is stripped
+export const SCAN_ROUTE_PATTERNS = {
+  create:      '/',
+  getById:     '/:scanId',
+  listHistory: '/history',
+} as const
+```
+
+```ts
+// shared/src/routes/index.ts
+import { SCAN_ROUTES, SCAN_ROUTE_PATTERNS }     from './scan.routes'
+import { RECIPE_ROUTES, RECIPE_ROUTE_PATTERNS } from './recipe.routes'
+// ...
+
+export const API_ROUTES = {
+  scan:    SCAN_ROUTES,
+  recipes: RECIPE_ROUTES,
+  // ...
+} as const
+
+export const API_ROUTE_PATTERNS = {
+  scan:    SCAN_ROUTE_PATTERNS,
+  recipes: RECIPE_ROUTE_PATTERNS,
+  // ...
+} as const
+```
+
+Backend uses `API_ROUTE_PATTERNS`. Mobile uses `API_ROUTES`. Neither writes raw strings.
+
+---
+
+## Hono Context Type
+
+`AppContext` is derived from the Hono app instance — no duplication:
+
+```ts
+// backend/src/index.ts
+export const app = new Hono<{
   Variables: {
-    userId: UserId              // injected by auth middleware
-    requestId: string           // injected by logging middleware
+    userId:    UserId   // injected by auth middleware
+    requestId: string   // injected by logging middleware
   }
-}
+}>()
+
+export type AppContext = typeof app extends Hono<infer E> ? Context<E> : never
 ```
 
-Usage in handlers:
-
-```ts
-// c.get('userId') returns UserId — fully typed
-const userId = c.get('userId')
-```
-
----
-
-## Zod Validation at Route Entry
-
-Every route that accepts a body or query params validates with `@hono/zod-validator`. No raw `c.req.json()` without validation.
-
-```ts
-import { zValidator } from '@hono/zod-validator'
-import { CreateRecipeSchema } from '@brioela/shared'
-
-recipes.post(
-  '/',
-  zValidator('json', CreateRecipeSchema),
-  async (c) => {
-    const body = c.req.valid('json')  // body is CreateRecipe — fully typed
-    // ...
-  }
-)
-
-// Query params also validated
-recipes.get(
-  '/',
-  zValidator('query', z.object({ limit: z.coerce.number().max(50).default(20) })),
-  async (c) => {
-    const { limit } = c.req.valid('query')  // limit is number
-    // ...
-  }
-)
-```
+All handlers import `AppContext` from `@/index`. `c.get('userId')` returns `UserId` — fully typed.
 
 ---
 
 ## Middleware Pattern
 
-Each middleware is a standalone file. Middleware only does one thing.
+Each middleware lives in `core/middleware/` — one file, one concern:
 
 ```ts
-// backend/src/middleware/auth.ts
+// backend/src/core/middleware/auth.middleware.ts
 import type { MiddlewareHandler } from 'hono'
-import type { Env } from '../types'
-import { verifyJwt } from '../lib/auth/verify-jwt'
-import { asUserId } from '@brioela/shared'
+import type { AppContext } from '@/index'
+import { verifyJwt } from '@/core/auth/verify.jwt.helper'
+import { asUserId } from '@brioela/shared/types'
 
-export const authMiddleware: MiddlewareHandler<Env> = async (c, next) => {
+export const authMiddleware: MiddlewareHandler<AppContext> = async (c, next) => {
   const token = c.req.header('Authorization')?.replace('Bearer ', '')
   if (!token) return c.json({ error: 'UNAUTHORIZED' }, 401)
 
@@ -182,7 +231,7 @@ export const authMiddleware: MiddlewareHandler<Env> = async (c, next) => {
 
 ## DO Access Pattern
 
-Route handlers access DOs only via `c.env.DO_BINDING.idFromName(key)`. The key is always the userId (one DO per user). Never pool DOs or use random IDs.
+Route handlers access DOs only via `c.env.DO_BINDING.idFromName(userId)`. Always `idFromName` — one DO per user. Never `newUniqueId`.
 
 ```ts
 // ✓ — always idFromName with userId
@@ -190,40 +239,22 @@ const id = c.env.ORCHESTRATOR.idFromName(userId)
 const stub = c.env.ORCHESTRATOR.get(id)
 return stub.fetch(c.req.raw)
 
-// ✗ — never random IDs, never pooled
-const id = c.env.ORCHESTRATOR.newUniqueId()  // wrong for user agents
+// ✗ — never random IDs
+const id = c.env.ORCHESTRATOR.newUniqueId()
 ```
 
 ---
 
 ## Response Format
 
-All API responses use a consistent envelope:
+`apiSuccessResponse` wraps handler data in the standard envelope. The controller always uses it — handlers never touch `c.json`.
 
 ```ts
-// Success
-c.json({ data: result }, 200)
+// backend/src/core/response.ts
+export function apiSuccessResponse<T>(data: T) {
+  return { data }
+}
 
-// Error
-c.json({ error: 'SCAN_NOT_FOUND', message: 'Scan result not found' }, 404)
-
-// Created
-c.json({ data: created }, 201)
+// Success: { data: result }
+// Error (from error middleware): { error: 'SCAN_NOT_FOUND', message: '...' }
 ```
-
-Never return raw values at the top level. Always wrap in `{ data: ... }` or `{ error: ... }`.
-
-The error middleware (see `11-error-handling.md`) handles unhandled exceptions and formats them into this envelope automatically.
-
----
-
-## RPC Type Export
-
-Export `AppType` from the root for use in the mobile API client (Hono RPC):
-
-```ts
-// backend/src/index.ts — add to existing exports
-export type AppType = typeof app
-```
-
-This enables fully typed API calls from the mobile app without any manual type duplication (see `10-mobile-api-layer.md`).
