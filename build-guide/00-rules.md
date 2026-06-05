@@ -9,20 +9,18 @@ If this file and a build-guide file conflict, this file wins.
 ## Rule 1 — Feature-First Organization
 
 The build-guide is organized by feature. Each feature gets one folder. Everything that
-feature needs — including its tools, its UI, its backend, its data model — is described
-inside that feature's folder. Nothing is extracted into a separate "tools folder" or
-"shared folder" in the build-guide.
+feature needs — its tools, UI, backend, data model — is described inside that feature's folder.
+Nothing is extracted into a separate "tools folder" or "shared folder" in the build-guide.
 
 ```
 build-guide/
-  07-cooking-session/         ← one feature
+  07-cooking-session/
     00-overview.md
     01-cooking-agent-do.md
     02-gemini-live-connection.md
     03-proactive-speech-engine.md
     04-tools-this-feature-needs.md   ← tools described HERE, inside the feature
     05-timer-system.md
-    ...
 ```
 
 The `implementable-specs/brioela-tools/` files and `proactive-speech-engine/` files are
