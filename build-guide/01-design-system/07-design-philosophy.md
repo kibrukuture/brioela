@@ -13,7 +13,7 @@ The visual bar is set by the best iOS experiences of 2025-2026: Apple's Liquid G
 Brioela is not a scanner you pull out when you need it. It is an intelligence that runs alongside your food life. The design must reflect this. Idle states are alive but quiet. The interface does not demand attention. It offers it.
 
 Concretely:
-- The app at rest is not empty. It breathes. The ambient background field (Skia shader layer) gives the darkness depth.
+- The app at rest is not empty. It breathes. The ambient background field (Skia shader layer) gives the surface depth — warmth in light mode, depth in dark mode.
 - Content appears when it is relevant, not when the user requests it. Proactive intelligence is a visual expectation.
 - The interface is confident. It does not hedge. When the AI knows something, it states it. The design reflects that confidence — no excessive qualifiers, no decorative uncertainty.
 
@@ -50,7 +50,7 @@ If a design concept requires a form, the concept is wrong.
 ## Depth and Glass
 
 Brioela's surfaces are layered, not flat. The interface exists in three-dimensional space:
-- Background: the world (dark ambient field)
+- Background: the world (warm cream in light mode / near-black in dark mode — ambient field layer)
 - Mid-layer: content surfaces (Liquid Glass cards — blurred, translucent, floating)
 - Foreground: primary actions and critical information
 

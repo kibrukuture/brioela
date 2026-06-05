@@ -46,14 +46,17 @@ This is the core integration pattern. The SharedValue updates on the UI thread; 
 ```glsl
 uniform float time;
 uniform float amplitude;
+uniform vec3 baseColor;   // light: vec3(0.973, 0.965, 0.949) / dark: vec3(0.055, 0.047, 0.063)
 
 vec4 main(vec2 fragCoord) {
   vec2 uv = fragCoord / iResolution;
   float noise = fract(sin(dot(uv + time * 0.03, vec2(12.9898, 78.233))) * 43758.5453);
   float field = mix(0.0, amplitude, noise);
-  return vec4(vec3(0.055 + field * 0.04), 1.0);
+  return vec4(baseColor + field * 0.03, 1.0);
 }
 ```
+
+The `baseColor` uniform adapts to light/dark mode — in light mode it is the warm cream base, in dark mode the near-black base. The ambient field overlays the same slight variation over both.
 
 ---
 
@@ -80,14 +83,18 @@ vec4 main(vec2 fragCoord) {
 **Implementation:** Skia `BackdropFilter` with `Blur` filter applied to the card background:
 
 ```ts
-import { BackdropFilter, Blur, RoundedRect, Fill } from '@shopify/react-native-skia'
+import { BackdropFilter, Blur, RoundedRect } from '@shopify/react-native-skia'
+
+// Light mode: white glass on cream — rgba(255,255,255,0.72)
+// Dark mode:  white glass on near-black — rgba(255,255,255,0.06)
+// The color value is passed in via a prop driven by useColorScheme()
 
 <BackdropFilter filter={<Blur sigmaX={20} sigmaY={20} />}>
-  <RoundedRect r={16} color="rgba(255,255,255,0.06)" />
+  <RoundedRect r={16} color={glassSurfaceColor} />
 </BackdropFilter>
 ```
 
-Combined with a 1px border at `rgba(255,255,255,0.10)` via a `RoundedRect` with `style="stroke"`.
+Border: 1px `RoundedRect` with `style="stroke"`. Light mode border: `rgba(0,0,0,0.06)`. Dark mode border: `rgba(255,255,255,0.10)`.
 
 **Bloom integration:** The Verdict Field color system (see `02-color-system.md`) blooms *behind* the BackdropFilter. The blur samples the tinted background — the color comes through the glass. The card does not change color directly; the environment behind it does.
 
