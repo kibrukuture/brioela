@@ -3,177 +3,225 @@
 ## The Money Flow
 
 ```
-User wallet (pre-funded)
+User's card (authorization hold placed at order acceptance)
         │
         ▼
-  Escrow hold placed                  ← when shopper accepts order
+  Hold: grocery estimate + 20% buffer + delivery fee + platform fee
         │
-        ▼
-  Shopper delivers + user confirms
+  Shopper shops, pays at store with their dedicated Bela card
         │
-        ├──► Shopper payout (net of service fee)   ← Stripe Connect transfer
-        └──► Brioela service fee                   ← retained by platform
+  Shopper scans receipt at store → actual total confirmed
+        │
+  Shopper delivers → scans receipt at door → user sees confirmation screen
+        │
+  User confirms in app (10-minute window)
+        │
+        ├──► platform captures: actual grocery total + delivery fee + platform fee
+        ├──► Stripe Connect transfer: shopper receives grocery reimbursement + delivery fee
+        └──► platform retains: service fee
 ```
 
-Money moves twice: once to create the hold, once to release it. Between those two events, neither the user nor the shopper can touch it. The user cannot cancel without consequence after the shopper starts shopping. The shopper cannot be stiffed on a completed delivery.
+Money is locked from order acceptance. Shopper is out of pocket for grocery cost from store checkout until user confirms delivery (typically 15–45 minutes for a local order). Auto-capture fires after 10 minutes if user does not respond.
 
 ---
 
-## Brioela Wallet
+## No Wallet, No Pre-Funded Balance
 
-The Brioela wallet is the user's stored balance on the platform. It is powered by Stripe — specifically a Stripe Customer with a payment method on file and a balance tracked in Brioela's own database (not a Stripe balance — a Brioela ledger).
+Brioela does not hold user money. There is no Brioela wallet. The user's payment method (debit or credit card) is stored via Stripe Customer. When an order is accepted by a shopper, Stripe places an authorization hold on the user's card. The money stays in the user's bank — it is reserved and cannot be spent elsewhere, but it has not moved. The hold disappears if the order is cancelled before shopping begins. The hold becomes a charge only when the order completes.
 
-### Funding the Wallet
-
-The user adds money to their wallet from a linked payment method (card or bank account):
-- Minimum top-up: $5 (or local equivalent)
-- Top-up is a Stripe PaymentIntent for the top-up amount
-- On success: `wallet_transactions` table is updated with a `credit` row
-- The wallet balance is the sum of all `wallet_transactions` for this user
-
-The wallet balance is stored in the Orchestrator DO's `agent_state` table as a cached value and in Supabase `wallet_balance` table as the source of truth. The Orchestrator DO updates its cache from Supabase at session start. Discrepancies between the two (from any failed sync) are resolved in favor of the Supabase value.
-
-### Wallet Balance Display
-
-The wallet balance is shown:
-- On the main home screen (small balance chip in the corner)
-- On the Bela tab (prominently — the user must understand available balance before ordering)
-- During order creation (the estimated total is shown against the available balance; if balance is insufficient, the user is prompted to top up before confirming)
+This is the same mechanism hotels use for incidental holds. It requires no money transmission license. Brioela never holds funds — Stripe holds the authorization on behalf of the user's bank.
 
 ---
 
-## Escrow Hold
+## Authorization Amount
 
-When a shopper accepts an order:
+When a shopper accepts an order, the `PaymentIntent` is created immediately with `capture_method: 'manual'`:
 
-1. The `OrderAgent` DO sends a request to the payment service to place an escrow hold
-2. The hold is a Stripe PaymentIntent in `status = 'requires_capture'` — funds are reserved but not yet moved
-3. The hold amount is the order estimated total plus a 10% buffer (to cover if the shopper finds items that run slightly over the estimate due to price variance)
-4. The `orders` table is updated with: `stripe_payment_intent_id`, `escrow_hold_amount`, `escrow_hold_at`
-5. The user's displayed wallet balance is reduced by the hold amount — they cannot spend held funds on other orders
+```typescript
+const intent = await stripe.paymentIntents.create({
+  amount:          estimatedTotalCents,    // see breakdown below
+  currency:        'usd',
+  customer:        user.stripeCustomerId,
+  payment_method:  user.stripePaymentMethodId,
+  capture_method:  'manual',
+  confirm:         true,
+  metadata: {
+    order_id:    order.orderId,
+    shopper_id:  order.shopperId,
+    user_id:     order.userId,
+  },
+})
+```
 
-If the Stripe hold fails (insufficient wallet balance):
-- The shopper is notified: "Order cannot proceed — payment hold failed"
-- The order returns to `pending`
-- The user is notified: "Please top up your wallet — your balance is too low to hold for this order"
+The `estimatedTotalCents` is:
+
+| Component | Amount |
+|---|---|
+| Estimated grocery total (from AI list + Ground price data) | $52.00 |
+| 20% buffer (price variance, unit size differences) | $10.40 |
+| Delivery fee (distance + item count — fixed at order creation) | $7.00 |
+| Platform service fee (10% of grocery estimate) | $5.20 |
+| **Total authorized on user's card** | **$74.60** |
+
+The user sees this total on the order confirmation screen before confirming the order. They are not charged $74.60 — they are authorized up to $74.60. The actual capture is based on the real receipt total.
+
+The `orders` table is updated immediately with: `stripe_payment_intent_id`, `authorization_amount_cents`, `authorized_at`.
+
+---
+
+## Shopper Checkout at the Store
+
+The shopper pays at the grocery store till using their registered Bela card — a dedicated debit card registered during onboarding and used exclusively for Bela orders. See `02-shopper-platform.md` and `15-checkout-payment.md` for the dedicated card model.
+
+After paying, the shopper scans the receipt in the app. The receipt scan:
+- Confirms the actual total paid by the shopper
+- Verifies the last-4 of the card used matches the registered Bela card
+- Locks in per-item prices for Ground price intelligence
+- Stores the receipt image in Cloudflare R2 as dispute evidence
+
+**If actual receipt total exceeds the estimated grocery amount but is within the 20% buffer:** no action needed — the authorization already covers it.
+
+**If actual receipt total approaches or exceeds the authorization buffer:** the platform calls `incrementAuthorization` before the shopper leaves the store:
+
+```typescript
+await stripe.paymentIntents.incrementAuthorization(intent.id, {
+  amount: newTotalCents,   // actual grocery + fees, recalculated from receipt
+})
+```
+
+This must fire while the shopper is still at the store, before they scan the door receipt. The shopper gets an in-app message: "Budget updated to match your receipt — you're good to go."
+
+The shopper cannot advance to delivery mode until the receipt scan succeeds.
+
+---
+
+## Delivery and User Confirmation
+
+At the door:
+1. Shopper taps "I've arrived"
+2. Shopper scans receipt again (second scan — proof of physical presence with the order)
+3. User receives a full-screen prompt immediately:
+
+```
+Your order is here ✓
+
+12 items · $52.40
+
+[ View receipt ]
+
+Confirm delivery?
+[ Yes, I have everything ]    [ Something's wrong ]
+
+Auto-confirms in 9:58...
+```
+
+**User taps "Yes, I have everything":**
+- `orders.status` → `completed`
+- `paymentIntents.capture()` fires with actual grocery total + delivery fee + platform fee
+- Stripe Connect transfer created: shopper receives grocery cost reimbursement + delivery fee (combined in one transfer)
+- Platform retains service fee
+
+**User taps "Something's wrong":**
+- `orders.status` → `disputed`
+- `paymentIntents.capture()` does NOT fire
+- Authorization hold remains
+- Dispute flow opens — see `12-dispute-resolution.md`
+- Shopper payout held until resolution
+
+**User does not respond within 10 minutes:**
+- OrderAgent DO alarm fires (set at door-scan time)
+- Auto-capture executes: same as user confirming
+- `orders.status` → `completed`
+- User can still raise a dispute within 30 minutes of auto-capture
 
 ---
 
 ## Service Fee Structure
 
-Brioela takes a service fee on every completed order. The fee structure:
+The platform service fee is calculated on the actual grocery total (from receipt), not the estimate.
 
-| Order total | Platform service fee | Shopper receives |
+| Grocery total (actual) | Platform service fee | Shopper delivery fee |
 |---|---|---|
-| Under $20 | 12% | 88% of order total |
-| $20–$50 | 10% | 90% of order total |
-| $50–$100 | 8% | 92% of order total |
-| Over $100 | 6% | 94% of order total |
+| Under $20 | 15% | Flat — set at order creation |
+| $20–$50 | 12% | Flat — set at order creation |
+| $50–$100 | 10% | Flat — set at order creation |
+| Over $100 | 8% | Flat — set at order creation |
 
-The shopper also keeps 100% of any tip the user adds at confirmation (tips are outside the order total and processed separately).
+The delivery fee is fixed at order creation and shown to the user before they confirm the order. It is based on distance and item count. It is separate from the platform service fee. The shopper always knows their earnings before accepting.
 
-The service fee covers: platform infrastructure, KYC verification cost amortization, dispute resolution overhead, and Stripe processing fees.
-
-**Stripe processing fees** are taken from the platform service fee — they do not reduce the shopper's payout. The platform absorbs Stripe's cut.
-
----
-
-## Delivery Confirmation and Payout
-
-When the shopper marks the order as delivered:
-- The `orders.status` → `delivered`
-- The user receives a notification: "Your order has been delivered — confirm receipt"
-
-**Confirmation window: 10 minutes**
-
-The user has 10 minutes to confirm delivery. If they confirm:
-1. `orders.status` → `completed`
-2. The Stripe PaymentIntent is captured (funds actually move from escrow)
-3. The actual order total (which may differ from the estimate if some items were unavailable) is calculated from the final `order_items` list
-4. Stripe Connect transfer is initiated: shopper receives net payout (order total minus service fee)
-5. Any over-captured amount (the 10% buffer, minus actual variance) is immediately released back to the user's wallet
-
-If the user does NOT confirm within 10 minutes:
-- Auto-confirm triggers
-- Same payment flow as above
-- The user can still raise a dispute within 30 minutes of auto-confirm (see `12-dispute-resolution.md`)
-
-If the user raises a dispute instead of confirming:
-- `orders.status` → `disputed`
-- The Stripe PaymentIntent is NOT captured during dispute
-- Funds remain in escrow until dispute resolution
-- The shopper payout is held until resolution
+Stripe processing fees (~2.9% + $0.30 per charge, ~0.25% per payout) are absorbed by the platform — they come out of the platform service fee. The shopper receives 100% of the quoted delivery fee.
 
 ---
 
 ## Shopper Payout Timing
 
-After a successful `completed` status:
-- The Stripe Connect transfer is created immediately
-- Stripe's standard payout timing to the shopper's bank account: 2 business days for standard payout, instant for Stripe Instant Payouts (available in markets where Stripe supports it)
+After capture:
+- Stripe Connect transfer is created immediately
+- Shopper sees "Payment incoming" in their earnings screen
+- Standard payout to bank account: 2 business days
+- Instant payout (shopper opts in during onboarding): funds arrive within minutes; platform absorbs the Stripe instant payout fee (~1%) for the first 90 days, after which the shopper can choose speed
 
-Shoppers can see their pending payouts in the Shopper Mode earnings screen. A payout shows as "processing" until the bank transfer settles.
+The shopper is never waiting on Brioela's action after the user confirms — the transfer fires immediately on capture.
 
 ---
 
 ## Tip Flow
 
-At delivery confirmation, the user sees:
+At delivery confirmation, the user sees a tip prompt after confirming:
 
 ```
-Order delivered ✓
-
-[Product list summary]
-
-Total: $41.20
-
-Add a tip for your shopper?
+Tip your shopper?
 
   [ $2 ]  [ $4 ]  [ $6 ]  [ Custom ]  [ No tip ]
 ```
 
-Tips are processed as a separate Stripe PaymentIntent (not from escrow — from the user's wallet directly at confirmation time). Tips are transferred 100% to the shopper via Stripe Connect with no platform fee deducted.
+Tips are a separate `PaymentIntent` charged to the user's card immediately (not from the authorization — tips are additive). Transferred 100% to the shopper via Stripe Connect with no platform fee deducted.
 
 ---
 
-## Refunds
+## Cancellation and Refunds
 
-Refunds come from two sources:
+**Before shopper starts shopping** (`status = 'accepted'`):
+- Authorization hold is released: `paymentIntents.cancel()`
+- No charge. User sees the pending hold disappear from their bank within minutes (bank-dependent timing).
 
-**Automatic partial refund**: if items were unavailable and marked so by the shopper, the actual order total is automatically less than the escrow hold. The difference is released back to the user's wallet immediately at completion. No dispute needed — this is a normal outcome.
+**After shopper starts shopping** (`status = 'shopping'`):
+- Cancellation not allowed. Shopper has invested time and travel.
+- User can only dispute after delivery.
 
-**Dispute refund**: if a dispute is resolved in the user's favor (wrong item, missing item that was marked as delivered), the relevant portion of the captured funds is returned to the user's wallet via Stripe refund. See `12-dispute-resolution.md` for resolution logic.
+**Items unavailable** (shopper marked items as out-of-stock):
+- Capture amount is the actual receipt total (unavailable items were not purchased, so they are not on the receipt).
+- User is automatically not charged for items that were not delivered. No dispute needed.
 
-**Full refund**: if an order is cancelled before the shopper starts shopping (status is `accepted` but not yet `shopping`), the escrow hold is released immediately and the user's wallet balance is fully restored. No charge occurs.
+**Dispute refund:**
+- If dispute resolves in user's favor, the relevant portion is refunded via `paymentIntents.refund()`.
+- Full disputes (order never arrived, all items wrong): full refund, shopper receives no payout for that order.
 
 ---
 
-## Financial Ledger Tables
+## Financial Ledger
 
-All money movements are appended to `wallet_transactions` and `order_payment_events` in Supabase. These are append-only logs — no row is ever updated or deleted.
+All payment events are appended to `order_payment_events`. Append-only — no row is ever updated or deleted.
 
 ```sql
-wallet_transactions (
-  id             uuid primary key,
-  user_id        text not null,
-  kind           text check(kind in ('credit','debit','hold','release','refund')),
-  amount_cents   int not null,
-  currency       text not null,
-  stripe_ref     text,       -- PaymentIntent ID or transfer ID
-  order_id       text,       -- linked order if applicable
-  created_at     timestamptz not null default now()
-)
-
 order_payment_events (
   id             uuid primary key,
   order_id       text not null references orders(order_id),
-  kind           text,       -- 'hold_placed', 'hold_released', 'captured', 'transfer', 'tip', 'refund'
-  amount_cents   int,
-  stripe_ref     text,
+  kind           text check(kind in (
+    'authorization_placed',
+    'authorization_incremented',
+    'captured',
+    'connect_transfer',
+    'tip_charge',
+    'tip_transfer',
+    'authorization_released',
+    'refund'
+  )),
+  amount_cents   int not null,
+  currency       text not null default 'usd',
+  stripe_ref     text,    -- PaymentIntent ID, transfer ID, or refund ID
   created_at     timestamptz not null default now()
 )
 ```
 
-The wallet balance for a user is: `SUM(amount_cents) WHERE user_id = ? AND kind IN ('credit','release','refund') MINUS SUM(amount_cents) WHERE user_id = ? AND kind IN ('debit','hold')`.
-
-This is recalculated on every wallet display render. The cached value in `wallet_balance` table is used for fast reads and is reconciled with the ledger sum on every Curator pass.
+There is no wallet balance table. No ledger sum queries. Every financial event for an order is in `order_payment_events`. The user's card and Stripe are the source of truth — Brioela's ledger is an audit log, not a balance system.

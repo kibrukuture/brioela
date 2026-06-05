@@ -1,182 +1,142 @@
-# Bela — Checkout Payment (Apple Pay / Google Pay)
+# Bela — Shopper Checkout (Dedicated Bela Card + Receipt Scan)
 
-## The Problem
+## The Model
 
-The shopper fills the basket, walks to the checkout till, and needs to pay. The money is the user's — held in escrow in the Brioela wallet. The shopper cannot pay from their own bank account and get reimbursed later (that creates cash flow risk and trust issues). The shopper needs a payment method at the till that is funded by the user's wallet at that exact moment, with no manual transfer, no cash handling, no awkwardness.
+The shopper pays at the grocery store till using their own dedicated debit card — their "Bela card" — registered during onboarding. They pay like a normal customer. They scan the receipt with the Brioela scanner at the store. They scan it again at the user's door. The user confirms. Money moves.
 
-The solution: **Stripe Issuing virtual card** — a single-use virtual Visa/Mastercard card, pre-loaded with the order amount from escrow, provisioned to the shopper's Apple Pay or Google Pay wallet for this order only. The shopper taps to pay at checkout. Done.
+No Stripe Issuing. No virtual cards. No Apple entitlement approval. No push provisioning. No approval process of any kind. The shopper is out of pocket for the grocery cost from checkout until the user confirms delivery (typically 15–45 minutes for a local order). This is the same model used by DoorDash's Red Card program and early Instacart.
 
 ---
 
-## How Stripe Issuing Works Here
+## The Dedicated Bela Card
 
-Stripe Issuing allows Brioela to create virtual payment cards programmatically. These are real Visa/Mastercard cards with a BIN, an expiry, a CVV — they work at any merchant terminal that accepts contactless payment.
+### What It Is
 
-**The flow:**
+During shopper onboarding (after KYC and Stripe Connect setup — see `02-shopper-platform.md`), the shopper registers a dedicated debit card as their Bela card. This is:
 
-1. When the shopper accepts the order and the escrow hold is placed (`orders.status → 'accepted'`), the OrderAgent DO creates a Stripe Issuing virtual card via the Stripe API:
+- Any debit card they designate for Bela shopping: a dedicated bank account debit card, or a prepaid Visa/Mastercard
+- A separate card from their personal primary debit or credit card
+- Registered via Stripe's payment method tokenization — Brioela stores the Stripe `PaymentMethod` ID and the card last-4 only, never the raw card number
+
+The card is labeled "Bela Shopping Card" in their shopper profile.
+
+### Why a Dedicated Card (Not Their Personal Card)
+
+- **Tax clarity**: all Bela purchases on one card — easy to reconcile with their earnings statements
+- **Dispute evidence**: any charge on the Bela card can be traced to a specific order via receipt scan last-4 verification
+- **Professional separation**: Brioela's scanner verifies the card used matches the registered Bela card — this makes the receipt tamper-evident
+- **Shopper protection**: personal spending never shows up in Bela's order records; Bela purchases never show up in personal spending history
+
+### Contractual Requirement
+
+In the shopper terms of service, the shopper agrees:
+- The registered Bela card is used exclusively for Bela orders during active shopping sessions
+- No personal purchases on this card while they have an active Bela order in `shopping` status
+- Any charge on the Bela card that does not correspond to a scanned order receipt triggers a review
+
+This is a contractual policy, not a technical lock. The receipt scan enforces it indirectly: the scanner verifies last-4 of the card on the receipt matches the registered Bela card. A purchase on the wrong card produces a mismatch and blocks the order from advancing.
+
+### Registering the Card During Onboarding
 
 ```typescript
-const card = await stripe.issuing.cards.create({
-  currency:     'usd',      // or local currency
-  type:         'virtual',
-  status:       'active',
-  spending_controls: {
-    spending_limits: [{
-      amount:   order.escrowHoldAmountCents + bufferCents,
-      interval: 'per_authorization',
-    }],
-    blocked_categories: [],   // no category restrictions — the shopper buys grocery items
-  },
+// Shopper onboarding — Step 5: Register Bela card
+// Uses Stripe SetupIntent to tokenize the card without charging it
+const setupIntent = await stripe.setupIntents.create({
+  customer:    shopper.stripeCustomerId,
+  usage:       'off_session',
   metadata: {
-    order_id:   order.orderId,
-    shopper_id: order.shopperId,
-    user_id:    order.userId,
+    shopper_id: shopper.shopperId,
+    purpose:    'bela_shopping_card',
+  },
+})
+
+// Client uses stripe.confirmCardSetup(setupIntent.client_secret)
+// to present card entry UI — no raw card number stored server-side
+
+// On completion, save the PaymentMethod ID and last-4:
+await db.shoppers.update({
+  where:  { shopper_id: shopper.shopperId },
+  data: {
+    bela_card_payment_method_id: paymentMethod.id,
+    bela_card_last4:             paymentMethod.card.last4,
+    bela_card_brand:             paymentMethod.card.brand,
   },
 })
 ```
 
-The spending limit is set to the escrow hold amount (order estimate + 10% buffer). The card cannot be charged beyond this limit. After the order completes, the card is immediately cancelled — it is single-use per order.
+---
 
-2. The shopper receives a push notification when the card is ready (immediately after order acceptance):
+## Receipt Scan at the Store
+
+After paying at checkout, the shopper opens the Brioela scanner and scans the receipt — paper receipt or POS screen.
+
+**What the scan does:**
+
+1. OCR reads the receipt: merchant name, line items, quantities, prices, total, card last-4 used
+2. **Card verification**: last-4 from receipt must match `shoppers.bela_card_last4`. Mismatch blocks the order from advancing and flags the order for review.
+3. **Amount check**: actual total is compared against the PaymentIntent authorization:
+   - Actual total within authorization: nothing to do — hold already covers it
+   - Actual total approaches or exceeds authorization: `paymentIntents.incrementAuthorization()` fires immediately, before the shopper leaves the store (shopper sees "Budget updated — you're good to go")
+4. **Ground price contribution**: per-item prices are contributed to the Ground price intelligence system, anonymized
+5. **Receipt image stored**: uploaded to Cloudflare R2, tagged with `order_id` — retained for the dispute window (30 days)
+
+**The shopper cannot advance to delivery mode until the store receipt scan succeeds.**
+
+If the receipt OCR fails (faded receipt, long paper roll, crumpled):
+- Fallback: shopper takes a photo, server-side OCR runs with higher quality pipeline (2–3 second latency)
+- If OCR still fails: shopper manually enters the total. Receipt photo is required. Order is flagged for operations review. Shopper is paid after review (within 2 hours). Repeated manual-entry use triggers a quality flag.
+
+---
+
+## Receipt Scan at the Door
+
+When the shopper arrives at the delivery address and taps "I've arrived," the app shows:
 
 ```
-Your order payment card is ready
+Scan the receipt at handover
 
-Add it to Apple Pay or Google Pay to pay at checkout.
-It's pre-loaded with the order budget.
-
-[ Add to Apple Pay ]  [ Add to Google Pay ]
+Show the receipt to the user as you hand over the order.
+This starts their 10-minute confirmation window.
 ```
 
-3. The shopper taps "Add to Apple Pay" (or Google Pay). The card is provisioned to their device wallet via the native SDK:
-   - **Apple Pay**: `PKAddPaymentPassRequest` / PassKit API — the card details are pushed to Wallet without the shopper seeing the raw card number
-   - **Google Pay**: Google Pay Issuer API / push provisioning — same result on Android
+The shopper scans the receipt again. This:
+- Creates a second timestamped receipt record (store scan vs door scan — same receipt, different locations and times)
+- Confirms the shopper is physically present at the delivery address with the actual order
+- Triggers the user's confirmation screen immediately
 
-4. At checkout, the shopper taps their phone to the NFC terminal. Apple Pay / Google Pay handles the contactless transaction. The Stripe Issuing card is charged.
-
-5. Stripe sends a webhook to Brioela: `issuing_transaction.created` — Brioela receives the real charged amount.
-
-6. The real charged amount feeds into the order's final total reconciliation:
-   - If the shopper bought all items: actual total ≈ estimated total (within the 10% buffer)
-   - If items were unavailable: actual total < estimated total → the difference is released back to the user's wallet
-   - The card spending limit prevents any overcharge beyond the escrow buffer
+**The two-scan system (store + door) is Bela's evidence layer.** Both timestamps, both images, same receipt. A shopper cannot fake delivery without physically being at the store with the goods, then physically being at the delivery address with the same receipt. This is stronger dispute evidence than anything competitors have — it is why Bela's dispute model in `12-dispute-resolution.md` can auto-resolve many cases without human review.
 
 ---
 
-## Apple Pay Integration in the Shopper App
+## User Confirmation Screen
 
-The shopper app uses **React Native** (same as the main Brioela app). Apple Pay in React Native is handled via `@stripe/stripe-react-native` which includes the PassKit push provisioning bridge.
+Fires immediately when the door scan completes. Full-screen takeover on the user's phone:
 
-Push provisioning flow:
-```typescript
-import { useStripe } from '@stripe/stripe-react-native'
+```
+Your order is here ✓
 
-const { canAddCardToWallet, addToWallet } = useStripe()
+Delivered by [Shopper first name]
 
-// Check if the device supports adding cards
-const { canAddCard } = await canAddCardToWallet({
-  primaryAccountIdentifier: card.id,  // Stripe Issuing card ID
-})
+12 items · $52.40 total
 
-if (canAddCard) {
-  // Trigger the native Add to Wallet sheet
-  await addToWallet({
-    cardHolderName:           shopper.displayName,
-    primaryAccountIdentifier: card.id,
-    // Ephemeral key for verification (server-generated per Stripe docs)
-    token: ephemeralKey,
-  })
-}
+[ View receipt ]
+
+Confirm delivery?
+[ Yes, I have everything ]    [ Something's wrong ]
+
+Auto-confirms in 9:58...
 ```
 
-The "Add to Apple Pay" button in the shopper app triggers this flow. The native Wallet sheet appears. The shopper confirms. The card is in Apple Pay.
-
-**Requirements:**
-- Apple Pay push provisioning requires an Apple-approved entitlement from Brioela's developer account: `com.apple.developer.payment-pass-provisioning`
-- This entitlement requires a separate application to Apple — it is not automatically available. Apple reviews the use case before granting it. Brioela's case (single-use order cards for gig shoppers) is a standard approved use case. Estimated approval: 2–4 weeks.
-
----
-
-## Google Pay Integration in the Shopper App
-
-Google Pay push provisioning in React Native uses the same `@stripe/stripe-react-native` package on Android.
-
-```typescript
-// Android: check Google Pay availability
-const { isGooglePaySupported } = useGooglePay()
-const supported = await isGooglePaySupported({ testEnv: false })
-
-if (supported) {
-  // Initialize Google Pay
-  await initGooglePay({
-    testEnv: false,
-    merchantName: 'Brioela',
-    countryCode:  'ET',   // or user's market country
-    billingAddressConfig: { format: 'MIN', isRequired: false },
-  })
-}
-```
-
-For push provisioning (adding a card to Google Pay, not using Google Pay for a one-time payment):
-- Use Google Pay Issuer API (separate from the payments API)
-- Stripe provides a server-side `issuing_cards.pushProvision()` method that generates the push provisioning payload
-- Delivered to the Android app as a Stripe ephemeral key + card details bundle
-- The native Google Pay SDK provisions the card to the device wallet
-
-**Requirements:**
-- Google Pay push provisioning requires approval from Google for the issuer program. Stripe Issuing handles most of this — Brioela's Stripe account must be on the Issuing program and approved for push provisioning. Stripe provides guidance on the approval process as part of their Issuing onboarding.
-
----
-
-## What Happens If the Shopper Cannot Add the Card
-
-Not every device supports push provisioning (older Android versions, devices without NFC, devices where Google/Apple Pay is not set up). Fallback options:
-
-**Fallback 1: Show card details in-app**
-The shopper can view the virtual card number, expiry, and CVV within the shopper app (behind biometric auth). They manually enter these at checkout — works for any till that accepts card-not-present entry (rare at grocery stores, but possible at some markets).
-
-**Fallback 2: Shopper pays own card, gets reimbursed**
-The shopper pays from their own card and submits the receipt. Brioela verifies the receipt (total ≤ order estimate, same items), then transfers the amount to the shopper's Stripe Connect account immediately rather than at delivery. This is the pre-Stripe Issuing model — it works but creates cash flow risk for the shopper (they are out of pocket until receipt verification).
-
-Fallback 2 is a last resort. The target is that 90%+ of active shoppers use Apple Pay or Google Pay with push provisioning.
-
----
-
-## Receipt Capture and Price Reconciliation
-
-After paying at checkout, the shopper taps "I've paid — heading to delivery" in the app. At this point:
-
-1. The Stripe Issuing transaction webhook has already arrived (near-real-time from Stripe)
-2. The actual charged amount is now known
-3. The OrderAgent DO compares the actual charge to the escrow hold:
-   - Actual ≤ escrow hold: escrow captures for actual amount + service fee; remainder released to user wallet
-   - Actual > escrow hold (should not happen — spending limit prevents this, but edge cases exist for tax, rounding): the card is declined at that amount and the shopper is asked to remove one item
-
-4. Optional receipt photo: the shopper can photograph the receipt (paper or screen). This feeds:
-   - Per-item price data to the Ground price intelligence system (item prices visible in the receipt)
-   - Confirmation of exact items purchased for dispute evidence
-
-The receipt photo is not required. The Stripe Issuing transaction is the source of truth for the charged amount, not the receipt photo. The photo is supplementary evidence for disputes and Ground price updates.
-
----
-
-## Card Security
-
-The Stripe Issuing virtual card is:
-- **Single-use per order**: cancelled immediately after the order reaches `in_transit` status (shopper has left the store). The card cannot be used for any subsequent purchase.
-- **Amount-capped**: the spending limit is the escrow hold amount. Overspend is impossible.
-- **Order-bound**: the card `metadata` contains `order_id` and `shopper_id` — any transaction on this card is traceable to the exact order and shopper.
-- **Time-limited**: the card expires 24 hours after creation (a shopping trip should never take longer than this). If the shopper is delayed and the card expires, a new card is issued upon request.
-
-If the card is charged for an amount significantly different from the expected order total (> 20% variance): the transaction is flagged for manual review in Brioela's operations dashboard. This catches cases where a shopper uses the card for personal purchases (the card should only be charged at the specific store in the routing plan — merchant category and location are verified against the Stripe transaction data).
+If the user taps "Yes": capture fires and shopper is paid. See `05-escrow-payment.md`.
+If the user taps "Something's wrong": dispute opens, no capture. See `12-dispute-resolution.md`.
+If the timer reaches zero: auto-capture fires. User can still dispute within 30 minutes.
 
 ---
 
 ## Checkout Flow Summary (Shopper Experience)
 
 ```
-Shopper finishes scanning all items
+Shopper scans last item
         │
         ▼
 AI assistant: "Shopping done — 12 of 12 items found. Head to checkout."
@@ -185,20 +145,42 @@ AI assistant: "Shopping done — 12 of 12 items found. Head to checkout."
 Shopper walks to checkout till
         │
         ▼
-Shopper taps their phone to the NFC terminal
-(Apple Pay / Google Pay — Brioela order card)
+Shopper pays with Bela card (tap, chip, or swipe)
         │
         ▼
-Beep. Payment approved.
+Shopper opens scanner → scans receipt
         │
         ▼
-AI assistant: "Paid. Total was $42.30. Head to [user's address]."
+"Receipt confirmed. $52.40. Head to [user neighborhood]."
         │
         ▼
-Shopper taps "Heading to delivery" in the app
-Order status → 'in_transit'
-Virtual card is cancelled
-Stripe transaction logged to order_payment_events
+Shopper travels to delivery address
+        │
+        ▼
+Shopper arrives → taps "I've arrived"
+        │
+        ▼
+Shopper shows receipt, scans it, hands over items
+        │
+        ▼
+User confirmation screen fires on their phone
+        │
+        ▼
+User confirms → shopper payout initiated immediately
 ```
 
-The shopper never opens a wallet app manually, never types a card number, never deals with cash. They tap their phone once and keep moving.
+The shopper pays at the till like a normal customer. No NFC tap from the Brioela app. No virtual card. No Wallet setup. Just their own card, their own phone, and the Brioela scanner for the receipt.
+
+---
+
+## Legality
+
+This model is legally clean:
+
+- **Purchasing agent model**: the shopper acts as a purchasing agent for the user, a standard arrangement in service contracts. No special license required.
+- **Expense reimbursement**: the shopper's Bela card payment is an advance purchase that is reimbursed on delivery confirmation. This is standard expense reimbursement — used in business travel, corporate cards, and all contractor models globally.
+- **No money transmission license**: Brioela never holds or moves user funds directly. Stripe holds the authorization on the user's bank and moves money on Brioela's API instruction. The platform's role is instruction, not custody.
+- **Dedicated card requirement**: a contractual employment term in the shopper agreement, not a financial product. No banking license required to mandate a card designation.
+- **Precedent**: DoorDash Red Card program (US), early Instacart (US), multiple regional delivery services in Europe and Africa operate on this model.
+
+**Geographic note**: This model works in any country where Stripe Connect and Stripe PaymentIntents operate. For Ethiopia and other regions where Stripe is not available, the fallback payment collection method is Telebirr with manual shopper reimbursement via local bank transfer. Phase 1 Africa design is documented separately.

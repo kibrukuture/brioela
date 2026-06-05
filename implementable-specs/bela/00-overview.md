@@ -4,9 +4,9 @@
 
 **Bela** is Brioela's personal grocery delivery service — a brand name, not a feature label. Users say "I'll Bela it." Media writes "Bela by Brioela." The name is warm, short, and its own thing.
 
-What it does: the user funds their Brioela wallet, the AI builds the grocery list from their cooking history, a KYC-verified gig shopper goes to the store with a voice + camera AI assistant in their ear, buys exactly the right things using the Brioela scanner, taps to pay at checkout via Apple Pay or Google Pay funded from the user's wallet, and delivers to the door.
+What it does: the user's card is authorized (locked) at order acceptance, the AI builds the grocery list from their cooking history, a KYC-verified gig shopper goes to the store with a voice + camera AI assistant in their ear, buys exactly the right things using the Brioela scanner, pays at checkout with their own dedicated Bela card, scans the receipt, delivers to the door, and the user confirms receipt in the app — releasing payment to the shopper immediately.
 
-Payment is held in escrow from the moment the order is accepted. It releases to the shopper only when delivery is confirmed. The app takes a service fee. The wallet stays on Stripe.
+Payment is locked on the user's card from the moment the order is accepted. It is captured only when the user confirms delivery (or auto-confirms after 10 minutes). No wallet. No pre-funded balance. Stripe holds the authorization; Brioela triggers the capture.
 
 This is not Instacart. The core differentiator is one sentence: **the user's full AI constraint profile — allergies, dietary restrictions, boycotts, preferences — travels with the order and enforces on the shopper's scanner in real time.** A shopper shopping for a user with a sesame allergy cannot buy a product containing sesame. The scanner blocks it. The allergy cannot follow the user unless Bela is involved.
 
@@ -30,7 +30,7 @@ User App                    Shopper App Mode               Backend
 Order creation flow    →    Order queue + map              Orchestrator DO (per user)
 AI list generation          Constraint-enforced scanner    CookingAgent DO (session link)
 Live scan-together view     Live scan sync                 OrderAgent DO (per order)
-Wallet + escrow UI          Delivery confirmation          Stripe Connect (escrow + payout)
+Authorization + confirm UI  Delivery confirmation          Stripe Connect (hold + payout)
 Standing order setup        Ground auto-draft              Supabase Postgres (shared tables)
 Cooking intent trigger      Shopper quality tracker        Cloudflare R2 (delivery photos)
 Dispute submission          Routing map
@@ -59,18 +59,19 @@ The OrderAgent is created when a shopper accepts an order. It is archived (no lo
 3. Order enters Supabase orders table with status = 'pending'
 4. Nearest available KYC-verified shoppers are notified
 5. A shopper accepts → OrderAgent DO is created → status = 'accepted'
-6. Escrow hold is placed on user's wallet (Stripe PaymentIntent created)
-7. Stripe Issuing virtual card provisioned to shopper's Apple Pay / Google Pay (order budget pre-loaded)
-8. Shopper navigates to the store using the smart route (Ground + product_sighting data)
-9. Shopper AI assistant (voice + camera) activates — shopper talks to the AI throughout the shop
-10. Shopper scans each product → constraint check → user sees result (live scan-together) → AI confirms aloud
-11. Shopper taps phone at checkout till → Apple Pay / Google Pay → Stripe Issuing card pays from user's wallet
-12. Shopper completes shopping → navigates to delivery address
-13. Shopper takes a photo of all items → submits delivery
-11. User confirms receipt → escrow releases → Stripe Connect payout to shopper
-12. App takes service fee → shopper receives net payout
-13. AI updates pantry memory from delivered items
-14. If order was cooking-intent-triggered → "Ready to start cooking?" prompt appears
+6. Authorization hold placed on user's card (Stripe PaymentIntent, capture_method: 'manual') — money locked, not yet charged
+7. Shopper navigates to the store using the smart route (Ground + product_sighting data)
+8. Shopper AI assistant (voice + camera) activates — shopper talks to the AI throughout the shop
+9. Shopper scans each product → constraint check → user sees result (live scan-together) → AI confirms aloud
+10. Shopper pays at checkout till with their dedicated Bela card (their own debit card, registered during onboarding)
+11. Shopper scans receipt in app → actual total confirmed → authorization incremented if needed
+12. Shopper travels to delivery address → taps "I've arrived" → scans receipt again at door
+13. User receives full-screen confirmation prompt — "Confirm delivery?" with 10-minute timer
+14. User confirms → Stripe PaymentIntent captured → Stripe Connect transfer fires immediately to shopper
+15. Platform retains service fee; shopper receives grocery reimbursement + delivery fee in one transfer
+16. If user does not confirm in 10 minutes → auto-capture fires (OrderAgent DO alarm)
+17. AI updates pantry memory from delivered items
+18. If order was cooking-intent-triggered → "Ready to start cooking?" prompt appears
 ```
 
 ---
@@ -81,7 +82,7 @@ The OrderAgent is created when a shopper accepts an order. It is archived (no lo
 |---|---|---|
 | Order state | OrderAgent Durable Object | Session-scoped, survives eviction, WebSocket relay |
 | Shared tables | Supabase Postgres | orders, order_items, shoppers, disputes — shared across all users |
-| Wallet + escrow | Stripe Connect | PaymentIntent for escrow, Express accounts for shopper payout |
+| Escrow + payout | Stripe Connect | PaymentIntent manual capture for authorization hold; Express accounts for shopper payout |
 | User constraint data | Orchestrator DO SQLite | Read at order creation, cached in OrderAgent for scanner enforcement |
 | Delivery photos | Cloudflare R2 | Shopper uploads; user views; retained for dispute window |
 | Routing intelligence | Ground `location_signal_summary` + `product_sighting` | Price and availability signals for multi-store routing |

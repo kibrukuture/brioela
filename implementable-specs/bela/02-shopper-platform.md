@@ -74,9 +74,39 @@ The shopper completes the Stripe Connect onboarding flow embedded in the app:
 
 Brioela never sees or stores raw bank account details. Stripe handles all of this. The only thing stored in the Brioela `shoppers` table is the Stripe Connect `account_id` — used to trigger payouts.
 
-### Step 5: Shopper Profile Activated
+### Step 5: Register Dedicated Bela Card
 
-After all three verification steps complete:
+After Stripe Connect setup, the shopper registers a dedicated debit card — their **Bela card** — used exclusively for Bela shopping orders.
+
+The shopper is shown:
+
+```
+Register your Bela shopping card
+
+This is the card you'll use to pay at grocery stores.
+Keep it separate from your personal card.
+
+A prepaid Visa or Mastercard works well — available at any bank or drugstore.
+
+[ Add card ]
+```
+
+How it works:
+- The shopper enters any debit card they want to dedicate to Bela purchases
+- It must not be the same card as their personal primary card (Stripe fingerprint check prevents duplicates)
+- The card is tokenized via Stripe SetupIntent — Brioela stores the `PaymentMethod` ID and last-4 only, never the raw card number
+- The card last-4 is shown in their shopper profile as "Bela Shopping Card — ending 4242"
+
+**Contractual requirement**: by registering the card, the shopper agrees (in the Bela shopper terms of service) that this card is used exclusively for Bela orders during active shopping sessions. Personal purchases on this card while an order is in `shopping` status are a terms violation. The receipt scan enforces this: the last-4 on every grocery receipt must match the registered Bela card.
+
+The dedicated card serves three purposes:
+1. **Tax simplicity**: all Bela order purchases appear on one card, separate from personal spending
+2. **Dispute evidence**: any receipt mismatch (wrong card used) is immediately detectable
+3. **Shopper protection**: personal finances never appear in Bela order records
+
+### Step 6: Shopper Profile Activated
+
+After all verification steps complete (KYC, background check, Stripe Connect, Bela card registration):
 - `shoppers.status` → `active`
 - The shopper receives a push notification: "You're approved — you can start accepting orders now."
 - The shopper app mode is unlocked in their existing Brioela app
