@@ -13,6 +13,8 @@ There are two related records:
 - Import job/source artifacts: evidence and processing state.
 - User recipe: the normalized private recipe in the user's library.
 
+For non-recipe shares, this folder does not create a recipe row. It routes to the relevant feature/memory path described in `08-shared-content-router.md`.
+
 The final user recipe belongs in the Orchestrator DO SQLite `recipes` table. Source artifacts can be stored with the import job and scoped to the user.
 
 ---
@@ -106,6 +108,8 @@ Library card should show:
 - primary action: cook, review, or edit
 
 Partial imports appear in a separate review/pending area, not mixed with fully cookable recipes.
+
+Non-recipe shares should appear in the destination surface, not in the recipe library. A restaurant share goes to map/place context, a menu share goes to menu scanning, a receipt share goes to receipt intelligence, and a general food note goes to user memory if useful.
 
 ---
 

@@ -21,6 +21,7 @@
 ## Required For
 
 - share-sheet recipe import
+- general shared food-content routing
 - social/video recipe conversion
 - imported recipes as cooking-session inputs
 - imported recipes as meal-plan candidates

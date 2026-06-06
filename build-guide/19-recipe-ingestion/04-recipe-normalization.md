@@ -24,6 +24,7 @@ Blocked:
 - invent cooking times without evidence
 - remove source uncertainty
 - convert a food review into a recipe if no recipe exists
+- merge unrelated recipes from the web into one fake recipe
 
 ---
 
@@ -138,6 +139,23 @@ Minimum cookable recipe:
 - confidence/warnings
 
 If the source lacks enough steps, save as `partial` instead of pretending it is cookable.
+
+---
+
+## Multi-Source Reconstruction
+
+When initial shared content is incomplete, the normalizer may use supporting public web evidence collected by `03-source-extraction.md`.
+
+Reconstruction rules:
+
+- Use the original shared source as the anchor.
+- Prefer supporting evidence from the same creator, same canonical URL, or same platform description.
+- Use unrelated web recipes only as weak hints, never as direct replacement.
+- Mark fields from supporting evidence with lower confidence unless source match is strong.
+- List source evidence in attribution.
+- If the model cannot explain where an ingredient or step came from, it must not include it.
+
+The goal is to rescue legitimate recipe shares, not generate a generic recipe for the dish name.
 
 ---
 

@@ -8,7 +8,7 @@ How Brioela extracts source artifacts from shared URLs, videos, web pages, scree
 
 ## Extraction Goal
 
-Extraction collects evidence. It does not create the recipe.
+Extraction collects evidence. It does not create the recipe and it does not assume the share is a recipe.
 
 Artifacts are stored so the normalizer can reason from them and future model upgrades can reprocess them.
 
@@ -89,13 +89,43 @@ Before normalization, classify source quality:
 ```typescript
 type RecipeSourceClassification = {
   isLikelyRecipe: boolean
-  contentKind: "recipe_page" | "food_video" | "caption_recipe" | "screenshot_recipe" | "non_recipe" | "uncertain"
+  contentKind: "recipe_page" | "food_video" | "caption_recipe" | "screenshot_recipe" | "menu" | "place" | "product" | "receipt" | "food_note" | "non_food" | "uncertain"
   extractionConfidence: number
   reasons: string[]
 }
 ```
 
-If `isLikelyRecipe` is false with high confidence, mark the job `failed` or `partial` depending on whether saving the source is useful.
+If `isLikelyRecipe` is false with high confidence, route the content through `08-shared-content-router.md`. Do not mark useful food content failed just because it is not a recipe.
+
+---
+
+## Deep Web Search For Recipe Reconstruction
+
+If shared content appears recipe-like but lacks enough detail, Brioela can run a deeper public web search before giving up.
+
+Use this only when the initial artifacts suggest a specific recipe or dish:
+
+- title or dish name is visible
+- creator caption mentions a dish
+- transcript has partial ingredients
+- page metadata suggests recipe content
+- screenshot shows a recognizable dish/ingredient list
+
+Search evidence can include:
+
+- same canonical URL indexed elsewhere
+- creator's linked recipe page
+- matching dish title on public recipe sites
+- public transcript/caption mirrors
+- source description or pinned comment text when accessible
+
+Rules:
+
+- Never invent a recipe from generic web results.
+- Prefer same-source or creator-owned pages over unrelated recipes.
+- Require enough corroboration before constructing a recipe.
+- Preserve all sources used as attribution/evidence.
+- If evidence stays weak, save as partial instead of fabricating.
 
 ---
 

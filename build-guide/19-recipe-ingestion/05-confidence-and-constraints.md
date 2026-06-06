@@ -62,6 +62,8 @@ type ImportedRecipeConstraintResult = {
 
 Hard conflicts should be visible before the user cooks.
 
+If a hard conflict is found, the import still saves, but the default action changes from `cook` to `review` or `adapt`. The user should not be dropped into a cooking session for a recipe that conflicts with their profile.
+
 ---
 
 ## Constraint Copy
@@ -77,6 +79,27 @@ Avoid medical certainty:
 
 - "This recipe is medically safe."
 - "This will not affect your condition."
+
+---
+
+## Conversational Review Surface
+
+When an imported recipe has allergy/diet conflicts or major uncertainty, Brioela can offer a live review conversation.
+
+This uses the same voice/video assistant stack documented in `08-cooking-session`: Cloudflare Realtime plus Gemini Live, with Orchestrator context and tool forwarding. The surface is not limited to cooking. It can be used anywhere Brioela needs real-time intelligence and conversation: recipe review, shopper help, restaurant/menu questions, or scan follow-up.
+
+Recipe review examples:
+
+- "This recipe contains cashews, which conflicts with your allergy. Want to talk through substitutions?"
+- "The video did not give exact quantities. Want me to walk through the recipe and fill gaps with you?"
+- "This looks vegan except for honey. Want an alternative?"
+
+Rules:
+
+- Hard allergy conflict appears in UI before any conversational option.
+- The agent can explain and adapt; it must not hide or downgrade the conflict.
+- Accepted substitutions become a user-specific variant or note, not an overwrite of the source recipe.
+- If video/camera context is not needed, use voice/text only; do not force live video.
 
 ---
 

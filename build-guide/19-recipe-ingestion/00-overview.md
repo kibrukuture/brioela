@@ -1,10 +1,10 @@
 # Recipe Ingestion — Overview
 
 ## What This Folder Covers
-The share-sheet pipeline: a user shares a food video or URL from TikTok, YouTube, Instagram, or any browser to Brioela. The backend fetches the source, extracts transcript, captions, visible text, and page content. A model normalizes the result into a structured recipe — ingredients, steps, timing, servings — with confidence markers on uncertain fields. The recipe lands in the user's library and personal memory without any copy/paste. The share-sheet extension (iOS and Android) is one of the highest-leverage distribution mechanisms in the app: someone watching a food video → shares to Brioela → has a reason to install.
+The share-sheet pipeline: a user shares food-related content from TikTok, YouTube, Instagram, maps, browsers, screenshots, or another app to Brioela. The first step is classification, not recipe extraction. If the content is recipe-like, the backend extracts transcript, captions, visible text, page content, and supporting web evidence, then normalizes a structured recipe with confidence markers. If it is not a recipe, the agent routes it to the relevant Brioela surface: place/map memory, menu scanning, product scan context, receipt intelligence, or general user memory. The share-sheet extension (iOS and Android) is one of the highest-leverage distribution mechanisms in the app: someone watching food content → shares to Brioela → Brioela knows what to do with it.
 
 ## Status
-[x] complete — seven files written
+[x] complete — eight files written
 
 ## Files In This Folder
 
@@ -17,6 +17,7 @@ The share-sheet pipeline: a user shares a food video or URL from TikTok, YouTube
 | `05-confidence-and-constraints.md` | uncertain quantities, missing steps, user constraint checks, re-rankable recipes |
 | `06-storage-and-library.md` | recipe persistence in Orchestrator SQLite, source artifacts, memory events |
 | `07-import-status-and-growth-loop.md` | user-facing import states, failure handling, share-sheet acquisition loop |
+| `08-shared-content-router.md` | classify any shared food content and route non-recipes to the right Brioela feature/memory |
 
 ## Specs This Folder Draws From
 - `brioela-specs/02-recipe-ingestion-from-shared-content.md` — full spec: share-sheet ingestion, URL ingestion, video transcript extraction, recipe normalization, confidence schema, data model, API surface
@@ -27,21 +28,26 @@ The share-sheet pipeline: a user shares a food video or URL from TikTok, YouTube
 - Share-sheet extension must be built and listed in the App Store from day one — it is a distribution mechanism, not just a utility
 - Extension launches the import job immediately (background process) and confirms to user within 2 seconds
 - User does NOT need to have Brioela open — extension works from background
+- Shared content is classified before recipe extraction; not every share is treated as a recipe
 - Import job is async: `recipe_import_job` row written immediately, processing continues in background via Upstash Workflow
+- If recipe evidence is incomplete, Brioela may run deeper web search for supporting public recipe evidence before deciding whether reconstruction is safe enough
 - Source attribution preserved on every import (for trust and later reprocessing if model improves)
 - Quantity estimation supports nullable/confidence-based schema — uncertain values marked `estimated`, never fabricated
 - Imported recipes are re-rankable by user allergies, dislikes, budget, and nearby product availability
+- Hard allergy/diet conflicts surface in UI before cooking and can escalate into a voice/video agent review
 - If media parsing fails: store source with `partial` status — never silently drop the import
 
 ## Data Model
 ```
-recipe_import_job:   user_id, source_type, source_url, status, started_at, completed_at
+shared_import_job:   user_id, source_type, source_url, route, status, started_at, completed_at
+recipe_import_job:   user_id, shared_import_job_id, source_type, source_url, status, started_at, completed_at
 recipe_source_artifact:  import_job_id, transcript, captions, extracted_text, thumbnail_url
 user_recipe:         user_id, recipe_id, title, ingredients_json, steps_json, cuisine, difficulty, confidence
 ```
 
 ## API Surface
-- `POST /api/recipes/import` — receives shared URL or media reference from the extension
+- `POST /api/shared/import` — receives any shared food-related URL/media reference from the extension and classifies route
+- `POST /api/recipes/import` — recipe-specific import route when the caller already knows the content is recipe-like
 - `GET /api/recipes/import/:jobId` — poll status (or push via notification when complete)
 - `GET /api/recipes/:id` — retrieve a completed recipe
 
@@ -51,6 +57,9 @@ user_recipe:         user_id, recipe_id, title, ingredients_json, steps_json, cu
 - `06-memory-engine` — `recipes`, `memory_event`, and session context schema
 - `07-scanner` — screenshot/OCR ingestion reuses server-side image OCR patterns and confidence caveats
 - `08-cooking-session` — imported recipes must be immediately cookable by the cooking agent
+- `10-map` — place shares can route to place/map memory rather than recipe import
+- `13-receipt-intelligence` — receipt-like shares can route to receipt processing rather than recipe import
+- `17-menu-scanning` — menu-like shares can route to menu parsing rather than recipe import
 
 ## What Depends On This Folder
 - `08-cooking-session` — imported recipes are a primary source for cooking sessions; a recipe imported from TikTok is cookable immediately
