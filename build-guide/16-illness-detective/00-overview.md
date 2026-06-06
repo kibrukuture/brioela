@@ -4,7 +4,17 @@
 When the user says they feel sick, Brioela looks at the last 24-72 hours of their food history and surfaces the most probable culprit — cross-referencing against active recalls, community illness reports, and known high-risk product patterns. One question asked ("when did symptoms start?"), then a ranked list of suspects with confidence levels and actionable advice. Also has a public health upside: anonymized illness reports cluster into community alerts.
 
 ## Status
-[ ] not started
+[x] complete — five files written
+
+## Files In This Folder
+
+| File | Contents |
+|---|---|
+| `01-illness-report-flow.md` | user report, one question, report status |
+| `02-lookback-window.md` | symptom-onset window logic and food history query |
+| `03-suspect-ranking.md` | recall/community/high-risk/new/outside-food ranking |
+| `04-community-signal.md` | anonymized illness clustering and Ground alert handoff |
+| `05-output-privacy-and-followup.md` | results screen, medical language boundary, follow-up alarm, privacy |
 
 ## Specs This Folder Draws From
 - `brioela-specs/30-food-illness-detective.md` — full illness detective spec: symptom onset window logic, suspect ranking, community signal, actionable output, privacy model
@@ -28,3 +38,7 @@ When the user says they feel sick, Brioela looks at the last 24-72 hours of thei
 
 ## What Depends On This Folder
 Nothing — terminal feature.
+
+## Boundary
+
+The app never diagnoses. It narrows likely food suspects and recommends safe next actions.
