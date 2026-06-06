@@ -34,6 +34,7 @@ spec: brioela-specs/35-ground-community-intelligence.md
 - `14-ambient-intelligence-connections.md`
 - `15-recipe-ingestion-connections.md`
 - `16-wearables-connections.md`
+- `17-kids-mode-connections.md`
 
 ## When to update
 Every time a build-guide file is written: add the connection here immediately.
