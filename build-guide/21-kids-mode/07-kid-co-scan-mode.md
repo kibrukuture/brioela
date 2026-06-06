@@ -2,7 +2,7 @@
 
 ## What This File Covers
 
-Parent-controlled phone handoff: the child holds the phone, scans products, and Brioela speaks directly in kid-friendly mode. This file only covers supervised Kids Mode scanning. Broader household or family-account architecture is intentionally out of scope for now.
+Parent-controlled phone handoff: the child holds the phone, scans products, and Brioela speaks directly in kid-friendly mode. This file only covers supervised Kids Mode scanning. Broader multi-person food compatibility belongs to Mesa (`26-mesa`), not Kids Mode.
 
 ---
 
@@ -175,4 +175,4 @@ Do not build in this feature:
 - child history timeline
 - child-specific recommendations across the whole app
 
-Those belong to a future Household Profiles / Family Account design discussion. For now, Kids Mode remains a parent-supervised explanation layer on top of the parent's account.
+Those belong to Mesa (`26-mesa`). Kids Mode remains a parent-supervised explanation layer; Mesa owns persistent multi-person compatibility.

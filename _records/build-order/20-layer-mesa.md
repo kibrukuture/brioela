@@ -2,7 +2,7 @@
 
 ## Status
 
-[~] overview exists; implementation not planned yet
+[x] build-guide exists
 
 ## Build-Guide Folder
 
@@ -24,9 +24,6 @@
 - Mesa-aware grocery and meal planning
 - future invited-member shared enrichment
 - future upgraded tier / add-on design
-
-## Open
-
-- Full implementation order is not decided.
-- Tier placement is not decided.
-- Account/invite model is not decided.
+- conversational member management
+- Food Audience compatibility layer
+- Mesa AI-callable tools

@@ -57,7 +57,7 @@ Core product philosophy and feature specs. These are the "what and why" layer.
 | [x] | `38-food-time-machine.md` | Historical food data — what did I eat this time last year |
 | [~] | `39-generative-ui.md` | Generative UI spec — CRITICAL for design system build |
 | [x] | `40-wearables-integration.md` | Apple Watch, wearable integration |
-| [~] | `41-mesa.md` | Mesa — multi-person food audience and compatibility layer |
+| [x] | `41-mesa.md` | Mesa — multi-person food audience and compatibility layer |
 | [ ] | `README.md` | Spec folder overview |
 
 ---

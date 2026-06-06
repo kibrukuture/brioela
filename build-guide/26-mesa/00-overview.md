@@ -4,11 +4,24 @@
 
 Mesa is Brioela's multi-person food intelligence layer. It lets the app evaluate products, recipes, menus, grocery lists, Bela orders, meal plans, and cooking sessions for more than one person. Mesa is not called Family Account or Household. Mesa means the table: who is eating, who can eat this, who should avoid it, and what works for everyone at the table.
 
-This folder is currently overview-only. Full implementation files are intentionally not written yet because account model, tiering, invite permissions, and data ownership need product decisions first.
-
 ## Status
 
-[~] overview only — full build-guide not started
+[x] complete — ten files written
+
+## Files In This Folder
+
+| File | Contents |
+|---|---|
+| `01-mesa-data-model.md` | Orchestrator SQLite tables for Mesa, members, constraints, audience, candidates, invites |
+| `02-conversational-setup.md` | no-form Mesa creation, voice/chat member addition, confirmation language |
+| `03-mesa-tools.md` | AI-callable Mesa tools under `tools/mesa/` and permissions |
+| `04-food-audience.md` | just me / Mesa / selected members / guest session audience model |
+| `05-compatibility-engine.md` | per-member compatibility, works-for-everyone verdicts, severity aggregation |
+| `06-feature-integration.md` | scanner, recipes, menu scanning, meal plan, Bela, cooking, Kids Mode integrations |
+| `07-shared-enrichment-and-invites.md` | invited account contribution, scoped sharing, no private brain copy |
+| `08-potential-members.md` | inferred potential Mesa members from repeated cooking/shopping patterns |
+| `09-privacy-permissions.md` | member privacy, child restrictions, medical/wearable boundaries, deletion/export |
+| `10-tiering-and-rollout.md` | Mesa tier/add-on boundary, launch phases, upgrade copy, open pricing decisions |
 
 ## Specs This Folder Draws From
 
@@ -21,8 +34,10 @@ This folder is currently overview-only. Full implementation files are intentiona
 - Product name: **Mesa**.
 - User-facing copy should not call this Family Account or Household.
 - Mesa is the food audience layer: every food decision can ask who it is for.
-- Start with owner-managed Mesa before full multi-account auth.
-- Later invited accounts can contribute selected scans/events into Mesa if permissioned.
+- Start with owner-managed Mesa and support scoped invited contributors without requiring every member to have an account.
+- Mesa is conversational/no-form: the user can add people by talking to Brioela.
+- Brioela may suggest potential Mesa members from repeated patterns, but only after strong evidence and explicit owner confirmation.
+- Invited accounts can contribute selected scans/events into Mesa if permissioned.
 - Invited accounts keep their private Brioela memory private by default.
 - Mesa can enrich shared pantry, grocery, recipe, and scan context without copying everyone's private brain.
 - Child members do not imply child login or child identity storage.
@@ -76,11 +91,10 @@ type MesaMember = {
 
 ## Open Decisions Before Full Build
 
-- Launch as owner-managed only, or include invited contributors?
 - Which tier owns Mesa?
 - How many Mesa members are included per tier?
-- Can invited adults edit constraints or only contribute scans?
-- How does deletion/export work for contributed Mesa data?
-- Does Mesa include guests, or are guests promoted from Guest Mode only after confirmation?
+- Whether invited adults can edit constraints in v1 or only contribute observations.
+- Exact deletion/export UX for contributed Mesa data.
+- Whether guests are promoted from Guest Mode automatically as suggestions or only through explicit owner request.
 
-Do not write implementation files until these are decided.
+These are rollout/pricing decisions. The core Mesa architecture is defined in this folder.
