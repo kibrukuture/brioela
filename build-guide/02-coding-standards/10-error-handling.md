@@ -15,7 +15,7 @@ Two error handling patterns are used in this codebase depending on context:
 All application errors are instances of `AppError`. This is a typed, serializable error class with a machine-readable `code` and a human-readable `message`.
 
 ```ts
-// shared/src/types/error.ts
+// shared/validator/error/app.error.type.ts
 export type ErrorCode =
   | 'UNAUTHORIZED'
   | 'FORBIDDEN'
@@ -66,7 +66,7 @@ export const errors = {
 One error middleware catches everything thrown in route handlers. It formats the error into the standard API envelope:
 
 ```ts
-// backend/src/middleware/error.ts
+// backend/src/core/middleware/error.middleware.ts
 import type { MiddlewareHandler } from 'hono'
 import { ZodError } from 'zod'
 import { AppError } from '@brioela/shared'
@@ -111,7 +111,7 @@ if (!product) throw errors.notFound('Product')
 Internal library functions that can fail return a `Result<T, E>` rather than throwing. This makes error handling explicit at the call site and prevents silent error swallowing.
 
 ```ts
-// shared/src/types/result.ts
+// shared/validator/result/result.type.ts
 export type Ok<T>  = { ok: true;  value: T }
 export type Err<E> = { ok: false; error: E }
 export type Result<T, E = AppError> = Ok<T> | Err<E>
@@ -171,11 +171,11 @@ The `ErrorState` component is a shared design system component. It receives an `
 Zod parse errors on API responses indicate a backend/mobile contract mismatch — a bug, not a user-facing problem. These are logged and surfaced as generic errors:
 
 ```ts
-// mobile/src/api/recipes.ts
+// mobile/src/network/recipe/recipe.api.ts
 export async function getRecipe(id: string): Promise<Recipe> {
-  const response = await apiClient.get(`/api/recipes/${id}`)
+  const raw = await api.get<unknown>(API_ROUTES.recipes.getById(id))
   try {
-    return RecipeSchema.parse(response.data)
+    return RecipeSchema.parse(raw)
   } catch (error) {
     if (error instanceof ZodError) {
       // Log the schema mismatch — this is a contract bug

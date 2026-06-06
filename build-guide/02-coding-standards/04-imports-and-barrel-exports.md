@@ -10,8 +10,8 @@ Every package uses path aliases. No `../../../` relative imports that traverse m
 {
   "compilerOptions": {
     "paths": {
-      "@brioela/shared":   ["./shared/src/index.ts"],
-      "@brioela/shared/*": ["./shared/src/*"]
+      "@brioela/shared":   ["./shared/index.ts"],
+      "@brioela/shared/*": ["./shared/*"]
     }
   }
 }
@@ -25,13 +25,12 @@ Every package uses path aliases. No `../../../` relative imports that traverse m
   "compilerOptions": {
     "paths": {
       "@/":              ["./src/"],
-      "@/routes/*":      ["./src/routes/*"],
+      "@/api/*":         ["./src/api/*"],
       "@/agents/*":      ["./src/agents/*"],
       "@/tools":         ["./src/tools/index.ts"],
+      "@/core/*":        ["./src/core/*"],
       "@/db/*":          ["./src/db/*"],
-      "@/lib/*":         ["./src/lib/*"],
-      "@/middleware/*":  ["./src/middleware/*"],
-      "@brioela/shared": ["../shared/src/index.ts"]
+      "@brioela/shared": ["../shared/index.ts"]
     }
   }
 }
@@ -49,11 +48,12 @@ Every package uses path aliases. No `../../../` relative imports that traverse m
       "@/components/*":        ["./src/components/*"],
       "@/design-system/*":     ["./src/design-system/*"],
       "@/generative-ui/*":     ["./src/generative-ui/*"],
-      "@/api":                 ["./src/api/index.ts"],
-      "@/api/*":               ["./src/api/*"],
+      "@/network":             ["./src/network/index.ts"],
+      "@/network/*":           ["./src/network/*"],
+      "@/stores/*":            ["./src/stores/*"],
       "@/providers/*":         ["./src/providers/*"],
       "@/lib/*":               ["./src/lib/*"],
-      "@brioela/shared":       ["../shared/src/index.ts"]
+      "@brioela/shared":       ["../shared/index.ts"]
     }
   }
 }
@@ -66,12 +66,12 @@ Every package uses path aliases. No `../../../` relative imports that traverse m
 import { UserIdSchema } from '@brioela/shared'
 import { spring } from '@/design-system/motion'
 import { haptic } from '@/design-system/haptics'
-import { scanApi } from '@/api'
+import { useCreateScan } from '@/network/scan'
 import { useScanner } from '@/features/scanner'
 
 // ✗ — relative traversal banned
 import { spring } from '../../../design-system/motion'
-import { UserIdSchema } from '../../../../shared/src/schemas/user'
+import { UserIdSchema } from '../../../../shared/validator/user'
 ```
 
 ---
@@ -103,12 +103,11 @@ export type { ScannerState, VerdictAnimationState } from './hooks/useScanner'
 ```ts
 // backend/src/tools/index.ts
 // ✓ — ALL tools exported from one place, feature code imports from here
-export { checkConstraint } from './scan/check-constraint'
-export { logScanEvent } from './scan/log-scan-event'
-export { writeUserMemory } from './memory/write-user-memory'
-export { readUserMemory } from './memory/read-user-memory'
-export { logMemoryEvent } from './memory/log-memory-event'
-// ...all other tools
+export { checkConstraint, logScanEvent } from './scan'
+export { writeUserMemory, readUserMemory, logMemoryEvent } from './memory'
+export { viewRecipe, updateRecipe, archiveRecipe } from './recipes'
+export { proposeConstraint, confirmConstraint } from './constraints'
+// ...all other tool domains
 ```
 
 ### Barrel anti-patterns:

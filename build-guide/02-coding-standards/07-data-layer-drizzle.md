@@ -18,7 +18,7 @@ They are completely separate. Never mix schemas between them. Never query Supaba
 Tables are grouped by domain. Each domain file is a Drizzle schema file with related tables. A `_shared.ts` file defines reusable column helpers.
 
 ```ts
-// backend/src/db/schema/_shared.ts
+// backend/src/db/schema/_shared.schema.ts
 import { timestamp } from 'drizzle-orm/pg-core'
 
 export const timestamps = {
@@ -32,7 +32,7 @@ export const softDelete = {
 ```
 
 ```ts
-// backend/src/db/schema/products.ts
+// backend/src/db/schema/products.schema.ts
 import { pgTable, varchar, text, jsonb, real } from 'drizzle-orm/pg-core'
 import { timestamps } from './_shared'
 
@@ -61,13 +61,13 @@ export const productSightings = pgTable('product_sightings', {
 ```ts
 // backend/src/db/schema/index.ts
 // This file is the Drizzle schema entry point for migrations
-export * from './_shared'
-export * from './products'
-export * from './community'
-export * from './map'
-export * from './businesses'
-export * from './bela'
-export * from './recall'
+export * from './_shared.schema'
+export * from './products.schema'
+export * from './community.schema'
+export * from './map.schema'
+export * from './businesses.schema'
+export * from './bela.schema'
+export * from './recall.schema'
 ```
 
 ---
@@ -77,7 +77,7 @@ export * from './recall'
 The Drizzle client for Supabase is created once and reused:
 
 ```ts
-// backend/src/db/client.ts
+// backend/src/core/database/db.client.ts
 import { drizzle } from 'drizzle-orm/postgres-js'
 import postgres from 'postgres'
 import * as schema from './schema'

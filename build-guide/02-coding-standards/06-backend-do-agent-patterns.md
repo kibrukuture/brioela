@@ -5,13 +5,12 @@
 Every DO extends `Agent` from `@cloudflare/agents`. The class is the single source of behavior for that DO. The class file (`index.ts`) only contains the class definition, `fetch()` handler routing, `alarm()` handler, and WebSocket lifecycle methods. Business logic lives in sibling files imported by the class.
 
 ```ts
-// backend/src/agents/orchestrator/index.ts
+// backend/src/agents/orchestrator/orchestrator.agent.ts
 import { Agent } from '@cloudflare/agents'
 import { drizzle } from 'drizzle-orm/durable-sqlite'
-import * as schema from './schema'
-import { handleAlarm } from './alarm'
-import { loadContext } from './context'
-import { runCompress } from './compress'
+import * as schema from './_schema'
+import { handleAlarm } from './_handlers'
+import { loadContext, runCompress } from './_helpers'
 
 export class BrioelOrchestrator extends Agent<Env> {
   db = drizzle(this.ctx.storage, { schema })
@@ -48,10 +47,10 @@ export class BrioelOrchestrator extends Agent<Env> {
 
 ## SQLite Schema — Per DO
 
-Each DO has its own `schema.ts`. Tables are defined with Drizzle's `sqliteTable` (not `pgTable`). The schema file only defines tables — no queries, no business logic.
+Each DO has its own `_schema/` folder. Tables are defined with Drizzle's `sqliteTable` (not `pgTable`). Schema files only define tables — no queries, no business logic. Each file covers one table or one tightly related group.
 
 ```ts
-// backend/src/agents/orchestrator/schema.ts
+// backend/src/agents/orchestrator/_schema/memory.schema.ts
 import { sqliteTable, text, integer, real } from 'drizzle-orm/sqlite-core'
 
 export const memoryEvents = sqliteTable('memory_events', {
@@ -97,7 +96,7 @@ DO alarms are the ambient intelligence mechanism. An alarm is set by the DO sche
 The `alarm.ts` file handles dispatch — it reads the alarm type from DO storage and routes to the correct handler:
 
 ```ts
-// backend/src/agents/orchestrator/alarm.ts
+// backend/src/agents/orchestrator/_handlers/alarm.handler.ts
 import type { DrizzleD1Database } from 'drizzle-orm/d1'
 import type * as schema from './schema'
 
@@ -144,7 +143,7 @@ function scheduleNextAlarm(ctx: DurableObjectState, type: AlarmType, delayMs: nu
 The CookingAgent DO holds WebSocket connections open using CF hibernation. WebSocket lifecycle methods are defined directly on the class:
 
 ```ts
-// backend/src/agents/cooking/index.ts
+// backend/src/agents/cooking/cooking.agent.ts
 import { Agent } from '@cloudflare/agents'
 
 export class CookingAgent extends Agent<Env> {
@@ -208,7 +207,7 @@ new_sqlite_classes = ["BrioelOrchestrator", "CookingAgent"]
 Every AI-callable tool is a standalone async function in its own file. Tools are pure functions — they receive typed inputs, interact with the DO's db or external services, and return typed outputs.
 
 ```ts
-// backend/src/tools/memory/write-user-memory.ts
+// backend/src/tools/memory/write.user.memory.tool.ts
 import { z } from 'zod'
 import type { DrizzleSQLiteDatabase } from 'drizzle-orm/sqlite-core'
 import { eq } from 'drizzle-orm'

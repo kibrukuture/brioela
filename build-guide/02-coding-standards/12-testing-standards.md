@@ -50,15 +50,15 @@ bun test --coverage               # coverage report
 Test files live next to the file they test. Naming convention: `{filename}.test.ts` or `{filename}.test.tsx`.
 
 ```
-backend/src/lib/scan/
-├── resolve-product.ts
-├── resolve-product.test.ts    ← test for resolve-product
-└── check-cache.ts
+backend/src/api/scan/_helpers/
+├── build.verdict.helper.ts
+├── build.verdict.helper.test.ts    ← test for the helper
+└── index.ts
 
-shared/src/schemas/
-├── scan.ts
-├── scan.test.ts               ← schema tests
-└── recipe.ts
+shared/validator/scan/
+├── scan.schema.ts
+├── scan.schema.test.ts             ← schema tests
+└── index.ts
 
 mobile/src/lib/
 ├── cn.ts
@@ -73,9 +73,9 @@ No separate `__tests__/` folder. No `tests/` folder at the root. Tests live with
 ## Test Pattern
 
 ```ts
-// shared/src/schemas/scan.test.ts
+// shared/validator/scan/scan.schema.test.ts
 import { describe, test, expect } from 'bun:test'
-import { ScanEventSchema, VerdictLevelSchema } from './scan'
+import { ScanEventSchema, VerdictLevelSchema } from './scan.schema'
 
 describe('VerdictLevelSchema', () => {
   test('accepts valid verdict levels', () => {
@@ -125,9 +125,9 @@ describe('ScanEventSchema', () => {
 Tool functions are the most important to test — they are the AI's interface with user data.
 
 ```ts
-// backend/src/tools/memory/write-user-memory.test.ts
+// backend/src/tools/memory/write.user.memory.tool.test.ts
 import { describe, test, expect, beforeEach } from 'bun:test'
-import { writeUserMemory, WriteUserMemoryInputSchema } from './write-user-memory'
+import { writeUserMemory, WriteUserMemoryInputSchema } from './write.user.memory.tool'
 
 describe('WriteUserMemoryInputSchema', () => {
   test('accepts valid input', () => {
@@ -162,9 +162,9 @@ describe('writeUserMemory', () => {
 ## Hono Route Integration Tests
 
 ```ts
-// backend/src/routes/scan.test.ts
+// backend/src/api/scan/scan.route.test.ts
 import { describe, test, expect } from 'bun:test'
-import app from '../index'
+import app from '@/index'
 
 describe('POST /api/scan', () => {
   test('returns 422 for missing UPC', async () => {
@@ -187,7 +187,7 @@ describe('POST /api/scan', () => {
 
 ## Rules
 
-- Test file name must match the file being tested exactly: `resolve-product.ts` → `resolve-product.test.ts`
+- Test file name must match the file being tested exactly: `build.verdict.helper.ts` → `build.verdict.helper.test.ts`
 - No test file imports from another test file.
 - Tests are independent — each test sets up its own state, tears down after itself.
 - No `describe` nesting beyond two levels.

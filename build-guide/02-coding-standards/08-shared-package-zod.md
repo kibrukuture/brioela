@@ -51,8 +51,14 @@ shared/validator/
 │   ├── bela.order.schema.ts
 │   ├── create.order.schema.ts
 │   └── index.ts
-└── recall/
-    ├── recall.alert.schema.ts
+├── recall/
+│   ├── recall.alert.schema.ts
+│   └── index.ts
+├── error/
+│   ├── app.error.type.ts         # AppError class, ErrorCode, errors factory
+│   └── index.ts
+└── result/
+    ├── result.type.ts            # Result<T,E>, ok(), err()
     └── index.ts
 ```
 

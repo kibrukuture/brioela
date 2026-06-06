@@ -120,7 +120,7 @@ Plain `string` IDs are a bug waiting to happen. A function that takes `userId: s
 All domain IDs are branded types. Branded types are the same underlying type at runtime but distinct at compile time.
 
 ```ts
-// shared/src/types/branded.ts
+// shared/validator/user/user.id.type.ts
 
 declare const _brand: unique symbol
 
@@ -149,9 +149,9 @@ export const asAlertId   = (s: string): AlertId   => s as AlertId
 Branded types integrate with Zod:
 
 ```ts
-// shared/src/schemas/user.ts
+// shared/validator/user/user.schema.ts
 import { z } from 'zod'
-import { asUserId } from '../types/branded'
+import { asUserId } from './user.id.type'
 
 export const UserIdSchema = z.string().uuid().transform(asUserId)
 export type UserId = z.output<typeof UserIdSchema>
