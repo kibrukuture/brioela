@@ -4,7 +4,18 @@
 The healthy food map — location-aware discovery of nearby healthy food options, products, and trusted businesses. Separate from Ground (which is the community intelligence layer). The map shows curated health data about places; Ground shows real-time community observations. Both render on the same Mapbox base map with independent layer toggles. Also covers: product sightings, place health scoring, and hyperlocal price alerts. Note: pre-trip food intelligence (spec 22) is owned by `18-ambient-intelligence` — that feature writes geo-cached map data that this folder displays when the user arrives at their destination.
 
 ## Status
-[ ] not started
+[x] complete — six files written
+
+## Files In This Folder
+
+| File | Contents |
+|---|---|
+| `01-mapbox-setup.md` | Mapbox SDK choice, tokens, styles, 3D map baseline, attribution |
+| `02-map-data-model.md` | map_place, map_place_signal, product_sighting, price_sighting, alert_candidate, delivered_alert |
+| `03-nearby-ranking-api.md` | nearby endpoint, user-aware ranking, filters, geohash/S2 query shape |
+| `04-product-sightings.md` | product availability sightings, decay/reconfirmation, scan/receipt inputs |
+| `05-price-alerts.md` | price sightings, alert thresholds, alert candidates, throttling |
+| `06-map-ui-layers.md` | healthy map layer, Ground overlay, toggles, place detail and navigation surface |
 
 ## Specs This Folder Draws From
 - `brioela-specs/04-healthy-food-map.md` — map places, health scoring, product availability overlays, Ground integration
@@ -29,3 +40,9 @@ The healthy food map — location-aware discovery of nearby healthy food options
 ## What Depends On This Folder
 - `11-bela` — smart routing uses map data (store locations, product sightings)
 - `14-pantry-meal-plan` — store suggestions on shopping list from map price data
+
+## Boundary With Ground
+
+- `10-map` owns shared Mapbox base, healthy place/product discovery, product sightings, and price availability.
+- `09-ground` owns Finds and personalized Ground signal rendering.
+- Both render on the same Mapbox base as separate layers.

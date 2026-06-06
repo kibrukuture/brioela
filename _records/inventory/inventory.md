@@ -19,7 +19,7 @@ Core product philosophy and feature specs. These are the "what and why" layer.
 | [x] | `01-product-health-scanning.md` | Product barcode scanning, health data, constraint check at scan time |
 | [~] | `02-recipe-ingestion-from-shared-content.md` | Parsing recipes from shared links, screenshots, social content |
 | [x] | `03-hyperlocal-community-notes.md` | **DEPRECATED** — superseded by spec 35 (Ground). Read for context only. |
-| [~] | `04-healthy-food-map.md` | Map layer showing healthy food locations — overlays with Ground |
+| [x] | `04-healthy-food-map.md` | Map layer showing healthy food locations — overlays with Ground |
 | [x] | `05-origin-supply-chain-and-boycott-filters.md` | Country-of-origin tracking, supply chain, user boycott enforcement |
 | [ ] | `06-receipt-spend-intelligence.md` | Receipt scanning, spend tracking, price intelligence |
 | [x] | `07-allergy-dislike-and-dietary-guardrails.md` | Allergy system, dietary restrictions, hard blocks vs soft guidance |
@@ -30,7 +30,7 @@ Core product philosophy and feature specs. These are the "what and why" layer.
 | [~] | `12-multi-person-cooking-rooms.md` | Multiple people in one cooking session |
 | [x] | `13-generational-recipe-capture.md` | Capturing family recipes from elders, voice, video |
 | [ ] | `14-fridge-and-pantry-ingredient-rescue.md` | Pantry state, ingredient rescue, what can I cook with what I have |
-| [ ] | `15-hyperlocal-price-and-availability-alerts.md` | Real-time price and availability signals near user |
+| [x] | `15-hyperlocal-price-and-availability-alerts.md` | Real-time price and availability signals near user |
 | [ ] | `16-weekly-food-summary.md` | Weekly digest of user's food activity |
 | [ ] | `17-behavioral-food-pattern-detection.md` | AI detecting patterns in user food behavior |
 | [ ] | `18-verified-business-and-practitioner-profiles.md` | Verified profiles for food businesses, dietitians, practitioners |
