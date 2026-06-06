@@ -32,12 +32,12 @@ Core product philosophy and feature specs. These are the "what and why" layer.
 | [x] | `14-fridge-and-pantry-ingredient-rescue.md` | Pantry state, ingredient rescue, what can I cook with what I have |
 | [x] | `15-hyperlocal-price-and-availability-alerts.md` | Real-time price and availability signals near user |
 | [x] | `16-weekly-food-summary.md` | Weekly digest of user's food activity |
-| [ ] | `17-behavioral-food-pattern-detection.md` | AI detecting patterns in user food behavior |
+| [x] | `17-behavioral-food-pattern-detection.md` | AI detecting patterns in user food behavior |
 | [ ] | `18-verified-business-and-practitioner-profiles.md` | Verified profiles for food businesses, dietitians, practitioners |
 | [~] | `19-pricing-and-tiers.md` | App pricing tiers, what is free vs paid — CRITICAL for product decisions |
 | [ ] | `20-platform-and-app-distribution.md` | iOS, Android, web distribution strategy |
 | [x] | `21-onboarding.md` | User onboarding flow — first experience, constraint setup |
-| [ ] | `22-pre-trip-food-intelligence.md` | Travel food intelligence — what to eat, buy, avoid in a new city |
+| [x] | `22-pre-trip-food-intelligence.md` | Travel food intelligence — what to eat, buy, avoid in a new city |
 | [x] | `23-ambient-notification-strategy.md` | Push notification design, when and how to notify |
 | [~] | `24-technical-architecture-backbone.md` | Full technical architecture — CRITICAL, read early |
 | [ ] | `25-viral-growth-and-sharing.md` | Viral mechanics, sharing, growth loops |
@@ -53,8 +53,8 @@ Core product philosophy and feature specs. These are the "what and why" layer.
 | [x] | `35-ground-community-intelligence.md` | Ground system — community food intelligence layer |
 | [x] | `35b-ground-finds-deep-design.md` | Ground deep design — UX, pulse animation, haptic discovery, find flow |
 | [x] | `36-predictive-pantry-intelligence.md` | Predicting what user will run out of before they do |
-| [ ] | `37-guest-and-cooking-for-others.md` | Cooking for guests, dietary handling for multiple people |
-| [ ] | `38-food-time-machine.md` | Historical food data — what did I eat this time last year |
+| [x] | `37-guest-and-cooking-for-others.md` | Cooking for guests, dietary handling for multiple people |
+| [x] | `38-food-time-machine.md` | Historical food data — what did I eat this time last year |
 | [~] | `39-generative-ui.md` | Generative UI spec — CRITICAL for design system build |
 | [ ] | `40-wearables-integration.md` | Apple Watch, wearable integration |
 | [ ] | `README.md` | Spec folder overview |

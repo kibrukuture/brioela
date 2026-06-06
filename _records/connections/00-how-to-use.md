@@ -31,6 +31,7 @@ spec: brioela-specs/35-ground-community-intelligence.md
 - `11-recall-alerts-connections.md`
 - `12-illness-detective-connections.md`
 - `13-menu-scanning-connections.md`
+- `14-ambient-intelligence-connections.md`
 
 ## When to update
 Every time a build-guide file is written: add the connection here immediately.
