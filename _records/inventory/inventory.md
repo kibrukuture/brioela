@@ -40,7 +40,7 @@ Core product philosophy and feature specs. These are the "what and why" layer.
 | [x] | `22-pre-trip-food-intelligence.md` | Travel food intelligence — what to eat, buy, avoid in a new city |
 | [x] | `23-ambient-notification-strategy.md` | Push notification design, when and how to notify |
 | [~] | `24-technical-architecture-backbone.md` | Full technical architecture — CRITICAL, read early |
-| [~] | `25-viral-growth-and-sharing.md` | Viral mechanics, sharing, growth loops |
+| [x] | `25-viral-growth-and-sharing.md` | Viral mechanics, sharing, growth loops |
 | [x] | `26-personalized-recall-alerts.md` | Food recall detection, user-specific alert matching |
 | [x] | `27-restaurant-menu-scanning.md` | Scanning restaurant menus, constraint check against menu items |
 | [x] | `28-medical-condition-food-profile.md` | Medical conditions (diabetes, celiac, etc.) mapped to food restrictions |

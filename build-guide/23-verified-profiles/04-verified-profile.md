@@ -67,6 +67,7 @@ Capabilities:
 
 - verified attribution on recipes imported from their content
 - public recipe profile page
+- Brioela-ready step-by-step videos, gated by the creator video firewall
 - structured recipe metadata if they publish Brioela-native recipes later
 - source credibility for recipe ingestion
 
@@ -76,6 +77,7 @@ Boundary:
 
 - creator profile is still a `verified_profile`
 - no follower counts or social feed required
+- no infinite creator video feed
 - no public comments/likes
 - no automatic scraping into public recipe databases
 

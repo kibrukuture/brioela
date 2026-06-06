@@ -38,6 +38,7 @@ spec: brioela-specs/35-ground-community-intelligence.md
 - `18-mesa-connections.md`
 - `19-medical-conditions-connections.md`
 - `20-verified-profiles-connections.md`
+- `21-viral-sharing-connections.md`
 
 ## When to update
 Every time a build-guide file is written: add the connection here immediately.

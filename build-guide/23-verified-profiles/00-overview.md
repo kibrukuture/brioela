@@ -4,7 +4,7 @@
 Verified profiles on the Brioela platform, split into exactly two top-level lanes: `verified_profile` for people and `verified_business` for businesses. People can be practitioners, nutritionists, dietitians, chefs, or creators. Businesses can be restaurants, cafes, cloud kitchens, meal-prep companies, health food stores, grocery stores, brands, or markets. Verified Profiles plug into the consumer product through map listings, recipe/source attribution, client guidance, ingredient transparency, and analytics. Limited in scope — this is not a social network or marketplace-first product.
 
 ## Status
-[x] complete — six files written
+[x] complete — seven files written
 
 ## Files In This Folder
 
@@ -16,6 +16,7 @@ Verified profiles on the Brioela platform, split into exactly two top-level lane
 | `04-verified-profile.md` | person profiles: practitioner/client guidance and creator/chef recipe attribution |
 | `05-client-and-practitioner-boundary.md` | user consent, condition annotations, no diagnosis/treatment boundary |
 | `06-analytics-and-revenue.md` | B2B tier, profile analytics, privacy-safe metrics, pricing boundary |
+| `07-creator-video-firewall.md` | verified-profile creator video routing, relevance firewall, no infinite feed |
 
 ## Specs This Folder Draws From
 - `brioela-specs/18-verified-business-and-practitioner-profiles.md` — verified profile spec: who qualifies, what they get, practitioner-client relationship
@@ -27,6 +28,7 @@ Verified profiles on the Brioela platform, split into exactly two top-level lane
 - Analytics: scan counts, community note sentiment for their listed products/places
 - Creator/chef public recipe profile is a `verified_profile` subtype, not a third top-level type
 - Top-level model has only two kinds: `verified_profile` and `verified_business`
+- Creator videos are not an infinite TikTok-like feed; they pass a relevance firewall and only a small highly relevant set is surfaced
 - Practitioner does NOT set the user's condition — the user does; practitioner can annotate with notes that appear in scan verdicts
 - Up to 10 client accounts per practitioner account
 - This is a B2B revenue stream, not a consumer social feature

@@ -8,6 +8,7 @@ spec: brioela-specs/18-verified-business-and-practitioner-profiles.md
   → build-guide/23-verified-profiles/04-verified-profile.md [x] done
   → build-guide/23-verified-profiles/05-client-and-practitioner-boundary.md [x] done
   → build-guide/23-verified-profiles/06-analytics-and-revenue.md [x] done
+  → build-guide/23-verified-profiles/07-creator-video-firewall.md [x] done
 
 spec: brioela-specs/19-pricing-and-tiers.md
   → build-guide/23-verified-profiles/06-analytics-and-revenue.md [~] partial
@@ -34,3 +35,4 @@ product direction: 2026-06-06 user clarification
   → build-guide/23-verified-profiles/00-overview.md [x] done
   → build-guide/23-verified-profiles/01-profile-types.md [x] done
   → build-guide/23-verified-profiles/04-verified-profile.md [x] done
+  → build-guide/23-verified-profiles/07-creator-video-firewall.md [x] done
