@@ -69,5 +69,5 @@ Before writing:
 ## Blockers / Decisions
 
 - Personal response/glucose cards are blocked by default and require explicit opt-in.
-- Mesa cards are future-ready only while Mesa remains overview-only.
+- Mesa cards depend on Mesa compatibility data and Discovery Card UI templates.
 - Discovery Card implementation needs design-system templates before UI build.

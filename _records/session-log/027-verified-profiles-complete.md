@@ -33,7 +33,7 @@ Written — records:
 ## Inventory Status Changes
 
 - `brioela-specs/18-verified-business-and-practitioner-profiles.md` → `[x]`
-- `brioela-specs/19-pricing-and-tiers.md` remains `[~]`; only B2B/practitioner tier details were used here
+- `brioela-specs/19-pricing-and-tiers.md` remains `[~]`; only the Signet/B2B source tier details were used here
 
 ## Product Direction Captured
 
@@ -62,4 +62,4 @@ Before writing:
 - Practitioner access to user condition data requires explicit scoped consent.
 - Businesses can improve transparency and source data but cannot pay to suppress safety warnings.
 - Creator/chef recipe attribution is handled under verified_profile.
-- B2B pricing enforcement belongs to future Pricing Tiers implementation.
+- Signet pricing enforcement belongs to Pricing Tiers implementation.

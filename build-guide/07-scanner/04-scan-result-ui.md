@@ -262,4 +262,4 @@ Avoid is shown only when the verdict is yellow or red with an identifiable ingre
 
 From spec 19: unlimited scanning is free forever. No cap, no paywall, no tier gate. The scan result, including constraint check and verdict, is available to all users regardless of tier.
 
-The only gating that happens at the scan level: advanced features triggered from the scan result (community note authoring requires Core tier, certain map features require Core tier). The verdict itself is always free.
+The only gating that happens at the scan level: advanced features triggered from the scan result (community note authoring requires Luma, certain map features require Luma). The verdict itself is always free.

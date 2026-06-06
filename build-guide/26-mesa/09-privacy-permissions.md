@@ -49,7 +49,7 @@ Rules:
 
 Wearable/glucose data is never shared into Mesa by default.
 
-If future Mesa support allows it, it requires separate explicit opt-in per member/account.
+If Mesa ever supports wearable sharing, it requires separate explicit opt-in per member/account.
 
 ---
 

@@ -24,4 +24,4 @@
 - practitioner/client condition annotation boundary
 - verified business map and transparency surfaces
 - creator/chef recipe attribution as verified_profile subtype
-- B2B/practitioner pricing implementation later
+- Signet pricing implementation later

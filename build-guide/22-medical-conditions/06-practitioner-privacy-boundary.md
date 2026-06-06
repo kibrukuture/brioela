@@ -8,7 +8,7 @@ Verified practitioner access, consent, annotations, privacy rules, deletion/expo
 
 ## Practitioner Boundary
 
-Practitioner integration depends on `23-verified-profiles` and is not required for Medical Conditions v1.
+Practitioner integration depends on `23-verified-profiles`. Medical Conditions defines the privacy and annotation boundary; Verified Profiles implements the practitioner relationship.
 
 The user sets and owns their condition profile. A practitioner may annotate or suggest guidance later, but the practitioner does not silently set the user's condition.
 

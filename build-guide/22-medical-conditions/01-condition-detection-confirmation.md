@@ -82,7 +82,7 @@ Confirmation must include:
 
 ---
 
-## Supported V1 Conditions
+## Supported Conditions
 
 ```typescript
 type MedicalConditionType =

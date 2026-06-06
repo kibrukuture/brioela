@@ -89,12 +89,11 @@ type MesaMember = {
 }
 ```
 
-## Open Decisions Before Full Build
+## Remaining Product Decisions
 
-- Which tier owns Mesa?
-- How many Mesa members are included per tier?
 - Invited adults contribute observations and suggestions; owner confirmation is required for safety-critical constraint changes.
 - Exact deletion/export UX for contributed Mesa data.
 - Whether guests are promoted from Guest Mode automatically as suggestions or only through explicit owner request.
+- Whether very large Mesa needs support-assisted expansion beyond 8 active members.
 
-These are rollout/pricing decisions. The core Mesa architecture is defined in this folder.
+The core Mesa architecture, pricing policy, and member limit are defined in this folder and `25-pricing-tiers`.

@@ -54,5 +54,5 @@ Before writing, read:
 - No child identity/profile beyond parent-selected age range.
 - Hard allergy blocks appear before kid explanations.
 - Voice mode is one-response contextual tone switch, then resets.
-- Kids Mode is Core tier and above, but scanning/safety remains free.
+- Kids Mode is Luma tier and above, but scanning/safety remains free.
 - No creative addendum was added beyond the spec; this pass focused on safety, tone, and privacy boundaries.

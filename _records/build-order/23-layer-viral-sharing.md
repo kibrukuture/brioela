@@ -25,4 +25,4 @@
 - privacy-safe organic sharing
 - creator attribution loop
 - scan/menu/kids/recipe/savings share moments
-- future Mesa compatibility share moments
+- Mesa compatibility share moments

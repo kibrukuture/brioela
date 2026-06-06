@@ -70,7 +70,7 @@ Dinner that works for everyone at our table.
 Found with Mesa.
 ```
 
-Mesa implementation is overview-only today, so this card type is future-ready.
+Mesa owns the compatibility decision; Viral Sharing owns the privacy-safe card.
 
 ---
 

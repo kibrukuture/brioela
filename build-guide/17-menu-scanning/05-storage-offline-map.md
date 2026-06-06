@@ -2,7 +2,7 @@
 
 ## What This File Covers
 
-The data retention boundary, offline partial mode, map/community overlay, and Core tier upgrade surface for menu scanning.
+The data retention boundary, offline partial mode, map/community overlay, and Luma tier upgrade surface for menu scanning.
 
 ---
 
@@ -114,9 +114,9 @@ A red dish stays red even if community sentiment about the restaurant is positiv
 
 ---
 
-## Core Tier Upgrade Trigger
+## Luma Tier Upgrade Trigger
 
-Menu scanning is a Core tier feature trigger. Entitlement rules and payment mechanics live in `25-pricing-tiers`; this feature only defines where the prompt appears.
+Menu scanning is a Luma tier feature trigger. Entitlement rules and payment mechanics live in `25-pricing-tiers`; this feature only defines where the prompt appears.
 
 Upgrade prompt behavior:
 

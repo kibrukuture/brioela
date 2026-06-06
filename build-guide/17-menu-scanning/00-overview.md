@@ -33,7 +33,7 @@ The larger product angle: every menu scan also improves Brioela's restaurant int
 - Offline: cached constraint profile enables local constraint matching; community notes unavailable offline
 - Map integration: if restaurant is in healthy food map, community notes about that place overlay the menu scan result
 - Discovery: Brioela should eventually show the best places for this user, not a generic list of all restaurants
-- Upgrade trigger: free users hit menu scan → Core tier upgrade prompt
+- Upgrade trigger: Sapor users hit menu scan → Luma upgrade prompt
 
 ## What This Folder Depends On
 - `05-orchestrator` — user's full constraint profile (allergies, dietary identity, medical conditions, medications)
@@ -43,4 +43,4 @@ The larger product angle: every menu scan also improves Brioela's restaurant int
 ## What Depends On This Folder
 - `10-map` — can use shared menu intelligence to rank and render restaurants more personally
 - `18-ambient-intelligence` — can suggest restaurants before trips or mealtimes using derived place/menu fit
-- `25-pricing-tiers` — uses menu scanning as a Core tier upgrade trigger; entitlement mechanics live there, not here
+- `25-pricing-tiers` — uses menu scanning as a Luma upgrade trigger; entitlement mechanics live there, not here

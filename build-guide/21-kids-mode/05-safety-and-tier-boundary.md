@@ -2,7 +2,7 @@
 
 ## What This File Covers
 
-How Kids Mode respects scan safety, hard allergy warnings, low-confidence product data, and Core tier gating without weakening the free scanner.
+How Kids Mode respects scan safety, hard allergy warnings, low-confidence product data, and Luma tier gating without weakening the free scanner.
 
 ---
 
@@ -68,9 +68,9 @@ Do not produce a confident child explanation from uncertain product data.
 
 Scanning and hard allergy safety are always free.
 
-Kids Mode is Core tier and above.
+Kids Mode is Luma and above.
 
-Free tier behavior:
+Sapor behavior:
 
 - Show the "Explain to my kid" entry point.
 - Show one short teaser line.

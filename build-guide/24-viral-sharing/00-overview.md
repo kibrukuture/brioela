@@ -43,7 +43,7 @@ The mechanics that make Brioela grow without paid acquisition by turning real fo
 - `19-recipe-ingestion` — share sheet import and creator/source attribution loop
 - `21-kids-mode` — Kids learning share cards
 - `23-verified-profiles` — verified_profile creator/chef attribution and verified_business trust surfaces
-- `26-mesa` — Mesa compatibility moments are future/overview-only until Mesa implementation decisions are made
+- `26-mesa` — Mesa compatibility moments
 - `17-menu-scanning` — menu reality cards
 - `20-wearables` — personal response cards are opt-in only and never default
 

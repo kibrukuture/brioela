@@ -44,4 +44,4 @@ Brioela returns a 7-day plan using what the user already has where possible.
 
 ## Tier Rule
 
-Full 7-day plan is Core tier and above. Free users may see a single-day preview.
+Full 7-day plan is Luma and above. Sapor users may see a single-day preview.

@@ -2,15 +2,15 @@
 
 ## What This File Covers
 
-B2B/Practitioner tier behavior, privacy-safe analytics, add-ons, and what profile owners can and cannot see.
+Signet tier behavior, privacy-safe analytics, add-ons, and what profile owners can and cannot see.
 
 ---
 
 ## Revenue Model
 
-Verified Profiles are a B2B revenue stream.
+Verified Profiles are a Signet revenue stream.
 
-Pricing spec says B2B/Practitioner tier is roughly `$79-99/month`, with:
+The source pricing spec's B2B/Practitioner tier maps to Signet, starting from `$99/month`, with:
 
 - verified business or practitioner profile
 - practitioner multi-client management
@@ -99,7 +99,7 @@ Product metrics:
 - verified business listing interactions
 - practitioner-client relationship activation
 - public recipe profile imports/saves
-- B2B conversion
+- Signet conversion
 - churn by profile subtype
 
 Safety metrics:

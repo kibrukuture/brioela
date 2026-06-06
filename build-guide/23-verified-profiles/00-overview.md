@@ -15,12 +15,12 @@ Verified profiles on the Brioela platform, split into exactly two top-level lane
 | `03-verified-business.md` | business listings, transparency fields, map/menu/product trust surfaces |
 | `04-verified-profile.md` | person profiles: practitioner/client guidance and creator/chef recipe attribution |
 | `05-client-and-practitioner-boundary.md` | user consent, condition annotations, no diagnosis/treatment boundary |
-| `06-analytics-and-revenue.md` | B2B tier, profile analytics, privacy-safe metrics, pricing boundary |
+| `06-analytics-and-revenue.md` | Signet tier, profile analytics, privacy-safe metrics, pricing boundary |
 | `07-creator-video-firewall.md` | verified-profile creator video routing, relevance firewall, no infinite feed |
 
 ## Specs This Folder Draws From
 - `brioela-specs/18-verified-business-and-practitioner-profiles.md` — verified profile spec: who qualifies, what they get, practitioner-client relationship
-- `brioela-specs/19-pricing-and-tiers.md` — B2B/Practitioner tier pricing and features
+- `brioela-specs/19-pricing-and-tiers.md` — source pricing spec for what is now Signet
 
 ## Key Decisions From Specs
 - Practitioners can view client active conditions and push food guidance (client must grant access)
@@ -31,7 +31,7 @@ Verified profiles on the Brioela platform, split into exactly two top-level lane
 - Creator videos are not an infinite TikTok-like feed; they pass a relevance firewall and only a small highly relevant set is surfaced
 - Practitioner does NOT set the user's condition — the user does; practitioner can annotate with notes that appear in scan verdicts
 - Up to 10 client accounts per practitioner account
-- This is a B2B revenue stream, not a consumer social feature
+- This is a Signet revenue stream, not a consumer social feature
 
 ## What This Folder Depends On
 - `05-orchestrator` — practitioner reads client condition data from DO (with client permission)
@@ -42,6 +42,6 @@ Verified profiles on the Brioela platform, split into exactly two top-level lane
 - `17-menu-scanning` — verified business menu transparency and restaurant trust surfaces
 
 ## What Depends On This Folder
-- `25-pricing-tiers` — B2B/Practitioner subscription and add-ons
+- `25-pricing-tiers` — Signet subscription and add-ons
 - Future practitioner/client management
 - Future verified business analytics and menu/product transparency upgrades

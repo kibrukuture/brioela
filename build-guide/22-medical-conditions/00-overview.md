@@ -1,7 +1,7 @@
 # Medical Conditions — Overview
 
 ## What This Folder Covers
-Declare a medical condition once by voice and the entire app adapts permanently: scan flags, recipe filters, map recommendations, and meal plans all reflect the condition's dietary implications without any further setup. Conditions supported v1: pregnancy, T2 diabetes/pre-diabetes, gout, hypertension, high cholesterol, Warfarin/blood thinners, IBS/low-FODMAP, celiac disease, chronic kidney disease, PKU. Condition rules stored as versioned config in Supabase — updates without a code deploy.
+Declare a medical condition once by voice and the entire app adapts permanently: scan flags, recipe filters, map recommendations, and meal plans all reflect the condition's dietary implications without any further setup. Launch-supported conditions: pregnancy, T2 diabetes/pre-diabetes, gout, hypertension, high cholesterol, Warfarin/blood thinners, IBS/low-FODMAP, celiac disease, chronic kidney disease, PKU. Condition rules stored as versioned config in Supabase — updates without a code deploy.
 
 ## Status
 [x] complete — six files written

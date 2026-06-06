@@ -49,7 +49,7 @@ Nothing half-done.
 
 ## What Is Next
 
-All current numbered feature folders now have at least an overview/build-guide pass. Mesa remains overview-only by design.
+All current numbered feature folders now have at least an overview/build-guide pass. Mesa was expanded to a full build-guide in Session 030.
 
 Potential next work:
 - decide Mesa account/tier model

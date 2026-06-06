@@ -35,7 +35,7 @@ build-guide: build-guide/23-verified-profiles/
   → build-guide/24-viral-sharing/05-creator-and-attribution-loop.md [x] done
 
 build-guide: build-guide/26-mesa/
-  → build-guide/24-viral-sharing/04-feature-specific-card-types.md [~] future Mesa card type
+  → build-guide/24-viral-sharing/04-feature-specific-card-types.md [x] done
 
 product direction: 2026-06-06 Discovery Cards addendum
   → build-guide/23-verified-profiles/07-creator-video-firewall.md [x] done

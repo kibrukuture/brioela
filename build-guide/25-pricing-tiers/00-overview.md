@@ -44,7 +44,7 @@ Under `tools/pricing/`:
 - `17-menu-scanning` — Luma upgrade trigger
 - `21-kids-mode` — Luma upgrade trigger
 - `23-verified-profiles` — Signet verified person/business tier
-- `26-mesa` — Mesa add-on/tier is future overview-only until decisions are made
+- `26-mesa` — Mesa add-on/tier policy and member limits
 
 ## What Depends On This Folder
 Every feature with tier-gated access: voice sessions, vision sessions, multi-person rooms, receipt scan, menu scan, kids mode, advanced behavioral reports.
