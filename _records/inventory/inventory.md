@@ -56,7 +56,7 @@ Core product philosophy and feature specs. These are the "what and why" layer.
 | [x] | `37-guest-and-cooking-for-others.md` | Cooking for guests, dietary handling for multiple people |
 | [x] | `38-food-time-machine.md` | Historical food data — what did I eat this time last year |
 | [~] | `39-generative-ui.md` | Generative UI spec — CRITICAL for design system build |
-| [ ] | `40-wearables-integration.md` | Apple Watch, wearable integration |
+| [x] | `40-wearables-integration.md` | Apple Watch, wearable integration |
 | [ ] | `README.md` | Spec folder overview |
 
 ---
