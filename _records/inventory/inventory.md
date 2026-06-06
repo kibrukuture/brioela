@@ -17,7 +17,7 @@ Core product philosophy and feature specs. These are the "what and why" layer.
 |---|---|---|
 | [~] | `00-product-philosophy-and-ux.md` | Core product philosophy, UX principles — read FIRST before any build-guide |
 | [x] | `01-product-health-scanning.md` | Product barcode scanning, health data, constraint check at scan time |
-| [~] | `02-recipe-ingestion-from-shared-content.md` | Parsing recipes from shared links, screenshots, social content |
+| [x] | `02-recipe-ingestion-from-shared-content.md` | Parsing recipes from shared links, screenshots, social content |
 | [x] | `03-hyperlocal-community-notes.md` | **DEPRECATED** — superseded by spec 35 (Ground). Read for context only. |
 | [x] | `04-healthy-food-map.md` | Map layer showing healthy food locations — overlays with Ground |
 | [x] | `05-origin-supply-chain-and-boycott-filters.md` | Country-of-origin tracking, supply chain, user boycott enforcement |
@@ -35,12 +35,12 @@ Core product philosophy and feature specs. These are the "what and why" layer.
 | [x] | `17-behavioral-food-pattern-detection.md` | AI detecting patterns in user food behavior |
 | [ ] | `18-verified-business-and-practitioner-profiles.md` | Verified profiles for food businesses, dietitians, practitioners |
 | [~] | `19-pricing-and-tiers.md` | App pricing tiers, what is free vs paid — CRITICAL for product decisions |
-| [ ] | `20-platform-and-app-distribution.md` | iOS, Android, web distribution strategy |
+| [~] | `20-platform-and-app-distribution.md` | iOS, Android, web distribution strategy |
 | [x] | `21-onboarding.md` | User onboarding flow — first experience, constraint setup |
 | [x] | `22-pre-trip-food-intelligence.md` | Travel food intelligence — what to eat, buy, avoid in a new city |
 | [x] | `23-ambient-notification-strategy.md` | Push notification design, when and how to notify |
 | [~] | `24-technical-architecture-backbone.md` | Full technical architecture — CRITICAL, read early |
-| [ ] | `25-viral-growth-and-sharing.md` | Viral mechanics, sharing, growth loops |
+| [~] | `25-viral-growth-and-sharing.md` | Viral mechanics, sharing, growth loops |
 | [x] | `26-personalized-recall-alerts.md` | Food recall detection, user-specific alert matching |
 | [x] | `27-restaurant-menu-scanning.md` | Scanning restaurant menus, constraint check against menu items |
 | [ ] | `28-medical-condition-food-profile.md` | Medical conditions (diabetes, celiac, etc.) mapped to food restrictions |

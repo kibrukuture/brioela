@@ -4,7 +4,19 @@
 The share-sheet pipeline: a user shares a food video or URL from TikTok, YouTube, Instagram, or any browser to Brioela. The backend fetches the source, extracts transcript, captions, visible text, and page content. A model normalizes the result into a structured recipe — ingredients, steps, timing, servings — with confidence markers on uncertain fields. The recipe lands in the user's library and personal memory without any copy/paste. The share-sheet extension (iOS and Android) is one of the highest-leverage distribution mechanisms in the app: someone watching a food video → shares to Brioela → has a reason to install.
 
 ## Status
-[ ] not started
+[x] complete — seven files written
+
+## Files In This Folder
+
+| File | Contents |
+|---|---|
+| `01-share-sheet-entry.md` | iOS/Android share extension, 2-second confirmation, background import start |
+| `02-import-job-workflow.md` | `recipe_import_job`, durable async processing, status polling, retry behavior |
+| `03-source-extraction.md` | URL/video/page/screenshot extraction, transcript/caption/OCR/page text artifacts |
+| `04-recipe-normalization.md` | canonical recipe schema, ingredient/step/timing/serving extraction, no fabrication |
+| `05-confidence-and-constraints.md` | uncertain quantities, missing steps, user constraint checks, re-rankable recipes |
+| `06-storage-and-library.md` | recipe persistence in Orchestrator SQLite, source artifacts, memory events |
+| `07-import-status-and-growth-loop.md` | user-facing import states, failure handling, share-sheet acquisition loop |
 
 ## Specs This Folder Draws From
 - `brioela-specs/02-recipe-ingestion-from-shared-content.md` — full spec: share-sheet ingestion, URL ingestion, video transcript extraction, recipe normalization, confidence schema, data model, API surface
@@ -36,6 +48,9 @@ user_recipe:         user_id, recipe_id, title, ingredients_json, steps_json, cu
 ## What This Folder Depends On
 - `05-orchestrator` — completed recipes written to user's recipe library in Orchestrator DO SQLite
 - `03-foundation` — Upstash Workflow runs the multi-step import job (fetch → extract → normalize → store); share-sheet extension is a native iOS/Android target registered in the Cloudflare Worker
+- `06-memory-engine` — `recipes`, `memory_event`, and session context schema
+- `07-scanner` — screenshot/OCR ingestion reuses server-side image OCR patterns and confidence caveats
+- `08-cooking-session` — imported recipes must be immediately cookable by the cooking agent
 
 ## What Depends On This Folder
 - `08-cooking-session` — imported recipes are a primary source for cooking sessions; a recipe imported from TikTok is cookable immediately
