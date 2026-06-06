@@ -66,12 +66,12 @@ type MesaPermission =
   | "invite_members"
 ```
 
-V1 recommendation:
-
 - owner has all permissions
 - invited adults can contribute scans/pantry if granted
-- invited adults cannot edit hard constraints by default
+- invited adults can suggest constraints, but cannot activate hard constraints by default
 - children have no account-level permissions
+
+Owner confirmation is required for any safety-critical member change.
 
 ---
 
@@ -89,7 +89,7 @@ Contributor can:
 - stop contributing
 - request removal of their contributed events where ownership applies
 
-Open decision: exact export/deletion ownership for accepted contributor events.
+Accepted shared object contributions belong to Mesa continuity after acceptance. Personal/member facts belong to the person or member they describe and should be removable/archiveable when that person leaves or revokes permission.
 
 ---
 
@@ -105,5 +105,6 @@ Mesa export should label:
 - contributor-created data
 - member constraints
 - compatibility events
+- contribution ownership: Mesa-owned shared object vs person/member fact
 
 Do not include private data from linked contributor accounts.

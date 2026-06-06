@@ -93,7 +93,7 @@ type MesaMember = {
 
 - Which tier owns Mesa?
 - How many Mesa members are included per tier?
-- Whether invited adults can edit constraints in v1 or only contribute observations.
+- Invited adults contribute observations and suggestions; owner confirmation is required for safety-critical constraint changes.
 - Exact deletion/export UX for contributed Mesa data.
 - Whether guests are promoted from Guest Mode automatically as suggestions or only through explicit owner request.
 

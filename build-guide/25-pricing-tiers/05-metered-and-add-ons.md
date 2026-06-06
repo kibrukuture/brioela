@@ -43,24 +43,22 @@ Rules:
 
 ## Mesa Add-On
 
-Mesa is not final.
-
-Options:
-
-1. Included in Viva.
-2. Add-on to Luma/Culina/Viva.
-3. Member-count-based add-on.
-4. Separate Mesa plan later.
-
-Recommendation for now:
-
 ```text
 Mesa
++$8/month
+Included in Viva
 For everyone at your table.
-Pricing to be decided before implementation.
+Up to 8 active Mesa members.
 ```
 
-Do not hardcode Mesa pricing until account model and invite permissions are decided.
+Mesa can be added to Luma or Culina. Viva includes Mesa.
+
+Rules:
+
+- no per-member fee within 8 active members
+- archived members do not count toward limit
+- invited contributor accounts do not automatically increase member limit
+- larger Mesa needs a later support/custom policy, not hidden per-seat billing
 
 ---
 

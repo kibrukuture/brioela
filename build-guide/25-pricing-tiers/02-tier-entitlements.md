@@ -110,13 +110,13 @@ Includes:
 - advanced behavior reports
 - priority routing where supported
 - advanced wearable/CGM personalization if connected
-- possibly Mesa included, pending decision
+- Mesa included
 
 Viva is priced around expensive realtime voice/video usage and the fullest AI experience.
 
 ---
 
-## Mesa — Add-On Or Included In Viva
+## Mesa — Add-On Included In Viva
 
 Positioning:
 
@@ -124,22 +124,24 @@ Positioning:
 For everyone at your table.
 ```
 
-Potential includes:
+Pricing:
+
+```text
+Mesa
++$8/month
+Included in Viva
+Up to 8 active Mesa members
+```
+
+Includes:
 
 - multi-person Food Audience
 - works-for-everyone product compatibility
 - Mesa meal planning
 - Mesa grocery compatibility
-- invited contributor enrichment later
+- invited contributor enrichment
 
-Open pricing decisions:
-
-- include Mesa in Viva
-- sell Mesa as add-on to Luma/Culina/Viva
-- member-count-based pricing
-- invited contributor limits
-
-Do not enforce Mesa pricing until Mesa implementation decisions are made.
+Do not charge per active member within the 8-member limit.
 
 ---
 

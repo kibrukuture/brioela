@@ -68,6 +68,6 @@ Potential next work:
 
 ## Blockers / Decisions
 
-- Mesa final price/member limits remain undecided in Pricing Tiers.
-- Invited adults editing constraints in v1 remains a rollout decision.
-- Exact deletion/export ownership for accepted contributor events remains an implementation policy decision.
+- Mesa pricing policy decided: +$8/month add-on, included in Viva, up to 8 active members.
+- Invited adults contribute observations and suggestions; owner confirms safety-critical changes.
+- Accepted shared object contributions belong to Mesa continuity; personal/member facts remain tied to the person/member they describe.

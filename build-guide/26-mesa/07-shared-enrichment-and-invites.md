@@ -12,6 +12,8 @@ Invited contributors share selected events, not their whole Brioela brain.
 
 Mesa enrichment is scoped, permissioned, and reversible.
 
+Invited adults contribute observations and suggestions. The Mesa owner remains the authority for members, constraints, and safety-critical changes.
+
 ---
 
 ## Invite Roles
@@ -77,6 +79,20 @@ Owner-review candidates:
 - deletion of shared pantry item
 - changing food audience defaults
 
+Invited adults cannot activate hard constraints by default. If an invited adult says:
+
+```text
+Noah is also allergic to cashews.
+```
+
+Brioela queues:
+
+```text
+Alex suggested adding cashew as a hard allergy for Noah. Confirm before I use this for Mesa?
+```
+
+The rule becomes active only after owner confirmation.
+
 ---
 
 ## Revocation
@@ -92,6 +108,36 @@ On revoke:
 
 ---
 
+## Data Ownership
+
+Mesa separates three kinds of data.
+
+Shared object contributions become Mesa data after acceptance:
+
+- pantry items
+- grocery purchases
+- scanned products marked for Mesa
+- recipe worked/did-not-work feedback
+
+Personal/member facts belong to the person/member they describe:
+
+- allergy
+- medical condition
+- dietary identity
+- dislike
+- private preference
+
+Private account data never becomes Mesa data unless explicitly contributed:
+
+- full scan history
+- private notes
+- wearable/glucose data
+- personal food memory
+
+Contributor leaving Mesa stops future sharing. Accepted shared objects may remain with Mesa. Personal/member facts contributed by that person should be removed or archived unless the owner independently confirms a non-sensitive reason to keep them.
+
+---
+
 ## Copy
 
 Use:
@@ -99,6 +145,10 @@ Use:
 ```text
 Let Alex contribute grocery scans to Mesa?
 They will not share their private Brioela memory.
+```
+
+```text
+Leaving Mesa stops future sharing. Shared pantry items you added may remain with Mesa, but personal food needs you shared can be removed.
 ```
 
 Avoid:
