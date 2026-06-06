@@ -2,7 +2,7 @@
 
 ## Status
 
-[ ] not started
+[x] build-guide exists
 
 ## Build-Guide Folder
 

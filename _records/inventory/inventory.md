@@ -149,22 +149,22 @@ Full Bela grocery delivery implementation.
 
 | Status | File | One-line description |
 |---|---|---|
-| [~] | `00-overview.md` | Bela system overview — updated this session |
-| [ ] | `01-order-creation.md` | AI list generation, user approval, delivery window |
-| [~] | `02-shopper-platform.md` | Shopper onboarding, KYC, Stripe Connect, Bela card — updated this session |
-| [ ] | `03-constraint-travel.md` | Constraint profile enforcement on shopper's scanner |
-| [ ] | `04-live-scan-session.md` | Real-time scan sharing between shopper and user |
-| [~] | `05-escrow-payment.md` | Payment intent escrow, capture, Connect payout — full rewrite this session |
-| [ ] | `06-shopper-quality.md` | Scan accuracy score, trust relationship, suspension |
-| [ ] | `07-ground-contribution.md` | Shoppers contributing Ground finds as side effect of orders |
-| [ ] | `08-smart-routing.md` | Ground + product_sighting multi-store route planning |
-| [ ] | `09-standing-order.md` | Weekly pantry replenishment — zero management |
-| [ ] | `10-cooking-intent-trigger.md` | Cooking session → grocery order trigger |
-| [ ] | `11-for-others.md` | Ordering for grandparents, family, non-users |
-| [ ] | `12-dispute-resolution.md` | Wrong/missing items, photo proof, auto-refunds |
-| [ ] | `13-data-model.md` | All SQL tables for the shopping system |
-| [ ] | `14-shopper-ai-assistant.md` | Voice + vision AI for shopper — Gemini Live, same stack as cooking session |
-| [~] | `15-checkout-payment.md` | Dedicated Bela card, receipt scan, door scan — full rewrite this session |
+| [x] | `00-overview.md` | Bela system overview — updated this session |
+| [x] | `01-order-creation.md` | AI list generation, user approval, delivery window |
+| [x] | `02-shopper-platform.md` | Shopper onboarding, KYC, Stripe Connect, Bela card — updated this session |
+| [x] | `03-constraint-travel.md` | Constraint profile enforcement on shopper's scanner |
+| [x] | `04-live-scan-session.md` | Real-time scan sharing between shopper and user |
+| [x] | `05-escrow-payment.md` | Payment intent escrow, capture, Connect payout — full rewrite this session |
+| [x] | `06-shopper-quality.md` | Scan accuracy score, trust relationship, suspension |
+| [x] | `07-ground-contribution.md` | Shoppers contributing Ground finds as side effect of orders |
+| [x] | `08-smart-routing.md` | Ground + product_sighting multi-store route planning |
+| [x] | `09-standing-order.md` | Weekly pantry replenishment — zero management |
+| [x] | `10-cooking-intent-trigger.md` | Cooking session → grocery order trigger |
+| [x] | `11-for-others.md` | Ordering for grandparents, family, non-users |
+| [x] | `12-dispute-resolution.md` | Wrong/missing items, photo proof, auto-refunds |
+| [x] | `13-data-model.md` | All SQL tables for the shopping system |
+| [x] | `14-shopper-ai-assistant.md` | Voice + vision AI for shopper — Gemini Live, same stack as cooking session |
+| [x] | `15-checkout-payment.md` | Dedicated Bela card, receipt scan, door scan — full rewrite this session |
 
 ---
 

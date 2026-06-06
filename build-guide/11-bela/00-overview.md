@@ -4,7 +4,27 @@
 Brioela's personal grocery delivery service. The user's constraint profile travels with the order and enforces on the shopper's scanner in real time — this is the differentiator no competitor has. Covers: order creation, shopper onboarding (KYC + dedicated Bela card), Stripe Connect Express payouts, PaymentIntent manual capture escrow, constraint travel (constraint profile enforces on shopper's scanner), live scan-together session, shopper AI assistant (Gemini Live, same stack as cooking session), receipt scan at store and door, delivery confirmation, auto-capture alarm, dispute resolution, Ground contribution by shoppers, smart routing, and standing orders.
 
 ## Status
-[ ] not started
+[x] complete — fifteen files written
+
+## Files In This Folder
+
+| File | Contents |
+|---|---|
+| `01-order-creation.md` | order sources, item approval, estimate, pending state |
+| `02-shopper-platform.md` | shopper onboarding, KYC, Connect, dedicated Bela card |
+| `03-constraint-travel.md` | frozen constraint snapshot, shopper scanner enforcement |
+| `04-live-scan-session.md` | OrderAgent live scan relay between shopper and user |
+| `05-payment-and-escrow.md` | PaymentIntent manual capture, no wallet, payout model |
+| `06-shopper-quality.md` | quality score, trust relationships, suspension rules |
+| `07-ground-contribution.md` | opt-in shopper Ground drafts and privacy boundaries |
+| `08-smart-routing.md` | store scoring from map/Ground/product sightings |
+| `09-standing-orders.md` | recurring pantry replenishment flow |
+| `10-cooking-intent-trigger.md` | cooking session / recipe gap to Bela order |
+| `11-for-others.md` | ordering for family/non-users and recipient profiles |
+| `12-dispute-resolution.md` | evidence, windows, refunds, constraint violation incidents |
+| `13-data-model.md` | Supabase, Orchestrator, OrderAgent, R2 tables/state |
+| `14-shopper-ai-assistant.md` | Gemini Live shopper assistant using cooking-session stack |
+| `15-checkout-payment.md` | store receipt scan, door scan, auto-capture timer |
 
 ## Specs This Folder Draws From
 - `implementable-specs/bela/` — all 16 files (00-overview through 15-checkout-payment)
@@ -31,7 +51,8 @@ Under `tools/bela/`:
 - `05-orchestrator` — user constraint profile (copied to OrderAgent at order acceptance)
 - `07-scanner` — constraint enforcement pipeline reused for shopper scanner
 - `08-cooking-session` — shopper AI uses same Gemini Live connection pattern
-- `09-ground` — smart routing uses Ground product_sighting data
+- `09-ground` — Ground finds and location_signal_summary inform routing
+- `10-map` — product_sighting, price_sighting, map_place_signal, store data
 - `03-foundation` — Stripe, Supabase orders tables
 
 ## What Depends On This Folder

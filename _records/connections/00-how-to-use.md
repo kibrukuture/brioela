@@ -21,7 +21,8 @@ spec: brioela-specs/35-ground-community-intelligence.md
 - `02-scanner-connections.md`
 - `03-cooking-session-connections.md`
 - `04-ground-connections.md`
-- `05-bela-connections.md`
+- `05-map-connections.md`
+- `06-bela-connections.md`
 - `06-memory-engine-connections.md`
 - `07-auth-connections.md`
 - `08-design-system-connections.md`
