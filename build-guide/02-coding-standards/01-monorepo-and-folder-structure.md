@@ -371,173 +371,165 @@ mobile/
 │   ├── cooking-session/[sessionId].tsx
 │   └── +not-found.tsx
 │
-├── src/
-│   ├── network/                        # ALL server state — one folder per API domain
-│   │   ├── core/
-│   │   │   ├── client.ts              # fetch-based HTTP client — auth headers, retry, error parsing
-│   │   │   ├── query.keys.ts          # QUERY_KEYS — all TanStack query key arrays in one place
-│   │   │   └── index.ts
-│   │   │
-│   │   ├── scan/
-│   │   │   ├── scan.api.ts            # pure fetch functions — uses API_ROUTES.scan.*
-│   │   │   ├── use.create.scan.hook.ts
-│   │   │   ├── use.scan.hook.ts
-│   │   │   ├── use.scan.history.hook.ts
-│   │   │   └── index.ts
-│   │   │
-│   │   ├── recipe/
-│   │   │   ├── recipe.api.ts
-│   │   │   ├── use.recipes.hook.ts
-│   │   │   ├── use.recipe.hook.ts
-│   │   │   ├── use.create.recipe.hook.ts
-│   │   │   ├── use.update.recipe.hook.ts
-│   │   │   ├── use.archive.recipe.hook.ts
-│   │   │   └── index.ts
-│   │   │
-│   │   ├── ground/
-│   │   │   ├── ground.api.ts
-│   │   │   ├── use.finds.hook.ts
-│   │   │   ├── use.submit.find.hook.ts
-│   │   │   ├── use.vote.find.hook.ts
-│   │   │   └── index.ts
-│   │   │
-│   │   ├── map/
-│   │   │   ├── map.api.ts
-│   │   │   ├── use.places.hook.ts
-│   │   │   ├── use.signals.hook.ts
-│   │   │   └── index.ts
-│   │   │
-│   │   ├── bela/
-│   │   │   ├── bela.api.ts
-│   │   │   ├── use.create.order.hook.ts
-│   │   │   ├── use.confirm.order.hook.ts
-│   │   │   └── index.ts
-│   │   │
-│   │   ├── recall/
-│   │   │   ├── recall.api.ts
-│   │   │   ├── use.recall.hook.ts
-│   │   │   ├── use.alerts.hook.ts
-│   │   │   └── index.ts
-│   │   │
-│   │   └── auth/
-│   │       ├── auth.api.ts
-│   │       ├── use.create.session.hook.ts
-│   │       └── index.ts
+├── network/                            # ALL server state — one folder per API domain
+│   ├── core/
+│   │   ├── client.ts                  # fetch-based HTTP client — auth headers, retry, error parsing
+│   │   ├── query.keys.ts              # QUERY_KEYS — all TanStack query key arrays in one place
+│   │   └── index.ts
 │   │
-│   ├── features/                       # Feature UI — composes network hooks + local UI state
-│   │   ├── scanner/
-│   │   │   ├── scanner.feature.tsx     # root component rendered by the screen
-│   │   │   ├── _components/
-│   │   │   │   ├── VerdictCard.tsx
-│   │   │   │   ├── ScanOverlay.tsx
-│   │   │   │   └── index.ts
-│   │   │   ├── _hooks/                # UI state hooks only — imports from network/ for data
-│   │   │   │   ├── use.scanner.hook.ts
-│   │   │   │   ├── use.barcode.detector.hook.ts
-│   │   │   │   ├── use.verdict.animation.hook.ts
-│   │   │   │   └── index.ts
-│   │   │   ├── _helpers/
-│   │   │   │   ├── format.verdict.helper.ts
-│   │   │   │   └── index.ts
+│   ├── scan/
+│   │   ├── scan.api.ts                # pure fetch functions — uses API_ROUTES.scan.*
+│   │   ├── use.create.scan.hook.ts
+│   │   ├── use.scan.hook.ts
+│   │   ├── use.scan.history.hook.ts
+│   │   └── index.ts
+│   │
+│   ├── recipe/
+│   │   ├── recipe.api.ts
+│   │   ├── use.recipes.hook.ts
+│   │   ├── use.recipe.hook.ts
+│   │   ├── use.create.recipe.hook.ts
+│   │   ├── use.update.recipe.hook.ts
+│   │   ├── use.archive.recipe.hook.ts
+│   │   └── index.ts
+│   │
+│   ├── ground/
+│   │   ├── ground.api.ts
+│   │   ├── use.finds.hook.ts
+│   │   ├── use.submit.find.hook.ts
+│   │   ├── use.vote.find.hook.ts
+│   │   └── index.ts
+│   │
+│   ├── map/
+│   │   ├── map.api.ts
+│   │   ├── use.places.hook.ts
+│   │   ├── use.signals.hook.ts
+│   │   └── index.ts
+│   │
+│   ├── bela/
+│   │   ├── bela.api.ts
+│   │   ├── use.create.order.hook.ts
+│   │   ├── use.confirm.order.hook.ts
+│   │   └── index.ts
+│   │
+│   ├── recall/
+│   │   ├── recall.api.ts
+│   │   ├── use.recall.hook.ts
+│   │   ├── use.alerts.hook.ts
+│   │   └── index.ts
+│   │
+│   └── auth/
+│       ├── auth.api.ts
+│       ├── use.create.session.hook.ts
+│       └── index.ts
+│
+├── features/                           # Feature UI — composes network hooks + local UI state
+│   ├── scanner/
+│   │   ├── scanner.feature.tsx         # root component rendered by the screen
+│   │   ├── _components/
+│   │   │   ├── VerdictCard.tsx
+│   │   │   ├── ScanOverlay.tsx
 │   │   │   └── index.ts
-│   │   │
-│   │   ├── ground/
-│   │   │   ├── ground.feature.tsx
-│   │   │   ├── _components/
-│   │   │   │   ├── FindCard.tsx
-│   │   │   │   ├── FindList.tsx
-│   │   │   │   ├── SubmitFindSheet.tsx
-│   │   │   │   └── index.ts
-│   │   │   ├── _hooks/
-│   │   │   │   ├── use.ground.hook.ts
-│   │   │   │   ├── use.find.submission.hook.ts
-│   │   │   │   └── index.ts
-│   │   │   ├── _helpers/
-│   │   │   │   └── index.ts
+│   │   ├── _hooks/                    # UI state hooks only — imports from network/ for data
+│   │   │   ├── use.scanner.hook.ts
+│   │   │   ├── use.barcode.detector.hook.ts
+│   │   │   ├── use.verdict.animation.hook.ts
 │   │   │   └── index.ts
-│   │   │
-│   │   ├── cooking.session/
-│   │   ├── recipes/
-│   │   ├── map/
-│   │   ├── pantry/
-│   │   ├── bela/
-│   │   ├── memory/
-│   │   ├── recall/
-│   │   ├── notifications/
-│   │   ├── auth/
-│   │   ├── onboarding/
-│   │   ├── profile/
-│   │   ├── receipt/
-│   │   ├── illness.detective/
-│   │   ├── menu.scanning/
-│   │   ├── ambient.intelligence/
-│   │   ├── recipe.ingestion/
-│   │   ├── wearables/
-│   │   ├── kids.mode/
-│   │   └── viral.sharing/
-│   │
-│   ├── stores/                         # Zustand stores — one folder per concern
-│   │   ├── ambient/
-│   │   │   └── use.ambient.store.ts
-│   │   ├── auth/
-│   │   │   └── use.auth.store.ts
-│   │   ├── ui/
-│   │   │   ├── use.app.store.ts
-│   │   │   ├── use.overlay.store.ts
-│   │   │   └── use.privacy.store.ts
-│   │   └── scanner/
-│   │       └── use.scanner.flow.store.ts
-│   │
-│   ├── components/                     # Shared design system components
-│   │   ├── Button/
-│   │   │   ├── Button.tsx
+│   │   ├── _helpers/
+│   │   │   ├── format.verdict.helper.ts
 │   │   │   └── index.ts
-│   │   ├── GlassCard/
-│   │   ├── VerdictField/
-│   │   ├── GlowRing/
-│   │   ├── AmbientCanvas/
-│   │   ├── Icon/
-│   │   └── ErrorBoundary/
+│   │   └── index.ts
 │   │
-│   ├── design-system/
-│   │   ├── colors.ts
-│   │   ├── typography.ts
-│   │   ├── spacing.ts
-│   │   ├── motion.ts
-│   │   ├── haptics.ts
-│   │   ├── variants/
-│   │   │   ├── button.variants.ts
-│   │   │   ├── card.variants.ts
-│   │   │   ├── tag.variants.ts
-│   │   │   ├── badge.variants.ts
+│   ├── ground/
+│   │   ├── ground.feature.tsx
+│   │   ├── _components/
+│   │   │   ├── FindCard.tsx
+│   │   │   ├── FindList.tsx
+│   │   │   ├── SubmitFindSheet.tsx
 │   │   │   └── index.ts
-│   │   └── shaders/
-│   │       ├── ambient.glsl.ts
-│   │       ├── texture.glsl.ts
-│   │       ├── holographic.glsl.ts
-│   │       └── index.ts
+│   │   ├── _hooks/
+│   │   │   ├── use.ground.hook.ts
+│   │   │   ├── use.find.submission.hook.ts
+│   │   │   └── index.ts
+│   │   ├── _helpers/
+│   │   │   └── index.ts
+│   │   └── index.ts
 │   │
-│   ├── generative-ui/
-│   │   ├── registry.ts
-│   │   ├── schemas.ts
-│   │   ├── types.ts
-│   │   └── GenerativeSlot.tsx
-│   │
-│   ├── providers/
-│   │   ├── QueryProvider.tsx
-│   │   ├── AuthProvider.tsx
-│   │   ├── AmbientProvider.tsx
-│   │   └── index.tsx
-│   │
-│   └── lib/                            # Pure utilities — no React
-│       ├── cn.ts
-│       ├── format.ts
-│       └── assert.ts
+│   ├── cooking.session/
+│   ├── recipes/
+│   ├── map/
+│   ├── pantry/
+│   ├── bela/
+│   ├── memory/
+│   ├── recall/
+│   ├── notifications/
+│   ├── auth/
+│   ├── onboarding/
+│   ├── profile/
+│   ├── receipt/
+│   ├── illness.detective/
+│   ├── menu.scanning/
+│   ├── ambient.intelligence/
+│   ├── recipe.ingestion/
+│   ├── wearables/
+│   ├── kids.mode/
+│   └── viral.sharing/
+│
+├── stores/                             # Zustand stores — one folder per concern
+│   ├── ambient/
+│   │   └── use.ambient.store.ts
+│   ├── auth/
+│   │   └── use.auth.store.ts
+│   ├── ui/
+│   │   ├── use.app.store.ts
+│   │   ├── use.overlay.store.ts
+│   │   └── use.privacy.store.ts
+│   └── scanner/
+│       └── use.scanner.flow.store.ts
+│
+├── components/                         # Shared design system components
+│   ├── Button/
+│   │   ├── Button.tsx
+│   │   └── index.ts
+│   ├── GlassCard/
+│   ├── VerdictField/
+│   ├── GlowRing/
+│   ├── AmbientCanvas/
+│   ├── Icon/
+│   └── ErrorBoundary/
+│
+├── design-system/
+│   ├── colors.ts
+│   ├── typography.ts
+│   ├── spacing.ts
+│   ├── motion.ts
+│   ├── haptics.ts
+│   ├── variants/
+│   │   ├── button.variants.ts
+│   │   ├── card.variants.ts
+│   │   ├── tag.variants.ts
+│   │   ├── badge.variants.ts
+│   │   └── index.ts
+│   └── shaders/
+│       ├── ambient.glsl.ts
+│       ├── texture.glsl.ts
+│       ├── holographic.glsl.ts
+│       └── index.ts
+│
+├── providers/
+│   ├── query.provider.tsx
+│   ├── auth.provider.tsx
+│   └── index.tsx
+│
+├── lib/                                # Pure utilities — no React
+│   ├── cn.ts
+│   ├── format.ts
+│   └── assert.ts
 │
 ├── assets/fonts/
 ├── global.css
 ├── tailwind.config.ts
-├── app.config.ts
+├── app.json
 ├── tsconfig.json
 └── package.json
 ```
@@ -586,12 +578,12 @@ The `shared/src/routes/index.ts` is the single source of truth.
 | Shared Zod schemas | `shared/validator/scan/scan.schema.ts` |
 | Branded ID types | `shared/validator/user/user.id.type.ts` |
 | All API route definitions | `shared/routes/index.ts` → `API_ROUTES` + `API_ROUTE_PATTERNS` |
-| Mobile fetch functions for scan | `mobile/src/network/scan/scan.api.ts` |
-| TanStack hook for creating a scan | `mobile/src/network/scan/use.create.scan.hook.ts` |
-| All TanStack query keys | `mobile/src/network/core/query.keys.ts` |
-| Scanner feature root component | `mobile/src/features/scanner/scanner.feature.tsx` |
-| Scanner UI state hooks | `mobile/src/features/scanner/_hooks/*.hook.ts` |
-| Scanner UI components | `mobile/src/features/scanner/_components/*.tsx` |
-| Zustand store for ambient | `mobile/src/stores/ambient/use.ambient.store.ts` |
-| Shared design system component | `mobile/src/components/Button/Button.tsx` |
-| CVA variant definitions | `mobile/src/design-system/variants/button.variants.ts` |
+| Mobile fetch functions for scan | `mobile/network/scan/scan.api.ts` |
+| TanStack hook for creating a scan | `mobile/network/scan/use.create.scan.hook.ts` |
+| All TanStack query keys | `mobile/network/core/query.keys.ts` |
+| Scanner feature root component | `mobile/features/scanner/scanner.feature.tsx` |
+| Scanner UI state hooks | `mobile/features/scanner/_hooks/*.hook.ts` |
+| Scanner UI components | `mobile/features/scanner/_components/*.tsx` |
+| Zustand store for ambient | `mobile/stores/ambient/use.ambient.store.ts` |
+| Shared design system component | `mobile/components/Button/Button.tsx` |
+| CVA variant definitions | `mobile/design-system/variants/button.variants.ts` |

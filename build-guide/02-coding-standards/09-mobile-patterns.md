@@ -23,7 +23,7 @@ If a screen file exceeds 40 lines, business logic is leaking in. Extract it.
 Each feature has a root component — the entry point rendered by the screen. It owns: layout structure, feature-level state, coordination between sub-components.
 
 ```tsx
-// mobile/src/features/scanner/components/ScanView.tsx
+// mobile/features/scanner/components/ScanView.tsx
 import { View } from 'react-native'
 import { AmbientCanvas } from '@/components/AmbientCanvas'
 import { GlowRing } from '@/components/GlowRing'
@@ -50,7 +50,7 @@ export function ScanView() {
 Custom hooks own all logic that is not pure rendering. Data fetching, state machines, animation values, side effects, event handlers — all in hooks.
 
 ```ts
-// mobile/src/features/scanner/hooks/useScanner.ts
+// mobile/features/scanner/hooks/useScanner.ts
 import { useState } from 'react'
 import { useSharedValue, withSpring } from 'react-native-reanimated'
 import { useIsomorphicLayoutEffect } from 'usehooks-ts'
@@ -108,7 +108,7 @@ network/
 **`{domain}.api.ts`** — raw fetch functions, uses typed route paths, returns typed data:
 
 ```ts
-// mobile/src/network/scan/scan.api.ts
+// mobile/network/scan/scan.api.ts
 import { API_ROUTES } from '@brioela/shared/routes'
 import type { Scan, CreateScan } from '@brioela/shared'
 import * as api from '@/network/core'
@@ -129,7 +129,7 @@ export async function listScanHistory(): Promise<Scan[]> {
 **`use.{action}.hook.ts`** — one hook per query or mutation, one file per hook:
 
 ```ts
-// mobile/src/network/scan/use.create.scan.hook.ts
+// mobile/network/scan/use.create.scan.hook.ts
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { createScan } from './scan.api'
 import { QUERY_KEYS } from '@/network/core'
@@ -146,7 +146,7 @@ export function useCreateScan() {
 ```
 
 ```ts
-// mobile/src/network/scan/use.scan.history.hook.ts
+// mobile/network/scan/use.scan.history.hook.ts
 import { useQuery } from '@tanstack/react-query'
 import { listScanHistory } from './scan.api'
 import { QUERY_KEYS } from '@/network/core'
@@ -162,7 +162,7 @@ export function useScanHistory() {
 **`query.keys.ts`** — all query keys in one place, typed as `const`:
 
 ```ts
-// mobile/src/network/core/query.keys.ts
+// mobile/network/core/query.keys.ts
 export const QUERY_KEYS = {
   SCAN: {
     HISTORY:  ['scan', 'history'] as const,
@@ -181,7 +181,7 @@ export const QUERY_KEYS = {
 **`client.ts`** — typed fetch wrapper, never axios:
 
 ```ts
-// mobile/src/network/core/client.ts
+// mobile/network/core/client.ts
 import { useAuthStore } from '@/stores/auth/use.auth.store'
 import { AppError } from '@brioela/shared/types'
 
@@ -227,7 +227,7 @@ The `features/` folder's `_hooks/` contains UI state hooks that **import from ne
 All API calls go through TanStack Query. No `useEffect` + `fetch`. No `useState` for server data.
 
 ```ts
-// mobile/src/features/scanner/hooks/useScanQuery.ts
+// mobile/features/scanner/hooks/useScanQuery.ts
 import { useMutation } from '@tanstack/react-query'
 import { scanApi } from '@/api'
 
@@ -237,7 +237,7 @@ export function useScanQuery() {
   })
 }
 
-// mobile/src/features/recipes/hooks/useRecipes.ts
+// mobile/features/recipes/hooks/useRecipes.ts
 import { useQuery } from '@tanstack/react-query'
 import { recipesApi } from '@/api'
 
@@ -266,7 +266,7 @@ queryKey: ['ground', 'finds', geohash]       // finds in a geohash cell
 Every shared component lives in its own folder. The folder contains the component, its test file, and the barrel export. Nothing else.
 
 ```
-mobile/src/components/Button/
+mobile/components/Button/
 ├── Button.tsx      — the component
 ├── Button.test.tsx — tests (if any)
 └── index.ts        — barrel: export { Button } from './Button'
@@ -275,7 +275,7 @@ mobile/src/components/Button/
 The component file:
 
 ```tsx
-// mobile/src/components/Button/Button.tsx
+// mobile/components/Button/Button.tsx
 import { Pressable, Text } from 'react-native'
 import type { VariantProps } from 'class-variance-authority'
 import { cn } from '@/lib/cn'
@@ -352,10 +352,10 @@ No prop drilling past two levels. If a value needs to go three or more levels de
 
 ## Zustand Store Pattern
 
-One file per store. Stores are in `mobile/src/providers/` if they need a React context bridge, or directly in the feature if feature-local.
+One file per store. Stores live in `mobile/stores/{concern}/` — one folder per concern. Providers live in `mobile/providers/`.
 
 ```ts
-// mobile/src/providers/ambient-store.ts
+// mobile/providers/ambient-store.ts
 import { create } from 'zustand'
 
 type AmbientStore = {
