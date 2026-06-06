@@ -1,0 +1,11 @@
+[
+  { "time": 0, "event": "black.start" },
+  { "time": 1.2, "event": "ember.appear" },
+  { "time": 4, "event": "narration.start" },
+  { "time": 7.4, "event": "flame.bloom", "sfx": "sfx-flame-bloom", "haptic": "heavy" },
+  { "time": 14.8, "event": "hands.enter" },
+  { "time": 23.5, "event": "memory.burst", "sfx": "sfx-bite-burst", "haptic": "rigid" },
+  { "time": 31.2, "event": "wordmark.complete", "sfx": "sfx-brioela-note", "haptic": "heavy" },
+  { "time": 36, "event": "camera.reveal" },
+  { "time": 38, "event": "final-text.show" }
+]
