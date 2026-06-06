@@ -18,6 +18,7 @@
 ## Required For
 
 - child-friendly scan explanations
+- supervised kid co-scan phone handoff
 - parenting-moment share cards
 - voice-session kid tone switch
 - Kids Mode Core tier upgrade trigger
