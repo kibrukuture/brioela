@@ -4,7 +4,18 @@
 The community food intelligence layer. Finds (single time-stamped, location-tagged observations), the 3D Mapbox map (building extrusion, pulsing signal dots, color by signal type, zoom behavior), the AI authenticity gate, voice-to-find flow, haptic walking discovery, find-to-cooking-session triggers, and the personalized relevance scoring for the map. The product is never about the person — the product observation is the center.
 
 ## Status
-[ ] not started
+[x] complete — six files written
+
+## Files In This Folder
+
+| File | Contents |
+|---|---|
+| `01-find-data-model.md` | Supabase shared find tables, Orchestrator private find history, status/freshness model |
+| `02-authenticity-gate.md` | AI gate checks, rejection handling, media safety, rate limits |
+| `03-find-submission-flow.md` | scan-to-find, map-to-find, ambient prompt, voice-to-find, AI-drafted finds |
+| `04-map-rendering.md` | Mapbox layers, pulse animation, relevance sizing, zoom behavior, clusters |
+| `05-haptic-walking-discovery.md` | optional background discovery haptic, local privacy rules, suppression |
+| `06-find-to-cooking-trigger.md` | matching fresh finds to cooking gaps and surfacing cooking actions |
 
 ## Specs This Folder Draws From
 - `brioela-specs/35-ground-community-intelligence.md` — full Ground spec: find schema, AI gate, map, privacy model, data model
@@ -35,3 +46,8 @@ Under `tools/ground/`:
 ## What Depends On This Folder
 - `10-map` — Ground signals overlay the healthy food map as a separate layer
 - `11-bela` — Bela shoppers contribute Ground finds as a side effect of every order; smart routing uses Ground data
+
+## Release Split
+
+- First release: data model, AI gate, manual/AI-drafted find submission, map pulse rendering.
+- Later release: haptic walking discovery and find-to-cooking triggers.

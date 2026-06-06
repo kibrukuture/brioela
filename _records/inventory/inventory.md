@@ -18,8 +18,8 @@ Core product philosophy and feature specs. These are the "what and why" layer.
 | [~] | `00-product-philosophy-and-ux.md` | Core product philosophy, UX principles — read FIRST before any build-guide |
 | [x] | `01-product-health-scanning.md` | Product barcode scanning, health data, constraint check at scan time |
 | [~] | `02-recipe-ingestion-from-shared-content.md` | Parsing recipes from shared links, screenshots, social content |
-| [ ] | `03-hyperlocal-community-notes.md` | **DEPRECATED** — superseded by spec 35 (Ground). Read for context only. |
-| [ ] | `04-healthy-food-map.md` | Map layer showing healthy food locations — overlays with Ground |
+| [x] | `03-hyperlocal-community-notes.md` | **DEPRECATED** — superseded by spec 35 (Ground). Read for context only. |
+| [~] | `04-healthy-food-map.md` | Map layer showing healthy food locations — overlays with Ground |
 | [x] | `05-origin-supply-chain-and-boycott-filters.md` | Country-of-origin tracking, supply chain, user boycott enforcement |
 | [ ] | `06-receipt-spend-intelligence.md` | Receipt scanning, spend tracking, price intelligence |
 | [x] | `07-allergy-dislike-and-dietary-guardrails.md` | Allergy system, dietary restrictions, hard blocks vs soft guidance |
@@ -38,7 +38,7 @@ Core product philosophy and feature specs. These are the "what and why" layer.
 | [ ] | `20-platform-and-app-distribution.md` | iOS, Android, web distribution strategy |
 | [x] | `21-onboarding.md` | User onboarding flow — first experience, constraint setup |
 | [ ] | `22-pre-trip-food-intelligence.md` | Travel food intelligence — what to eat, buy, avoid in a new city |
-| [ ] | `23-ambient-notification-strategy.md` | Push notification design, when and how to notify |
+| [~] | `23-ambient-notification-strategy.md` | Push notification design, when and how to notify |
 | [~] | `24-technical-architecture-backbone.md` | Full technical architecture — CRITICAL, read early |
 | [ ] | `25-viral-growth-and-sharing.md` | Viral mechanics, sharing, growth loops |
 | [ ] | `26-personalized-recall-alerts.md` | Food recall detection, user-specific alert matching |
@@ -50,8 +50,8 @@ Core product philosophy and feature specs. These are the "what and why" layer.
 | [x] | `32-grandma-style-flavor-profile.md` | Capturing and recreating traditional/family flavor profiles |
 | [ ] | `33-minimum-spend-meal-plan.md` | Budget meal planning — most nutrition for least cost |
 | [x] | `34-universal-visual-intake.md` | Visual food logging — photo → nutrition data |
-| [ ] | `35-ground-community-intelligence.md` | Ground system — community food intelligence layer |
-| [ ] | `35b-ground-finds-deep-design.md` | Ground deep design — UX, pulse animation, haptic discovery, find flow |
+| [x] | `35-ground-community-intelligence.md` | Ground system — community food intelligence layer |
+| [x] | `35b-ground-finds-deep-design.md` | Ground deep design — UX, pulse animation, haptic discovery, find flow |
 | [ ] | `36-predictive-pantry-intelligence.md` | Predicting what user will run out of before they do |
 | [ ] | `37-guest-and-cooking-for-others.md` | Cooking for guests, dietary handling for multiple people |
 | [ ] | `38-food-time-machine.md` | Historical food data — what did I eat this time last year |
