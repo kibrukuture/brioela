@@ -1,7 +1,7 @@
 module.exports = function (api) {
   api.cache(true);
   const plugins = [
-    'react-native-reanimated/plugin',
+    'react-native-worklets/plugin',
   ];
 
   // Remove console statements in production

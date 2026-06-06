@@ -17,5 +17,8 @@
   "packageManager": "bun@1.2.21",
   "dependencies": {
     "dotenv": "^17.4.2"
-  }
+  },
+  "trustedDependencies": [
+    "@shopify/react-native-skia"
+  ]
 }
