@@ -29,9 +29,9 @@ Under `tools/ground/`:
 
 ## What This Folder Depends On
 - `05-orchestrator` — user constraint profile for personalized relevance scoring
-- `06-scanner` — find-from-scan entry point
+- `05-scanner` — find-from-scan entry point
 - `03-foundation` — Supabase for shared find tables, Cloudflare R2 for media
 
 ## What Depends On This Folder
 - `09-map` — Ground signals overlay the healthy food map as a separate layer
-- `22-bela` — Bela shoppers contribute Ground finds as a side effect of every order; smart routing uses Ground data
+- `09-bela` — Bela shoppers contribute Ground finds as a side effect of every order; smart routing uses Ground data

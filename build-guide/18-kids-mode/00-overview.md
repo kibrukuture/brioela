@@ -20,7 +20,7 @@ When a parent scans a product, one tap produces a child-friendly explanation of 
 - Available Core tier and above; free tier sees teaser + upgrade prompt
 
 ## What This Folder Depends On
-- `06-scanner` — triggered from scan result screen after standard verdict
+- `05-scanner` — triggered from scan result screen after standard verdict
 - `07-cooking-session` — voice mode piggybacks on cooking session AI
 - `05-orchestrator` — constraint profile (allergy flags must still show)
 

@@ -20,7 +20,7 @@ Declare a medical condition once by voice and the entire app adapts permanently:
 
 ## What This Folder Depends On
 - `05-orchestrator` — condition profile stored in Orchestrator DO; loaded into all scan and recipe calls
-- `06-scanner` — condition flag row appears in scan result alongside standard verdict
+- `05-scanner` — condition flag row appears in scan result alongside standard verdict
 - `20-verified-profiles` — practitioner access to condition data
 
 ## What Depends On This Folder

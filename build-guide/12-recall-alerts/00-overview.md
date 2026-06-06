@@ -21,7 +21,7 @@ Personalized food recall detection. FDA / EFSA / CFIA / RASFF recall feeds polle
 - Geo-scoped: FDA alerts for US products; EFSA/RASFF for EU; CFIA for Canada
 
 ## What This Folder Depends On
-- `06-scanner` — `scan_event` rows in Supabase are the match target
+- `05-scanner` — `scan_event` rows in Supabase are the match target
 - `10-notifications` — push delivery through notification system
 - `03-foundation` — Upstash QStash for polling cron, Supabase for scan_event and recall tables
 

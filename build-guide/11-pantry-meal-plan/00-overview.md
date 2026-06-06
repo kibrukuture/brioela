@@ -28,4 +28,4 @@ Four interconnected features that form the "what should I eat this week" surface
 - `09-map` — shopping list store suggestions from community price data
 
 ## What Depends On This Folder
-- `22-bela` — cooking intent trigger from meal plan → Bela order
+- `09-bela` — cooking intent trigger from meal plan → Bela order

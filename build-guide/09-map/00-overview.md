@@ -27,5 +27,5 @@ The healthy food map — location-aware discovery of nearby healthy food options
 - `03-foundation` — Supabase for shared map tables, Upstash Redis for geo cache
 
 ## What Depends On This Folder
-- `22-bela` — smart routing uses map data (store locations, product sightings)
+- `09-bela` — smart routing uses map data (store locations, product sightings)
 - `11-pantry-meal-plan` — store suggestions on shopping list from map price data

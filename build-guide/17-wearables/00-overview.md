@@ -22,7 +22,7 @@ Integration with health wearables to enrich food intelligence with actual biomet
 
 ## What This Folder Depends On
 - `05-orchestrator` — all wearable data routes to Orchestrator DO memory namespaces
-- `06-scanner` — CGM correlation triggered by scan events
+- `05-scanner` — CGM correlation triggered by scan events
 
 ## What Depends On This Folder
 - `11-pantry-meal-plan` — readiness score affects meal complexity suggestions; pre-workout glucose optimization

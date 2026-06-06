@@ -23,10 +23,10 @@ Receipt OCR and parsing, merchant normalization, line-item matching to canonical
 
 ## What This Folder Depends On
 - `05-orchestrator` — price history and spend data stored in Orchestrator DO SQLite
-- `06-scanner` — receipt scanner uses same OCR pipeline as product scanner
+- `05-scanner` — receipt scanner uses same OCR pipeline as product scanner
 - `03-foundation` — Supabase for shared anonymized price trend data
 
 ## What Depends On This Folder
 - `11-pantry-meal-plan` — receipt history drives pantry state and shopping list cost estimates
 - `15-ambient-intelligence` — behavioral patterns use receipt data to detect dietary drift and spend habits
-- `22-bela` — Bela receipt scan at store and door uses this OCR pipeline
+- `09-bela` — Bela receipt scan at store and door uses this OCR pipeline

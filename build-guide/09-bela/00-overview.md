@@ -29,7 +29,7 @@ Under `tools/bela/`:
 
 ## What This Folder Depends On
 - `05-orchestrator` — user constraint profile (copied to OrderAgent at order acceptance)
-- `06-scanner` — constraint enforcement pipeline reused for shopper scanner
+- `05-scanner` — constraint enforcement pipeline reused for shopper scanner
 - `07-cooking-session` — shopper AI uses same Gemini Live connection pattern
 - `08-ground` — smart routing uses Ground product_sighting data
 - `03-foundation` — Stripe, Supabase orders tables

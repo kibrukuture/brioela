@@ -21,7 +21,7 @@ Point camera at a restaurant menu, get per-dish verdicts in under 3 seconds. Eac
 
 ## What This Folder Depends On
 - `05-orchestrator` — user's full constraint profile (allergies, dietary identity, medical conditions, medications)
-- `06-scanner` — OCR pipeline reused for menu photo processing
+- `05-scanner` — OCR pipeline reused for menu photo processing
 - `09-map` — restaurant's community notes for trust layer overlay
 
 ## What Depends On This Folder

@@ -21,7 +21,7 @@ The mechanics that make Brioela grow without paid acquisition. Share cards gener
 - Recipe import: POST /api/recipes/import; URL or media reference; model normalizes into canonical schema; uncertain quantities marked `estimated` not fabricated
 
 ## What This Folder Depends On
-- `06-scanner` — scan share triggered from scan result
+- `05-scanner` — scan share triggered from scan result
 - `07-cooking-session` — cook-together share from cooking room session end
 - `11-pantry-meal-plan` — weekly summary share
 - `03-foundation` — share sheet extension registration on iOS/Android
