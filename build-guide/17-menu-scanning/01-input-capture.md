@@ -8,10 +8,11 @@ How the user gets a restaurant menu into Brioela: a single photo, multiple pages
 
 ## Entry Points
 
-Menu scanning has three user entry paths:
+Menu scanning has four user entry paths:
 
 - Camera capture from the scanner surface.
 - Multi-page capture from a menu-scanning session.
+- QR code capture from a restaurant table, window, receipt, or menu sign.
 - Shared URL from a browser, restaurant QR page, or platform menu page.
 
 The scanner's barcode flow is not reused directly. Menu scanning reuses the camera/OCR infrastructure from `07-scanner`, but it has its own endpoint and session shape because the output is a list of dishes, not one product verdict.
@@ -24,6 +25,10 @@ The scanner's barcode flow is not reused directly. Menu scanning reuses the came
 // Mobile sends digital menus to:
 // POST /api/menu-scans/url
 // Body: { url, restaurantId?, placeName?, geoHash?, capturedAt }
+
+// Mobile sends QR-derived menus to the same URL path after QR resolution:
+// POST /api/menu-scans/url
+// Body: { url, qrPayload, restaurantId?, placeName?, geoHash?, capturedAt }
 ```
 
 ---
@@ -92,6 +97,32 @@ The parser must not give URL menus a stronger confidence level than photo menus.
 
 ---
 
+## QR Code Menu Capture
+
+QR menu capture is a first-class path, not a fallback. The user scans the restaurant QR code, Brioela resolves the URL, loads the menu page, extracts the menu, and immediately returns a color-coded dish list.
+
+QR flow:
+
+1. Camera detects a QR code.
+2. Client validates that the QR payload is a URL or resolves to a URL.
+3. Backend fetches the target page with the same safety limits as shared URLs.
+4. Backend extracts visible menu content and structured dish data.
+5. Dish verdicts run against the user's private constraint profile.
+6. UI shows the parsed menu as a consumable decision surface, not as a web page.
+
+QR rules:
+
+- Never open arbitrary QR content inside an unrestricted webview before validation.
+- Follow redirects only within configured limits.
+- Store the final resolved URL separately from the raw QR payload.
+- If the QR leads to a PDF, image menu, ordering platform, or hosted menu page, normalize it into the same menu parser path.
+- If extraction fails, offer screenshot/photo capture as the fallback.
+- If the QR points to a non-menu page, return a clear "menu not found" state.
+
+The point is not to send the user to the restaurant website. The point is to transform that website into Brioela's own green/yellow/red menu view.
+
+---
+
 ## Low-Light Restaurant Conditions
 
 Restaurant menus often have dark backgrounds, glare, small typography, and poor lighting. The same server-side contrast enhancement from `07-scanner/05-ocr-fallback.md` runs before OCR.
@@ -113,9 +144,11 @@ Capture produces one normalized request for OCR/parsing:
 
 ```typescript
 type MenuScanInput = {
-  source: "photo" | "multi_page_photo" | "url"
+  source: "photo" | "multi_page_photo" | "url" | "qr_url"
   imagePages?: string[]
   extractedUrlText?: string
+  qrPayload?: string
+  resolvedUrl?: string
   restaurantId: string | null
   placeName: string | null
   geoHash: string | null

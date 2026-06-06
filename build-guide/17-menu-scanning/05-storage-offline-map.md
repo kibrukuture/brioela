@@ -8,11 +8,11 @@ The data retention boundary, offline partial mode, map/community overlay, and Co
 
 ## Storage Rule
 
-Menu content is transient by default.
+Raw menu content is transient by default.
 
 The backend may hold raw OCR text and parsed dish results only for the active request/session. Raw OCR text is discarded after processing unless the user explicitly saves the menu to their profile.
 
-This protects restaurants' menu content and avoids building a hidden menu database from private scans.
+This protects private scans and avoids storing messy raw OCR as if it were reliable menu data. Normalized public menu facts are different: after filtering and validation, they can feed the shared restaurant intelligence tables described in `06-shared-menu-intelligence.md`.
 
 ---
 
@@ -61,6 +61,8 @@ type MenuScanMemoryEvent = {
   kind: "menu_scanned"
   restaurantId: string | null
   placeName: string | null
+  source: "photo" | "multi_page_photo" | "url" | "qr_url"
+  resolvedUrlHash: string | null
   dishCount: number
   redCount: number
   yellowCount: number
@@ -69,7 +71,7 @@ type MenuScanMemoryEvent = {
 }
 ```
 
-Do not store OCR text, full dish descriptions, or waiter questions in `memory_event` unless the user saves the menu and the save flow makes that clear.
+Do not store OCR text, full dish descriptions, or waiter questions in `memory_event` unless the user saves the menu and the save flow makes that clear. The private event can remember that the user scanned a place and what the aggregate outcome was; the shared database can remember public menu facts without attaching the user's health profile.
 
 ---
 
@@ -83,6 +85,7 @@ Offline behavior:
 - Run local deterministic matching when OCR/text is available locally.
 - Show a visible "offline partial result" banner.
 - Do not show real-time community notes.
+- Do not write shared restaurant intelligence until the device is back online and the contribution can pass validation.
 - Do not imply the profile is current.
 - Queue a lightweight `menu_scanned` event for later sync if event logging is enabled.
 

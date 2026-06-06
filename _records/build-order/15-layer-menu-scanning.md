@@ -20,4 +20,6 @@
 - restaurant menu allergy/diet filtering
 - waiter question generation
 - later restaurant trust and saved-menu features
+- shared restaurant/menu intelligence from repeated scans
+- personalized restaurant discovery and map ranking
 - pricing-tier upgrade trigger definition

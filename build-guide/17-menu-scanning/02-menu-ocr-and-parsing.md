@@ -10,7 +10,7 @@ The server-side OCR and menu-specific LLM parsing path. This file stops at struc
 
 Menu scanning uses a one-shot structured extraction flow:
 
-1. Normalize input from photo, multi-page photo, or URL.
+1. Normalize input from photo, multi-page photo, QR code, or URL.
 2. Run server-side OCR for image input.
 3. Merge multi-page OCR text in page order.
 4. Send menu text to a standard text LLM call.
@@ -130,9 +130,10 @@ Parsing produces:
 
 ```typescript
 type ParsedMenu = {
-  source: "photo" | "multi_page_photo" | "url"
+  source: "photo" | "multi_page_photo" | "url" | "qr_url"
   restaurantId: string | null
   placeName: string | null
+  resolvedUrl: string | null
   dishes: ParsedMenuDish[]
   parserWarnings: string[]
 }

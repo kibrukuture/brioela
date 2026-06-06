@@ -1,10 +1,12 @@
 # Menu Scanning — Overview
 
 ## What This Folder Covers
-Point camera at a restaurant menu, get per-dish verdicts in under 3 seconds. Each dish is green (safe), yellow (ask waiter), or red (hard constraint violation). For yellow dishes, Brioela generates the exact question to ask: "Does this contain [X]? Is it cooked in a shared fryer with [allergen]?" Works on paper menus, screen menus, multi-page menus, and digital menus via URL. Low-connectivity offline partial mode using cached constraint profile.
+Point camera at a restaurant menu, scan a restaurant QR code, or share a menu URL, then get a fully parsed, per-dish decision surface in under 3 seconds. Each dish is green (likely OK), yellow (ask waiter), or red (hard constraint violation) for this specific user. For yellow dishes, Brioela generates the exact question to ask: "Does this contain [X]? Is it cooked in a shared fryer with [allergen]?" Works on paper menus, screen menus, multi-page menus, QR menus, and digital menus via URL. Low-connectivity offline partial mode uses the cached constraint profile when possible.
+
+The larger product angle: every menu scan also improves Brioela's restaurant intelligence layer. Private health constraints stay in the user's Orchestrator SQLite, while normalized restaurant/menu facts and aggregate safety signals can improve future scans, map ranking, and personalized restaurant discovery for other users.
 
 ## Status
-[x] complete — five files written
+[x] complete — seven files written
 
 ## Files In This Folder
 
@@ -15,6 +17,8 @@ Point camera at a restaurant menu, get per-dish verdicts in under 3 seconds. Eac
 | `03-dish-verdicts.md` | constraint-profile loading, green/yellow/red verdict rules, ranking behavior |
 | `04-waiter-questions.md` | exact yellow-flag question generation and user-facing script rules |
 | `05-storage-offline-map.md` | transient storage, offline partial mode, map/community overlay, upgrade trigger |
+| `06-shared-menu-intelligence.md` | shared restaurant menu data, aggregate safety signals, privacy boundary |
+| `07-personalized-restaurant-discovery.md` | user-specific restaurant ranking from menu, map, price, and health signals |
 
 ## Specs This Folder Draws From
 - `brioela-specs/27-restaurant-menu-scanning.md` — full menu scan spec: input handling, AI processing, constraint profile used, waiter script generation, offline mode, map integration
@@ -25,8 +29,10 @@ Point camera at a restaurant menu, get per-dish verdicts in under 3 seconds. Eac
 - Dishes with no ingredient detail flagged yellow by default (unknown = ask, never assume safe)
 - Waiter script: pre-formulated, specific, non-awkward — removes anxiety of not knowing what to ask
 - Raw OCR text discarded after processing; results stored for session only unless user saves
+- Normalized public menu facts can feed shared restaurant intelligence after privacy filtering
 - Offline: cached constraint profile enables local constraint matching; community notes unavailable offline
 - Map integration: if restaurant is in healthy food map, community notes about that place overlay the menu scan result
+- Discovery: Brioela should eventually show the best places for this user, not a generic list of all restaurants
 - Upgrade trigger: free users hit menu scan → Core tier upgrade prompt
 
 ## What This Folder Depends On
@@ -35,4 +41,6 @@ Point camera at a restaurant menu, get per-dish verdicts in under 3 seconds. Eac
 - `10-map` — restaurant's community notes for trust layer overlay
 
 ## What Depends On This Folder
+- `10-map` — can use shared menu intelligence to rank and render restaurants more personally
+- `18-ambient-intelligence` — can suggest restaurants before trips or mealtimes using derived place/menu fit
 - `25-pricing-tiers` — uses menu scanning as a Core tier upgrade trigger; entitlement mechanics live there, not here
