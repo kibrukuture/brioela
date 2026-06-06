@@ -45,3 +45,20 @@ spec: brioela-specs/13-generational-recipe-capture.md
 
 spec: brioela-specs/32-grandma-style-flavor-profile.md
   → build-guide/07-cooking-session/06-session-end-and-recipe.md [x] done (cultural notes, technique preservation in recipe content)
+
+spec: brioela-specs/10-voice-cooking-agent.md
+  → build-guide/07-cooking-session/00-overview.md           [x] done (voice cooking scope)
+  → build-guide/07-cooking-session/03-gemini-live-session.md [x] done (Gemini Live audio session)
+
+spec: brioela-specs/11-live-vision-cooking-coach.md
+  → build-guide/07-cooking-session/03-gemini-live-session.md [x] done (JPEG frame forwarding to Gemini)
+  → build-guide/07-cooking-session/04-proactive-speech-engine.md [x] done (visual observation behavior)
+
+spec: brioela-specs/12-multi-person-cooking-rooms.md
+  → build-guide/07-cooking-session/00-overview.md           [~] partial (source still says LiveKit; current guide uses Cloudflare Realtime)
+  → build-guide/07-cooking-session/01-room-lifecycle.md      [~] partial (RealtimeKit room lifecycle replaces LiveKit path)
+
+spec: brioela-specs/24-technical-architecture-backbone.md
+  → build-guide/07-cooking-session/00-overview.md           [x] done (stateful CookingAgent DO, context, alarms)
+  → build-guide/07-cooking-session/03-gemini-live-session.md [x] done (Gemini Live, reconnect, context)
+  → build-guide/07-cooking-session/05-timers.md              [x] done (DO alarms)
