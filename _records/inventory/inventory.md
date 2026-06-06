@@ -43,7 +43,7 @@ Core product philosophy and feature specs. These are the "what and why" layer.
 | [~] | `25-viral-growth-and-sharing.md` | Viral mechanics, sharing, growth loops |
 | [x] | `26-personalized-recall-alerts.md` | Food recall detection, user-specific alert matching |
 | [x] | `27-restaurant-menu-scanning.md` | Scanning restaurant menus, constraint check against menu items |
-| [ ] | `28-medical-condition-food-profile.md` | Medical conditions (diabetes, celiac, etc.) mapped to food restrictions |
+| [x] | `28-medical-condition-food-profile.md` | Medical conditions (diabetes, celiac, etc.) mapped to food restrictions |
 | [x] | `29-food-cost-inflation-tracker.md` | Tracking price changes over time for user's regular purchases |
 | [x] | `30-food-illness-detective.md` | Detecting potential food illness from user's recent consumption |
 | [x] | `31-kids-food-literacy-mode.md` | Kids mode — age-appropriate food education |

@@ -36,6 +36,7 @@ spec: brioela-specs/35-ground-community-intelligence.md
 - `16-wearables-connections.md`
 - `17-kids-mode-connections.md`
 - `18-mesa-connections.md`
+- `19-medical-conditions-connections.md`
 
 ## When to update
 Every time a build-guide file is written: add the connection here immediately.
