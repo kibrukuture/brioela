@@ -15,7 +15,7 @@ Core product philosophy and feature specs. These are the "what and why" layer.
 
 | Status | File | One-line description |
 |---|---|---|
-| [~] | `00-product-philosophy-and-ux.md` | Core product philosophy, UX principles — read FIRST before any build-guide |
+| [x] | `00-product-philosophy-and-ux.md` | Core product philosophy, UX principles — read FIRST before any build-guide |
 | [x] | `01-product-health-scanning.md` | Product barcode scanning, health data, constraint check at scan time |
 | [x] | `02-recipe-ingestion-from-shared-content.md` | Parsing recipes from shared links, screenshots, social content |
 | [x] | `03-hyperlocal-community-notes.md` | **DEPRECATED** — superseded by spec 35 (Ground). Read for context only. |
@@ -27,7 +27,7 @@ Core product philosophy and feature specs. These are the "what and why" layer.
 | [x] | `09-per-user-agent-orchestrator.md` | Orchestrator DO — the central agent, CRITICAL PATH for everything |
 | [x] | `10-voice-cooking-agent.md` | Voice cooking assistant — precursor to cooking session spec |
 | [x] | `11-live-vision-cooking-coach.md` | Camera-based cooking coach — precursor to cooking session spec |
-| [~] | `12-multi-person-cooking-rooms.md` | Multiple people in one cooking session |
+| [x] | `12-multi-person-cooking-rooms.md` | Multiple people in one cooking session |
 | [x] | `13-generational-recipe-capture.md` | Capturing family recipes from elders, voice, video |
 | [x] | `14-fridge-and-pantry-ingredient-rescue.md` | Pantry state, ingredient rescue, what can I cook with what I have |
 | [x] | `15-hyperlocal-price-and-availability-alerts.md` | Real-time price and availability signals near user |
@@ -35,11 +35,11 @@ Core product philosophy and feature specs. These are the "what and why" layer.
 | [x] | `17-behavioral-food-pattern-detection.md` | AI detecting patterns in user food behavior |
 | [x] | `18-verified-business-and-practitioner-profiles.md` | Verified profiles for food businesses, dietitians, practitioners |
 | [x] | `19-pricing-and-tiers.md` | App pricing tiers, what is free vs paid — CRITICAL for product decisions |
-| [~] | `20-platform-and-app-distribution.md` | iOS, Android, web distribution strategy |
+| [x] | `20-platform-and-app-distribution.md` | iOS, Android, web distribution strategy |
 | [x] | `21-onboarding.md` | User onboarding flow — first experience, constraint setup |
 | [x] | `22-pre-trip-food-intelligence.md` | Travel food intelligence — what to eat, buy, avoid in a new city |
 | [x] | `23-ambient-notification-strategy.md` | Push notification design, when and how to notify |
-| [~] | `24-technical-architecture-backbone.md` | Full technical architecture — CRITICAL, read early |
+| [x] | `24-technical-architecture-backbone.md` | Full technical architecture — CRITICAL, read early |
 | [x] | `25-viral-growth-and-sharing.md` | Viral mechanics, sharing, growth loops |
 | [x] | `26-personalized-recall-alerts.md` | Food recall detection, user-specific alert matching |
 | [x] | `27-restaurant-menu-scanning.md` | Scanning restaurant menus, constraint check against menu items |
@@ -81,7 +81,7 @@ Orchestrator DO SQLite schema and memory system — the data layer everything ru
 | [x] | `10-scheduled-alarms.md` | DO alarm schedule — timer system |
 | [x] | `11-agent-state.md` | Agent state key/value store in DO SQLite |
 | [x] | `12-schema-version.md` | Schema migration versioning |
-| [~] | `13-gaps-and-missing-specs.md` | Known gaps — read to understand what is intentionally unspecced |
+| [x] | `13-gaps-and-missing-specs.md` | Known gaps — all blockers closed or superseded in current build-guide records |
 | [x] | `15-curator.md` | Curator — background maintenance job (note: no file 14) |
 | [x] | `16-agent-identity.md` | Agent identity — who Brioela is, how it presents itself |
 | [x] | `17-session-lifecycle.md` | Full session lifecycle from open to close |

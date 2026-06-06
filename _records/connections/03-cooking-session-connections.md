@@ -55,8 +55,8 @@ spec: brioela-specs/11-live-vision-cooking-coach.md
   → build-guide/08-cooking-session/04-proactive-speech-engine.md [x] done (visual observation behavior)
 
 spec: brioela-specs/12-multi-person-cooking-rooms.md
-  → build-guide/08-cooking-session/00-overview.md           [~] partial (source still says LiveKit; current guide uses Cloudflare Realtime)
-  → build-guide/08-cooking-session/01-room-lifecycle.md      [~] partial (RealtimeKit room lifecycle replaces LiveKit path)
+  → build-guide/08-cooking-session/00-overview.md           [x] done (multi-person room scope; source LiveKit path superseded by Cloudflare Realtime/RealtimeKit decision)
+  → build-guide/08-cooking-session/01-room-lifecycle.md      [x] done (RealtimeKit room lifecycle replaces LiveKit path)
 
 spec: brioela-specs/24-technical-architecture-backbone.md
   → build-guide/08-cooking-session/00-overview.md           [x] done (stateful CookingAgent DO, context, alarms)
