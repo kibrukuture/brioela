@@ -21,7 +21,7 @@ Core product philosophy and feature specs. These are the "what and why" layer.
 | [x] | `03-hyperlocal-community-notes.md` | **DEPRECATED** — superseded by spec 35 (Ground). Read for context only. |
 | [x] | `04-healthy-food-map.md` | Map layer showing healthy food locations — overlays with Ground |
 | [x] | `05-origin-supply-chain-and-boycott-filters.md` | Country-of-origin tracking, supply chain, user boycott enforcement |
-| [ ] | `06-receipt-spend-intelligence.md` | Receipt scanning, spend tracking, price intelligence |
+| [x] | `06-receipt-spend-intelligence.md` | Receipt scanning, spend tracking, price intelligence |
 | [x] | `07-allergy-dislike-and-dietary-guardrails.md` | Allergy system, dietary restrictions, hard blocks vs soft guidance |
 | [x] | `08-personal-food-memory-engine.md` | User food memory — what they cook, buy, prefer, avoid |
 | [x] | `09-per-user-agent-orchestrator.md` | Orchestrator DO — the central agent, CRITICAL PATH for everything |
@@ -44,7 +44,7 @@ Core product philosophy and feature specs. These are the "what and why" layer.
 | [~] | `26-personalized-recall-alerts.md` | Food recall detection, user-specific alert matching |
 | [ ] | `27-restaurant-menu-scanning.md` | Scanning restaurant menus, constraint check against menu items |
 | [ ] | `28-medical-condition-food-profile.md` | Medical conditions (diabetes, celiac, etc.) mapped to food restrictions |
-| [ ] | `29-food-cost-inflation-tracker.md` | Tracking price changes over time for user's regular purchases |
+| [x] | `29-food-cost-inflation-tracker.md` | Tracking price changes over time for user's regular purchases |
 | [ ] | `30-food-illness-detective.md` | Detecting potential food illness from user's recent consumption |
 | [ ] | `31-kids-food-literacy-mode.md` | Kids mode — age-appropriate food education |
 | [x] | `32-grandma-style-flavor-profile.md` | Capturing and recreating traditional/family flavor profiles |

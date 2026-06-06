@@ -4,7 +4,18 @@
 Receipt OCR and parsing, merchant normalization, line-item matching to canonical products, spend categorization (healthy vs non-healthy), weekly spend aggregation, personal price history, inflation tracking with cheaper equivalent suggestions, and the price history view. Receipts are also the primary data source for the predictive pantry and meal plan features.
 
 ## Status
-[ ] not started
+[x] complete — six files written
+
+## Files In This Folder
+
+| File | Contents |
+|---|---|
+| `01-receipt-ingestion.md` | capture/upload, receipt record, OCR raw storage |
+| `02-ocr-and-normalization.md` | OCR parsing, merchant normalization, uncertain line preservation |
+| `03-line-item-product-matching.md` | exact/SKU/barcode/fuzzy matching to products |
+| `04-spend-summaries.md` | weekly/category healthy spend aggregation |
+| `05-price-history-and-alerts.md` | private price history, inflation detection, cheaper equivalent candidates |
+| `06-receipt-ui-and-voice.md` | receipt detail, price history view, voice query behavior |
 
 ## Specs This Folder Draws From
 - `brioela-specs/06-receipt-spend-intelligence.md` — receipt OCR, line-item matching, spend categorization
@@ -30,3 +41,7 @@ Receipt OCR and parsing, merchant normalization, line-item matching to canonical
 - `14-pantry-meal-plan` — receipt history drives pantry state and shopping list cost estimates
 - `18-ambient-intelligence` — behavioral patterns use receipt data to detect dietary drift and spend habits
 - `11-bela` — Bela receipt scan at store and door uses this OCR pipeline
+
+## Boundary
+
+This feature owns personal receipt/spend/price history. Map owns shared `price_sighting` and alert candidate geography. Bela owns checkout proof workflow.
