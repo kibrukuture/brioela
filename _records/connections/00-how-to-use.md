@@ -25,7 +25,7 @@ spec: brioela-specs/35-ground-community-intelligence.md
 - `06-bela-connections.md`
 - `06-memory-engine-connections.md`
 - `07-auth-connections.md`
-- `08-design-system-connections.md`
+- `08-notifications-connections.md`
 
 ## When to update
 Every time a build-guide file is written: add the connection here immediately.

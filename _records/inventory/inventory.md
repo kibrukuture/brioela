@@ -38,10 +38,10 @@ Core product philosophy and feature specs. These are the "what and why" layer.
 | [ ] | `20-platform-and-app-distribution.md` | iOS, Android, web distribution strategy |
 | [x] | `21-onboarding.md` | User onboarding flow — first experience, constraint setup |
 | [ ] | `22-pre-trip-food-intelligence.md` | Travel food intelligence — what to eat, buy, avoid in a new city |
-| [~] | `23-ambient-notification-strategy.md` | Push notification design, when and how to notify |
+| [x] | `23-ambient-notification-strategy.md` | Push notification design, when and how to notify |
 | [~] | `24-technical-architecture-backbone.md` | Full technical architecture — CRITICAL, read early |
 | [ ] | `25-viral-growth-and-sharing.md` | Viral mechanics, sharing, growth loops |
-| [ ] | `26-personalized-recall-alerts.md` | Food recall detection, user-specific alert matching |
+| [~] | `26-personalized-recall-alerts.md` | Food recall detection, user-specific alert matching |
 | [ ] | `27-restaurant-menu-scanning.md` | Scanning restaurant menus, constraint check against menu items |
 | [ ] | `28-medical-condition-food-profile.md` | Medical conditions (diabetes, celiac, etc.) mapped to food restrictions |
 | [ ] | `29-food-cost-inflation-tracker.md` | Tracking price changes over time for user's regular purchases |
