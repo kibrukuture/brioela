@@ -4,7 +4,18 @@
 Four interconnected features that form the "what should I eat this week" surface: fridge/pantry ingredient rescue (urgent — what can I make right now), predictive pantry intelligence (proactive — you'll run out of X in 3 days), the minimum spend meal plan (7-day plan from existing inventory + constraint-filtered recipes + waste minimization), and the weekly food summary (ambient digest of food behavior each week). All four share the same inventory model and constraint pipeline.
 
 ## Status
-[ ] not started
+[x] complete — six files written
+
+## Files In This Folder
+
+| File | Contents |
+|---|---|
+| `01-pantry-snapshot.md` | fridge/pantry camera snapshot, detections, inventory estimate |
+| `02-recipe-matching.md` | matching recipes to available ingredients and constraints |
+| `03-meal-plan-generation.md` | 7-day plan generation, inventory/recipe/constraint context |
+| `04-shopping-list-and-cost.md` | shopping list delta, estimated cost, store suggestions |
+| `05-predictive-pantry.md` | purchase pattern prediction, depletion estimates, confidence tiers |
+| `06-weekly-food-summary.md` | weekly rollup and delivery through notifications |
 
 ## Specs This Folder Draws From
 - `brioela-specs/14-fridge-and-pantry-ingredient-rescue.md` — camera ingredient detection, pantry snapshot, recipe ranking by ingredient coverage
@@ -29,3 +40,7 @@ Four interconnected features that form the "what should I eat this week" surface
 
 ## What Depends On This Folder
 - `11-bela` — cooking intent trigger from meal plan → Bela order
+
+## Boundary
+
+This folder owns personal pantry/meal planning intelligence. Receipt Intelligence supplies purchase history. Map supplies store/price suggestions. Notifications only delivers surfaced moments.

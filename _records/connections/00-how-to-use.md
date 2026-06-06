@@ -27,6 +27,7 @@ spec: brioela-specs/35-ground-community-intelligence.md
 - `07-auth-connections.md`
 - `08-notifications-connections.md`
 - `09-receipt-intelligence-connections.md`
+- `10-pantry-meal-plan-connections.md`
 
 ## When to update
 Every time a build-guide file is written: add the connection here immediately.

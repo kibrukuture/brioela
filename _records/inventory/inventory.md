@@ -29,9 +29,9 @@ Core product philosophy and feature specs. These are the "what and why" layer.
 | [x] | `11-live-vision-cooking-coach.md` | Camera-based cooking coach — precursor to cooking session spec |
 | [~] | `12-multi-person-cooking-rooms.md` | Multiple people in one cooking session |
 | [x] | `13-generational-recipe-capture.md` | Capturing family recipes from elders, voice, video |
-| [ ] | `14-fridge-and-pantry-ingredient-rescue.md` | Pantry state, ingredient rescue, what can I cook with what I have |
+| [x] | `14-fridge-and-pantry-ingredient-rescue.md` | Pantry state, ingredient rescue, what can I cook with what I have |
 | [x] | `15-hyperlocal-price-and-availability-alerts.md` | Real-time price and availability signals near user |
-| [ ] | `16-weekly-food-summary.md` | Weekly digest of user's food activity |
+| [x] | `16-weekly-food-summary.md` | Weekly digest of user's food activity |
 | [ ] | `17-behavioral-food-pattern-detection.md` | AI detecting patterns in user food behavior |
 | [ ] | `18-verified-business-and-practitioner-profiles.md` | Verified profiles for food businesses, dietitians, practitioners |
 | [~] | `19-pricing-and-tiers.md` | App pricing tiers, what is free vs paid — CRITICAL for product decisions |
@@ -48,11 +48,11 @@ Core product philosophy and feature specs. These are the "what and why" layer.
 | [ ] | `30-food-illness-detective.md` | Detecting potential food illness from user's recent consumption |
 | [ ] | `31-kids-food-literacy-mode.md` | Kids mode — age-appropriate food education |
 | [x] | `32-grandma-style-flavor-profile.md` | Capturing and recreating traditional/family flavor profiles |
-| [ ] | `33-minimum-spend-meal-plan.md` | Budget meal planning — most nutrition for least cost |
+| [x] | `33-minimum-spend-meal-plan.md` | Budget meal planning — most nutrition for least cost |
 | [x] | `34-universal-visual-intake.md` | Visual food logging — photo → nutrition data |
 | [x] | `35-ground-community-intelligence.md` | Ground system — community food intelligence layer |
 | [x] | `35b-ground-finds-deep-design.md` | Ground deep design — UX, pulse animation, haptic discovery, find flow |
-| [ ] | `36-predictive-pantry-intelligence.md` | Predicting what user will run out of before they do |
+| [x] | `36-predictive-pantry-intelligence.md` | Predicting what user will run out of before they do |
 | [ ] | `37-guest-and-cooking-for-others.md` | Cooking for guests, dietary handling for multiple people |
 | [ ] | `38-food-time-machine.md` | Historical food data — what did I eat this time last year |
 | [~] | `39-generative-ui.md` | Generative UI spec — CRITICAL for design system build |
