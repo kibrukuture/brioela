@@ -34,7 +34,7 @@ Core product philosophy and feature specs. These are the "what and why" layer.
 | [x] | `16-weekly-food-summary.md` | Weekly digest of user's food activity |
 | [x] | `17-behavioral-food-pattern-detection.md` | AI detecting patterns in user food behavior |
 | [x] | `18-verified-business-and-practitioner-profiles.md` | Verified profiles for food businesses, dietitians, practitioners |
-| [~] | `19-pricing-and-tiers.md` | App pricing tiers, what is free vs paid — CRITICAL for product decisions |
+| [x] | `19-pricing-and-tiers.md` | App pricing tiers, what is free vs paid — CRITICAL for product decisions |
 | [~] | `20-platform-and-app-distribution.md` | iOS, Android, web distribution strategy |
 | [x] | `21-onboarding.md` | User onboarding flow — first experience, constraint setup |
 | [x] | `22-pre-trip-food-intelligence.md` | Travel food intelligence — what to eat, buy, avoid in a new city |
