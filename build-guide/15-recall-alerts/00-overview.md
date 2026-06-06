@@ -4,7 +4,17 @@
 Personalized food recall detection. FDA / EFSA / CFIA / RASFF recall feeds polled every 15 minutes via Upstash QStash cron. Each new recall is matched against the scan history of every user in Supabase. Confirmed matches trigger an immediate critical-priority push notification — no quiet hours, no suppression. The notification is specific: "the exact batch of [product] you scanned on [date] has been recalled for [reason]."
 
 ## Status
-[ ] not started
+[x] complete — five files written
+
+## Files In This Folder
+
+| File | Contents |
+|---|---|
+| `01-recall-feed-polling.md` | FDA/EFSA/RASFF/CFIA polling, diffing, queueing |
+| `02-recall-matching.md` | UPC/lot/date matching against scan history |
+| `03-critical-notification.md` | Orchestrator delivery, critical priority, content rules |
+| `04-recall-detail-and-resolution.md` | detail screen, official notice, discard/resolve flow |
+| `05-data-model.md` | recall_entry, recall_scan_match, processing state |
 
 ## Specs This Folder Draws From
 - `brioela-specs/26-personalized-recall-alerts.md` — full recall spec: data sources, matching logic, notification content, recall detail screen, edge cases, technical constraints
@@ -27,3 +37,7 @@ Personalized food recall detection. FDA / EFSA / CFIA / RASFF recall feeds polle
 
 ## What Depends On This Folder
 - `16-illness-detective` — active recall matches are highest-weight suspect in illness ranking
+
+## Boundary
+
+This feature owns recall ingestion and match creation. Notification delivery rules come from `12-notifications`. Scanner owns scan history capture.
