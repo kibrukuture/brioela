@@ -6,8 +6,6 @@ export default function Layout() {
     <SheetContentWrapper>
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="index" />
-        <Stack.Screen name="recipient-detail" />
-        <Stack.Screen name="send" />
       </Stack>
     </SheetContentWrapper>
   );
