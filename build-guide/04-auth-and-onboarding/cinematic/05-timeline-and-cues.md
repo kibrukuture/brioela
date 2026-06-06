@@ -53,3 +53,66 @@ Track:
 ## Rule
 
 Too much sync feels like a lyric video. Use fewer cues with stronger meaning.
+
+## Strongest Cinematic Beats
+
+1. Flame appears.
+2. Hands appear.
+3. “Until hunger became home.”
+4. “A people could live inside a pot.”
+5. “A voice could return through a bite.” Burst.
+6. “Someone fed you.” Convergence begins.
+7. Brioela thesis line. Wordmark completes.
+8. Camera reveal.
+
+Everything else supports these moments.
+
+## Refined Beat Map
+
+```text
+Before memory had words,        black. tiny ember.
+it had taste.                   ember glows. first warmth.
+
+Before recipes,                 ember opens.
+there was flame.                fire appears. first haptic.
+
+Before maps,                    smoke rises.
+there was smoke.                smoke becomes paths, then dissolves.
+
+Before names,                   hand-shadow enters.
+there were hands.               ingredients appear around the hands.
+
+Hands that washed.              water shimmer.
+Hands that cut.                 line of light.
+Hands that stirred              particles spiral.
+until hunger became home.       pot-universe stabilizes. long pause.
+
+A people could live             pot expands into a small cosmos.
+inside a pot.                   stillness. culture implied in particles.
+
+A place could rise              smoke forms room fragments.
+from a smell.                   room shifts with phone tilt.
+
+A voice could return            single particle moves toward lens.
+through a bite.                 burst. whoosh. haptic.
+
+Someone fed you.                particles return inward.
+
+And before you knew             warm pulse forms.
+what love was called,           pulse becomes body-memory ring.
+your body knew                  particles begin shaping letters.
+what love felt like.            first Brioela letter appears.
+
+One taste opens the door.       wordmark/lens opens slightly.
+One breath brings back the room. room fragments return behind logo.
+One bite returns the hands      hand-shadow flickers once.
+that held you.                  frame warms like an embrace.
+
+Brioela begins                  wordmark completes.
+where language ends:            handpan/krar note.
+in the taste your body          final particles lock.
+remembers                       wordmark breathes once.
+before your mind does.          silence begins.
+
+Show Brioela something you eat. camera fully open. text only.
+```

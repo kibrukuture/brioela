@@ -12,7 +12,7 @@ Deep read-only pass completed across:
 - `brioela-specs/`
 
 Confirmed:
-- `build-guide/07-cooking-session/` already exists and is marked complete.
+- `build-guide/08-cooking-session/` already exists and is marked complete.
 - Current cooking-session implementation direction is Cloudflare Realtime / RealtimeKit, not LiveKit.
 - Latest previous session log `007-scanner-complete.md` was stale because it said cooking-session was next.
 
@@ -27,7 +27,7 @@ Records updated:
 Build-guide cleanup completed:
 - `build-guide/03-foundation/00-overview.md` updated to reflect Cloudflare Realtime as current cooking transport decision.
 - `build-guide/04-auth-and-onboarding/` reorganized: auth docs added, cinematic onboarding moved under `cinematic/`.
-- stale `06-scanner` and `22-bela` folder references corrected.
+- stale `07-scanner` and `11-bela` folder references corrected.
 
 ## Inventory Status Changes
 
@@ -48,7 +48,7 @@ Continue with the next not-started feature build-guide area after reading its so
 
 ## Blockers / Decisions
 
-- Treat `build-guide/07-cooking-session/` as current cooking-session implementation truth.
+- Treat `build-guide/08-cooking-session/` as current cooking-session implementation truth.
 - Treat old LiveKit mentions in older specs/build docs as stale unless explicitly revalidated.
 - Cloudflare Realtime / RealtimeKit is the current cooking media transport direction.
 - Auth implementation is documented from current mobile code; product-spec deferred account creation still needs a guest strategy later.

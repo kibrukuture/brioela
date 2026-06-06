@@ -31,7 +31,7 @@ After each group: update inventory.md statuses and write relevant build-guide fi
 - `brioela-tools/` area is entirely unaccounted for in current build-guide structure
   → `build-guide/` will need a `06-memory-engine/` scope that includes the tool protocol
 - `proactive-speech-engine/` is a standalone subsystem inside cooking-session
-  → needs its own set of files inside `build-guide/07-cooking-session/`
+  → needs its own set of files inside `build-guide/08-cooking-session/`
 - `brioela-specs/39-generative-ui.md` exists — must be read before any design-system work
 - `brioela-specs/13-gaps-and-missing-specs.md` — read early to know what is intentionally unspecced
 

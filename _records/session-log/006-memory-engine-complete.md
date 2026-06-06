@@ -45,14 +45,14 @@ Nothing half-done.
 
 ## What Is Next
 
-`05-scanner/` — the core product loop. Files to write:
+`07-scanner/` — the core product loop. Files to write:
 - `01-barcode-decode.md` — on-device barcode detection, UPC extraction, offline-first
 - `02-product-resolution.md` — Open Food Facts + gov DBs, Upstash Redis cache, pending scan queue
 - `03-constraint-check.md` — check product against Orchestrator DO constraints + user_memory.medications
 - `04-scan-result-ui.md` — green/yellow/red verdict, one-sentence reason, expand-on-demand, boycott display
 - `05-ocr-fallback.md` — when no barcode: OCR + image classification, confidence schema
 
-Source specs to read before writing 05-scanner:
+Source specs to read before writing 07-scanner:
 - `brioela-specs/01-product-health-scanning.md` — scan flow, latency target, verdict structure
 - `brioela-specs/05-origin-supply-chain-and-boycott-filters.md` — boycott rules, origin display
 - `brioela-specs/07-allergy-dislike-and-dietary-guardrails.md` — allergy interrupt, soft dislike ranking

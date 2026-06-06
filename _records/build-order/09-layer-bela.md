@@ -6,7 +6,7 @@
 
 ## Build-Guide Folder
 
-- `build-guide/09-bela/`
+- `build-guide/11-bela/`
 
 ## Depends On
 
@@ -16,7 +16,3 @@
 - `06-layer-cooking-session.md`
 - `07-layer-ground.md`
 - `08-layer-map.md`
-
-## Known Issue
-
-Folder numbering conflicts with `09-map`. Do not rely only on folder number; use this build-order record until numbering is reconciled.

@@ -6,7 +6,7 @@
 
 ## Build-Guide Folder
 
-- `build-guide/07-cooking-session/`
+- `build-guide/08-cooking-session/`
 
 ## Depends On
 

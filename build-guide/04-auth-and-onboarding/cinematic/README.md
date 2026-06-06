@@ -1,12 +1,9 @@
-# Brioela Onboarding Temp Workspace
+# Cinematic Onboarding Notes
 
-Temporary design files for the cinematic Brioela onboarding.
+Design notes for the future cinematic Brioela onboarding.
 
 Files:
 
-- `script.md` - script, visual meaning, scene direction, and refined beat map.
-- `audio-and-narration.md` - narration, music bed, sound design, haptics, and timeline/audio asset strategy.
-- `implementation-notes.md` - provisional component structure and technical implementation notes.
 - `01-script.md` - locked current script and script delivery rules.
 - `02-narration-and-voice.md` - voice direction and recording/generation approach.
 - `03-music-direction.md` - cinematic music bed direction.

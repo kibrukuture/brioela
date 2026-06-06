@@ -17,25 +17,25 @@
 03-foundation
 04-auth-and-onboarding
 05-orchestrator          ← per-user agent DO, the critical path
-05-scanner               ← number overlap intentional; build-order clarifies sequence
+07-scanner               ← number overlap intentional; build-order clarifies sequence
 06-memory-engine         ← data layer for orchestrator (SQLite schema, Curator, Vectorize)
-07-cooking-session
-08-ground
-09-bela                  ← number overlap with 09-map; both valid, different features
-09-map                   ← healthy food map (separate from Ground)
-10-notifications
-10-receipt-intelligence  ← number overlap with 10-notifications; both valid
-11-pantry-meal-plan
-12-recall-alerts
-13-illness-detective
-14-menu-scanning
-15-ambient-intelligence
-17-wearables
-18-kids-mode
-19-medical-conditions
-20-verified-profiles
-21-viral-sharing
-23-pricing-tiers
+08-cooking-session
+09-ground
+11-bela                  ← number overlap with 10-map; both valid, different features
+10-map                   ← healthy food map (separate from Ground)
+12-notifications
+13-receipt-intelligence  ← number overlap with 12-notifications; both valid
+14-pantry-meal-plan
+15-recall-alerts
+16-illness-detective
+17-menu-scanning
+18-ambient-intelligence
+20-wearables
+21-kids-mode
+22-medical-conditions
+23-verified-profiles
+24-viral-sharing
+25-pricing-tiers
 ```
 
 Note on number overlaps: folder names are unique; numbers are hints at build order only.
@@ -44,8 +44,8 @@ Actual build order is in `_records/build-order/` (not yet written — next sessi
 ## Key Discoveries From Reading All Specs
 - `brioela-specs/39-generative-ui.md` exists and specifies `react-native-gen-ui` — critical for design system
 - `brioela-specs/40-wearables-integration.md` — CGM integration is described as "the killer feature"; personal glucose response to specific foods
-- `brioela-specs/32-grandma-style-flavor-profile.md` — style extraction from generational sessions; lives inside 07-cooking-session build folder
-- `brioela-specs/38-food-time-machine.md` — pure read layer over existing data; no new collection; lives in 15-ambient-intelligence
+- `brioela-specs/32-grandma-style-flavor-profile.md` — style extraction from generational sessions; lives inside 08-cooking-session build folder
+- `brioela-specs/38-food-time-machine.md` — pure read layer over existing data; no new collection; lives in 18-ambient-intelligence
 - Universal visual intake (spec 34) + memory curator both live in 06-memory-engine scope
 - `implementable-specs/13-gaps-and-missing-specs.md` NOT YET READ — flagged to read before building
 - `brioela-specs/18-verified-business-and-practitioner-profiles.md` and `brioela-specs/20-platform-and-app-distribution.md` NOT YET READ — low priority, read when building those features

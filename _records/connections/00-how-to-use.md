@@ -11,9 +11,9 @@ in ways that are hard to trace.
 ## Format for each entry
 ```
 spec: brioela-specs/35-ground-community-intelligence.md
-  → build-guide/08-ground/01-mapbox-3d-setup.md        [x] done
-  → build-guide/08-ground/02-find-submission-flow.md   [~] partial
-  → build-guide/08-ground/03-ai-gate.md                [ ] not started
+  → build-guide/09-ground/01-mapbox-3d-setup.md        [x] done
+  → build-guide/09-ground/02-find-submission-flow.md   [~] partial
+  → build-guide/09-ground/03-ai-gate.md                [ ] not started
 ```
 
 ## Files in this folder

@@ -13,7 +13,7 @@ Full spec read pass before writing:
 - build-guide/02-coding-standards/ (Hono patterns, folder structure, file suffix conventions)
 - build-guide/03-foundation/04-shared-package-setup.md (routes pattern)
 
-Written — `build-guide/05-scanner/`:
+Written — `build-guide/07-scanner/`:
 - `00-overview.md` — updated to [x] complete, all five files listed
 - `01-barcode-decode.md` — on-device decode (Expo Camera), dual write (Supabase + DO), offline queue
 - `02-product-resolution.md` — three-layer stack (Redis → Supabase → OFF + gov DBs), products + product_origin schema, pending scan queue
@@ -35,9 +35,9 @@ Nothing half-done.
 
 ## What Is Next
 
-`07-cooking-session/` — the live AI cooking coach. This is one of the most complex features: CookingAgent DO, Gemini Live WebSocket, LiveKit SFU for multi-person, proactive speech engine, timers via alarms, transcript storage, session-end recipe capture, reconnection logic.
+`08-cooking-session/` — the live AI cooking coach. This is one of the most complex features: CookingAgent DO, Gemini Live WebSocket, LiveKit SFU for multi-person, proactive speech engine, timers via alarms, transcript storage, session-end recipe capture, reconnection logic.
 
-Source specs to read before writing 07-cooking-session:
+Source specs to read before writing 08-cooking-session:
 - implementable-specs/cooking-session/00-overview.md through 10-human-behaviors.md (all 11 files)
 - implementable-specs/cooking-session/proactive-speech-engine/ (all 7 files)
 - brioela-specs/10-voice-cooking-agent.md
@@ -46,7 +46,7 @@ Source specs to read before writing 07-cooking-session:
 - brioela-specs/13-generational-recipe-capture.md
 - brioela-specs/32-grandma-style-flavor-profile.md
 
-Files to write for 07-cooking-session:
+Files to write for 08-cooking-session:
 - 01-cooking-agent-do.md — CookingAgent DO class, state management, fetch/alarm handlers
 - 02-gemini-live-connection.md — WebSocket setup, audio stream, video frame pipeline, reconnection
 - 03-proactive-speech-engine.md — silence tracker, visual change detector, adaptive frequency, response filter

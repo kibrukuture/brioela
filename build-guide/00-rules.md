@@ -14,7 +14,7 @@ Nothing is extracted into a separate "tools folder" or "shared folder" in the bu
 
 ```
 build-guide/
-  07-cooking-session/
+  08-cooking-session/
     00-overview.md
     01-cooking-agent-do.md
     02-gemini-live-connection.md
