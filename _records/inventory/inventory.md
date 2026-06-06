@@ -36,7 +36,7 @@ Core product philosophy and feature specs. These are the "what and why" layer.
 | [ ] | `18-verified-business-and-practitioner-profiles.md` | Verified profiles for food businesses, dietitians, practitioners |
 | [~] | `19-pricing-and-tiers.md` | App pricing tiers, what is free vs paid — CRITICAL for product decisions |
 | [ ] | `20-platform-and-app-distribution.md` | iOS, Android, web distribution strategy |
-| [ ] | `21-onboarding.md` | User onboarding flow — first experience, constraint setup |
+| [x] | `21-onboarding.md` | User onboarding flow — first experience, constraint setup |
 | [ ] | `22-pre-trip-food-intelligence.md` | Travel food intelligence — what to eat, buy, avoid in a new city |
 | [ ] | `23-ambient-notification-strategy.md` | Push notification design, when and how to notify |
 | [~] | `24-technical-architecture-backbone.md` | Full technical architecture — CRITICAL, read early |

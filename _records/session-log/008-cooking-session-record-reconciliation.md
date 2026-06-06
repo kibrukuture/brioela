@@ -21,6 +21,13 @@ Records updated:
 - `_records/connections/03-cooking-session-connections.md`
 - `_records/connections/01-orchestrator-connections.md`
 - `_records/inventory/inventory.md`
+- `_records/build-order/`
+- `_records/connections/07-auth-connections.md`
+
+Build-guide cleanup completed:
+- `build-guide/03-foundation/00-overview.md` updated to reflect Cloudflare Realtime as current cooking transport decision.
+- `build-guide/04-auth-and-onboarding/` reorganized: auth docs added, cinematic onboarding moved under `cinematic/`.
+- stale `06-scanner` and `22-bela` folder references corrected.
 
 ## Inventory Status Changes
 
@@ -33,16 +40,15 @@ Updated completed/partial statuses for:
 
 ## In Progress
 
-Record reconciliation started. Build-order layer files still need to be created or reconciled from current build-guide reality.
+Nothing half-done.
 
 ## What Is Next
 
-Create/update `_records/build-order/` layer files so the dependency graph matches the current build-guide folders and Cloudflare Realtime decision.
-
-Then continue with the next not-started feature build-guide area after records are reliable.
+Continue with the next not-started feature build-guide area after reading its source specs and connection context. Do not start coding.
 
 ## Blockers / Decisions
 
 - Treat `build-guide/07-cooking-session/` as current cooking-session implementation truth.
 - Treat old LiveKit mentions in older specs/build docs as stale unless explicitly revalidated.
 - Cloudflare Realtime / RealtimeKit is the current cooking media transport direction.
+- Auth implementation is documented from current mobile code; product-spec deferred account creation still needs a guest strategy later.
