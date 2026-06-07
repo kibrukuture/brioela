@@ -6,7 +6,7 @@ Brioela Generative Grammar is the safe creative UI language for the app. It repl
 
 ## Status
 
-[x] design complete — `01–17` + `19–21` written, research saved; `18` (WebView) deferred to future. Ready to code.
+[x] design complete — `01–17` + `19–22` written, research saved; `18` (WebView) deferred to future. Ready to code.
 
 ## Files In This Folder
 
@@ -32,6 +32,7 @@ Brioela Generative Grammar is the safe creative UI language for the app. It repl
 | `19-code-package-structure.md` | the grammar mapped to real dirs: `shared/grammar/`, `mobile/grammar/`, `backend/src/core/generative-grammar/`; build order |
 | `20-contracts-and-stage-delivery.md` | contract-first API boundary, HTTP/realtime Stage delivery, no normal grammar route, end-to-end examples |
 | `21-contract-spine-hardening.md` | stricter contract spine: co-located schemas, stage policy, contract-derived query keys, lint/CI rules |
+| `22-ts-rest-full-stack-standard.md` | ts-rest full-stack HTTP standard, React Query wrapper, feature hooks, no normal `.api.ts`, contract-derived keys |
 | `research/` | five full-text 2025–2026 research reports + index (substrate, frameworks, beauty stack) |
 
 ## Deferred (future, not v1)
@@ -56,6 +57,7 @@ Brioela Generative Grammar is the safe creative UI language for the app. It repl
 - HTTP and realtime features can both receive AI-selected Stages; only delivery differs.
 - Normal product flows do not call a separate grammar route. Feature responses or streams carry optional Stage data.
 - New boundary-crossing code should use the Contract Spine: contract-backed requests, responses, streams, Stage policy, and query keys.
+- New normal HTTP API code should use ts-rest contracts and `@ts-rest/react-query` feature wrappers, not hand-written `.api.ts` files.
 - Skia, Reanimated, and haptics are tokenized grammar outputs, not arbitrary style code.
 - Build-time AI can propose new `.tsx` components, but humans review and ship them before runtime use.
 
