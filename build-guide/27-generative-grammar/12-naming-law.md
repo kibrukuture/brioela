@@ -61,9 +61,9 @@ One fixed structure per kind, so the AI never has to guess what shape a name tak
 | Generative surface | `{feature}_{surface_role}_brioela_generative_ui` | `scan_explanation_brioela_generative_ui` · `cooking_opener_brioela_generative_ui` |
 | Primitive (generic) | `{role}_{form}` | `metric_single` · `reason_statement` · `timestamped_note` |
 | Primitive (domain) | `{feature}_{role}` | `recipe_step` · `mesa_member_row` · `ingredient_list` |
-| Composition (scene) | `{surface}_{intent}_{layout}` | `scan_verdict_focus` · `mesa_fit_grid` · `memory_recall_reverent` |
-| Atmosphere (shader) | `{character}_field` | `ambient_grain_field` · `verdict_bloom_field` |
-| Entrance motion | `{character}_{pace}_entrance` | `reveal_slow_entrance` · `lift_soft_entrance` |
+| Layout template | `{feature}_{purpose}_{layout_form}_layout` | `scan_explanation_focus_layout` · `mesa_member_fit_grid_layout` |
+| Background effect | `{purpose}_{visual_mechanism}_background` | `neutral_texture_background` · `verdict_color_background` |
+| Entrance motion | `{movement}_{order}_entrance` | `fade_all_entrance` · `slide_primary_then_details_entrance` |
 | Token | named on its axis (next section) | — |
 
 Generic primitives take **no** feature prefix (that is what makes them reusable — see
@@ -79,7 +79,7 @@ differently:
 
 | Axis | What it measures | Naming style | Examples |
 |---|---|---|---|
-| **Emotional** | a feeling | emotional words (correct here) | `emotionalTone`: `plain_truth` · `warm_caution` · `soft_celebration` |
+| **Emotional** | communication style | descriptive communication words | `emotionalTone`: `neutral_factual` · `caution_explanatory` · `positive_confirming` |
 | **Character** | a kind/quality of movement or field | descriptive character words | `motion`: `breath` · `soft_lift` · `field_bloom`; background effects |
 | **Scalar** | a magnitude on a hierarchy | an ordinal scale, **never** metaphor | `space_xs … space_2xl`; `typography_display … typography_caption` |
 
@@ -105,9 +105,9 @@ renderer component:             CaptionNode                      (PascalCase + s
 ```
 
 ```
-enum:        scan_verdict_focus
-schema file: scan-verdict-focus.ts
-component:   ScanVerdictFocusScene
+enum:        scan_explanation_focus_layout
+schema file: scan-explanation-focus-layout.ts
+component:   ScanExplanationFocusScene
 ```
 
 ---
@@ -118,8 +118,8 @@ component:   ScanVerdictFocusScene
 |---|---|---|
 | Generative surface | `_brioela_generative_ui` | n/a |
 | Primitive | none | `Node` |
-| Composition | none (the 3-part name already signals it) | `Scene` |
-| Atmosphere | `_field` | `Field` |
+| Layout template | `_layout` | `Scene` |
+| Background effect | `_background` | `Field` |
 | Entrance motion | `_entrance` | — |
 
 Generative surface names deliberately carry the explicit `_brioela_generative_ui` suffix. This is
@@ -171,14 +171,14 @@ through the Domain-Primitive Rule in `14`: keep only those whose data shape a ge
 
 | Old | New |
 |---|---|
-| `single_focal_reveal` / `single_focal_verdict_scene` | `scan_verdict_focus` |
-| `mesa_table` / `mesa_table_fit_overview_scene` | `mesa_fit_grid` |
-| `food_memory_reverent_scene` | `memory_recall_reverent` |
+| `single_focal_reveal` / `single_focal_verdict_scene` | `scan_explanation_focus_layout` |
+| `mesa_table` / `mesa_table_fit_overview_scene` | `mesa_member_fit_grid_layout` |
+| `food_memory_reverent_scene` | `memory_recall_reflective_layout` |
 
-New canonical examples in the same grammar: `scan_insight_secondary` · `scan_swap_comparison` ·
-`mesa_conflict_spotlight` · `recipe_steps_rail` · `recipe_technique_spotlight` ·
-`savings_story_scroll` · `summary_week_overview` · `share_discovery_stamp` ·
-`kids_explainer_gentle`.
+New canonical examples in the same grammar: `scan_detail_insight_layout` · `scan_swap_comparison_layout` ·
+`mesa_conflict_focus_layout` · `recipe_steps_horizontal_layout` · `recipe_technique_focus_layout` ·
+`savings_story_scroll_layout` · `summary_week_overview_layout` · `share_discovery_stamp_layout` ·
+`kids_explainer_gentle_layout`.
 
 ### Tokens
 

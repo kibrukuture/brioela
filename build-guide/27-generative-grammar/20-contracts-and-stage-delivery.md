@@ -329,14 +329,14 @@ The model chooses from the Brioela Generative UI schema:
   "grammarVersion": "1",
     "surface": "scan_explanation_brioela_generative_ui",
   "safetyLock": true,
-  "emotionalTone": "warm_caution",
+  "emotionalTone": "caution_explanatory",
   "backgroundEffect": {
-    "family": "verdict_bloom_field",
+    "family": "verdict_color_background",
     "intensity": "low",
     "tone": "caution"
   },
   "layoutTemplate": {
-    "type": "scan_verdict_focus"
+    "type": "scan_explanation_focus_layout"
   },
   "content": {
     "headline": "This one needs care",
@@ -347,7 +347,7 @@ The model chooses from the Brioela Generative UI schema:
     ]
   },
   "entranceMotion": {
-    "preset": "settle_calm_entrance",
+    "preset": "settle_all_entrance",
     "stagger": "none"
   },
   "typographyStyle": "typography_body",
@@ -392,21 +392,21 @@ Tool call emitted by the model:
     "grammarVersion": "1",
     "surface": "cooking_opener_brioela_generative_ui",
     "safetyLock": false,
-    "emotionalTone": "focused_cooking",
+    "emotionalTone": "focused_instructional",
     "backgroundEffect": {
-      "family": "ambient_grain_field",
+      "family": "neutral_texture_background",
       "intensity": "low",
       "tone": "neutral"
     },
     "layoutTemplate": {
-      "type": "recipe_steps_rail"
+      "type": "recipe_steps_horizontal_layout"
     },
     "content": {
       "headline": "Twenty minutes, no drama",
       "caption": "I’ll keep this tight and skip anything fussy."
     },
     "entranceMotion": {
-      "preset": "lift_soft_entrance",
+      "preset": "slide_primary_then_details_entrance",
       "stagger": "small"
     },
     "typographyStyle": "typography_body",
@@ -453,9 +453,9 @@ Wire event:
     "grammarVersion": "1",
     "surface": "cooking_opener_brioela_generative_ui",
     "layoutTemplate": {
-      "type": "recipe_steps_rail"
+      "type": "recipe_steps_horizontal_layout"
     },
-    "emotionalTone": "focused_cooking"
+    "emotionalTone": "focused_instructional"
   }
 }
 ```

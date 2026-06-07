@@ -102,7 +102,7 @@ default for that layer. `layoutTemplate` and its required `content` are the only
 These are enforced at validation (see `15-validation-and-repair.md`):
 
 - An `emotionalTone` implies an allowed set of `backgroundEffect`, `entranceMotion`, and `typographyStyle`. Invalid pairings fail
-  (e.g. `reverent_memory` cannot pair with an urgent background effect). Pairing rules live in
+  (e.g. `memory_reflective` cannot pair with an urgent background effect). Pairing rules live in
   `04-emotion-motion-skia.md`.
 - A `layoutTemplate` declares which `content` fields are required and their length caps.
 - `surface` declares which `layoutTemplate` types are permitted (per-surface allowlist).

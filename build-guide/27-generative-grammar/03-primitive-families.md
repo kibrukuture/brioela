@@ -122,7 +122,7 @@ Share / discovery:
 | `works_for_all_stamp` | `stamp` | Expressive (with mesa tone) |
 | `avoid_for_member_line` | `caption` / `reason_statement` | Expressive |
 | `table_fit_summary` | `mesa_fit_grid` (composition) | Composition |
-| `recipe_step_rail` | `recipe_step` + `recipe_steps_rail` (composition) | Domain + composition |
+| `recipe_step_rail` | `recipe_step` + `recipe_steps_horizontal_layout` (layout template) | Domain + layout template |
 | `timing_bead` | `recipe_timing` | Domain |
 | `technique_note` | `micro_explainer` | Expressive |
 | `substitution_pair` | `swap_suggestion` | Expressive |

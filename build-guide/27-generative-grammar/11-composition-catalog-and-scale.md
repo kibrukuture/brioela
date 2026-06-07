@@ -105,7 +105,7 @@ before it enters the catalog (this extends the promotion checklist in
 
 - Has a single, unambiguous focal point.
 - Uses generous, intentional negative space (spacing tokens, never cramped).
-- Has a dramatic type hierarchy (a real `voice_display` moment where appropriate).
+- Has a dramatic type hierarchy (a real `typography_display` moment where appropriate).
 - Looks beautiful with the *longest* allowed content and the *shortest*.
 - Looks beautiful with empty/optional slots omitted.
 - Binds to at least one atmosphere and one beat sequence tastefully.

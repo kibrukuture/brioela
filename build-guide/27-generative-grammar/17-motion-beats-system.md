@@ -43,11 +43,11 @@ Target ~15–20 presets. New presets arrive through the build-time creation lane
 
 Starting set (names follow the `{character}_{pace}_entrance` grammar):
 
-- `reveal_slow_entrance`
-- `lift_soft_entrance`
-- `bloom_warm_entrance`
-- `settle_calm_entrance`
-- `cascade_gentle_entrance`
+- `fade_all_entrance`
+- `slide_primary_then_details_entrance`
+- `scale_primary_then_supporting_entrance`
+- `settle_all_entrance`
+- `cascade_details_entrance`
 
 ---
 
@@ -96,7 +96,7 @@ Non-negotiable accessibility behavior:
 ## Pairing Rules
 
 - Each `emotionalTone` implies an allowed set of entrance motion presets (`04` pairing rules); illegal pairings fail
-  validation step 6 (`15`). E.g. `gentle_learning` uses soft presets, never an urgent cascade;
+  validation step 6 (`15`). E.g. `learning_gentle` uses soft presets, never an urgent cascade;
   `urgent_lock` motion is reserved for static safety surfaces and is never an AI-selected beat.
 - An entrance motion preset must be compatible with the chosen layout template's content roles; an incompatible
   preset fails closed.

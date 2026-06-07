@@ -32,11 +32,11 @@ is a hand-authored SkSL shader (or layered shader stack) with a small set of exp
 Starting set:
 
 - `none`
-- `ambient_grain_field`
-- `verdict_bloom_field`   *(tone token tints safe vs caution — not separate shaders)*
-- `memory_glow_field`
-- `mesa_table_field`
-- `discovery_sheen_field`
+- `neutral_texture_background`
+- `verdict_color_background`   *(tone token tints safe vs caution — not separate shaders)*
+- `memory_soft_glow_background`
+- `mesa_group_background`
+- `discovery_highlight_background`
 
 New families arrive only through the build-time creation lane (`08`): authored, reviewed against
 the quality bar, shipped in the binary, then selectable at runtime.
@@ -70,7 +70,7 @@ Key safety rules:
   document that omits `backgroundEffect` still looks intentional (`10`, emotionalTone-first read order).
 - **Tone tints, never restyles.** `tone` shifts color/temperature within the family; it cannot
   change the family's character.
-- **Pairing is validated.** Illegal emotionalTone↔backgroundEffect pairings (e.g. `reverent_memory` with an
+- **Pairing is validated.** Illegal emotionalTone↔backgroundEffect pairings (e.g. `memory_reflective` with an
   urgent field) fail at step 6 of validation (`04`, `15`).
 
 ---

@@ -10,15 +10,15 @@ How emotional tone, Reanimated motion, haptics, and Skia visual treatments are r
 
 ```typescript
 type EmotionalTone =
-  | "plain_truth"
-  | "quiet_discovery"
-  | "warm_caution"
-  | "soft_celebration"
-  | "reverent_memory"
-  | "focused_cooking"
-  | "gentle_learning"
-  | "table_care"
-  | "savings_relief"
+  | "neutral_factual"
+  | "discovery_informational"
+  | "caution_explanatory"
+  | "positive_confirming"
+  | "memory_reflective"
+  | "focused_instructional"
+  | "learning_gentle"
+  | "group_considerate"
+  | "savings_reassuring"
 ```
 
 `emotionalTone` controls tone, emphasis, motion, and background defaults. It never changes safety verdicts.
@@ -84,11 +84,11 @@ Hard safety haptics are static and not chosen by generative grammar.
 ```typescript
 type BackgroundEffectToken =
   | "none"
-  | "ambient_grain_field"
-  | "verdict_bloom_field"   // safe vs caution carried by the tone token, not separate treatments
-  | "memory_glow_field"
-  | "mesa_table_field"
-  | "discovery_sheen_field"
+  | "neutral_texture_background"
+  | "verdict_color_background"   // safe vs caution carried by the tone token, not separate treatments
+  | "memory_soft_glow_background"
+  | "mesa_group_background"
+  | "discovery_highlight_background"
 ```
 
 Background effects are prebuilt shader/layer configurations selected as the Brioela Generative UI document's `backgroundEffect`
@@ -102,9 +102,9 @@ selects a token only and may nudge uniforms within safe ranges. The full atmosph
 ## Pairing Rules
 
 - `urgent_lock` only for static safety surfaces controlled by the feature, not AI-selected generative flavor.
-- `soft_celebration` can use `warm_pulse` or `field_bloom`.
-- `reverent_memory` can use `memory_glow_field` and slow reveal.
-- `gentle_learning` uses soft lift, never urgent motion.
-- `table_care` can use `mesa_table_field`.
+- `positive_confirming` can use `warm_pulse` or `field_bloom`.
+- `memory_reflective` can use `memory_soft_glow_background` and slow reveal.
+- `learning_gentle` uses soft lift, never urgent motion.
+- `group_considerate` can use `mesa_group_background`.
 
 Invalid pairings fail validation.

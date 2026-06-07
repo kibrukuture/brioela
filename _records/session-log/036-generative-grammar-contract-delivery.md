@@ -58,6 +58,12 @@ Updated:
   - `slots` → `content`
   - `beats` → `entranceMotion`
   - `voice` → `typographyStyle`
+- AI-emitted enum values were also clarified:
+  - emotional tones use communication-style names such as `neutral_factual`, `caution_explanatory`, `positive_confirming`, `focused_instructional`
+  - background effects end in `_background`, e.g. `neutral_texture_background`, `verdict_color_background`, `mesa_group_background`
+  - layout templates end in `_layout`, e.g. `scan_explanation_focus_layout`, `scan_detail_insight_layout`, `recipe_steps_horizontal_layout`
+  - entrance motion values end in `_entrance`, e.g. `settle_all_entrance`, `slide_primary_then_details_entrance`
+  - typography styles use `typography_*`, e.g. `typography_body`
 
 ## Evidence From Repo Audit
 

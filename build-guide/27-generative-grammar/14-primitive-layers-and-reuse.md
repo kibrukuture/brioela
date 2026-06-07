@@ -102,7 +102,7 @@ This is the principle that frees the whole design:
 
 shadcn feels soulless because its generic `button`/`card` are *also rendered* generically —
 flat default styling, default spacing, no atmosphere. Our generic `headline` is rendered through
-the Brioela design system: a `voice_display` type register, expansive spacing tokens, a Skia
+the Brioela design system: a `typography_display` type register, expansive spacing tokens, a Skia
 atmosphere behind it, a choreographed beat on entrance. **Same generic role, completely
 different soul.**
 
