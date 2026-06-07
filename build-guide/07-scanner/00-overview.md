@@ -42,6 +42,51 @@ Note: restaurant menu scanning has its own folder (`17-menu-scanning`) and reuse
 - Scanning is always free regardless of tier (spec 19 non-negotiable rule)
 - Product facts must carry provenance; user corrections require label/URL evidence and safety-impacting corrections need review.
 
+## Unified Scan Experience
+
+The scanner must feel like one product judgment, not a stack of separate modules. Product resolution,
+fact provenance, private constraints, medication-food checks, origin/supply-chain context, and
+anonymous community evidence all feed one computation that returns one primary verdict.
+
+The user should never feel like Brioela fetched a database score, then separately bolted on medication
+logic, then separately bolted on community notes. Those are evidence layers inside a single scan
+decision.
+
+Runtime spine:
+
+```text
+scan input
+→ resolve product identity
+→ build resolved product fact snapshot
+→ attach product fact evidence and confidence
+→ load origin / parent-company context
+→ load cached product community health summary
+→ call Orchestrator DO for personal constraints and medication-food checks
+→ read cached ingredient event association signals relevant to the user profile
+→ build one verdict
+→ return one scan result payload
+```
+
+Primary result:
+
+```text
+YELLOW
+Worth caution for your profile.
+```
+
+Expanded details can explain the layers separately:
+
+```text
+Product facts: contains MSG.
+Your profile: hypertension.
+Community evidence: similar anonymous profiles reported headaches more often after products containing MSG.
+Origin: manufactured in X, parent company Y.
+Evidence confidence: ingredient list from label photo + Open Food Facts, medium confidence.
+```
+
+Origin, boycott, recall, label confidence, and community evidence remain distinct data surfaces. The
+experience is still unified: one scan, one verdict, one explanation hierarchy.
+
 ## Tools Built In This Feature
 
 Under `tools/product-scan/`:

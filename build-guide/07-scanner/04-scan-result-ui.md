@@ -8,6 +8,13 @@ The verdict structure, how the base health score is computed, the green/yellow/r
 
 ## Verdict Structure — What the Backend Returns
 
+The backend returns one verdict object. It must not return separate mini-verdicts for nutrition,
+medication, origin, label evidence, and community evidence. Those are supporting layers inside the
+same result.
+
+The compact result is assertive: one color, one headline reason, one primary action. Expanded details
+show how Brioela reached that answer.
+
 ```typescript
 // shared/validator/scan.schema.ts
 
@@ -44,6 +51,32 @@ export const VerdictSchema = z.object({
 
 export type Verdict = z.infer<typeof VerdictSchema>
 ```
+
+---
+
+## Unified Verdict Assembly
+
+The final verdict is one computation. Separate evidence layers keep their own provenance, but they do
+not create separate user experiences.
+
+```text
+base score
+→ hard personal overrides
+→ medication-food interaction cautions
+→ community health association cautions
+→ origin / boycott context
+→ final green / yellow / red
+```
+
+Rules:
+
+- Hard allergy, dietary identity, boycott, and confirmed recall behavior can produce red.
+- Medication-food interactions can produce yellow or red depending on configured severity.
+- Community health associations can upgrade green to yellow when supported by enough anonymous health groups.
+- Community health associations cannot clear hard constraints and cannot produce clinical conclusion copy.
+- Origin and parent-company context are shown as evidence and can affect verdict only through explicit boycott or recall rules.
+
+The user sees one answer first. Evidence layers appear only when they expand the result.
 
 ---
 
