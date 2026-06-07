@@ -102,7 +102,7 @@
     "wrangler":                  "^4.x"
   },
   "dependencies": {
-    "@cloudflare/agents":  "latest",
+    "agents":              "latest",
     "@google/genai":       "^1.x",
     "@anthropic-ai/sdk":   "latest",
     "@supabase/supabase-js": "^2.x",

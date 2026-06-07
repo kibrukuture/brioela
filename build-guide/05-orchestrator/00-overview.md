@@ -10,11 +10,11 @@ The per-user agent brain. One `BrioelOrchestrator` Durable Object per user, fore
 
 | File | Contents |
 |---|---|
-| `01-do-class-and-setup.md` | BrioelOrchestrator class, wrangler.jsonc entries, SQLite init, WAL mode, Drizzle wiring, keepAlive pattern, fetch() + alarm() entry points |
+| `01-do-class-and-setup.md` | BrioelOrchestrator class, wrangler.jsonc entries, SQLite init, WAL mode, Drizzle wiring, current Agents SDK runtime primitives |
 | `02-tool-protocol.md` | All 17 AI-callable tools, tool definition pattern, tool registration, Zod validation at boundary, TOOL_PERMISSIONS, /internal/tool-call forwarding endpoint |
 | `03-session-lifecycle.md` | Session open, system prompt construction (SOUL + order), compression triggers, CompressorAgent, abandoned session detection, watchdog alarm |
 | `04-sub-agents.md` | Ephemeral DO pattern, CuratorAgent, PatternDetectionAgent, HTTP tool forwarding protocol, caller-based authorization |
-| `05-alarm-system.md` | Alarm dispatch, all alarm types, scheduled_alarms table as queue, keepAlive heartbeat, ambient intelligence loop, first-boot initialization |
+| `05-alarm-system.md` | scheduled_alarms product ledger, Agents SDK schedule wake/callback model, ambient intelligence loop, first-boot initialization |
 | `06-agent-identity.md` | SOUL document, 800 token cap, system prompt block order, prefix cache contract, update rules |
 | `07-agent-framework-hardening.md` | Brioela-first update: Cloudflare Agents SDK runtime primitives, AI SDK tool layer, replacing custom plumbing without making Brioela chat-first |
 
@@ -35,8 +35,8 @@ The per-user agent brain. One `BrioelOrchestrator` Durable Object per user, fore
 - Memory write path: always through `write_user_memory` tool — never direct SQLite writes from AI
 - Memory namespace: dot-separated, max 3 levels, lowercase, Zod-enforced at tool boundary, hard cap 40 namespaces
 - Skills: index-then-load pattern — AI reads compact index in system prompt, calls `view_user_skill(name)` on demand
-- Alarms: DO self-scheduling via `this.ctx.storage.setAlarm()` — no external cron for any per-user ambient feature
-- keepAlive heartbeat: alarm every 20s during long-running streams to prevent DO eviction
+- Alarms: `scheduled_alarms` stores product meaning/outcomes; Agents SDK `schedule()` wakes/calls execution when possible
+- keepAlive: use `keepAliveWhile()` / fibers for long provider interactions; do not use manual heartbeat alarms as default
 - Sub-agents: ephemeral DOs keyed by `curator_${userId}_${runId}`, `pattern_${userId}_${runId}` — no SQLite, all writes forwarded
 - Context compression: chat sessions at 40 turns/60k tokens, cooking at 80 turns/100k tokens — CompressorAgent produces four-field summary
 - Abandoned detection: watchdog alarm set at session open, marks sessions abandoned if still active when fired

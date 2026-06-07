@@ -2,7 +2,7 @@
 
 ## What This File Covers
 
-Timer tool implementation, DO alarm mechanics for multiple concurrent timers, timer fire dispatch, cancellation, and cleanup at session end.
+Timer tool implementation, Agents SDK schedule mechanics for concurrent timers, timer fire dispatch, cancellation, and cleanup at session end.
 
 ---
 
@@ -11,30 +11,30 @@ Timer tool implementation, DO alarm mechanics for multiple concurrent timers, ti
 ```
 User: "set a timer for the eggs, 8 minutes"
 Gemini: calls schedule_timer({ label: "eggs", seconds: 480 })
-DO: schedules DO alarm at Date.now() + 480_000
-DO: writes timer to DO storage (fast) + scheduled_alarms via Orchestrator (audit)
-DO: returns { success: true, fires_in_seconds: 480 }
+CookingAgent: writes timer row to local Agent SQLite
+CookingAgent: calls schedule(new Date(firesAt), "fireCookingTimer", { timerId })
+CookingAgent: returns { success: true, fires_in_seconds: 480 }
 Gemini: "Done, I'll let you know in 8 minutes."
 
 ... 8 minutes pass ...
 
-DO alarm fires → DO injects "eggs timer fired" message into Gemini
+Agents SDK scheduled callback fires → CookingAgent injects "eggs timer fired" message into Gemini
 Gemini: "Your eggs are done! Take them off the heat."
 ```
 
-DO alarms persist in Cloudflare's infrastructure and survive DO eviction. The timer fires at exactly the right moment whether the session has been running for 3 minutes or 43 minutes.
+Agents SDK schedules are durable Agent runtime callbacks. Delivery is at-least-once, not exactly-once, so timer handlers must be idempotent and guarded by persisted timer status.
 
 ---
 
 ## Timer Tool — `schedule_timer`
 
-Handled directly by CookingAgent DO — not forwarded to Orchestrator. Timer management requires immediate access to DO storage and DO alarm scheduling, which only the CookingAgent DO has.
+Handled directly by CookingAgent — not forwarded to Orchestrator for firing. Timer management requires immediate access to the live Gemini session and local Agent storage. Orchestrator can receive an audit mirror, but it is not the source of timer firing.
 
 ```typescript
 // backend/src/agents/cooking/_handlers/alarm.handler.ts
 
-// In-memory timer registry — rebuilt from DO storage on eviction recovery
-// activeTimers: Map<label, { alarmTime: number; alarmId: string }>
+// In-memory timer registry — rebuilt from local Agent SQLite on eviction recovery
+// activeTimers: Map<label, { firesAt: number; timerId: string; sdkScheduleId: string }>
 
 export async function scheduleTimer(
   args:      { label: string; seconds: number },
@@ -52,25 +52,39 @@ export async function scheduleTimer(
   }
 
   const firesAt  = Date.now() + seconds * 1000
-  const alarmId  = crypto.randomUUID()
+  const timerId  = crypto.randomUUID()
 
-  // Write to DO storage — survives eviction, fast synchronous access at alarm fire time
-  await cookingDo.ctx.storage.put(`timer:${alarmId}`, {
+  // Write local timer row first — survives eviction and guards at-least-once callbacks.
+  await cookingDo.sql.exec(
+    `INSERT INTO cooking_timers (id, session_id, label, fires_at, status, created_at)
+     VALUES (?, ?, ?, ?, 'pending', ?)`,
+    timerId,
+    cookingDo.sessionState!.sessionId,
     label,
     firesAt,
-    sessionId: cookingDo.sessionState!.sessionId,
-  })
+    Date.now(),
+  )
 
-  cookingDo.activeTimers.set(label, { alarmTime: firesAt, alarmId })
+  const schedule = await cookingDo.schedule(
+    new Date(firesAt),
+    'fireCookingTimer',
+    { timerId },
+    { idempotent: true },
+  )
 
-  // Reschedule the DO alarm for the earliest pending timer
-  await rescheduleAlarm(cookingDo)
+  await cookingDo.sql.exec(
+    `UPDATE cooking_timers SET sdk_schedule_id = ? WHERE id = ?`,
+    schedule.id,
+    timerId,
+  )
+
+  cookingDo.activeTimers.set(label, { firesAt, timerId, sdkScheduleId: schedule.id })
 
   // Also persist to scheduled_alarms table via Orchestrator (audit trail)
   // Fire-and-forget — timer functionality does not depend on this write completing
   cookingDo.ctx.waitUntil(
     forwardToolToOrchestrator('schedule_user_alarm', {
-      alarm_id:   alarmId,
+      alarm_id:   timerId,
       label,
       fires_at:   firesAt,
       session_id: cookingDo.sessionState!.sessionId,
@@ -80,66 +94,55 @@ export async function scheduleTimer(
     })
   )
 
-  return { success: true, alarmId, fires_in_seconds: seconds }
+  return { success: true, alarmId: timerId, fires_in_seconds: seconds }
 }
 ```
 
 ---
 
-## One DO Alarm for Multiple Timers
+## One Schedule Per Timer
 
-A DO can only have one scheduled alarm at a time. With multiple concurrent timers (eggs + sauce + rest dough), the DO schedules the alarm for the NEXT timer to fire and reschedules after each one fires.
+Agents SDK multiplexes durable schedules over the underlying DO alarm slot. CookingAgent creates one SDK schedule per timer and stores `sdk_schedule_id` for cancellation/debugging.
 
 ```typescript
-async function rescheduleAlarm(cookingDo: CookingAgent): Promise<void> {
-  // Find earliest pending timer
-  let earliest: number | null = null
-  for (const [, { alarmTime }] of cookingDo.activeTimers) {
-    if (earliest === null || alarmTime < earliest) {
-      earliest = alarmTime
-    }
-  }
-
-  if (earliest !== null) {
-    await cookingDo.ctx.storage.setAlarm(earliest)
-  }
+type CookingTimerRow = {
+  id: string
+  sessionId: string
+  label: string
+  firesAt: number
+  status: 'pending' | 'fired' | 'cancelled'
+  sdkScheduleId: string | null
 }
 ```
 
 ---
 
-## Alarm Fire — `alarm()` Handler
+## Timer Fire — Scheduled Callback
 
-When the DO alarm fires, it finds all due timers and injects them into the Gemini session one by one:
+When the SDK schedule fires, it loads the timer row and no-ops unless it is still pending:
 
 ```typescript
 // backend/src/agents/cooking/_handlers/alarm.handler.ts
 
-export async function handleAlarm(cookingDo: CookingAgent): Promise<void> {
-  const now = Date.now()
-  const fired: string[] = []
+export async function fireCookingTimer(
+  cookingDo: CookingAgent,
+  payload: { timerId: string },
+): Promise<void> {
+  const timer = await cookingDo.sql.exec(
+    `SELECT id, label, status FROM cooking_timers WHERE id = ?`,
+    payload.timerId,
+  ).one<{ id: string; label: string; status: string }>()
 
-  for (const [label, { alarmTime, alarmId }] of cookingDo.activeTimers) {
-    if (alarmTime <= now + 500) {   // 500ms grace — fire if within 500ms of due time
-      fired.push(label)
+  if (!timer || timer.status !== 'pending') return
 
-      // Remove from DO storage
-      await cookingDo.ctx.storage.delete(`timer:${alarmId}`)
-    }
-  }
+  await cookingDo.sql.exec(
+    `UPDATE cooking_timers SET status = 'fired', fired_at = ? WHERE id = ? AND status = 'pending'`,
+    Date.now(),
+    timer.id,
+  )
 
-  // Remove from in-memory registry
-  for (const label of fired) {
-    cookingDo.activeTimers.delete(label)
-  }
-
-  // Inject each fired timer into Gemini
-  for (const label of fired) {
-    await injectTimerFireIntoGemini(label, cookingDo)
-  }
-
-  // Reschedule alarm for next pending timer
-  await rescheduleAlarm(cookingDo)
+  cookingDo.activeTimers.delete(timer.label)
+  await injectTimerFireIntoGemini(timer.label, cookingDo)
 }
 
 async function injectTimerFireIntoGemini(
@@ -179,10 +182,12 @@ export async function cancelTimer(
   }
 
   cookingDo.activeTimers.delete(label)
-  await cookingDo.ctx.storage.delete(`timer:${timer.alarmId}`)
-
-  // Reschedule alarm — the cancelled timer may have been the next due one
-  await rescheduleAlarm(cookingDo)
+  await cookingDo.sql.exec(
+    `UPDATE cooking_timers SET status = 'cancelled', cancelled_at = ? WHERE id = ? AND status = 'pending'`,
+    Date.now(),
+    timer.timerId,
+  )
+  await cookingDo.cancelSchedule(timer.sdkScheduleId)
 
   return { success: true, cancelled: true }
 }
@@ -198,7 +203,7 @@ export async function cancelAllTimers(cookingDo: CookingAgent): Promise<void> {
     try { await cancelTimer(label, cookingDo) } catch {}
   }
   cookingDo.activeTimers.clear()
-  await cookingDo.ctx.storage.deleteAlarm()   // remove DO alarm entirely
+  // SDK schedules are cancelled per timer. No raw DO alarm cleanup is needed here.
 }
 ```
 
@@ -206,31 +211,23 @@ Called as step 4 of the session end sequence — before closing the Realtime roo
 
 ---
 
-## DO Eviction Recovery — Rebuilding Timer State
+## Eviction Recovery — Rebuilding Timer State
 
-If the DO is evicted mid-session, the in-memory `activeTimers` map is gone. Recovery reads it from DO storage:
+If the Agent is evicted mid-session, the in-memory `activeTimers` map is gone. Recovery reads it from local Agent SQLite:
 
 ```typescript
 async function rebuildTimerState(cookingDo: CookingAgent): Promise<void> {
-  // List all timer keys in DO storage
-  const allKeys = await cookingDo.ctx.storage.list({ prefix: 'timer:' })
+  const rows = await cookingDo.sql.exec(
+    `SELECT id, label, fires_at, sdk_schedule_id FROM cooking_timers WHERE status = 'pending'`,
+  ).toArray<{ id: string; label: string; fires_at: number; sdk_schedule_id: string }>()
 
-  for (const [key, value] of allKeys) {
-    const { label, firesAt } = value as { label: string; firesAt: number }
-    const alarmId = key.replace('timer:', '')
-
-    if (firesAt > Date.now()) {
-      // Timer still in the future — restore to active map
-      cookingDo.activeTimers.set(label, { alarmTime: firesAt, alarmId })
-    } else {
-      // Timer already fired while DO was evicted — inject now and clean up
-      await injectTimerFireIntoGemini(label, cookingDo)
-      await cookingDo.ctx.storage.delete(key)
-    }
+  for (const row of rows) {
+    cookingDo.activeTimers.set(row.label, {
+      firesAt: row.fires_at,
+      timerId: row.id,
+      sdkScheduleId: row.sdk_schedule_id,
+    })
   }
-
-  // Reschedule alarm for any remaining timers
-  await rescheduleAlarm(cookingDo)
 }
 ```
 

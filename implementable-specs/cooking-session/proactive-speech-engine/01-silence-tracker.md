@@ -8,19 +8,16 @@ The silence tracker knows how long the user has been silent. This is the primary
 
 ## Voice Activity Signal
 
-The Cloudflare Realtime WebSocket adapter delivers audio as PCM chunks. Each chunk is accompanied by metadata that includes voice activity detection (VAD) state — whether the frame contains human speech or silence.
+The Cloudflare Realtime SFU WebSocket adapter delivers audio payloads as PCM inside protobuf packets. Current public docs do not provide adapter VAD metadata, so Brioela computes voice activity locally from PCM energy or a lightweight VAD helper.
 
 ```typescript
-// Frame metadata from Cloudflare Realtime adapter
-interface AudioFrameMetadata {
-  type:             'frame_metadata'
-  media_type:       'audio'
-  duration_ms:      number
-  has_voice_activity: boolean   // true = user is speaking, false = silence
+interface AudioActivitySample {
+  durationMs: number
+  hasVoiceActivity: boolean   // true = user is speaking, false = silence
 }
 ```
 
-The DO calls `speechEngine.onVoiceActivity(hasVoiceActivity)` on every audio frame.
+The CookingAgent calls `speechEngine.onVoiceActivity(hasVoiceActivity)` after local VAD evaluates each audio payload.
 
 ---
 

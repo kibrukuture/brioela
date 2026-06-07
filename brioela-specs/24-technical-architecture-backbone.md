@@ -62,7 +62,7 @@ Workers are stateless — born per request, die per request. They are the front 
 
 ### Cloudflare Agent SDK + Durable Objects (Per-User Brain)
 
-Each user has one `BrioelOrchestrator` DO instance — addressed by `idFromName(userId)`. Uses the Cloudflare Agent SDK (`@cloudflare/agents` package), which is an abstraction built on top of the raw Durable Object primitive. The Agent class extends DurableObject — there is no separate "Agent SDK process." It is the DO.
+Each user has one `BrioelOrchestrator` DO instance — addressed by `idFromName(userId)`. Uses the Cloudflare Agents SDK (`agents` package), which is an abstraction built on top of the raw Durable Object primitive. The Agent class extends DurableObject — there is no separate "Agent SDK process." It is the DO.
 
 SQLite via Drizzle ORM:
 ```typescript

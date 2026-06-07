@@ -2,11 +2,11 @@
 
 ## Class Structure
 
-Every DO extends `Agent` from `@cloudflare/agents`. The class is the single source of behavior for that DO. The class file (`index.ts`) only contains the class definition, `fetch()` handler routing, `alarm()` handler, and WebSocket lifecycle methods. Business logic lives in sibling files imported by the class.
+Every Agent-backed DO extends `Agent` from `agents`. The class is the single source of behavior for that DO. The class file (`index.ts`) only contains the class definition, request routing, scheduling callbacks, and WebSocket lifecycle methods. Business logic lives in sibling files imported by the class.
 
 ```ts
 // backend/src/agents/orchestrator/orchestrator.agent.ts
-import { Agent } from '@cloudflare/agents'
+import { Agent } from 'agents'
 import { drizzle } from 'drizzle-orm/durable-sqlite'
 import * as schema from './_schema'
 import { handleAlarm } from './_handlers'
@@ -130,9 +130,12 @@ export async function handleAlarm(
   }
 }
 
-function scheduleNextAlarm(ctx: DurableObjectState, type: AlarmType, delayMs: number): void {
-  ctx.storage.put('pending_alarm_type', type)
-  ctx.storage.setAlarm(Date.now() + delayMs)
+async function scheduleNextAlarm(agent: BrioelOrchestrator, type: AlarmType, delayMs: number): Promise<void> {
+  await scheduleUserAlarm({
+    alarmType: type,
+    payload: { userId: agent.userId },
+    scheduledAt: Date.now() + delayMs,
+  })
 }
 ```
 
@@ -144,7 +147,7 @@ The CookingAgent DO holds WebSocket connections open using CF hibernation. WebSo
 
 ```ts
 // backend/src/agents/cooking/cooking.agent.ts
-import { Agent } from '@cloudflare/agents'
+import { Agent } from 'agents'
 
 export class CookingAgent extends Agent<Env> {
   db = drizzle(this.ctx.storage, { schema })

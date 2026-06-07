@@ -2,7 +2,7 @@
 
 ## What This File Covers
 
-CookingAgent DO class structure, all endpoints, in-memory state, initialization, Cloudflare Realtime stream handling, mobile audio-out WebSocket, DO eviction recovery, and Orchestrator tool forwarding.
+CookingAgent Agent class structure, all endpoints, recoverable live-session state, initialization, Cloudflare Realtime SFU track stream handling, mobile audio-out WebSocket, eviction recovery, and Orchestrator tool forwarding.
 
 ---
 
@@ -12,7 +12,7 @@ CookingAgent DO class structure, all endpoints, in-memory state, initialization,
 DO ID: env.COOKING_AGENT.idFromName(`cooking:${sessionId}`)
 ```
 
-One DO per cooking session. Session-scoped — not user-scoped. The Orchestrator DO creates and addresses the CookingAgent. When the session ends, the CookingAgent DO is no longer addressed and Cloudflare eventually evicts it. All critical state is written to SQLite before eviction can matter.
+One Agent-backed Durable Object per cooking session. Session-scoped — not user-scoped. The Orchestrator DO creates and addresses the CookingAgent. CookingAgent owns live runtime state and a small local recovery record; Orchestrator owns persistent user SQLite truth.
 
 ---
 
@@ -45,7 +45,7 @@ backend/src/agents/cooking/
 ```typescript
 // backend/src/agents/cooking/cooking.agent.ts
 
-import { Agent } from '@cloudflare/agents'
+import { Agent } from 'agents'
 import type { Env } from '@/types/env'
 import { handleInit }           from './_handlers/init.handler'
 import { handleRealtimeStream } from './_handlers/realtime-stream.handler'
@@ -53,20 +53,21 @@ import { handleMobileAudio }    from './_handlers/mobile-audio.handler'
 import { handleAlarm }          from './_handlers/alarm.handler'
 
 export class CookingAgent extends Agent<Env> {
-  // In-memory state — rebuilt from SQLite on eviction recovery
+  // In-memory state — rebuilt from local Agent storage on eviction recovery
   sessionState: CookingAgentState | null = null
 
   override async fetch(request: Request): Promise<Response> {
     const url = new URL(request.url)
 
-    // Cold-start detection — DO was evicted mid-session
-    if (!this.sessionState && url.pathname === '/stream') {
+    // Cold-start detection — Agent was evicted mid-session. Every endpoint can wake cold.
+    if (!this.sessionState && url.pathname !== '/init') {
       await this.recover()
     }
 
     switch (url.pathname) {
       case '/init':   return handleInit(request, this)
-      case '/stream': return handleRealtimeStream(request, this)
+      case '/stream/audio': return handleRealtimeStream(request, this, 'audio')
+      case '/stream/video': return handleRealtimeStream(request, this, 'video')
       case '/audio':  return handleMobileAudio(request, this)
       default:        return new Response('Not found', { status: 404 })
     }
@@ -90,9 +91,10 @@ interface CookingAgentState {
 
   geminiWs:     WebSocket | null   // Gemini 3.1 Flash Live
   mobileWs:     WebSocket | null   // mobile receives Gemini audio here
-  realtimeWs:   WebSocket | null   // Cloudflare Realtime adapter
+  realtimeAudioWs: WebSocket | null // Cloudflare Realtime SFU audio adapter
+  realtimeVideoWs: WebSocket | null // Cloudflare Realtime SFU video adapter
 
-  status:       'initializing' | 'active' | 'reconnecting' | 'ending' | 'ended'
+  status:       'initializing' | 'active' | 'mobile_reconnecting' | 'gemini_reconnecting' | 'ending' | 'ended'
   turnCounter:  number
 
   geminiReconnectTimer: ReturnType<typeof setTimeout> | null
@@ -123,12 +125,19 @@ export async function handleInit(request: Request, do: CookingAgent): Promise<Re
 
   do.sessionState = {
     sessionId, userId, meetingId,
-    geminiWs: null, mobileWs: null, realtimeWs: null,
+    geminiWs: null, mobileWs: null, realtimeAudioWs: null, realtimeVideoWs: null,
     status: 'initializing',
     turnCounter: 0,
     geminiReconnectTimer: null,
     pendingToolCall: null,
   }
+
+  // Persist recovery bootstrap before opening external connections.
+  await do.sql.exec(
+    `INSERT OR REPLACE INTO cooking_session_runtime (session_id, user_id, meeting_id, status, updated_at)
+     VALUES (?, ?, ?, ?, ?)`,
+    sessionId, userId, meetingId, 'initializing', Date.now(),
+  )
 
   // Load user context from Orchestrator DO
   const context = await loadUserContext(userId, do.env)
@@ -147,56 +156,39 @@ export async function handleInit(request: Request, do: CookingAgent): Promise<Re
 
 ---
 
-## Handling the Cloudflare Realtime Stream
+## Handling Cloudflare Realtime SFU Track Streams
 
-The SFU adapter WebSocket connects here. Binary frames are PCM audio or JPEG — disambiguated by preceding metadata.
+The SFU WebSocket adapter connects here per selected track. Binary messages are protobuf `Packet`
+messages. Audio/video are disambiguated by endpoint path (`/stream/audio` or `/stream/video`), not by
+JSON metadata inside the stream.
 
 ```typescript
 // backend/src/agents/cooking/_handlers/realtime-stream.handler.ts
 
-export async function handleRealtimeStream(request: Request, do: CookingAgent): Promise<Response> {
-  // Validate HMAC from adapter
-  const sig = request.headers.get('X-Adapter-Signature')
-  if (!validateAdapterSignature(sig, do.sessionState!.sessionId, do.env.ADAPTER_SECRET)) {
-    return new Response('Unauthorized', { status: 401 })
+export async function handleRealtimeStream(
+  request: Request,
+  agent: CookingAgent,
+  mediaKind: 'audio' | 'video',
+): Promise<Response> {
+  if (request.headers.get('Upgrade')?.toLowerCase() !== 'websocket') {
+    return new Response('Expected WebSocket', { status: 426 })
   }
 
   const { 0: client, 1: server } = new WebSocketPair()
-  server.accept()
-  do.sessionState!.realtimeWs = server
+  agent.ctx.acceptWebSocket(server, [`realtime:${mediaKind}`])
+  server.serializeAttachment({ kind: 'realtime', mediaKind })
 
-  let nextFrameType: 'audio' | 'video' | null = null
-
-  server.addEventListener('message', async (event) => {
-    if (typeof event.data === 'string') {
-      const msg = JSON.parse(event.data) as { type: string; frame_type?: string }
-      if (msg.type === 'frame_metadata') {
-        nextFrameType = msg.frame_type as 'audio' | 'video'
-      }
-    } else if (event.data instanceof ArrayBuffer) {
-      if (nextFrameType === 'audio') {
-        await sendAudioChunk(event.data, do)
-        do.speechEngine?.onVoiceActivity(true)   // VAD signal to proactive engine
-      } else if (nextFrameType === 'video') {
-        await sendVideoFrame(event.data, do)
-        do.speechEngine?.onVideoFrame(event.data)
-      }
-      nextFrameType = null
-    }
-  })
-
-  server.addEventListener('close', () => {
-    do.sessionState!.realtimeWs = null
-    if (do.sessionState!.status === 'active') {
-      upsertAgentState(do.env, do.sessionState!.userId,
-        `stream.disconnect.${do.sessionState!.sessionId}`,
-        JSON.stringify({ ts: Date.now() }),
-      )
-    }
-  })
+  if (mediaKind === 'audio') agent.sessionState!.realtimeAudioWs = server
+  else agent.sessionState!.realtimeVideoWs = server
 
   return new Response(null, { status: 101, webSocket: client })
 }
+
+// In CookingAgent.webSocketMessage(ws, message):
+// 1. Read ws.deserializeAttachment() to get mediaKind.
+// 2. Decode protobuf Packet.
+// 3. For audio, forward packet.payload PCM to Gemini Live.
+// 4. For video, forward packet.payload JPEG to the visual-change detector.
 ```
 
 ---
@@ -209,14 +201,14 @@ Mobile opens this to receive Gemini's voice. Binary audio chunks from Gemini are
 // backend/src/agents/cooking/_handlers/mobile-audio.handler.ts
 
 export async function handleMobileAudio(request: Request, do: CookingAgent): Promise<Response> {
-  const { 0: client, 1: server } = new WebSocketPair()
-  server.accept()
-  do.sessionState!.mobileWs = server
+  if (request.headers.get('Upgrade')?.toLowerCase() !== 'websocket') {
+    return new Response('Expected WebSocket', { status: 426 })
+  }
 
-  server.addEventListener('close', () => {
-    do.sessionState!.mobileWs = null
-    onMobileDisconnect(do)
-  })
+  const { 0: client, 1: server } = new WebSocketPair()
+  do.ctx.acceptWebSocket(server, ['mobile-audio'])
+  server.serializeAttachment({ kind: 'mobile-audio' })
+  do.sessionState!.mobileWs = server
 
   return new Response(null, { status: 101, webSocket: client })
 }
@@ -226,32 +218,31 @@ export async function handleMobileAudio(request: Request, do: CookingAgent): Pro
 
 ## DO Eviction Recovery
 
-If Cloudflare evicts the DO mid-session, the next `/stream` request triggers recovery:
+If Cloudflare evicts the Agent mid-session, the next endpoint, WebSocket message, or alarm triggers recovery:
 
 ```typescript
 private async recover(): Promise<void> {
-  // Read active session from Orchestrator SQLite
-  const orchestratorId = this.env.ORCHESTRATOR.idFromName(/* userId from DO name */)
-  const orchestrator   = this.env.ORCHESTRATOR.get(orchestratorId)
-  const resp  = await orchestrator.fetch('/internal/active-session')
-  const session = await resp.json() as { id: string; userId: string; metadata: string } | null
+  // Read local recovery bootstrap written during /init.
+  const session = await this.sql.exec(
+    `SELECT session_id, user_id, meeting_id, status FROM cooking_session_runtime LIMIT 1`,
+  ).one<{ session_id: string; user_id: string; meeting_id: string; status: string }>()
 
   if (!session) return  // session ended while DO was evicted
 
   this.sessionState = {
-    sessionId:  session.id,
-    userId:     session.userId,
-    meetingId:  JSON.parse(session.metadata).meetingId,
-    geminiWs:   null, mobileWs: null, realtimeWs: null,
-    status:     'reconnecting',
+    sessionId:  session.session_id,
+    userId:     session.user_id,
+    meetingId:  session.meeting_id,
+    geminiWs:   null, mobileWs: null, realtimeAudioWs: null, realtimeVideoWs: null,
+    status:     'gemini_reconnecting',
     turnCounter: 0,
     geminiReconnectTimer: null,
     pendingToolCall: null,
   }
 
-  const context = await loadUserContext(session.userId, this.env)
+  const context = await loadUserContext(session.user_id, this.env)
   // Include recent transcript for Gemini continuity
-  context.recentTranscript = await loadRecentTranscript(session.id, 20, this.env)
+  context.recentTranscript = await loadRecentTranscript(session.session_id, 20, this.env)
 
   await openGeminiSession(context, this)
   this.sessionState.status = 'active'
@@ -262,7 +253,7 @@ private async recover(): Promise<void> {
 
 ## Orchestrator Tool Forwarding
 
-Every tool that touches SQLite is forwarded to the Orchestrator. The CookingAgent has no SQLite.
+Every tool that touches persistent user memory/recipes/health SQLite is forwarded to the Orchestrator. The CookingAgent may use local Agent SQLite only for live-session recovery metadata, timers, adapter IDs, and connection bookkeeping.
 
 ```typescript
 export async function forwardToolToOrchestrator(

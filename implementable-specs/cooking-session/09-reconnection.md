@@ -148,7 +148,7 @@ private async handleMobileAudio(request: Request): Promise<Response> {
 
 ## Cloudflare Realtime Room — Mobile Reconnection
 
-If the mobile drops the WebRTC connection to Cloudflare Realtime (separate from the DO WebSocket), the RealtimeKit SDK handles reconnection automatically on the mobile side. The room persists — the Cloudflare Realtime SFU does not close the meeting when one participant disconnects. The mobile reconnects using the same `authToken` (valid for the session duration).
+If the mobile drops the WebRTC connection to Cloudflare Realtime (separate from the DO WebSocket), the RealtimeKit SDK handles reconnection automatically on the mobile side. The room persists — the Cloudflare Realtime SFU does not close the meeting when one participant disconnects. If the participant token expires, refresh it through the RealtimeKit participant token refresh API rather than creating a second participant.
 
 The WebSocket adapter from the SFU to the DO continues sending audio/video from any still-connected participants. If the user was the only participant and they disconnect, the SFU adapter sends silence/no frames. When they reconnect, the adapter resumes sending.
 

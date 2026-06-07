@@ -283,7 +283,7 @@ async function executePendingToolCall(cookingDo: CookingAgent): Promise<void> {
 
   let result: unknown
   try {
-    // schedule_timer and cancel_timer handled locally (DO alarms)
+    // schedule_timer and cancel_timer handled locally (Agents SDK schedules)
     if (pending.name === 'schedule_timer') {
       result = await scheduleTimer(pending.args as { label: string; seconds: number }, cookingDo)
     } else if (pending.name === 'cancel_timer') {

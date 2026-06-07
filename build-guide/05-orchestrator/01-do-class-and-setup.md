@@ -66,7 +66,7 @@ backend/src/agents/orchestrator/
 ```typescript
 // backend/src/agents/orchestrator/brioela.orchestrator.agent.ts
 
-import { Agent } from '@cloudflare/agents'
+import { Agent } from 'agents'
 import { drizzle } from 'drizzle-orm/durable-sqlite'
 import { migrate } from 'drizzle-orm/durable-sqlite/migrator'
 import * as schema from './_schema'
@@ -114,40 +114,28 @@ export class BrioelOrchestrator extends Agent<Env> {
 
 ---
 
-## keepAlive Pattern — Preventing DO Eviction During Long Streams
+## keepAlive Pattern — Long Provider Work
 
-Cloudflare evicts idle DOs after ~30 seconds of inactivity. A long narration or cooking session is not sending requests every second — it has natural gaps. Without a keepAlive, the DO is evicted mid-session and the user loses context.
+Use Agents SDK primitives for long provider interactions. Do not implement a manual alarm heartbeat as the default; it competes with real scheduled work and is easy to orphan.
 
-**Solution:** the Orchestrator schedules a `KEEP_ALIVE` alarm every 20 seconds at the start of any streaming session and cancels it when the session ends.
-
-```typescript
-// In session.handler.ts — called when a streaming session opens
-
-const KEEP_ALIVE_INTERVAL_MS = 20_000
-
-async function startKeepAlive(ctx: DurableObjectState): Promise<void> {
-  await ctx.storage.put('keepAlive:active', true)
-  await ctx.storage.setAlarm(Date.now() + KEEP_ALIVE_INTERVAL_MS)
-}
-
-async function stopKeepAlive(ctx: DurableObjectState): Promise<void> {
-  await ctx.storage.put('keepAlive:active', false)
-  await ctx.storage.deleteAlarm()
-}
-```
-
-In `alarm.handler.ts`, when `keepAlive:active` is true, re-schedule immediately:
+For work that should avoid idle eviction but does not need recovery, use `keepAliveWhile()`:
 
 ```typescript
-const isKeepAlive = await ctx.storage.get<boolean>('keepAlive:active')
-if (isKeepAlive) {
-  // Touch state to prevent eviction, then reschedule
-  await ctx.storage.setAlarm(Date.now() + KEEP_ALIVE_INTERVAL_MS)
-  return  // do not run any other alarm logic
-}
+await this.keepAliveWhile(async () => {
+  await runProviderOperation()
+})
 ```
 
-This adds ~1 alarm every 20 seconds per active session. Alarm execution time is ~1ms (reads one KV key and reschedules). Cost is negligible.
+For recoverable multi-step work, use a fiber:
+
+```typescript
+await this.runFiber('session-finalize', async (ctx) => {
+  ctx.stash({ step: 'started', sessionId })
+  await finalizeSession(sessionId)
+})
+```
+
+Manual `ctx.storage.setAlarm()` keepalive loops are legacy fallback only.
 
 ---
 

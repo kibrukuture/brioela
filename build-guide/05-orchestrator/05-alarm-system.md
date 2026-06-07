@@ -2,79 +2,45 @@
 
 ## What This File Covers
 
-DO alarm dispatch, all alarm types, the `scheduled_alarms` table as the queue, keepAlive heartbeat, and the ambient intelligence loop that runs without any external cron.
+Current rule: `scheduled_alarms` is the product/audit ledger, and Agents SDK `schedule()` is the preferred wake/callback mechanism. Older raw `ctx.storage.setAlarm()` examples in this file are fallback guidance only for behavior the SDK cannot express.
 
 ---
 
-## How DO Alarms Work
+## How Scheduled Alarm Wakeups Work
 
-The Orchestrator calls `this.ctx.storage.setAlarm(timestamp)`. At that time, Cloudflare wakes the DO and calls `alarm()`. One alarm fires at a time — the next alarm is set inside the handler. No external scheduler. No cron job. No Upstash for per-user timed events.
-
-```typescript
-// brioela.orchestrator.agent.ts
-
-override async alarm(): Promise<void> {
-  await handleAlarm(this.db, this.env, this.ctx)
-}
-```
+The Orchestrator creates a `scheduled_alarms` row, then schedules a small SDK callback payload like `{ scheduledAlarmId }`. The callback loads the row, checks status for idempotency, dispatches the work, and records lifecycle/action outcome fields. Raw DO alarms are at-least-once and single-slot; use them only as fallback plumbing.
 
 ```typescript
 // backend/src/agents/orchestrator/_handlers/alarm.handler.ts
 
-export async function handleAlarm(
-  db: DrizzleDB,
-  env: Env,
-  ctx: DurableObjectState,
+export async function runScheduledAlarm(
+  agent: BrioelOrchestrator,
+  payload: { scheduledAlarmId: string },
 ): Promise<void> {
-  // Check keepAlive first — takes priority over all other alarm logic
-  const isKeepAlive = await ctx.storage.get<boolean>('keepAlive:active')
-  if (isKeepAlive) {
-    await ctx.storage.setAlarm(Date.now() + 20_000)
-    return
-  }
-
-  // Find the next pending alarm in the queue
-  const nextAlarm = db.select()
+  const alarm = agent.db.select()
     .from(scheduledAlarms)
-    .where(and(
-      eq(scheduledAlarms.status, 'pending'),
-      lte(scheduledAlarms.scheduledAt, Date.now()),
-    ))
-    .orderBy(asc(scheduledAlarms.scheduledAt))
-    .limit(1)
+    .where(eq(scheduledAlarms.id, payload.scheduledAlarmId))
     .get()
 
-  if (!nextAlarm) return
+  if (!alarm || alarm.status !== 'pending') return
 
-  // Mark as running before execution — prevents double-fire if DO wakes twice
-  db.update(scheduledAlarms)
-    .set({ status: 'running' })
-    .where(eq(scheduledAlarms.id, nextAlarm.id))
+  // Mark as processing before execution — guards at-least-once callback delivery.
+  agent.db.update(scheduledAlarms)
+    .set({ status: 'processing', startedAt: Date.now(), attempts: alarm.attempts + 1 })
+    .where(and(eq(scheduledAlarms.id, alarm.id), eq(scheduledAlarms.status, 'pending')))
     .run()
 
   try {
-    await dispatchAlarm(nextAlarm, db, env, ctx)
-    db.update(scheduledAlarms)
+    await dispatchAlarm(alarm, agent)
+    agent.db.update(scheduledAlarms)
       .set({ status: 'completed', completedAt: Date.now() })
-      .where(eq(scheduledAlarms.id, nextAlarm.id))
+      .where(eq(scheduledAlarms.id, alarm.id))
       .run()
   } catch (err) {
-    db.update(scheduledAlarms)
+    agent.db.update(scheduledAlarms)
       .set({ status: 'failed', failureReason: String(err) })
-      .where(eq(scheduledAlarms.id, nextAlarm.id))
+      .where(eq(scheduledAlarms.id, alarm.id))
       .run()
-  }
-
-  // Schedule next alarm for any remaining pending alarms
-  const next = db.select({ scheduledAt: scheduledAlarms.scheduledAt })
-    .from(scheduledAlarms)
-    .where(eq(scheduledAlarms.status, 'pending'))
-    .orderBy(asc(scheduledAlarms.scheduledAt))
-    .limit(1)
-    .get()
-
-  if (next) {
-    await ctx.storage.setAlarm(next.scheduledAt)
   }
 }
 ```
@@ -85,7 +51,6 @@ export async function handleAlarm(
 
 | Type | Trigger | What runs |
 |---|---|---|
-| `keep_alive` | Every 20s during active streaming session | Re-schedule self, return — prevents DO eviction |
 | `session_watchdog` | 2h (chat) or 4h (cooking) after session open | Detect abandoned sessions, mark as abandoned |
 | `curator_run` | Every 7 days | Spawn CuratorAgent sub-agent |
 | `pattern_detection` | Every 14 days | Spawn PatternDetectionAgent sub-agent |
@@ -104,49 +69,47 @@ export async function handleAlarm(
 
 async function dispatchAlarm(
   alarm: ScheduledAlarm,
-  db: DrizzleDB,
-  env: Env,
-  ctx: DurableObjectState,
+  agent: BrioelOrchestrator,
 ): Promise<void> {
   const payload = JSON.parse(alarm.payload)
 
-  switch (alarm.type) {
+  switch (alarm.alarmType) {
     case 'session_watchdog':
-      await handleSessionWatchdog(db, payload.sessionId)
+      await handleSessionWatchdog(agent.db, payload.sessionId)
       break
 
     case 'curator_run':
-      await spawnCurator(db, env, ctx, payload.userId)
+      await spawnCurator(agent, payload.userId)
       break
 
     case 'pattern_detection':
-      await spawnPatternDetection(db, env, ctx, payload.userId)
+      await spawnPatternDetection(agent, payload.userId)
       break
 
     case 'weekly_food_summary':
-      await generateWeeklySummary(db, env, payload.userId)
-      await scheduleNextWeeklySummary(db, ctx)
+      await generateWeeklySummary(agent, payload.userId)
+      await scheduleNextWeeklySummary(agent)
       break
 
     case 'sickness_followup':
-      await runSicknessFollowup(db, env, payload.userId, payload.eventId)
+      await runSicknessFollowup(agent, payload.userId, payload.eventId)
       break
 
     case 'travel_preload':
-      await runTravelPreload(db, env, payload.userId, payload.destination, payload.departureDate)
+      await runTravelPreload(agent, payload.userId, payload.destination, payload.departureDate)
       break
 
     case 'scan_followup':
-      await runScanFollowup(db, env, payload.userId, payload.productId, payload.scanEventId)
+      await runScanFollowup(agent, payload.userId, payload.productId, payload.scanEventId)
       break
 
     case 'recall_check':
-      await runRecallCheck(db, env, payload.userId)
-      await scheduleNextRecallCheck(ctx)
+      await runRecallCheck(agent, payload.userId)
+      await scheduleNextRecallCheck(agent)
       break
 
     default:
-      console.warn(`Unknown alarm type: ${alarm.type}`)
+      console.warn(`Unknown alarm type: ${alarm.alarmType}`)
   }
 }
 ```
@@ -155,25 +118,25 @@ async function dispatchAlarm(
 
 ## Scheduling an Alarm From a Tool
 
-The `schedule_user_alarm` tool writes to `scheduled_alarms` and also sets the DO's next alarm if the new alarm fires sooner than any existing pending alarm.
+The `schedule_user_alarm` tool writes to `scheduled_alarms` and also creates an Agents SDK schedule with a tiny pointer payload.
 
 ```typescript
 // backend/src/agents/orchestrator/_tools/schedule-user-alarm.tool.ts
 
-export const scheduleUserAlarmTool = (db: DrizzleDB, ctx: DurableObjectState) => tool({
+export const scheduleUserAlarmTool = (agent: BrioelOrchestrator) => tool({
   description: 'Schedule a time-based alarm. Use for cooking timers, sickness follow-ups, travel pre-loads, and any timed ambient action.',
   parameters: z.object({
-    type:        z.string().describe('alarm type — e.g. sickness_followup, travel_preload, scan_followup'),
+    alarmType:   z.string().describe('alarm type — e.g. sickness_followup, travel_preload, scan_followup'),
     payload:     z.record(z.unknown()).describe('data the alarm handler will receive'),
     scheduledAt: z.number().describe('unix timestamp ms when the alarm should fire'),
     label:       z.string().optional().describe('human-readable label for this alarm'),
   }),
-  execute: async ({ type, payload, scheduledAt, label }) => {
+  execute: async ({ alarmType, payload, scheduledAt, label }) => {
     const id = crypto.randomUUID()
 
-    db.insert(scheduledAlarms).values({
+    agent.db.insert(scheduledAlarms).values({
       id,
-      type,
+      alarmType,
       payload:     JSON.stringify(payload),
       scheduledAt,
       label:       label ?? null,
@@ -181,13 +144,19 @@ export const scheduleUserAlarmTool = (db: DrizzleDB, ctx: DurableObjectState) =>
       createdAt:   Date.now(),
     }).run()
 
-    // Update the DO's alarm if this fires sooner than what's already scheduled
-    const currentAlarm = await ctx.storage.getAlarm()
-    if (!currentAlarm || scheduledAt < currentAlarm) {
-      await ctx.storage.setAlarm(scheduledAt)
-    }
+    const schedule = await agent.schedule(
+      new Date(scheduledAt),
+      'runScheduledAlarm',
+      { scheduledAlarmId: id },
+      { idempotent: true },
+    )
 
-    return { id, type, scheduledAt, status: 'scheduled' }
+    agent.db.update(scheduledAlarms)
+      .set({ sdkScheduleId: schedule.id, updatedAt: Date.now() })
+      .where(eq(scheduledAlarms.id, id))
+      .run()
+
+    return { id, alarmType, scheduledAt, status: 'scheduled' }
   },
 })
 ```
@@ -196,43 +165,37 @@ export const scheduleUserAlarmTool = (db: DrizzleDB, ctx: DurableObjectState) =>
 
 ## First-Boot Alarm Initialization
 
-When a user's Orchestrator DO is first created (their first interaction with Brioela), the recurring alarms are bootstrapped once:
+When a user's Orchestrator Agent is first created (their first interaction with Brioela), the recurring alarm ledger rows and SDK schedules are bootstrapped once:
 
 ```typescript
-// In brioela.orchestrator.agent.ts constructor, after migration:
+// In brioela.orchestrator.agent.ts first-boot method, after migration:
 
-const isFirstBoot = !(await ctx.storage.get<boolean>('alarms:initialized'))
+const isFirstBoot = !(await this.ctx.storage.get<boolean>('alarms:initialized'))
 if (isFirstBoot) {
-  await ctx.storage.put('alarms:initialized', true)
+  await this.ctx.storage.put('alarms:initialized', true)
 
   // Curator — first run 7 days from now
-  db.insert(scheduledAlarms).values({
+  await scheduleUserAlarm({
     id: crypto.randomUUID(),
-    type: 'curator_run',
+    alarmType: 'curator_run',
     payload: JSON.stringify({ userId: this.userId }),
     scheduledAt: Date.now() + 7 * 24 * 60 * 60 * 1000,
-    status: 'pending',
-  }).run()
+  })
 
   // Pattern detection — first run 14 days from now
-  db.insert(scheduledAlarms).values({
+  await scheduleUserAlarm({
     id: crypto.randomUUID(),
-    type: 'pattern_detection',
+    alarmType: 'pattern_detection',
     payload: JSON.stringify({ userId: this.userId }),
     scheduledAt: Date.now() + 14 * 24 * 60 * 60 * 1000,
-    status: 'pending',
-  }).run()
+  })
 
   // Recall check — first run 6 hours from now
-  db.insert(scheduledAlarms).values({
+  await scheduleUserAlarm({
     id: crypto.randomUUID(),
-    type: 'recall_check',
+    alarmType: 'recall_check',
     payload: JSON.stringify({ userId: this.userId }),
     scheduledAt: Date.now() + 6 * 60 * 60 * 1000,
-    status: 'pending',
-  }).run()
-
-  // Set the DO alarm to the soonest pending alarm
-  await ctx.storage.setAlarm(Date.now() + 6 * 60 * 60 * 1000)
+  })
 }
 ```

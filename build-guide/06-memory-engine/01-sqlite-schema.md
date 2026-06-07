@@ -577,16 +577,22 @@ CREATE TABLE scheduled_alarms (
   user_id        TEXT NOT NULL,
   alarm_type     TEXT NOT NULL,   -- free text — no fixed enum
   payload        TEXT NOT NULL,   -- JSON object — alarm handler reads this
+  sdk_schedule_id TEXT,           -- Agents SDK schedule id used as wake/callback mechanism
   status         TEXT NOT NULL DEFAULT 'pending',  -- lifecycle: 'pending' | 'processing' | 'completed' | 'failed' | 'cancelled'
   attempts       INTEGER NOT NULL DEFAULT 0,
   failure_reason TEXT,
+  cancelled_at   INTEGER,
+  cancel_reason  TEXT,
+  rescheduled_from_alarm_id TEXT,
+  rescheduled_to_alarm_id   TEXT,
   label          TEXT,
   scheduled_at   INTEGER NOT NULL,
   started_at     INTEGER,
   completed_at   INTEGER,
   action_outcome_status  TEXT,    -- outcome of the action triggered by this alarm, distinct from lifecycle status. NULL until an outcome lands. e.g. 'calling' | 'answered' | 'missed' | 'notified' | 'failed'
   action_outcome_json    TEXT,    -- JSON — alarm-type-specific action outcome. medication call: {"took":1,"call_sid":"...","answered_at":123}. travel preload: {"products_cached":142}
-  created_at     INTEGER NOT NULL
+  created_at     INTEGER NOT NULL,
+  updated_at     INTEGER NOT NULL
 );
 
 CREATE INDEX idx_alarms_pending ON scheduled_alarms (status, scheduled_at ASC);
@@ -599,9 +605,14 @@ export const scheduledAlarms = sqliteTable('scheduled_alarms', {
   userId:        text('user_id').notNull(),
   alarmType:     text('alarm_type').notNull(),
   payload:       text('payload').notNull(),
+  sdkScheduleId: text('sdk_schedule_id'),
   status:        text('status').notNull().default('pending'),
   attempts:      integer('attempts').notNull().default(0),
   failureReason: text('failure_reason'),
+  cancelledAt:   integer('cancelled_at'),
+  cancelReason:  text('cancel_reason'),
+  rescheduledFromAlarmId: text('rescheduled_from_alarm_id'),
+  rescheduledToAlarmId:   text('rescheduled_to_alarm_id'),
   label:         text('label'),
   scheduledAt:   integer('scheduled_at').notNull(),
   startedAt:     integer('started_at'),
@@ -609,6 +620,7 @@ export const scheduledAlarms = sqliteTable('scheduled_alarms', {
   actionOutcomeStatus: text('action_outcome_status'), // action outcome — NULL until it lands
   actionOutcomeJson:   text('action_outcome_json'),   // JSON — alarm-type-specific action outcome payload
   createdAt:     integer('created_at').notNull(),
+  updatedAt:     integer('updated_at').notNull(),
 })
 ```
 

@@ -1,13 +1,29 @@
 # Cooking Session — CookingAgent Durable Object
 
+## Current Cloudflare Runtime Correction
+
+This older implementable spec uses raw Durable Object patterns. Before coding, use
+`build-guide/08-cooking-session/02-cooking-agent-do.md` as the current source of truth.
+
+Current direction:
+
+- CookingAgent should be an Agent-backed Durable Object using the current `agents` package, not the deprecated scoped package name.
+- CookingAgent owns live runtime state plus a small local recovery ledger; Orchestrator owns persistent user memory/recipes/health SQLite.
+- Inbound WebSockets should validate `Upgrade: websocket` and use hibernation-aware Agent/DO WebSocket handling where possible.
+- Cloudflare Realtime SFU media frames arrive as protobuf `Packet` messages per selected track, not JSON metadata followed by raw binary.
+- Timers should use Agents SDK `schedule()` with local timer rows and idempotent callbacks, not raw DO alarms as the default.
+- Recovery cannot derive `userId` from `cooking:${sessionId}`. Persist `{ sessionId, userId, meetingId }` during `/init`.
+
+The product intent below remains useful, but stale implementation snippets must be reconciled before coding.
+
 ## What the CookingAgent DO Is
 
 The CookingAgent is a Cloudflare Durable Object that controls everything for one cooking session. It is the single point of authority for:
 - Receiving audio and video from Cloudflare Realtime
 - Maintaining the Gemini 3.1 Flash Live WebSocket session
 - Executing or forwarding all tool calls
-- Writing all session state to SQLite
-- Managing cooking timers via DO alarms
+- Maintaining local recovery metadata while forwarding persistent user writes to Orchestrator
+- Managing cooking timers via Agents SDK schedules
 - Sending Gemini's audio response back to the mobile
 
 **DO ID:** `env.COOKING_AGENT.idFromName(\`cooking:${sessionId}\`)`
@@ -136,49 +152,34 @@ private async handleInit(request: Request): Promise<Response> {
 
 ---
 
-## Handling the Cloudflare Realtime Stream
+## Handling Cloudflare Realtime SFU Track Streams
 
-The WebSocket adapter from Cloudflare Realtime connects here. The DO receives binary frames — each frame is either a PCM audio chunk or a JPEG image.
+The current documented Cloudflare Realtime SFU WebSocket adapter connects per selected track. The Agent receives protobuf `Packet` binary messages. Audio and video are separated by endpoint path or WebSocket attachment.
 
 ```typescript
-private async handleRealtimeStream(request: Request): Promise<Response> {
-  // Validate HMAC from adapter secret
-  const sig = request.headers.get('X-Adapter-Signature')
-  if (!this.validateAdapterSignature(sig, request)) {
+private async handleRealtimeStream(request: Request, mediaKind: 'audio' | 'video'): Promise<Response> {
+  if (request.headers.get('Upgrade')?.toLowerCase() !== 'websocket') {
+    return new Response('Expected WebSocket', { status: 426 })
+  }
+
+  const token = new URL(request.url).searchParams.get('token')
+  if (!token || !(await this.verifyAdapterToken(token, mediaKind))) {
     return new Response('Unauthorized', { status: 401 })
   }
 
   const { 0: client, 1: server } = new WebSocketPair()
-  server.accept()
+  this.ctx.acceptWebSocket(server, [`realtime:${mediaKind}`])
+  server.serializeAttachment({ kind: 'realtime', mediaKind })
 
-  this.sessionState.realtimeWs = server
-
-  server.addEventListener('message', async (event) => {
-    const data = event.data
-
-    if (typeof data === 'string') {
-      // Control message from adapter — JSON
-      const msg = JSON.parse(data)
-      if (msg.type === 'frame_metadata') {
-        // frame follows: audio or video
-      }
-    } else {
-      // Binary: forward to Gemini based on last metadata type
-      await this.forwardToGemini(data)
-    }
-  })
-
-  server.addEventListener('close', () => {
-    this.sessionState.realtimeWs = null
-    // If session is still active, this is unexpected — log to agent_state
-    if (this.sessionState.status === 'active') {
-      this.upsertAgentState(`stream.disconnect.${this.sessionState.sessionId}`, JSON.stringify({ ts: Date.now() }))
-    }
-  })
+  if (mediaKind === 'audio') this.sessionState.realtimeAudioWs = server
+  else this.sessionState.realtimeVideoWs = server
 
   return new Response(null, { status: 101, webSocket: client })
 }
 ```
+
+`webSocketMessage()` decodes the protobuf `Packet`, then forwards `packet.payload` to Gemini as PCM
+audio or to the visual-change detector as JPEG. Do not rely on JSON metadata frames.
 
 ---
 

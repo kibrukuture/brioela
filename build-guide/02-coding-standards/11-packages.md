@@ -46,7 +46,7 @@ No runtime dependencies beyond Zod and Drizzle in the shared package. The shared
 
 | Package | Purpose |
 |---|---|
-| `@cloudflare/agents` | CF Agent SDK — Durable Object base class |
+| `agents` | Cloudflare Agents SDK — Durable Object-backed Agent runtime |
 | `@cloudflare/workers-types` | TypeScript types for CF Workers runtime |
 | `wrangler` | CF deploy tool (devDependency) |
 

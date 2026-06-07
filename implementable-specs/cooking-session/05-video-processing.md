@@ -2,47 +2,34 @@
 
 ## How Video Arrives at the DO
 
-The Cloudflare Realtime WebSocket adapter pushes media from the SFU to the CookingAgent DO's `/stream` endpoint. The adapter delivers two types of binary frames:
+The current documented Cloudflare Realtime SFU WebSocket adapter pushes selected tracks from the SFU to CookingAgent WebSocket endpoints. It is track-level, not room-level. The adapter delivers protobuf `Packet` binary messages:
 
-1. **PCM audio** — continuous stream, 20ms chunks at 48kHz
-2. **JPEG frames** — periodic, up to 1 FPS, from the mobile camera
+1. **PCM audio** — s16le, 48kHz stereo payloads on the audio endpoint
+2. **JPEG frames** — approximately 1 FPS payloads on the video endpoint
 
-The adapter sends a JSON control message before each frame to indicate what type follows:
+There is no documented JSON metadata prelude. The DO knows media kind from the endpoint path or WebSocket attachment:
 
-```json
-{ "type": "frame_metadata", "media_type": "audio", "duration_ms": 20 }
-{ "type": "frame_metadata", "media_type": "video", "width": 640, "height": 480 }
+```text
+/stream/audio → decode Packet.payload as PCM audio
+/stream/video → decode Packet.payload as JPEG frame
 ```
 
-The binary payload arrives in the next message. The DO tracks the last `media_type` from `frame_metadata` to know how to route the binary payload.
+Do not implement JSON metadata followed by raw binary unless Cloudflare publishes that protocol.
 
 ---
 
 ## Frame Routing in the DO
 
 ```typescript
-private lastMediaType: 'audio' | 'video' | null = null
+private async handleRealtimeMessage(ws: WebSocket, data: ArrayBuffer): Promise<void> {
+  const attachment = ws.deserializeAttachment() as { mediaKind: 'audio' | 'video' }
+  const packet = decodeCloudflareRealtimePacket(data)
 
-private async handleRealtimeMessage(event: MessageEvent): Promise<void> {
-  if (typeof event.data === 'string') {
-    // Control message
-    const msg = JSON.parse(event.data)
-    if (msg.type === 'frame_metadata') {
-      this.lastMediaType = msg.media_type
-    }
-    return
+  if (attachment.mediaKind === 'audio') {
+    await this.sendAudioChunk(packet.payload)
+  } else {
+    await this.handleVideoFrame(packet.payload)
   }
-
-  // Binary payload
-  if (!this.lastMediaType) return  // no metadata yet — skip
-
-  if (this.lastMediaType === 'audio') {
-    await this.sendAudioChunk(event.data as ArrayBuffer)
-  } else if (this.lastMediaType === 'video') {
-    await this.handleVideoFrame(event.data as ArrayBuffer)
-  }
-
-  this.lastMediaType = null  // reset after consuming
 }
 ```
 

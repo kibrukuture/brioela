@@ -2,12 +2,12 @@
 
 ## What a "Room" Is Here
 
-A Cloudflare Realtime room (RealtimeKit Meeting) is the WebRTC transport layer for one cooking session. It handles:
+A Cloudflare RealtimeKit Meeting is the WebRTC room layer for one cooking session. It handles:
 - WebRTC connection from the mobile device
 - Delivering audio and video from mobile to the Cloudflare Realtime SFU
-- Pushing that media to the CookingAgent DO via the native WebSocket adapter
+- Participant room lifecycle. Media-to-DO uses the documented Cloudflare Realtime SFU track adapter, not a RealtimeKit meeting-level adapter.
 
-A room is session-scoped. One cooking session = one Meeting. When the session ends, the Meeting is closed. Rooms are NOT persistent between sessions.
+Brioela may choose one Meeting per cooking session as product policy, but Cloudflare RealtimeKit Meetings are reusable by default. A live Session starts when participants join and ends after they leave.
 
 ---
 
@@ -19,14 +19,14 @@ The Orchestrator DO creates the room when the user starts a cooking session. It 
 Mobile ──── POST /api/cooking/start ────► Worker (routes to Orchestrator DO)
                                                │
                                                │ 1. Create RealtimeKit Meeting
-                                               │ 2. Create Participant + authToken
-                                               │ 3. Configure WebSocket Adapter
+                                               │ 2. Create Participant + participantToken
+                                               │ 3. Initialize CookingAgent DO
                                                │ 4. Create session row in SQLite
                                                │ 5. Spawn CookingAgent DO
                                                │
                                                ▼
                                           Return to Mobile:
-                                          { meetingId, authToken, doEndpoint }
+                                          { meetingId, participantToken, doEndpoint }
 ```
 
 ---
@@ -36,86 +36,87 @@ Mobile ──── POST /api/cooking/start ────► Worker (routes to Or
 ### 1. Create Meeting
 
 ```typescript
-const REALTIMEKIT_BASE = 'https://api.realtimekit.io/v1'
-const REALTIMEKIT_ORG  = env.REALTIMEKIT_ORG_ID
-const REALTIMEKIT_KEY  = env.REALTIMEKIT_API_KEY
+const REALTIMEKIT_BASE = (env: Env) =>
+  `https://api.cloudflare.com/client/v4/accounts/${env.CLOUDFLARE_ACCOUNT_ID}/realtime/kit/${env.REALTIMEKIT_APP_ID}`
 
-async function createMeeting(sessionId: string): Promise<string> {
-  const resp = await fetch(`${REALTIMEKIT_BASE}/meetings`, {
+const realtimeKitHeaders = (env: Env) => ({
+  'Authorization': `Bearer ${env.CLOUDFLARE_API_TOKEN}`,
+  'Content-Type': 'application/json',
+})
+
+async function createMeeting(sessionId: string, env: Env): Promise<string> {
+  const resp = await fetch(`${REALTIMEKIT_BASE(env)}/meetings`, {
     method: 'POST',
-    headers: {
-      'Authorization': `Basic ${btoa(REALTIMEKIT_ORG + ':' + REALTIMEKIT_KEY)}`,
-      'Content-Type': 'application/json',
-    },
+    headers: realtimeKitHeaders(env),
     body: JSON.stringify({
       title:      `cooking-${sessionId}`,
-      record:     false,           // recording handled separately if needed
-      max_participants: 3,         // user + possible family members watching
+      record_on_start: false,
+      persist_chat: false,
     }),
   })
-  const { id: meetingId } = await resp.json()
-  return meetingId
+  const json = await resp.json() as { data: { id: string } }
+  return json.data.id
 }
 ```
 
-### 2. Create Participant + authToken
+### 2. Create Participant + participantToken
 
 ```typescript
-async function createParticipant(meetingId: string, userId: string): Promise<string> {
-  const resp = await fetch(`${REALTIMEKIT_BASE}/meetings/${meetingId}/participants`, {
+async function createParticipant(meetingId: string, userId: string, env: Env): Promise<string> {
+  const resp = await fetch(`${REALTIMEKIT_BASE(env)}/meetings/${meetingId}/participants`, {
     method: 'POST',
-    headers: {
-      'Authorization': `Basic ${btoa(REALTIMEKIT_ORG + ':' + REALTIMEKIT_KEY)}`,
-      'Content-Type': 'application/json',
-    },
+    headers: realtimeKitHeaders(env),
     body: JSON.stringify({
-      name:   userId,
-      preset: 'host',             // full permissions: audio, video, screen share
+      custom_participant_id: `user:${userId}`,
+      name: userId,
+      preset_name: 'host',
     }),
   })
-  const { token: authToken } = await resp.json()
-  return authToken
-  // authToken is passed to mobile — used by RealtimeKit SDK to join the room
+  const json = await resp.json() as { data: { token: string } }
+  return json.data.token
+  // participantToken is passed to mobile — used by RealtimeKit SDK to join the room
 }
 ```
 
 ### 3. Configure WebSocket Adapter
 
-This is the critical step. It tells Cloudflare Realtime to push the mobile participant's audio and video to the CookingAgent DO's WebSocket endpoint.
+This is the critical step. Current public Cloudflare docs place the WebSocket media adapter under Realtime SFU, attached to selected SFU tracks. It is not a RealtimeKit meeting-level `/adapters` endpoint.
 
 ```typescript
-async function configureWebSocketAdapter(
-  meetingId:  string,
-  sessionId:  string,
-  doStubId:   DurableObjectId,
-  env:        Env,
-): Promise<void> {
-  // The CookingAgent DO's WebSocket endpoint is addressed via its DO stub
-  // We pass the DO stub URL through a shared secret — the SFU adapter POSTs
-  // to our Worker which routes to the correct DO
-  const adapterEndpoint = `${env.WORKER_BASE_URL}/internal/cooking-stream/${sessionId}`
+const REALTIME_SFU_BASE = 'https://rtc.live.cloudflare.com/v1'
 
-  const resp = await fetch(`${REALTIMEKIT_BASE}/meetings/${meetingId}/adapters`, {
+async function configureTrackWebSocketAdapter(
+  sfuSessionId: string,
+  trackName: string,
+  mediaKind: 'audio' | 'video',
+  sessionId: string,
+  env: Env,
+): Promise<{ adapterId: string }> {
+  const adapterEndpoint = `${env.WORKER_WS_BASE_URL}/internal/cooking-stream/${sessionId}/${mediaKind}?token=${await signAdapterToken(sessionId, mediaKind, env)}`
+
+  const resp = await fetch(`${REALTIME_SFU_BASE}/apps/${env.REALTIME_SFU_APP_ID}/adapters/websocket/new`, {
     method: 'POST',
     headers: {
-      'Authorization': `Basic ${btoa(REALTIMEKIT_ORG + ':' + REALTIMEKIT_KEY)}`,
+      'Authorization': `Bearer ${env.REALTIME_SFU_APP_SECRET}`,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      type:     'websocket',
-      endpoint: adapterEndpoint,
-      secret:   env.ADAPTER_SECRET,       // HMAC validation in the DO
-      tracks: {
-        audio: { format: 'pcm_s16le', sample_rate: 48000 },
-        video: { format: 'jpeg',      fps: 1 },
-      },
+      tracks: [{
+        location: 'remote',
+        sessionId: sfuSessionId,
+        trackName,
+        endpoint: adapterEndpoint,
+        outputCodec: mediaKind === 'audio' ? 'pcm' : 'jpeg',
+      }],
     }),
   })
   if (!resp.ok) throw new Error(`Adapter config failed: ${await resp.text()}`)
+  const json = await resp.json() as { tracks: Array<{ adapterId: string }> }
+  return { adapterId: json.tracks[0]!.adapterId }
 }
 ```
 
-The Worker at `/internal/cooking-stream/:sessionId` validates the HMAC from the adapter secret, looks up the CookingAgent DO stub by sessionId, and upgrades the connection to WebSocket — forwarding it to the DO.
+The Worker at `/internal/cooking-stream/:sessionId/:mediaKind` validates the signed adapter token, looks up the CookingAgent DO stub by sessionId, and upgrades the connection to WebSocket — forwarding it to the DO. Media arrives as protobuf `Packet` messages.
 
 ---
 
@@ -124,14 +125,14 @@ The Worker at `/internal/cooking-stream/:sessionId` validates the HMAC from the 
 ```typescript
 async function startCookingSession(userId: string, env: Env): Promise<CookingSessionStart> {
   const sessionId  = crypto.randomUUID()
-  const meetingId  = await createMeeting(sessionId)
-  const authToken  = await createParticipant(meetingId, userId)
+  const meetingId  = await createMeeting(sessionId, env)
+  const participantToken = await createParticipant(meetingId, userId, env)
 
   // Create CookingAgent DO
   const doId = env.COOKING_AGENT.idFromName(`cooking:${sessionId}`)
   const doStub = env.COOKING_AGENT.get(doId)
 
-  await configureWebSocketAdapter(meetingId, sessionId, doId, env)
+  // SFU adapters are configured after the mobile publishes tracks and track names are known.
 
   // Initialize the CookingAgent DO with session context
   await doStub.fetch('/init', {
@@ -163,8 +164,8 @@ async function startCookingSession(userId: string, env: Env): Promise<CookingSes
   return {
     sessionId,
     meetingId,
-    authToken,           // mobile uses this with RealtimeKit SDK to join
-    doAudioEndpoint: `${env.WORKER_BASE_URL}/cooking/${sessionId}/audio`,
+    participantToken,    // mobile uses this with RealtimeKit SDK to join
+    doAudioEndpoint: `${env.WORKER_WS_BASE_URL}/cooking/${sessionId}/audio?token=${await signMobileAudioToken(sessionId, userId, env)}`,
     // doAudioEndpoint: mobile opens WebSocket here to receive Gemini audio back
   }
 }
@@ -174,16 +175,14 @@ async function startCookingSession(userId: string, env: Env): Promise<CookingSes
 
 ## Mobile Join Flow
 
-Mobile receives `{ meetingId, authToken, doAudioEndpoint }` from the server. It then:
+Mobile receives `{ meetingId, participantToken, doAudioEndpoint }` from the server. It then:
 
 1. Joins the RealtimeKit room using the SDK:
 ```swift
 // iOS (Swift)
-let meeting = try await DyteClient.init(meetingInfo: DyteMeetingInfoV2(
-    authToken: authToken
-))
+let meeting = try await RealtimeKitClient.init(authToken: participantToken)
 meeting.addMeetingRoomEventsListener(meetingRoomEventsListener: self)
-try await meeting.joinRoom()
+try await meeting.join()
 ```
 
 2. Opens WebSocket to CookingAgent DO to receive Gemini audio:
@@ -199,29 +198,37 @@ The mobile sends audio/video via WebRTC (RealtimeKit SDK handles this automatica
 
 ## Room Teardown
 
-At session end, the CookingAgent DO tears down the room:
+At session end, Brioela ends the active RealtimeKit session and optionally disables the one-time Meeting:
 
 ```typescript
-async function closeMeeting(meetingId: string, env: Env): Promise<void> {
-  await fetch(`${REALTIMEKIT_BASE}/meetings/${meetingId}`, {
-    method: 'DELETE',
-    headers: {
-      'Authorization': `Basic ${btoa(env.REALTIMEKIT_ORG_ID + ':' + env.REALTIMEKIT_API_KEY)}`,
-    },
+async function endActiveRealtimeKitSession(meetingId: string, env: Env): Promise<void> {
+  await fetch(`${REALTIMEKIT_BASE(env)}/meetings/${meetingId}/active-session/kick-all`, {
+    method: 'POST',
+    headers: realtimeKitHeaders(env),
   })
-  // Closing the meeting kicks all participants and stops the WebSocket adapter
+
+  await fetch(`${REALTIMEKIT_BASE(env)}/meetings/${meetingId}`, {
+    method: 'PATCH',
+    headers: realtimeKitHeaders(env),
+    body: JSON.stringify({ status: 'INACTIVE' }),
+  })
 }
 ```
+
+Close SFU WebSocket adapters separately with stored adapter ids.
 
 ---
 
 ## Environment Variables Required
 
 ```
-REALTIMEKIT_ORG_ID      Cloudflare RealtimeKit organization ID
-REALTIMEKIT_API_KEY     RealtimeKit API key
-ADAPTER_SECRET          HMAC secret shared between RealtimeKit and our Worker
-WORKER_BASE_URL         Base URL for internal routing (https://brioela.workers.dev)
+CLOUDFLARE_ACCOUNT_ID       Cloudflare account id
+CLOUDFLARE_API_TOKEN        scoped API token with Realtime permissions
+REALTIMEKIT_APP_ID          RealtimeKit app id
+REALTIME_SFU_APP_ID         Realtime SFU app id, if using track adapters
+REALTIME_SFU_APP_SECRET     Realtime SFU app secret
+WORKER_BASE_URL             https://api.brioela.com
+WORKER_WS_BASE_URL          wss://api.brioela.com
 ```
 
 ---

@@ -39,7 +39,7 @@ Sub-agents do not have SQLite. They cannot persist anything directly. Every read
 
 ### Schedule
 
-Fires via DO alarm on a 7-day interval. Before running, the Orchestrator checks whether the user has been idle (no sessions in the last 2 hours). If the user is in an active session, the curator run is rescheduled 2 hours later — it never interrupts a live session.
+Fires via an Agents SDK schedule on a 7-day interval. Before running, the Orchestrator checks whether the user has been idle (no sessions in the last 2 hours). If the user is in an active session, the curator run is rescheduled 2 hours later — it never interrupts a live session.
 
 ```typescript
 // In alarm.handler.ts — CURATOR_RUN alarm case
@@ -54,7 +54,12 @@ case 'curator_run': {
 
   if (recentSession) {
     // User active — reschedule 2 hours later
-    await ctx.storage.setAlarm(Date.now() + 2 * 60 * 60 * 1000)
+    await scheduleUserAlarm({
+      alarmType: 'curator_run',
+      payload: { userId },
+      scheduledAt: Date.now() + 2 * 60 * 60 * 1000,
+      label: 'Curator run deferred while user is active',
+    })
     return
   }
 
@@ -64,7 +69,12 @@ case 'curator_run': {
   await curatorStub.fetch(new Request('https://internal/run', { method: 'POST' }))
 
   // Reschedule next curator run — 7 days
-  await ctx.storage.setAlarm(Date.now() + 7 * 24 * 60 * 60 * 1000)
+  await scheduleUserAlarm({
+    alarmType: 'curator_run',
+    payload: { userId },
+    scheduledAt: Date.now() + 7 * 24 * 60 * 60 * 1000,
+    label: 'Weekly curator run',
+  })
   break
 }
 ```
@@ -169,7 +179,7 @@ All sub-agents use the same base pattern — they extend `Agent` but override `f
 ```typescript
 // backend/src/agents/curator/curator.agent.ts
 
-import { Agent } from '@cloudflare/agents'
+import { Agent } from 'agents'
 import { generateText } from 'ai'
 import { anthropic } from '@ai-sdk/anthropic'
 import type { Env } from '@/types/env'

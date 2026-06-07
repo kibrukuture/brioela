@@ -56,8 +56,9 @@ export async function endSession(
   // 4. Cancel all cooking timers
   await cancelAllTimers(cookingDo)
 
-  // 5. Close Realtime room
-  await closeMeeting(state.meetingId, cookingDo.env)
+  // 5. Close SFU adapters and end active RealtimeKit session
+  await closeRealtimeAdapters(state.adapterIds, cookingDo.env)
+  await endActiveRealtimeKitSession(state.meetingId, cookingDo.env)
 
   // 6. Close mobile WebSocket
   if (state.mobileWs) {
@@ -65,8 +66,10 @@ export async function endSession(
     state.mobileWs = null
   }
 
-  // 7. Run end-of-session processing (recipe + outcome_summary + memory)
-  await runSessionEndProcessing(reason, cookingDo)
+  // 7. Run end-of-session processing (recipe + outcome_summary + memory) as recoverable Agent work
+  await cookingDo.runFiber(`cooking-session-end:${state.sessionId}`, async () => {
+    await runSessionEndProcessing(reason, cookingDo)
+  })
 
   // 8. Finalize session row via Orchestrator
   await forwardToolToOrchestrator('finalize_session', {
@@ -260,16 +263,18 @@ function onMobileDisconnect(cookingDo: CookingAgent): void {
   const state = cookingDo.sessionState!
   if (state.status !== 'active') return
 
-  state.status = 'reconnecting'
+  state.status = 'mobile_reconnecting'
 
-  // Wait 5 minutes for mobile to reconnect
-  setTimeout(async () => {
-    if (state.status === 'reconnecting') {
-      // Mobile never came back — end the session
-      await endSession('mobile_disconnected', cookingDo)
-    }
-  }, 5 * 60 * 1000)
+  // Persist a durable reconnect deadline instead of using setTimeout, which is lost on eviction.
+  const deadline = Date.now() + 5 * 60 * 1000
+  cookingDo.sql.exec(
+    `UPDATE cooking_session_runtime SET mobile_disconnect_deadline = ?, status = ? WHERE session_id = ?`,
+    deadline,
+    'mobile_reconnecting',
+    state.sessionId,
+  )
+  cookingDo.schedule(new Date(deadline), 'handleMobileDisconnectDeadline', { sessionId: state.sessionId }, { idempotent: true })
 }
 ```
 
-Gemini continues receiving audio from Cloudflare Realtime during the disconnect (the user may still be speaking in the kitchen). Any Gemini audio output during the disconnect is dropped — no mobile WebSocket to send to. When mobile reconnects, it receives audio from that point forward.
+Gemini can continue receiving SFU audio while the mobile audio-out socket is disconnected, as long as the Realtime adapter and Gemini socket remain active. Do not reuse a single `reconnecting` status for both mobile and Gemini. `mobile_reconnecting` means only the output socket is missing; `gemini_reconnecting` means the model session itself is being restored. Any Gemini audio output during a mobile-only disconnect is dropped unless a separate app event/local notification path is used.
