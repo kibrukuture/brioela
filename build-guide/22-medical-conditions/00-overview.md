@@ -23,7 +23,7 @@ Declare a medical condition once by voice and the entire app adapts permanently:
 ## Key Decisions From Specs
 - Voice detection: same behavioral inference pipeline as allergy detection (spec 07); proposed once, confirmed once — never asked again
 - Condition flag is SEPARATE from allergy flag in scan result — two distinct rows so user understands why each exists
-- Condition rules: versioned config table in Supabase (`drug_food_interaction` and `condition_rule`) — never hardcoded in DO logic
+- Condition rules: versioned config table in Supabase (`medication_food_interaction_rule` and `condition_rule`) — never hardcoded in DO logic
 - Condition profile loaded into every scan verdict call — part of standard context from Orchestrator DO
 - Celiac treated as hard allergy equivalent — cross-contamination warnings are red, not yellow
 - Practitioner integration: verified practitioners can view active conditions and push condition-specific guidance (spec 18)

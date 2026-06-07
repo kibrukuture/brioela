@@ -93,7 +93,7 @@ Return JSON array:
 [{
   "exposure_type": "product" | "ingredient" | "food_category",
   "exposure_key": string,    // product_id, ingredient name, or category
-  "outcome_event_type": string,
+  "post_exposure_event_kind": string,
   "onset_lag_hours": number,
   "confidence": number,
   "occurrence_count": number,
@@ -104,11 +104,11 @@ Return empty array if no meaningful correlations found. Never fabricate correlat
 `
 ```
 
-Detected correlations are written to `user_memory` under `patterns.*` namespace (personal, private). If the user consents and the cohort has k ≥ 100 members, they are also written to `anon_exposure_outcome_pairs` (anonymous, community).
+Detected correlations are written to `user_memory` under `patterns.*` namespace (personal, private). If the user consents and the anonymous health group has k ≥ 100 members, they are also written to `anonymous_exposure_event_associations` (anonymous, community).
 
 ---
 
-### Pass 2 — Medication Adherence and Risk Summary
+### Pass 2 — Medication Adherence and Caution Summary
 
 Reviews the last 7 days of fired `scheduled_alarms` where `alarm_type = 'medication_reminder'`. Adherence per medication = fraction of those alarms whose `action_outcome_json.took = 1` (alarms still `action_outcome_status = 'missed'` or with `took = 0` count against it). For any medication with adherence < 70% over 7 days:
 - Writes a note to `user_memory` under `health.medication_adherence`
@@ -116,7 +116,7 @@ Reviews the last 7 days of fired `scheduled_alarms` where `alarm_type = 'medicat
 
 Also cross-references active medications against product scans:
 - "You scanned 6 products containing Vitamin K this week while on Warfarin — here are the ones flagged."
-- Writes summary to `user_memory` under `health.drug_food_exposure_summary`
+- Writes summary to `user_memory` under `health.medication_food_exposure_summary`
 
 ---
 
@@ -131,72 +131,72 @@ async function runCommunityContributionPass(
   db:            DrizzleDB,
   env:           Env,
 ): Promise<void> {
-  // Build user's cohort fingerprint from their private health profile
-  const cohortFingerprint = buildCohortFingerprint(db, userId)
+  // Build user's anonymous health group fingerprint from their private health profile
+  const anonymousHealthGroupFingerprint = buildAnonymousHealthGroupFingerprint(db, userId)
 
-  // Check if this cohort exists in Supabase — and if it has >= 100 members
-  const { data: cohort } = await supabase
-    .from('brioela.anon_health_cohorts')
-    .select('id, k_size')
-    .eq('cohort_hash', cohortFingerprint.hash)
+  // Check if this anonymous health group exists in Supabase — and if it has >= 100 members
+  const { data: anonymousHealthGroup } = await supabase
+    .from('brioela.anonymous_health_groups')
+    .select('id, k_anonymity_group_size')
+    .eq('anonymous_health_group_hash', anonymousHealthGroupFingerprint.hash)
     .maybeSingle()
 
-  if (!cohort || cohort.k_size < 100) {
-    // Cohort too small — store locally and retry next week
+  if (!anonymousHealthGroup || anonymousHealthGroup.k_anonymity_group_size < 100) {
+    // Anonymous health group too small — store locally and retry next week
     await db.insert(agentState).values({
       key:       `health_agent.pending_contribution.${crypto.randomUUID()}`,
       userId,
-      value:     JSON.stringify({ correlations, cohortFingerprint, pendingSince: Date.now() }),
+      value:     JSON.stringify({ correlations, anonymousHealthGroupFingerprint, pendingSince: Date.now() }),
       updatedAt: Date.now(),
     }).onConflictDoUpdate({
       target: agentState.key,
-      set: { value: JSON.stringify({ correlations, cohortFingerprint, pendingSince: Date.now() }), updatedAt: Date.now() }
+      set: { value: JSON.stringify({ correlations, anonymousHealthGroupFingerprint, pendingSince: Date.now() }), updatedAt: Date.now() }
     }).run()
     return
   }
 
-  // Cohort is large enough — write community signals
+  // Anonymous health group is large enough — write community signals
   for (const correlation of correlations) {
     if (correlation.confidence < 0.60) continue   // below confidence floor — do not contribute
 
-    // Upsert into anon_exposure_outcome_pairs
-    await supabase.rpc('upsert_exposure_outcome_pair', {
-      p_cohort_id:         cohort.id,
-      p_exposure_type:     correlation.exposureType,
+    // Upsert into anonymous_exposure_event_associations
+    await supabase.rpc('upsert_exposure_event_association', {
+      p_anonymous_health_group_id: anonymousHealthGroup.id,
+      p_exposure_kind:     correlation.exposureType,
       p_exposure_key:      correlation.exposureKey,
-      p_outcome_event_type: correlation.outcomeEventType,
+      p_post_exposure_event_kind: correlation.postExposureEventKind,
       p_onset_lag_hours:   correlation.onsetLagHours,
       p_severity:          correlation.severity,
     })
 
-    // Update ingredient harm index if ingredient-level
+    // Update ingredient event association index if ingredient-level
     if (correlation.exposureType === 'ingredient') {
-      await supabase.rpc('update_ingredient_harm_index', {
+      await supabase.rpc('update_ingredient_event_association_index', {
         p_ingredient_name:  correlation.exposureKey,
-        p_condition_tags:   cohortFingerprint.conditionTags,
-        p_medication_cats:  cohortFingerprint.medicationCategories,
-        p_event_type:       correlation.outcomeEventType,
-        p_harm_signal:      correlation.confidence,
+        p_reported_condition_tags: anonymousHealthGroupFingerprint.conditionTags,
+        p_medication_cats:  anonymousHealthGroupFingerprint.medicationCategories,
+        p_post_exposure_event_kind: correlation.postExposureEventKind,
+        p_event_association_score: correlation.confidence,
         p_severity:         correlation.severity,
-        p_cohort_count:     1,
+        p_health_group_count: 1,
         p_exposure_count:   1,
-        p_outcome_count:    1,
+        p_post_exposure_event_count: 1,
       })
     }
 
-    // Update product community trust if product-level
+    // Update product community health summary if product-level
     if (correlation.exposureType === 'product') {
-      await supabase.rpc('update_product_community_trust', {
+      await supabase.rpc('update_product_community_health_summary', {
         p_product_id:    correlation.exposureKey,
-        p_event_type:    correlation.outcomeEventType,
-        p_condition_tags: cohortFingerprint.conditionTags,
+        p_post_exposure_event_kind: correlation.postExposureEventKind,
+        p_reported_condition_tags: anonymousHealthGroupFingerprint.conditionTags,
         p_severity:      correlation.severity,
       })
     }
   }
 }
 
-function buildCohortFingerprint(db: DrizzleDB, userId: string): CohortFingerprint {
+function buildAnonymousHealthGroupFingerprint(db: DrizzleDB, userId: string): AnonymousHealthGroupFingerprint {
   const activeMeds        = db.select().from(medications).where(eq(medications.active, 1)).all()
   const activeConstraints = db.select().from(constraints).where(eq(constraints.status, 'confirmed')).all()
   const memories          = db.select().from(userMemory).where(and(eq(userMemory.namespace, 'health'), eq(userMemory.active, 1))).all()
@@ -204,7 +204,7 @@ function buildCohortFingerprint(db: DrizzleDB, userId: string): CohortFingerprin
   const scanHistory       = db.select().from(memoryEvent).where(eq(memoryEvent.eventType, 'scan')).all()
 
   const conditionTags        = extractConditionTags(memories, activeConstraints)
-  const medicationCategories = [...new Set(activeMeds.map(m => m.drugCategory))]
+  const medicationCategories = [...new Set(activeMeds.map(m => m.medicationCategory))]
   const dietaryTags          = extractDietaryTags(activeConstraints)
   const ageBucket            = extractAgeBucket(memories)
   const regionBucket         = extractRegionBucket(memories)
@@ -214,16 +214,16 @@ function buildCohortFingerprint(db: DrizzleDB, userId: string): CohortFingerprin
   // different diets and metabolic states. These three fields sharpen the cohort.
   const dietaryPatternSignature = computeDietaryPatternSignature(scanHistory)  // e.g. 'high_sodium_ultra_processed' | 'whole_food_low_carb'
   const cuisineProfile          = inferCuisineProfile(scanHistory)             // {"west_african":0.6,"western_packaged":0.3,"south_asian":0.1}
-  const metabolicRiskBucket     = computeMetabolicRiskBucket(captures, conditionTags)  // 'low' | 'moderate' | 'elevated' | 'high' — from glucose/HbA1c/BP captures
+  const metabolicMarkerBucket   = computeMetabolicMarkerBucket(captures, conditionTags)  // 'low' | 'moderate' | 'elevated' | 'high' — from glucose/HbA1c/BP captures
 
   const hash = hashFingerprint({
     conditionTags, medicationCategories, dietaryTags, ageBucket, regionBucket,
-    dietaryPatternSignature, cuisineProfileTopKey: topKey(cuisineProfile), metabolicRiskBucket,
+    dietaryPatternSignature, cuisineProfileTopKey: topKey(cuisineProfile), metabolicMarkerBucket,
   })
 
   return {
     hash, conditionTags, medicationCategories, dietaryTags, ageBucket, regionBucket,
-    dietaryPatternSignature, cuisineProfile, metabolicRiskBucket,
+    dietaryPatternSignature, cuisineProfile, metabolicMarkerBucket,
   }
 }
 ```
@@ -234,10 +234,10 @@ function buildCohortFingerprint(db: DrizzleDB, userId: string): CohortFingerprin
 
 The Health Agent enforces these before any community write:
 
-1. **k-anonymity ≥ 100.** No row is written to community tables unless the cohort has at least 100 members in Supabase.
+1. **k-anonymity ≥ 100.** No row is written to community tables unless the anonymous health group has at least 100 members in Supabase.
 2. **Category-level only.** Drug names become drug categories. Specific conditions become condition tags. Geographic data becomes region buckets.
 3. **No temporal precision.** Timestamps contributed to community tables are rounded to the week.
-4. **No linking.** A user's individual contributions across multiple weeks cannot be linked — each contribution uses the cohort hash, not any user identifier.
+4. **No linking.** A user's individual contributions across multiple weeks cannot be linked — each contribution uses the anonymous health group hash, not any user identifier.
 5. **Opt-out.** If the user says "stop sharing my data with the community" — `agent_state` key `health_agent.community_opt_out = "1"` is set and Pass 3 is skipped permanently.
 
 ---
@@ -268,4 +268,4 @@ The Health Agent re-schedules itself at the end of each run. It runs at a time t
 - Never deletes `health_events` or `medications` — these are permanent records
 - Never writes community data if the user has opted out
 - Never runs while a cooking session or active voice/session flow is active (checks `active_session_id` in agent_state)
-- Never diagnoses — the `plain_language_finding` in `anon_association_candidates` describes patterns, not diagnoses
+- Never creates clinical conclusions — the `plain_language_association_summary` in `anonymous_research_association_candidates` describes patterns, not clinical conclusions

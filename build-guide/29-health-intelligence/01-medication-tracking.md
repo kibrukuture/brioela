@@ -2,7 +2,7 @@
 
 ## What This File Covers
 
-New private SQLite tables in the Orchestrator DO: `medications`, `health_events`, and one generic `health_captures` table that holds every captured measurement, lab result, prescription, and medical document. How users add data (voice, photo, wearable). How medication data feeds into drug-food interaction checks at scan time.
+New private SQLite tables in the Orchestrator DO: `medications`, `health_events`, and one generic `health_captures` table that holds every captured measurement, lab result, prescription, and medical document. How users add data (voice, photo, wearable). How medication data feeds into medication-food interaction checks at scan time.
 
 ---
 
@@ -19,7 +19,7 @@ export const medications = sqliteTable('medications', {
   id:            text('id').primaryKey(),        // UUID
   userId:        text('user_id').notNull(),
   drugName:      text('drug_name').notNull(),    // "Metformin"
-  drugCategory:  text('drug_category').notNull(), // "biguanide" — normalized category for anonymization
+  medicationCategory: text('medication_category').notNull(), // "biguanide" — normalized category for anonymization
   doseMg:        real('dose_mg'),
   doseUnit:      text('dose_unit'),              // 'mg' | 'mcg' | 'units' | 'ml'
   frequency:     text('frequency').notNull(),    // "2x daily" | "once morning"
@@ -100,7 +100,7 @@ This is a photograph of a medication label or prescription bottle.
 Extract the following as JSON:
 {
   "drug_name": string,            // exact name on label
-  "drug_category": string | null, // pharmaceutical category if identifiable
+  "medication_category": string | null, // pharmaceutical category if identifiable
   "dose_mg": number | null,       // numeric dose
   "dose_unit": string | null,     // "mg" | "mcg" | "units" | "ml"
   "frequency": string | null,     // as written: "twice daily", "once at bedtime"
@@ -137,9 +137,9 @@ const activeMedications = db.select()
   .all()
 
 if (activeMedications.length > 0) {
-  // Check community drug-food interaction table
-  const interactions = await fetchDrugFoodInteractions(
-    activeMedications.map(m => m.drugCategory),
+  // Check community medication-food event association table
+  const interactions = await fetchMedicationFoodEventAssociations(
+    activeMedications.map(m => m.medicationCategory),
     product.ingredients,
     env,
   )
@@ -147,9 +147,9 @@ if (activeMedications.length > 0) {
   for (const interaction of interactions) {
     if (interaction.severityCategory === 'contraindicated' || interaction.severityCategory === 'major') {
       matches.push({
-        constraintType: 'drug_food_interaction',
+        constraintType: 'medication_food_event_association',
         entityValue:    interaction.foodIngredient,
-        matchedVia:     `${interaction.drugCategory} × ${interaction.foodIngredient}`,
+        matchedVia:     `${interaction.medicationCategory} × ${interaction.foodIngredient}`,
         severity:       interaction.severityCategory === 'contraindicated' ? 'block' : 'warn',
         reason:         interaction.interactionDirection,
       })

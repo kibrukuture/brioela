@@ -2,7 +2,7 @@
 
 ## What This File Covers
 
-How a resolved product is checked against the user's full constraint profile: hard allergy interrupt, intolerance warning, dislike deprioritization, dietary identity filtering, boycott flagging, and drug-food interaction check. All pulled from the Orchestrator DO.
+How a resolved product is checked against the user's full constraint profile: hard allergy interrupt, intolerance warning, dislike deprioritization, dietary identity filtering, boycott flagging, and medication-food interaction check. All pulled from the Orchestrator DO.
 
 ---
 
@@ -139,7 +139,7 @@ export async function checkProductConstraints(
     }
   }
 
-  // Drug-food interaction check
+  // Medication-food interaction check
   // Read medications from user_memory
   const medications = db.select()
     .from(userMemory)
@@ -150,7 +150,7 @@ export async function checkProductConstraints(
     .all()
 
   if (medications.length > 0) {
-    const interactions = checkDrugFoodInteractions(
+    const interactions = checkMedicationFoodInteractions(
       medications.map(m => m.key),  // medication names
       productIngredients,
     )
@@ -240,7 +240,7 @@ export async function checkConstraints(
 }
 ```
 
-**Fail open rule:** if the constraint check fails for any reason (DO timeout, network error), the scan returns a `clear` verdict with a note that the constraint check was unavailable. Scanning is never blocked by a technical failure of the constraint system. Hard allergy protection depends on the system being up — this is a known acceptable risk for a network-dependent feature.
+**Fail open rule:** if the constraint check fails for any reason (DO timeout, network error), the scan returns a `clear` verdict with a note that the constraint check was unavailable. Scanning is never blocked by a technical failure of the constraint system. Hard allergy protection depends on the system being up — this is a known limitation for a network-dependent feature.
 
 ---
 

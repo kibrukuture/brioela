@@ -448,7 +448,7 @@ export class BrioelOrchestrator extends Agent {
     check_medication_interactions: tool({
       description: 'Check a list of ingredients against the user\'s active medications.',
       parameters: z.object({ ingredients: z.array(z.string()) }),
-      execute: async (args) => this.checkDrugFoodInteractions(args),
+      execute: async (args) => this.checkMedicationFoodInteractions(args),
     }),
 
     memory_update: tool({

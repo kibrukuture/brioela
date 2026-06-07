@@ -247,7 +247,7 @@ export async function processVisualIntake(
 The memory write is primary. Downstream behavioral effects are driven by the fact existing in `user_memory.health.medications`, not by a special trigger.
 
 **After the write:**
-- Every product scan automatically checks drug-food interactions for any entry under `health.medications`
+- Every product scan automatically checks medication-food interactions for any entry under `health.medications`
 - Recipe suggestions filter against the same interaction rules
 - Voice session context includes the medication list — the AI can mention interactions proactively
 - Interaction rules live in Supabase as versioned config — updated without a deploy

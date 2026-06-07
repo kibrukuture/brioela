@@ -20,7 +20,7 @@ Before anything else: a photo almost never creates a skill. It almost always upd
 
 **Skills (procedural)** — reusable how-to instructions the agent follows. "When this user asks about food safety, cross-reference their medication list before answering." "When cooking sessions involve a user with an infant, suggest faster prep times." These are stored in the `skills` table. They tell the agent HOW to serve this user better.
 
-A prescription photo → writes a medication fact to `user_memory` (declarative). But it may ALSO cause the agent to create a skill: "I should now always check drug-food interactions for this user during any food discussion." That skill creation is the agent's own judgment call — it decides whether the new memory fact warrants a new procedural skill. Usually: memory only. Occasionally: memory + skill.
+A prescription photo → writes a medication fact to `user_memory` (declarative). But it may ALSO cause the agent to create a skill: "I should now always check medication-food interactions for this user during any food discussion." That skill creation is the agent's own judgment call — it decides whether the new memory fact warrants a new procedural skill. Usually: memory only. Occasionally: memory + skill.
 
 This is the same distinction Hermes makes. Most input → memory. Skills are rare and earned from patterns.
 
@@ -98,7 +98,7 @@ The agent recognizes food products, meals, restaurant dishes, homemade cooking, 
 ### Medication / Prescription
 The agent recognizes pill bottles, blister packs, medication packaging, prescription labels. Extracts the drug name where visible.
 
-Calls `memory_update` with `namespace = "health.medications"`, `key = <drug name>`, `value = { dose, frequency }`. This fact is now permanent in `user_memory` and injected into every session context going forward. Scan verdicts automatically check drug-food interactions for any entry in `health.medications`. The AI may also create a procedural skill if it judges the behavioral change complex enough to warrant one — but the memory write always happens regardless.
+Calls `memory_update` with `namespace = "health.medications"`, `key = <medication name>`, `value = { dose, frequency }`. This fact is now permanent in `user_memory` and injected into every session context going forward. Scan verdicts automatically check medication-food interactions for any entry in `health.medications`. The AI may also create a procedural skill if it judges the behavioral change complex enough to warrant one — but the memory write always happens regardless.
 
 ### Health Signals
 The agent recognizes health-relevant visual information the user chooses to share: a glucose monitor reading, a blood pressure cuff display, a stool photo (the Bristol Stool Scale is real clinical medicine and Brioela can use it), a rash that might be a food reaction, a food diary page, a nutrition label photographed separately from a product scan.
@@ -137,7 +137,7 @@ A medication photo writes a fact to memory. That is the primary action. What cha
 The drug name, dosage, and frequency are written to `user_memory` under `category = 'health'`, `key = 'medications'`. This fact is now part of the user's permanent profile. It is injected into every session context from this point on, the same way allergies are.
 
 **The downstream behavioral effects (driven by the memory fact):**
-- Every product scan now automatically checks drug-food interactions for any medication in the user's `user_memory.medications` list. Grapefruit + statins. Vitamin K + Warfarin. Tyramine + MAOIs. The interaction check is part of the scan pipeline — it runs whenever `user_memory` contains any medications.
+- Every product scan now automatically checks medication-food interactions for any medication in the user's `user_memory.medications` list. Grapefruit + statins. Vitamin K + Warfarin. Tyramine + MAOIs. The interaction check is part of the scan pipeline — it runs whenever `user_memory` contains any medications.
 - Recipe suggestions are filtered against the same interaction rules.
 - Voice session context includes the medication list so the AI can mention interactions proactively.
 - Interaction rules live in Supabase as versioned config — not hardcoded — so they update without a deploy.
@@ -298,7 +298,7 @@ The metformin entry is untouchable — high read, updated multiple times, core t
 - Classification is a single Gemini vision call (standard, not Live). Not a streaming session. Target latency: under 2 seconds.
 - The classification result is a structured JSON object parsed by the Orchestrator DO handler — not a free-text response.
 - All memory writes go through `memory_update` — the single write path. The AI never writes directly to SQLite.
-- Drug-food interaction rules live in Supabase as a versioned config table: `drug_food_interaction` (drug_name, food_ingredient, interaction_type, severity, description). Updated without a deploy.
+- Medication-food interaction rules live in Supabase as a versioned config table: `medication_food_interaction_rule` (medication_category, food_ingredient, interaction_type, severity, description). Updated without a deploy.
 - `read_count` increments are fire-and-forget — never awaited, never allowed to block a session response.
 
 ## Privacy
@@ -314,6 +314,6 @@ The metformin entry is untouchable — high read, updated multiple times, core t
 - Visual intake submission rate (users who actually use this beyond food scanning).
 - Classification accuracy (manual audit of sampled events — is the agent making reasonable decisions?).
 - `health.medications` namespace population rate among users who submit prescription photos.
-- Medication scan flag engagement (user taps the drug-food interaction flag to read more).
+- Medication scan flag engagement (user taps the medication-food interaction flag to read more).
 - Lifestyle memory accumulation rate per user over 30/60/90 days.
 - Retention impact: users with rich lifestyle memory profiles vs. users with only food data.

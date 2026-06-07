@@ -144,7 +144,7 @@ cooking-coach          — Step-by-step voice cooking methodology with intervent
 allergy-detection      — Behavioral inference workflow for detecting and confirming allergens
 illness-detective      — Food history analysis procedure for foodborne illness investigation
 recipe-reconstruction  — Multi-speaker session technique for capturing grandma-style recipes
-medication-awareness   — Drug-food interaction checking workflow
+medication-awareness   — Medication-food interaction checking workflow
 ```
 
 Seeded with `source = 'system'`, `status = 'active'`, `version = 1`. The Curator never touches these. They are updated only in code and reseeded.

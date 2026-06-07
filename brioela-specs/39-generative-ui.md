@@ -71,7 +71,7 @@ The most important generative surface in the app. The scan verdict is Brioela's 
 | `urgent` | Hard allergy or medical condition conflict | Heavy, immediate, no decoration. Urgency without panic. |
 | `discovery` | First time scanning this product category | Curious, exploratory. "This is new for you." |
 | `familiar` | Product scanned 10+ times, long-term staple | Warm, comfortable, brief. No need to explain again. |
-| `medication_flag` | Drug-food interaction detected | Clinical but calm. Factual, not alarming. |
+| `medication_flag` | Medication-food interaction detected | Clinical but calm. Factual, not alarming. |
 
 The props the AI fills: headline copy, the one-sentence reason shown to the user, animation variant, accent color family, whether to show an expandable detail section. The actual allergen warning block, the product name, and the core verdict are hardcoded — never generated (see What Is Never Generative below).
 

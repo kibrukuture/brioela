@@ -49,13 +49,13 @@ The score is rule-based — no LLM involved in the scoring path. LLM involvement
 export function computeBaseScore(product: Product): number {
   let score = 100
 
-  // Additives — penalty per additive, weighted by risk class
-  const highRiskAdditives  = ['E621', 'E951', 'E950', 'E211', 'E102', 'E104', 'E110']
-  const medRiskAdditives   = ['E200', 'E202', 'E330', 'E300']
+  // Additives — penalty per additive, weighted by caution class
+  const highCautionAdditives = ['E621', 'E951', 'E950', 'E211', 'E102', 'E104', 'E110']
+  const medCautionAdditives = ['E200', 'E202', 'E330', 'E300']
 
   for (const additive of product.additives ?? []) {
-    if (highRiskAdditives.includes(additive)) score -= 10
-    else if (medRiskAdditives.includes(additive)) score -= 4
+    if (highCautionAdditives.includes(additive)) score -= 10
+    else if (medCautionAdditives.includes(additive)) score -= 4
     else score -= 2
   }
 

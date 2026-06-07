@@ -21,7 +21,7 @@ Throughout this file, `reminderId` is the id of the firing `scheduled_alarms` ro
 
 A push notification can be ignored, swiped away, or missed entirely. For critical medications — Warfarin, insulin, immunosuppressants, seizure medications — a missed dose has real consequences. An actual phone call from an AI agent is much harder to ignore. The user answers, says yes or no, and the response is logged.
 
-Voice calls are used sparingly — only for medications flagged as high-stakes. For routine supplements or low-risk medications, OneSignal push is sufficient.
+Voice calls are used sparingly — only for medications flagged as high-stakes. For routine supplements or lower-stakes medications, OneSignal push is sufficient.
 
 ---
 
@@ -38,11 +38,11 @@ case 'medication_reminder': {
   // Get user's phone number
   const userPhone = await getUserPhone(db, alarm.userId, env)
 
-  // Determine call vs push based on drug category
+  // Determine call vs push based on medication category
   const medication = db.select().from(medications)
     .where(eq(medications.id, medicationId)).get()
 
-  const requiresCall = medication && HIGH_STAKES_DRUG_CATEGORIES.includes(medication.drugCategory)
+  const requiresCall = medication && HIGH_STAKES_MEDICATION_CATEGORIES.includes(medication.medicationCategory)
 
   if (requiresCall && userPhone) {
     // Primary: AI voice call

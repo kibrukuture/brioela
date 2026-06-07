@@ -216,7 +216,7 @@ System skills are the skills Brioela ships with at deploy time. They are seeded 
 - `allergy-detection` — Behavioral inference workflow for detecting and confirming allergens
 - `illness-detective` — Food history analysis procedure for foodborne illness investigation
 - `recipe-reconstruction` — Multi-speaker session technique for capturing grandma-style recipes
-- `medication-awareness` — Drug-food interaction checking workflow
+- `medication-awareness` — Medication-food interaction checking workflow
 
 **Rules for adding a system skill:**
 - A system skill is only added when a core product feature consistently needs a reusable procedure that the AI cannot reliably improvise on its own.
@@ -237,7 +237,7 @@ Before replying, scan this list. If one matches your current task, call skill_vi
 - allergy-detection: Behavioral inference workflow for detecting and confirming allergens
 - illness-detective: Food history analysis procedure for foodborne illness investigation
 - recipe-reconstruction: Multi-speaker session technique for capturing grandma-style recipes
-- medication-awareness: Drug-food interaction checking workflow
+- medication-awareness: Medication-food interaction checking workflow
 ```
 
 The model reads this, recognizes the relevant skill by its one-line description, and calls `skill_view(name)` to load the full markdown content into context. The full content is only loaded when needed. The index costs ~2–3 tokens per skill regardless of how long the skill content is.

@@ -31,7 +31,7 @@ type ConditionRule = {
   updatedAt: number
 }
 
-type DrugFoodInteractionRule = {
+type MedicationFoodInteractionRule = {
   ruleId: string
   medicationClass: string
   triggerKind: "ingredient" | "category" | "nutrient"
@@ -43,7 +43,7 @@ type DrugFoodInteractionRule = {
 }
 ```
 
-The spec names `condition_rule` and `drug_food_interaction`; implementation can use those table names.
+The spec names `condition_rule` and `medication_food_interaction_rule`; implementation can use those table names.
 
 ---
 
