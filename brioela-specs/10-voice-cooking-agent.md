@@ -53,7 +53,7 @@ If something changes during the session — product scan result arrives, a step 
 ## Session Transport
 
 - For single-user sessions: the client connects directly to Gemini Live via WebSocket. Audio input and output are handled client-side. Session lifecycle (start, end, resume) is managed via the Cloudflare Worker + CookingAgent DO.
-- Multi-user sessions go through LiveKit Cloud (see spec 12).
+- Multi-user sessions go through Cloudflare Realtime / RealtimeKit (see spec 12).
 
 ## Audio Specs (Gemini Live)
 

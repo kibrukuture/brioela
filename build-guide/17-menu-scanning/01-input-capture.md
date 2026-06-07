@@ -2,7 +2,7 @@
 
 ## What This File Covers
 
-How the user gets a restaurant menu into Brioela: a single photo, multiple pages, a QR/menu URL, or a low-light restaurant photo. This file only covers input capture and normalization before OCR/parsing begins.
+How the user gets a restaurant menu into Brioela: a single photo, multiple pages, a QR/menu URL, or a low-light restaurant photo. This file only covers input capture and normalization before GPT-4o mini vision extraction/parsing begins.
 
 ---
 
@@ -15,7 +15,7 @@ Menu scanning has four user entry paths:
 - QR code capture from a restaurant table, window, receipt, or menu sign.
 - Shared URL from a browser, restaurant QR page, or platform menu page.
 
-The scanner's barcode flow is not reused directly. Menu scanning reuses the camera/OCR infrastructure from `07-scanner`, but it has its own endpoint and session shape because the output is a list of dishes, not one product verdict.
+The scanner's barcode flow is not reused directly. Menu scanning reuses the camera and GPT-4o mini vision extraction infrastructure from `07-scanner`, but it has its own endpoint and session shape because the output is a list of dishes, not one product verdict.
 
 ```typescript
 // Mobile sends photo menus to:
@@ -35,7 +35,7 @@ The scanner's barcode flow is not reused directly. Menu scanning reuses the came
 
 ## Single Photo Capture
 
-The user points at a menu page and captures a still image. The image is encoded as JPEG at the same baseline quality used by the scanner OCR path unless testing shows menus need a higher default.
+The user points at a menu page and captures a still image. The image is encoded as JPEG at the same baseline quality used by the scanner vision extraction path unless testing shows menus need a higher default.
 
 Capture requirements:
 
@@ -76,14 +76,14 @@ Rules:
 - Preserve page order exactly as captured.
 - Let the user delete a blurry page before submitting.
 - Do not stitch images visually on-device.
-- Send pages as an ordered array; the backend merges OCR text sections after extraction.
-- If one page fails OCR, return partial results for readable pages with a visible warning.
+- Send pages as an ordered array; the backend merges extracted text sections after extraction.
+- If one page fails vision extraction, return partial results for readable pages with a visible warning.
 
 ---
 
 ## Digital Menu URL
 
-Digital menu ingestion accepts a shared URL. The backend fetches readable menu text and normalizes it into the same parsing path used by photo OCR.
+Digital menu ingestion accepts a shared URL. The backend fetches readable menu text and normalizes it into the same parsing path used by photo vision extraction.
 
 URL rules:
 
@@ -125,11 +125,11 @@ The point is not to send the user to the restaurant website. The point is to tra
 
 ## Low-Light Restaurant Conditions
 
-Restaurant menus often have dark backgrounds, glare, small typography, and poor lighting. The same server-side contrast enhancement from `07-scanner/05-ocr-fallback.md` runs before OCR.
+Restaurant menus often have dark backgrounds, glare, small typography, and poor lighting. The same server-side contrast enhancement from `07-scanner/05-gpt4o-mini-vision-fallback.md` runs before GPT-4o mini vision extraction.
 
 Low-light handling:
 
-- Run contrast enhancement server-side before Gemini Vision OCR.
+- Run contrast enhancement server-side before GPT-4o mini vision extraction.
 - Preserve the original image only for the active request.
 - Return warnings such as `low_light`, `glare`, `partial_page`, or `text_too_small`.
 - If confidence is too low, ask for a closer/brighter photo instead of guessing.
@@ -140,7 +140,7 @@ Hard allergy safety beats latency. A readable result after one retry is better t
 
 ## Output To Next Step
 
-Capture produces one normalized request for OCR/parsing:
+Capture produces one normalized request for vision extraction/parsing:
 
 ```typescript
 type MenuScanInput = {

@@ -70,9 +70,9 @@ The mobile sends but does not need to receive via WebRTC. Receiving AI voice is 
 
 ## Key Decisions
 
-**Decision: Cloudflare Realtime instead of LiveKit.**
+**Decision: Cloudflare Realtime / RealtimeKit.**
 
-LiveKit Cloud's media is WebRTC-only (DTLS/SRTP). A Durable Object has no WebRTC stack and cannot receive LiveKit media without a separate egress service. Cloudflare Realtime's native WebSocket adapter delivers PCM audio and JPEG frames directly to a DO with no third-party egress infrastructure. It runs on 310+ global PoPs via anycast — 95% of internet users within 50ms. RealtimeKit (beta) provides iOS (Swift), Android (Kotlin), React Native, and Flutter SDKs with full room management out of the box. Source: Cloudflare engineering blog, Cloudflare Realtime docs.
+Cloudflare Realtime's native WebSocket adapter delivers PCM audio and JPEG frames directly to a DO with no third-party egress infrastructure. It runs on Cloudflare's global network. RealtimeKit provides mobile SDKs and room management out of the box. Source: Cloudflare engineering blog, Cloudflare Realtime docs.
 
 **Decision: Gemini 3.1 Flash Live as the AI model.**
 

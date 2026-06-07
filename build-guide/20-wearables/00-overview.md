@@ -3,6 +3,8 @@
 ## What This Folder Covers
 Integration with health wearables to enrich food intelligence with actual biometrics rather than population averages. Phase 1: Apple HealthKit (Apple Watch users) and Oura Ring. Phase 2: CGM (Dexcom Stelo, Abbott LibreFreeStyle), Google Health Connect, Whoop, Withings. The CGM integration is the killer feature — personal glucose response to specific foods, correlating scan events with 2-hour glucose windows.
 
+Provider direction: Brioela owns wearable connectors directly. Do not add a third-party health-data aggregation provider unless a separate vendor review proves it is materially better for privacy, coverage, reliability, and user consent. The default UX is connector-based: user taps a provider, grants permissions, and Brioela ingests only summarized allowed data.
+
 ## Status
 [x] complete — six files written
 

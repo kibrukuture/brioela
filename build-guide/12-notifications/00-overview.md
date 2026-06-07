@@ -38,7 +38,7 @@ Under `tools/notifications/`:
 
 ## What This Folder Depends On
 - `05-orchestrator` — suppression state stored in Orchestrator DO; device token managed here
-- `03-foundation` — push notification service setup (APNs, FCM)
+- `03-foundation` — OneSignal setup only; Brioela does not use other push providers directly
 
 ## What Depends On This Folder
 Every feature that surfaces information to the user: recall alerts, illness detective, pantry nudges, weekly summary, Bela delivery updates, pre-trip intelligence.

@@ -25,7 +25,7 @@ Confirms:
 - timestamp
 - merchant/place
 - card last4 matches registered Bela card
-- OCR extracted line items
+- GPT-4o mini vision-extracted line items
 
 Shopper cannot advance to delivery until store receipt scan succeeds or manual review is triggered.
 

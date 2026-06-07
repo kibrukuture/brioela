@@ -16,9 +16,9 @@ Before pricing anything, the real infrastructure cost per user:
 | Voice cooking, 3×/week, 10 min | ~$0.04 | ~$0.54 |
 | Voice cooking, daily, 20 min | ~$0.09 | ~$2.70 |
 | Vision + voice, daily, 30 min | ~$1.53 | ~$45.90 |
-| Grandma session (4 participants, 45 min) | $0.09 LiveKit + ~$2.30 Gemini | one-off ~$2.40 |
+| Grandma session (4 participants, 45 min) | Cloudflare Realtime/RealtimeKit + Gemini Live | re-check current provider pricing before launch |
 
-Gemini Live audio-only: $0.0045/min. Audio + video: $0.051/min. LiveKit Cloud: $0.0005/min per participant.
+Gemini Live and Cloudflare Realtime/RealtimeKit pricing must be rechecked against current provider pricing before launch.
 
 ## Tier Structure (from brain dump)
 

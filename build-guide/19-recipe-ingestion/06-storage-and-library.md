@@ -62,7 +62,7 @@ type RecipeSourceArtifact = {
   transcript: string | null
   captions: string | null
   extractedText: string | null
-  ocrText: string | null
+  extractedImageText: string | null
   thumbnailUrl: string | null
   createdAt: number
 }

@@ -29,19 +29,19 @@ spec: implementable-specs/bela/08-smart-routing.md
   → build-guide/11-bela/08-smart-routing.md [x] done
 
 spec: implementable-specs/bela/09-standing-order.md
-  → build-guide/11-bela/09-standing-orders.md [x] done (wallet references ignored as stale)
+  → build-guide/11-bela/09-standing-orders.md [x] done (PaymentIntent manual capture flow)
 
 spec: implementable-specs/bela/10-cooking-intent-trigger.md
   → build-guide/11-bela/10-cooking-intent-trigger.md [x] done
 
 spec: implementable-specs/bela/11-for-others.md
-  → build-guide/11-bela/11-for-others.md [x] done (wallet references ignored as stale)
+  → build-guide/11-bela/11-for-others.md [x] done (sender payment method flow)
 
 spec: implementable-specs/bela/12-dispute-resolution.md
   → build-guide/11-bela/12-dispute-resolution.md [x] done
 
 spec: implementable-specs/bela/13-data-model.md
-  → build-guide/11-bela/13-data-model.md [x] done (wallet table marked stale)
+  → build-guide/11-bela/13-data-model.md [x] done (order_payment_events ledger)
 
 spec: implementable-specs/bela/14-shopper-ai-assistant.md
   → build-guide/11-bela/14-shopper-ai-assistant.md [x] done

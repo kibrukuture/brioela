@@ -12,7 +12,7 @@ spec: brioela-specs/00-product-philosophy-and-ux.md
 spec: brioela-specs/12-multi-person-cooking-rooms.md
   → build-guide/08-cooking-session/00-overview.md [x] done
   → build-guide/08-cooking-session/01-room-lifecycle.md [x] done
-  note: source LiveKit path is superseded by current Cloudflare Realtime / RealtimeKit decision
+  note: current realtime path is Cloudflare Realtime / RealtimeKit
 
 spec: brioela-specs/20-platform-and-app-distribution.md
   → build-guide/03-foundation/05-mobile-setup.md [x] done
@@ -30,7 +30,7 @@ spec: brioela-specs/24-technical-architecture-backbone.md
   → build-guide/05-orchestrator/03-session-lifecycle.md [x] done
   → build-guide/06-memory-engine/01-sqlite-schema.md [x] done
   → build-guide/08-cooking-session/00-overview.md [x] done
-  note: older LiveKit architecture notes are superseded by Cloudflare Realtime / RealtimeKit in current build-guide
+  note: current realtime architecture is Cloudflare Realtime / RealtimeKit in current build-guide
 
 spec: brioela-specs/39-generative-ui.md
   → build-guide/01-design-system/06-generative-ui.md [~] partial

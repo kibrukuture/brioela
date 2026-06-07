@@ -52,7 +52,7 @@ Unless the parent profile explicitly requires stronger language, keep the child 
 
 ## Low Confidence Product Data
 
-If scan/OCR confidence is low, Kids Mode must include that uncertainty.
+If scan or vision extraction confidence is low, Kids Mode must include that uncertainty.
 
 Example:
 

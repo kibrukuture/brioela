@@ -17,8 +17,8 @@ Everything that must exist before a single feature is built: monorepo structure,
 | `05-mobile-setup.md` | `app.json`, tsconfig, folder structure, `_layout.tsx`, QueryProvider, network client (fetch-based), env vars, NativeWind tokens, Tailwind config |
 
 ## Specs This Folder Draws From
-- `brioela-specs/24-technical-architecture-backbone.md` — the original architecture source: CF Workers, Hono.js, DOs, Upstash, Supabase, Gemini, and earlier LiveKit notes
-- `implementable-specs/cooking-session/00-overview.md` — current cooking-session transport decision: Cloudflare Realtime / RealtimeKit, not LiveKit
+- `brioela-specs/24-technical-architecture-backbone.md` — the architecture source: CF Workers, Hono.js, DOs, Upstash, Supabase, Gemini, and Cloudflare Realtime / RealtimeKit
+- `implementable-specs/cooking-session/00-overview.md` — current cooking-session transport decision: Cloudflare Realtime / RealtimeKit
 
 ## Key Decisions From Specs
 - Single Hono.js router in one Worker — all routes in one `src/index.ts`, one `wrangler.toml`
@@ -29,7 +29,7 @@ Everything that must exist before a single feature is built: monorepo structure,
 - Upstash Redis: product cache, rate limits, session dedup — TTL-bound, disposable
 - Upstash QStash: one-shot fire-and-forget jobs (push notifications, enrichment, webhooks)
 - Upstash Workflow: multi-step durable flows with `waitForEvent` (post-session summarization, recall matching)
-- Current cooking-session transport is Cloudflare Realtime / RealtimeKit. Older LiveKit notes remain source context only unless explicitly revalidated.
+- Current cooking-session transport is Cloudflare Realtime / RealtimeKit.
 
 ## What This Folder Depends On
 Nothing. Built first.

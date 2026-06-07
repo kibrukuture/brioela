@@ -42,13 +42,13 @@ The current mobile Supabase auth client, encrypted session storage, token refres
 
 ## Important Decisions
 
-- Supabase Auth is the current auth provider.
+- Supabase Auth is the only auth provider.
 - Backend validates Supabase access tokens.
 - Mobile attaches Supabase access token to network requests through `mobile/network/core/client.ts`.
 - Private Brioela agent/Orchestrator identity depends on stable Supabase `user.id`.
 
 ## Known Gaps
 
-- Anonymous/guest scan identity is not finalized.
-- Account migration from guest usage to permanent Supabase user is not documented yet.
+- Guest scan identity uses Supabase anonymous auth.
+- Account migration links the anonymous Supabase user to Apple/Google/email when the user chooses to make the account permanent.
 - Session size logging should be removed or gated before production hardening.

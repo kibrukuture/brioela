@@ -4,12 +4,12 @@
 
 | Store | What lives there |
 |---|---|
-| **Supabase Postgres** | orders, order_items, order_events, shoppers, shopper_scan_log, standing_orders, standing_order_cycles, wallet_transactions, order_payment_events, family_links, disputes |
-| **Orchestrator DO SQLite** (per user) | recipient_profiles, wallet_balance cache, pantry_model (agent_state keys), user_find_history (see spec 35) |
+| **Supabase Postgres** | orders, order_items, order_events, shoppers, shopper_scan_log, standing_orders, standing_order_cycles, order_payment_events, family_links, disputes |
+| **Orchestrator DO SQLite** (per user) | recipient_profiles, pantry_model (agent_state keys), user_find_history (see spec 35) |
 | **OrderAgent DO** (per order) | Active order state machine, live scan session WebSocket relay, constraint snapshot cache |
 | **Cloudflare R2** | Delivery photos, dispute photos |
 
-Orders and shoppers are shared, community-level data — they belong in Supabase. User dietary profiles and wallet balances are per-user, private data — they belong in the Orchestrator DO.
+Orders and shoppers are shared, community-level data — they belong in Supabase. User dietary profiles are per-user, private data — they belong in the Orchestrator DO. Bela does not use a user wallet balance.
 
 ---
 
@@ -206,24 +206,11 @@ CREATE INDEX idx_disputes_order ON disputes (order_id);
 CREATE INDEX idx_disputes_status ON disputes (status, opened_at DESC);
 ```
 
-### `wallet_transactions`
+### Payment ledger
 
-```sql
-CREATE TABLE wallet_transactions (
-  id               uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id          text NOT NULL,
-  kind             text NOT NULL CHECK (kind IN ('credit','debit','hold','release','refund','tip')),
-  amount_cents     int NOT NULL,
-  currency         text NOT NULL DEFAULT 'USD',
-  stripe_ref       text,           -- PaymentIntent ID or Transfer ID
-  order_id         uuid REFERENCES orders(order_id),
-  description      text,
-  created_at       timestamptz NOT NULL DEFAULT now()
-);
-
-CREATE INDEX idx_wallet_transactions_user ON wallet_transactions (user_id, created_at DESC);
-CREATE INDEX idx_wallet_transactions_order ON wallet_transactions (order_id);
-```
+Bela does not use a user wallet transaction table. Every financial event for an order is stored in
+`order_payment_events`. Stripe PaymentIntent and Stripe Connect are the payment source of truth;
+Brioela's ledger is an audit log, not a balance system.
 
 ### `shopper_scan_log`
 
@@ -287,11 +274,8 @@ CREATE TABLE recipient_profiles (
   updated_at      INTEGER NOT NULL
 );
 
--- Cached wallet balance (source of truth is Supabase wallet_transactions sum)
--- Stored in agent_state table as:
--- key: 'wallet.balance_cents'
--- value: integer as string
--- Updated after every order completion and top-up
+-- Bela has no cached user wallet balance.
+-- Payment state is per-order via Stripe PaymentIntent + order_payment_events.
 ```
 
 ---

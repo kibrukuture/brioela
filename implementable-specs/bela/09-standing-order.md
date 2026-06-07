@@ -25,8 +25,8 @@ The user configures a standing order in the Bela tab:
 - If the AI-generated list exceeds the cap, items are trimmed by priority (most frequently used items kept; rarely used items dropped from that cycle)
 
 **Wallet minimum:**
-- The standing order will not dispatch if the wallet balance is below the budget cap
-- The user can set a "low balance alert" threshold and be notified to top up before the scheduled date
+- The standing order will not dispatch if PaymentIntent authorization fails for the saved payment method
+- The user can update their saved payment method before the scheduled date
 
 That is the entire setup. No list to manage. No items to configure. The AI builds the list each time from what it knows.
 
@@ -142,10 +142,10 @@ Permanent standing list entries override the AI's pantry model — if the user s
 
 ## Wallet Monitoring for Standing Orders
 
-The day before the delivery, after the list is generated, the system checks if the wallet balance covers the estimated total.
+The day before the delivery, after the list is generated, the system checks whether the saved payment method can authorize the estimated total.
 
 If the balance is insufficient:
-1. The user is notified: "Your wallet balance is $12.40 — not enough for this week's order (~$48). Top up by Saturday morning to keep your standing order on track."
-2. If the balance is not topped up by the morning of the delivery day: the standing order is skipped for that cycle and the user is notified: "Standing order skipped — wallet balance was too low. Your next order is scheduled for [next cycle date]."
+1. The user is notified: "Your saved payment method could not authorize this week's order (~$48). Update payment by Saturday morning to keep your standing order on track."
+2. If authorization still fails by the morning of the delivery day: the standing order is skipped for that cycle and the user is notified: "Standing order skipped — payment authorization failed. Your next order is scheduled for [next cycle date]."
 
 No funds are ever taken without sufficient balance. No overdraft occurs.

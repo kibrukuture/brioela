@@ -36,19 +36,19 @@ Two people in different cities agree to cook the same recipe tonight. They join 
 - Creator monetization or tipping.
 - Recording and distributing sessions externally.
 
-## Media Transport: LiveKit Cloud
+## Media Transport: Cloudflare Realtime / RealtimeKit
 
-All multi-person rooms use LiveKit Cloud exclusively. This is the managed WebRTC SFU — Brioela does not run WebRTC infrastructure.
+All multi-person rooms use Cloudflare Realtime / RealtimeKit. Brioela does not run its own WebRTC infrastructure.
 
-LiveKit Cloud handles: audio track routing between all participants, video track routing where enabled, room lifecycle, participant presence, reconnection on network drop, end-to-end encryption. Cost: $0.0005/minute per participant.
+RealtimeKit handles: audio track routing between participants, video track routing where enabled, room lifecycle, participant presence, reconnection on network drop, and client SDK room behavior.
 
-A grandma cooking session (grandma + parent + child + AI participant = 4 participants, 45 minutes) = $0.09 in LiveKit costs.
+The Cloudflare Realtime adapter delivers PCM audio and periodic JPEG frames to the CookingAgent DO.
 
 ## AI Agent in the Room
 
-The Brioela AI agent joins the LiveKit room as a participant via the LiveKit Agents SDK running as a Node.js worker on managed infrastructure (Railway or Fly.io). Before joining, it pulls full context from each participant's Orchestrator DO (their individual allergies, dislikes, dietary identity, prior recipe history).
+The CookingAgent DO receives room media through the Cloudflare Realtime adapter. Before the session begins, it pulls full context from each participant's Orchestrator DO (their individual allergies, dislikes, dietary identity, prior recipe history).
 
-The AI agent's voice goes back into the room via LiveKit so all participants hear it simultaneously.
+The AI agent's voice goes back through the RealtimeKit room so all participants hear it simultaneously.
 
 The AI agent uses `gemini-3.1-flash-live-preview` as its brain — the same model as single-user sessions. The system prompt includes all participants' constraints merged into a unified context. When there is a conflict (grandma's recipe uses butter, one participant is dairy-free), the AI flags this to the group and suggests a per-person substitution.
 
@@ -62,8 +62,8 @@ Each participant in the room has their own Orchestrator DO with their own constr
 
 ## Session State (Held in CookingAgent DO)
 
-- Room ID (LiveKit room name).
-- Participant list: user_id, participant_name, livekit_participant_id, constraints_summary.
+- Room ID (RealtimeKit room name).
+- Participant list: user_id, participant_name, realtime_participant_id, constraints_summary.
 - Canonical active recipe and step list.
 - Current step index (shared for all participants).
 - Transcript accumulation: attributed to participant where speaker identification is possible.
@@ -82,7 +82,7 @@ Each participant in the room has their own Orchestrator DO with their own constr
 - Session must survive temporary disconnect by any participant including the AI agent.
 - On reconnect, participant state is restored from CookingAgent DO.
 - Audio track failures for one participant must not interrupt other participants.
-- The AI agent reconnects automatically if its LiveKit connection drops.
+- The CookingAgent reconnects automatically if the realtime media adapter disconnects.
 
 ## Post-Session Flow
 
@@ -96,15 +96,15 @@ Each participant's memory is updated independently — they each own their own c
 
 ## Data Model
 
-- `cooking_room`: room_id, livekit_room_name, creator_user_id, recipe_id, created_at, ended_at, status.
-- `room_participant`: room_id, user_id, livekit_participant_id, joined_at, left_at, constraints_snapshot_json.
+- `cooking_room`: room_id, realtime_room_name, creator_user_id, recipe_id, created_at, ended_at, status.
+- `room_participant`: room_id, user_id, realtime_participant_id, joined_at, left_at, constraints_snapshot_json.
 - `room_recipe_state`: room_id, recipe_id, current_step_index, step_overrides_json, updated_at.
 - `room_transcript_event`: room_id, speaker_participant_id, text, attributed_at, confidence.
 
 ## API Surface
 
-- `POST /api/rooms/create` — create a room, select recipe, return room_id and LiveKit join token.
-- `POST /api/rooms/:id/join` — join an existing room, return LiveKit join token with participant's context injected.
+- `POST /api/rooms/create` — create a room, select recipe, return room_id and RealtimeKit join token.
+- `POST /api/rooms/:id/join` — join an existing room, return RealtimeKit join token with participant's context injected.
 - `POST /api/rooms/:id/end` — close the room and trigger post-session workflow.
 - `GET /api/rooms/:id/state` — return current room state for reconnecting participants.
 

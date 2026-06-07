@@ -16,7 +16,7 @@ This folder documents current auth/session behavior and the product onboarding c
 | `02-sign-in-methods.md` | Google, Apple, email/password fallback, reset password |
 | `03-session-and-route-gating.md` | AppGate, protected tabs, sign-out, post-login route |
 | `04-device-biometric-lock.md` | Device auth, local lock overlay, sensitive action gates |
-| `05-onboarding-flow.md` | Practical onboarding contract from specs, deferred account gap |
+| `05-onboarding-flow.md` | Practical onboarding contract from specs, Supabase anonymous-to-permanent account path |
 | `cinematic/` | Future cinematic onboarding design notes and generated-audio planning |
 
 ## Specs This Folder Draws From
@@ -30,7 +30,7 @@ This folder documents current auth/session behavior and the product onboarding c
 
 - Auth/session/route-gating docs describe current app behavior.
 - Cinematic onboarding is not implementation-ready yet.
-- Account creation is deferred by product direction, but Orchestrator features need a stable userId strategy.
+- Account creation is deferred by product direction; Supabase Auth remains the only auth provider and Supabase anonymous identity is the stable userId strategy before account linking.
 - Camera permission flow is still an open decision for cinematic onboarding.
 
 ## What This Folder Depends On
@@ -44,4 +44,4 @@ This folder documents current auth/session behavior and the product onboarding c
 
 ## Known Gap
 
-The product spec wants deferred account creation. Current protected tabs require auth. A guest scan / guest Orchestrator strategy is still needed if we want exact spec behavior.
+The product spec wants deferred account creation. Use Supabase anonymous auth for guest scan identity, then link the anonymous user to Apple/Google/email when the user chooses to make the account permanent. Do not introduce another auth provider.

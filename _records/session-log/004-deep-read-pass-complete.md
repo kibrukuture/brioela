@@ -18,7 +18,7 @@
   - Created: `build-guide/19-recipe-ingestion/00-overview.md`
 
 ### Conflict fixes (two overview files corrected)
-- **`build-guide/07-scanner/00-overview.md`** — was incorrectly claiming restaurant menu scanning (spec 27). That spec is owned by `17-menu-scanning`. Removed the claim; added a note that 17-menu-scanning uses the scanner's OCR pipeline as a dependency.
+- **`build-guide/07-scanner/00-overview.md`** — was incorrectly claiming restaurant menu scanning (spec 27). That spec is owned by `17-menu-scanning`. Removed the claim; added a note that 17-menu-scanning uses the scanner's vision extraction pattern as a dependency.
 - **`build-guide/10-map/00-overview.md`** — was incorrectly claiming pre-trip food intelligence (spec 22). That spec is owned by `18-ambient-intelligence`. Changed to a dependency reference: ambient intelligence pre-loads geo-cached data; the map displays it on arrival.
 
 ## Complete spec-to-folder mapping (authoritative)

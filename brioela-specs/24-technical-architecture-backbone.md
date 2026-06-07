@@ -21,14 +21,12 @@ Upstash Redis (product cache, rate limits, session deduplication)
 Supabase Postgres (global shared data: products, community notes, map, businesses)
 
 Live cooking sessions (multi-person):
-Mobile clients → LiveKit Cloud (WebRTC SFU, managed)
-                      ↓ audio stream + video frames
-               Gemini Live (gemini-3.1-flash-live-preview)
-               [LiveKit Agent Worker: Node.js on Railway/Fly.io]
-                      ↓ transcript + events (HTTP back to CF Worker)
-               CookingAgent DO ← pulls context from Orchestrator DO
-                      ↓ async
-               Upstash Workflow (summarize, save recipe, update memory)
+Mobile clients → Cloudflare Realtime / RealtimeKit room
+                       ↓ WebSocket adapter delivers PCM audio + JPEG frames
+                CookingAgent DO ← pulls context from Orchestrator DO
+                       ↓ Gemini Live (gemini-3.1-flash-live-preview)
+                       ↓ async
+                Cloudflare/agent workflow path (summarize, save recipe, update memory)
 
 Single-user voice sessions (no room):
 Mobile client → Gemini Live WebSocket directly
@@ -109,7 +107,7 @@ Key capabilities:
 Audio specs:
 - Input: raw 16-bit PCM, 16kHz, little-endian.
 - Output: raw 16-bit PCM, 24kHz, little-endian.
-- LiveKit handles these conversions automatically.
+- Mobile and RealtimeKit adapters handle these conversions at the transport boundary.
 
 Video specs:
 - JPEG or PNG frames, max 1 fps, max 768×768 pixels.
@@ -122,18 +120,20 @@ Cost model:
 
 Why Gemini over Grok Voice for Brioela: Grok Voice wins on task-completion benchmarks (67.3% vs 43.8% τ-voice) and raw latency (0.78s vs 0.96s), but Grok Voice is audio-only. Brioela's cooking coach requires the AI to watch the camera. Gemini is the only full-duplex model with native video support. Grok is not used.
 
-### LiveKit Cloud (Real-Time Media Transport)
+### Cloudflare Realtime / RealtimeKit (Real-Time Media Transport)
 
-Used only for multi-person cooking sessions. Not self-hosted — LiveKit Cloud manages servers, SFU, scaling, regions, reconnection, and encryption.
+Used for live cooking sessions and multi-person rooms. RealtimeKit handles room lifecycle,
+participants, media transport, reconnection, and client SDK behavior. Its WebSocket adapter sends
+PCM audio and periodic JPEG frames directly to the CookingAgent DO, where Gemini Live receives the
+model input.
 
-LiveKit owns: audio and video track routing between participants, room lifecycle, SFU management.
-LiveKit does NOT own: AI reasoning, memory, business logic, recipe state.
+RealtimeKit owns: participant room state, media routing, reconnect behavior, and client transport.
+RealtimeKit does not own: AI reasoning, user memory, recipe state, constraints, safety policy, or
+post-session writes.
 
-Cost: $0.0005/min per participant. A 45-min grandma session (4 participants) = $0.09 total LiveKit cost.
-
-The LiveKit Agent Worker is a separate Node.js process — it cannot run inside a Cloudflare Worker. LiveKit's Agents SDK requires Node.js runtime. This worker deploys on Railway or Fly.io (managed PaaS). It connects to LiveKit Cloud rooms as an AI participant, pulls user context from the Cloudflare Worker endpoint before joining, relays audio/video to Gemini Live, and fires transcript events back to the CookingAgent DO via HTTP.
-
-Single-user voice sessions do NOT use LiveKit. The client connects directly to Gemini Live via WebSocket, with context injected by the Orchestrator DO at session start.
+Single-user voice sessions can use the same Cloudflare Worker + CookingAgent DO lifecycle with the
+minimum transport needed for the session. Context is injected from the Orchestrator DO at session
+start.
 
 ### Upstash QStash (One-Shot Async Delivery)
 
@@ -196,8 +196,7 @@ Not used for any user-private data. User-private data lives exclusively in the p
 | Multi-step durable flows | Upstash Workflow | Upstash |
 | Cache + rate limits | Upstash Redis | Upstash |
 | Global shared data | Supabase Postgres | Supabase |
-| Real-time media rooms | LiveKit Cloud | LiveKit |
-| LiveKit AI agent worker | Railway or Fly.io (Node.js) | Managed PaaS |
+| Real-time media rooms | Cloudflare Realtime / RealtimeKit | Cloudflare |
 | AI voice + vision | Gemini Live (gemini-3.1-flash-live-preview) | Google |
 | Product data | Open Food Facts + gov DBs | External |
 

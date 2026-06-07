@@ -27,15 +27,15 @@ Define what Brioela is at the platform level, how it is distributed, and what pl
 
 ### Camera
 - Barcode scanning: real-time on-device detection before any server call.
-- Label/product image: full image sent to server for OCR when barcode fails.
+- Label/product image: full image sent to server for GPT-4o mini vision extraction when barcode fails.
 - Fridge/pantry view: camera opened to a frame capture mode, one or more frames sent for ingredient detection.
 - Live cooking vision: continuous low-rate frame capture sent to Gemini Live WebSocket (premium sessions only).
-- Receipt capture: single frame sent for OCR processing.
+- Receipt capture: single frame sent for GPT-4o mini vision extraction.
 - The camera experience must open in under 500ms on any recent device. Delay here is the entire first impression.
 
 ### Microphone
 - Voice cooking agent: real-time audio input sent to Gemini Live WebSocket.
-- Multi-person rooms: audio stream to LiveKit Cloud.
+- Multi-person rooms: audio/video transport through Cloudflare Realtime / RealtimeKit.
 - Passive detection of travel intent and contextual signals: only from explicit voice interactions, never background microphone access.
 - Microphone is never open passively. It activates only on explicit user gesture.
 

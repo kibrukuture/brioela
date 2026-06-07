@@ -13,7 +13,7 @@ Deep read pass before writing:
 - `brioela-specs/02-recipe-ingestion-from-shared-content.md`
 - `brioela-specs/20-platform-and-app-distribution.md`
 - `brioela-specs/25-viral-growth-and-sharing.md`
-- dependency docs: Foundation Upstash/QStash notes, Memory Engine recipes schema, Orchestrator recipe tools, Cooking Session recipe reconstruction, Scanner OCR fallback, Pantry Meal Plan overview
+- dependency docs: Foundation Upstash/QStash notes, Memory Engine recipes schema, Orchestrator recipe tools, Cooking Session recipe reconstruction, Scanner GPT-4o mini vision fallback, Pantry Meal Plan overview
 
 Written — `build-guide/19-recipe-ingestion/`:
 - `00-overview.md` — updated to complete, file list and dependencies added

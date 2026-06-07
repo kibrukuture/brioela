@@ -42,7 +42,7 @@ Onboarding means the user gets useful food intelligence quickly.
 
 Need a decision:
 
-- allow guest scan before auth, or
+- allow Supabase anonymous-auth scan before permanent auth, or
 - keep auth-first temporarily and document that it differs from the product spec.
 
 ## Cinematic Onboarding

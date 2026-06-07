@@ -86,7 +86,7 @@ Hard condition flags produce red condition rows. They do not erase the standard 
 
 ## Low Confidence Product Data
 
-If product data is OCR-derived or incomplete, condition evaluation must show uncertainty.
+If product data is vision-extracted or incomplete, condition evaluation must show uncertainty.
 
 Example:
 

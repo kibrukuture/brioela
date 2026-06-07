@@ -1,8 +1,8 @@
-# Menu Scanning — OCR And Parsing
+# Menu Scanning — GPT-4o Mini Vision And Parsing
 
 ## What This File Covers
 
-The server-side OCR and menu-specific LLM parsing path. This file stops at structured dish extraction; verdicts are handled in `03-dish-verdicts.md`.
+The server-side GPT-4o mini vision extraction and menu-specific parsing path. This file stops at structured dish extraction; verdicts are handled in `03-dish-verdicts.md`.
 
 ---
 
@@ -11,8 +11,8 @@ The server-side OCR and menu-specific LLM parsing path. This file stops at struc
 Menu scanning uses a one-shot structured extraction flow:
 
 1. Normalize input from photo, multi-page photo, QR code, or URL.
-2. Run server-side OCR for image input.
-3. Merge multi-page OCR text in page order.
+2. Run server-side GPT-4o mini vision extraction for image input with Zod-enforced structured output.
+3. Merge multi-page extracted text in page order.
 4. Send menu text to a standard text LLM call.
 5. Parse the LLM response into a typed dish list.
 6. Pass structured dishes to verdict evaluation.
@@ -21,7 +21,7 @@ This is not Gemini Live. There is no conversation, streaming video, or real-time
 
 ---
 
-## OCR Reuse From Scanner
+## Vision Extraction Reuse From Scanner
 
 Menu scanning reuses these scanner pieces from `07-scanner`:
 
@@ -41,20 +41,20 @@ Menus produce dishes, not canonical products.
 
 ---
 
-## OCR Output
+## Vision Extraction Output
 
-OCR output keeps page boundaries because menu sections and repeated item names can matter.
+Vision extraction output keeps page boundaries because menu sections and repeated item names can matter.
 
 ```typescript
-type MenuOcrPage = {
+type MenuVisionExtractionPage = {
   pageIndex: number
   text: string
   confidence: number
-  warnings: Array<"low_light" | "glare" | "partial_page" | "text_too_small" | "ocr_uncertain">
+  warnings: Array<"low_light" | "glare" | "partial_page" | "text_too_small" | "vision_extraction_uncertain">
 }
 
-type MenuOcrResult = {
-  pages: MenuOcrPage[]
+type MenuVisionExtractionResult = {
+  pages: MenuVisionExtractionPage[]
   combinedText: string
   minConfidence: number
 }
@@ -115,9 +115,9 @@ The feature target is under 3 seconds from photo submission to visible results f
 
 Latency budget:
 
-- Image enhancement and OCR: fast path, one model call per page.
-- Multi-page scans: parallel OCR per page when possible.
-- Menu parsing: one standard text model call over merged OCR text.
+- Image enhancement and GPT-4o mini vision extraction: fast path, one model call per page.
+- Multi-page scans: parallel vision extraction per page when possible.
+- Menu parsing: one standard text model call over merged extracted text.
 - Verdict evaluation: deterministic server code over structured dishes and constraint profile.
 
 If the menu is too large, return partial sections rather than waiting for a long full-menu analysis. The UI can show "More dishes loading" only if the backend supports stable incremental batches; otherwise keep the first implementation single-response.

@@ -6,9 +6,9 @@ RealtimeKit Meeting creation, participant token generation, WebSocket adapter co
 
 ---
 
-## Why Cloudflare Realtime, Not LiveKit
+## Why Cloudflare Realtime / RealtimeKit
 
-LiveKit Cloud's media is WebRTC-only (DTLS/SRTP). A Durable Object has no WebRTC stack and cannot receive LiveKit media without a separate egress service — an extra process on Railway or Fly.io just to convert WebRTC → something the DO can receive.
+RealtimeKit gives Brioela a managed realtime room layer while keeping the CookingAgent DO as the agent brain. Its adapter delivers media to the DO as data the Worker runtime can handle.
 
 Cloudflare Realtime's native WebSocket adapter delivers PCM audio (s16le, 48kHz) and JPEG frames directly to a DO's WebSocket endpoint. No third-party egress. No extra infrastructure. The SFU and the DO are on the same Cloudflare network — the media path is sub-millisecond internally. RealtimeKit runs on 310+ global PoPs via anycast.
 

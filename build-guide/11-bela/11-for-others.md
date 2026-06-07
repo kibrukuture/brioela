@@ -35,4 +35,4 @@ Includes:
 
 Use sender payment method + normal PaymentIntent manual capture.
 
-Ignore stale wallet references in source spec.
+Use sender payment method + normal PaymentIntent manual capture.

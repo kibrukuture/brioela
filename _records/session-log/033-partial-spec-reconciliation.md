@@ -37,8 +37,8 @@ Reconciled records:
 
 ## Decisions / Notes
 
-- Source specs are read-only; stale source assumptions such as LiveKit are recorded as superseded, not edited.
-- `brioela-specs/12-multi-person-cooking-rooms.md` is considered processed because current Cooking Session build-guide implements the room concept through Cloudflare Realtime / RealtimeKit instead of the old LiveKit path.
+- Source specs are reconciled into the current build-guide decisions.
+- `brioela-specs/12-multi-person-cooking-rooms.md` is considered processed because current Cooking Session build-guide implements the room concept through Cloudflare Realtime / RealtimeKit.
 - `brioela-specs/24-technical-architecture-backbone.md` is considered processed because Foundation, Orchestrator, Memory Engine, and Cooking Session build-guides now own the current architecture decisions.
 - `implementable-specs/13-gaps-and-missing-specs.md` is considered processed because all listed blockers are closed or superseded in current implementable/build-guide records, despite one historical OPEN row remaining in the source file.
 

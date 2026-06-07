@@ -72,7 +72,7 @@ After paying at checkout, the shopper opens the Brioela scanner and scans the re
 
 **What the scan does:**
 
-1. OCR reads the receipt: merchant name, line items, quantities, prices, total, card last-4 used
+1. GPT-4o mini vision extraction reads the receipt: merchant name, line items, quantities, prices, total, card last-4 used
 2. **Card verification**: last-4 from receipt must match `shoppers.bela_card_last4`. Mismatch blocks the order from advancing and flags the order for review.
 3. **Amount check**: actual total is compared against the PaymentIntent authorization:
    - Actual total within authorization: nothing to do — hold already covers it
@@ -82,9 +82,9 @@ After paying at checkout, the shopper opens the Brioela scanner and scans the re
 
 **The shopper cannot advance to delivery mode until the store receipt scan succeeds.**
 
-If the receipt OCR fails (faded receipt, long paper roll, crumpled):
-- Fallback: shopper takes a photo, server-side OCR runs with higher quality pipeline (2–3 second latency)
-- If OCR still fails: shopper manually enters the total. Receipt photo is required. Order is flagged for operations review. Shopper is paid after review (within 2 hours). Repeated manual-entry use triggers a quality flag.
+If receipt vision extraction fails (faded receipt, long paper roll, crumpled):
+- Fallback: shopper takes a photo, server-side GPT-4o mini vision extraction runs with a higher quality pipeline (2–3 second latency)
+- If extraction still fails: shopper manually enters the total. Receipt photo is required. Order is flagged for operations review. Shopper is paid after review (within 2 hours). Repeated manual-entry use triggers a quality flag.
 
 ---
 

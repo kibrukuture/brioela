@@ -2,12 +2,12 @@
 
 ## What This File Covers
 
-Receipt capture, upload, raw OCR persistence, and initial receipt record creation.
+Receipt capture, upload, raw GPT-4o mini vision extraction persistence, and initial receipt record creation.
 
 ## Source Specs
 
 - `brioela-specs/06-receipt-spend-intelligence.md`
-- `build-guide/07-scanner/05-ocr-fallback.md`
+- `build-guide/07-scanner/05-gpt4o-mini-vision-fallback.md`
 
 ## API Surface
 
@@ -19,8 +19,8 @@ Receipt capture, upload, raw OCR persistence, and initial receipt record creatio
 1. User captures receipt image.
 2. Client uploads image.
 3. Backend creates `receipt` row.
-4. Backend stores raw OCR result separately.
-5. Normalization runs after OCR.
+4. Backend stores raw GPT-4o mini vision extraction result separately.
+5. Normalization runs after vision extraction.
 6. Uncertain lines are preserved.
 
 ## Receipt Record
@@ -37,4 +37,4 @@ Fields:
 
 ## Rule
 
-Never overwrite raw OCR. Store raw OCR separately so model upgrades can reprocess later.
+Never overwrite raw extraction output. Store raw GPT-4o mini vision extraction output separately so model upgrades can reprocess later.

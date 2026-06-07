@@ -75,7 +75,7 @@ Product route:
 
 Receipt route:
 
-- Route to `13-receipt-intelligence` OCR and line-item parsing.
+- Route to `13-receipt-intelligence` GPT-4o mini vision extraction and line-item parsing.
 - Preserve uncertain lines.
 - Do not treat a receipt as a recipe.
 

@@ -50,7 +50,7 @@ Nothing half-done.
 - `02-product-resolution.md` — Open Food Facts + gov DBs, Upstash Redis cache, pending scan queue
 - `03-constraint-check.md` — check product against Orchestrator DO constraints + user_memory.medications
 - `04-scan-result-ui.md` — green/yellow/red verdict, one-sentence reason, expand-on-demand, boycott display
-- `05-ocr-fallback.md` — when no barcode: OCR + image classification, confidence schema
+- `05-gpt4o-mini-vision-fallback.md` — when no barcode: GPT-4o mini vision extraction + image classification, confidence schema
 
 Source specs to read before writing 07-scanner:
 - `brioela-specs/01-product-health-scanning.md` — scan flow, latency target, verdict structure

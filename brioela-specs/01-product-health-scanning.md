@@ -12,7 +12,7 @@ Allow a user to point the camera at a grocery product and receive an immediate h
 
 ## In Scope
 - Barcode scan.
-- OCR and label/image fallback when barcode is missing.
+- GPT-4o mini vision extraction and label/image fallback when barcode is missing.
 - Product lookup against external food datasets.
 - Rule-based and model-assisted scoring.
 - User-specific filtering for allergies and dietary constraints.
@@ -59,7 +59,7 @@ Allow a user to point the camera at a grocery product and receive an immediate h
 - Product scoring must degrade gracefully if enrichment sources fail.
 
 ## Failure Handling
-- If barcode resolution fails, fall back to OCR plus image classification.
+- If barcode resolution fails, fall back to GPT-4o mini vision extraction plus image classification.
 - If no product identity can be resolved, store a pending scan for later enrichment.
 - If external dataset conflicts exist, expose the confidence level in the expanded details only.
 

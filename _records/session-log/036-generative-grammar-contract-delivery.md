@@ -78,6 +78,14 @@ Updated:
   - Vercel AI SDK remains the model/tool-calling layer.
   - Prefer `subAgent`, `agentTool`, `runAgentTool`, `schedule`, `queue`, `runFiber`, `startFiber`, `keepAliveWhile`, and Cloudflare Workflows over older manual runtime plumbing where equivalent.
   - Keep custom Brioela memory schema, safety policy, ambient surfacing, and Gemini Live media bridge.
+- Additional architecture decisions captured during doc cleanup:
+  - Realtime transport is Cloudflare Realtime / RealtimeKit only; old realtime provider references were removed from Markdown.
+  - Image/text extraction wording now uses GPT-4o mini vision extraction with Zod-enforced structured output; old extraction terminology was removed from Markdown.
+  - Bela payment model is PaymentIntent manual capture + Stripe Connect Express payout + shopper registered Bela card; older payment model references were updated.
+  - Notifications use OneSignal only.
+  - Auth uses Supabase Auth only, with Supabase anonymous auth for guest scan identity and account linking.
+  - Wearables default to Brioela-owned connectors, not a generic aggregator.
+  - Scanner product data now has provenance and correction docs with Open Food Facts, USDA FoodData Central, GS1/Verified by GS1, GPT-4o mini label evidence, and safety correction boundaries.
 
 ## Evidence From Repo Audit
 

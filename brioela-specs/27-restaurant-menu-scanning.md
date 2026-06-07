@@ -22,14 +22,14 @@ Brioela already knows everything about the user: their allergies (confirmed or i
 
 ## Input Handling
 
-- **Photo input**: standard camera capture, same flow as barcode scan. OCR extracts menu text.
+- **Photo input**: standard camera capture, same flow as barcode scan. GPT-4o mini vision extraction reads menu text.
 - **Multiple pages**: user can photograph multiple pages, Brioela stitches them into a unified menu.
 - **Digital menu via link**: if the restaurant has a website or QR code menu, user can share the URL to Brioela and the same analysis runs on the web content.
-- **Low-light restaurant conditions**: OCR is run on the server with contrast enhancement for dark-background menus.
+- **Low-light restaurant conditions**: GPT-4o mini vision extraction runs on the server with contrast enhancement for dark-background menus.
 
 ## AI Processing
 
-1. OCR extracts full menu text.
+1. GPT-4o mini vision extraction reads full menu text.
 2. LLM parses menu into structured dishes: name, description, ingredients where listed, cooking method where mentioned.
 3. Each dish is evaluated against the user's full constraint profile pulled from their Orchestrator DO.
 4. Dishes missing ingredient detail are flagged yellow by default (unknown = ask, not assume safe).
@@ -55,7 +55,7 @@ The question is pre-formulated, not generic. This removes the anxiety of not kno
 
 ## Offline Partial Mode
 
-If the user is in low-connectivity conditions (common in restaurants in areas with poor signal), the app caches the last-known constraint profile locally. OCR still runs. The constraint matching runs locally against the cached profile. The result will not include real-time community notes but will still flag known allergens and dietary conflicts.
+If the user is in low-connectivity conditions (common in restaurants in areas with poor signal), the app caches the last-known constraint profile locally. Vision extraction runs when connectivity is available. The constraint matching runs locally against the cached profile when extracted text is available. The result will not include real-time community notes but will still flag known allergens and dietary conflicts.
 
 ## Integration with Map
 
@@ -63,14 +63,14 @@ If the restaurant is in the Brioela healthy food map (spec 04), the menu scan re
 
 ## Data Model
 
-- `menu_scan`: scan_id, user_id, restaurant_id (nullable), photo_count, ocr_text, created_at.
+- `menu_scan`: scan_id, user_id, restaurant_id (nullable), photo_count, extracted_text, created_at.
 - `menu_scan_result`: scan_id, dish_name, verdict (safe/caution/avoid), reason, waiter_question, created_at.
 
-Raw OCR text is discarded after processing. Results are stored for the session only unless the user explicitly saves the menu to their profile.
+Raw extracted text is discarded after processing. Results are stored for the session only unless the user explicitly saves the menu to their profile.
 
 ## Technical Constraints
 
-- OCR and menu parsing must complete in under 3 seconds on a typical menu photo.
+- GPT-4o mini vision extraction and menu parsing must complete in under 3 seconds on a typical menu photo.
 - The user's constraint profile is pulled from their Orchestrator DO — not re-derived from scratch per scan.
 - No menu data is stored on Brioela's servers after the session unless the user saves it. Menu content is transient.
 

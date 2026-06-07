@@ -28,7 +28,7 @@ When a confirmed travel destination is detected, the Orchestrator DO schedules a
 2. **Local product landscape**: what food brands and products are common in that country. What government food databases apply. Update the scan resolution priority to prefer local databases when the user is in that location.
 3. **Healthy food map pre-fetch**: load map places, farmers markets, health stores, and rated restaurants in the destination city. Cache in Upstash Redis with a geo-region key.
 4. **Local dietary context**: any country-specific food labeling norms, known additive lists that differ from the user's home country, local halal/kosher/vegan certification bodies (if relevant to user's dietary identity).
-5. **Language adjustment**: if the destination country uses a different primary language for food labels, note this so the OCR and label parsing layers use the correct language model.
+5. **Language adjustment**: if the destination country uses a different primary language for food labels, note this so GPT-4o mini vision extraction and label parsing use the correct language hints.
 
 ## Notification Behavior
 

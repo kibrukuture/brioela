@@ -28,6 +28,9 @@ The implementation should keep the connector interface stable so new devices add
 
 ## Connector Interface
 
+Brioela-owned connectors are the default integration model. A third-party wearable aggregation
+provider is not part of the default architecture.
+
 ```typescript
 type WearableConnector = {
   provider: "apple_health" | "oura" | "health_connect" | "dexcom" | "abbott" | "whoop" | "withings"

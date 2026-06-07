@@ -13,7 +13,7 @@ The larger product angle: every menu scan also improves Brioela's restaurant int
 | File | Contents |
 |---|---|
 | `01-input-capture.md` | photo, multi-page, QR/link, and low-light menu input handling |
-| `02-menu-ocr-and-parsing.md` | OCR reuse, menu-specific parsing, structured dish schema, latency boundary |
+| `02-menu-gpt4o-mini-vision-and-parsing.md` | GPT-4o mini vision extraction reuse, menu-specific parsing, structured dish schema, latency boundary |
 | `03-dish-verdicts.md` | constraint-profile loading, green/yellow/red verdict rules, ranking behavior |
 | `04-waiter-questions.md` | exact yellow-flag question generation and user-facing script rules |
 | `05-storage-offline-map.md` | transient storage, offline partial mode, map/community overlay, upgrade trigger |
@@ -24,11 +24,11 @@ The larger product angle: every menu scan also improves Brioela's restaurant int
 - `brioela-specs/27-restaurant-menu-scanning.md` — full menu scan spec: input handling, AI processing, constraint profile used, waiter script generation, offline mode, map integration
 
 ## Key Decisions From Specs
-- Processing: OCR → LLM parses menu into structured dishes → each dish evaluated against constraint profile from Orchestrator DO
+- Processing: GPT-4o mini vision extraction → LLM parses menu into structured dishes → each dish evaluated against constraint profile from Orchestrator DO
 - Standard text LLM call (NOT Gemini Live) — one-shot structured extraction, <3s latency
 - Dishes with no ingredient detail flagged yellow by default (unknown = ask, never assume safe)
 - Waiter script: pre-formulated, specific, non-awkward — removes anxiety of not knowing what to ask
-- Raw OCR text discarded after processing; results stored for session only unless user saves
+- Raw extracted text discarded after processing; results stored for session only unless user saves
 - Normalized public menu facts can feed shared restaurant intelligence after privacy filtering
 - Offline: cached constraint profile enables local constraint matching; community notes unavailable offline
 - Map integration: if restaurant is in healthy food map, community notes about that place overlay the menu scan result
@@ -37,7 +37,7 @@ The larger product angle: every menu scan also improves Brioela's restaurant int
 
 ## What This Folder Depends On
 - `05-orchestrator` — user's full constraint profile (allergies, dietary identity, medical conditions, medications)
-- `07-scanner` — OCR pipeline reused for menu photo processing
+- `07-scanner` — GPT-4o mini vision extraction pattern reused for menu photo processing
 - `10-map` — restaurant's community notes for trust layer overlay
 
 ## What Depends On This Folder

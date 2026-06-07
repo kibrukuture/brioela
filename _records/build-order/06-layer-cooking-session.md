@@ -16,4 +16,4 @@
 
 ## Current Decision
 
-Use Cloudflare Realtime / RealtimeKit, not LiveKit.
+Use Cloudflare Realtime / RealtimeKit.

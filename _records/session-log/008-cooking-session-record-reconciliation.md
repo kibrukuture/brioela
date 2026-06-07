@@ -13,7 +13,7 @@ Deep read-only pass completed across:
 
 Confirmed:
 - `build-guide/08-cooking-session/` already exists and is marked complete.
-- Current cooking-session implementation direction is Cloudflare Realtime / RealtimeKit, not LiveKit.
+- Current cooking-session implementation direction is Cloudflare Realtime / RealtimeKit.
 - Latest previous session log `007-scanner-complete.md` was stale because it said cooking-session was next.
 
 Records updated:
@@ -49,6 +49,6 @@ Continue with the next not-started feature build-guide area after reading its so
 ## Blockers / Decisions
 
 - Treat `build-guide/08-cooking-session/` as current cooking-session implementation truth.
-- Treat old LiveKit mentions in older specs/build docs as stale unless explicitly revalidated.
+- Treat Cloudflare Realtime / RealtimeKit as the current realtime transport decision.
 - Cloudflare Realtime / RealtimeKit is the current cooking media transport direction.
 - Auth implementation is documented from current mobile code; product-spec deferred account creation still needs a guest strategy later.

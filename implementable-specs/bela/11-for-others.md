@@ -2,7 +2,7 @@
 
 ## What This Is
 
-A user can place a grocery order for someone else — a grandparent who does not have a smartphone, a family member in another neighborhood, a friend who is sick and cannot shop. The sender pays from their own wallet. The delivery goes to the recipient's address. The AI uses the recipient's dietary constraints to ensure the right products are bought.
+A user can place a grocery order for someone else — a grandparent who does not have a smartphone, a family member in another neighborhood, a friend who is sick and cannot shop. The sender pays with their own saved payment method through the normal PaymentIntent manual-capture flow. The delivery goes to the recipient's address. The AI uses the recipient's dietary constraints to ensure the right products are bought.
 
 This is the most emotionally powerful use case in the product. It is also the most naturally viral: a user who receives groceries without expecting them will ask "how did this work?" The answer is a live demonstration of what Brioela does.
 
@@ -20,7 +20,7 @@ If the recipient has their own Brioela account:
 4. The sender selects them
 5. The order uses the **recipient's constraint profile** (not the sender's) for scanner enforcement
 6. The delivery address defaults to the recipient's registered home address (can be changed by the sender)
-7. The recipient's wallet is NOT charged — only the sender's wallet
+7. The recipient is not charged — only the sender's payment method is authorized and captured
 
 This is the correct model: grandma's allergies travel with her groceries even when her grandchild is paying for them.
 
@@ -84,7 +84,7 @@ The most emotionally powerful use case is ordering for an elderly relative who c
 - Standing order: every Thursday
 - Delivery: Woinshet's address
 - Constraint profile: Woinshet is diabetic, avoids high-sugar products, prefers traditional Ethiopian staples
-- Payment: from Kibru's wallet
+- Payment: from Kibru's saved payment method
 - Contact number: Woinshet's phone (a neighbor's number, as she does not have a smartphone)
 
 Every Thursday, the AI generates a list based on the recipient profile notes ("She typically needs: injera, vegetables, lentils, cooking oil, spices"). Kibru gets the approval notification Thursday morning, glances at it, taps Confirm. By Thursday afternoon, a KYC-verified shopper brings Woinshet's groceries to her door.
@@ -123,7 +123,7 @@ If the recipient is on Brioela and the sender wants to permanently share a trust
 Linked accounts:
 - Can see each other's saved addresses (with permission)
 - Can order for each other without going through the "search by phone" flow each time
-- Can share a single wallet top-up (one family member can top up on behalf of another)
+- Can pay for selected recipients using sender-owned payment methods
 
 Linking requires mutual consent: both parties must accept the link request. Unlinking is immediate and unilateral (either party can unlink without the other's consent — this is a safety requirement).
 
@@ -144,7 +144,7 @@ The recipient can see:
 
 The recipient cannot see:
 - What the sender paid
-- The sender's wallet balance
+- The sender's payment method status
 - The shopper's full route
 
 The shopper can see:

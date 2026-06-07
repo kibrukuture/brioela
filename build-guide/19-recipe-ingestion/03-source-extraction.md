@@ -22,7 +22,7 @@ type RecipeSourceArtifacts = {
   transcript: string | null
   captions: string | null
   extractedPageText: string | null
-  ocrText: string | null
+  extractedImageText: string | null
   thumbnailUrl: string | null
   mediaDurationSeconds: number | null
   extractionWarnings: string[]
@@ -54,30 +54,30 @@ For TikTok, YouTube, Instagram, and similar sources:
 - Extract captions/subtitles if accessible.
 - Extract page title, description, hashtags only as weak context.
 - Pull thumbnail for user recognition.
-- If transcript is unavailable, rely on visible text/OCR and metadata where possible.
+- If transcript is unavailable, rely on visible text from GPT-4o mini vision extraction and metadata where possible.
 
 Do not download full videos unless explicitly supported by platform terms and backend design. The first implementation can import from metadata/transcripts/captions/visible text and mark unsupported media as `partial`.
 
 ---
 
-## Screenshot And Image OCR
+## Screenshot And Image Vision Extraction
 
-Screenshots and recipe images use the server-side OCR pattern from `07-scanner/05-ocr-fallback.md`.
+Screenshots and recipe images use the server-side GPT-4o mini vision extraction pattern from `07-scanner/05-gpt4o-mini-vision-fallback.md`.
 
 Image rules:
 
-- Run contrast enhancement before OCR.
+- Run contrast enhancement before vision extraction.
 - Extract visible ingredient lists, step text, title, and timing.
-- Preserve OCR confidence and warnings.
+- Preserve vision extraction confidence and warnings.
 - Never invent text missing from the image.
 - If multiple images are shared, preserve order.
 
-OCR warnings:
+Vision extraction warnings:
 
 - `low_light`
 - `partial_crop`
 - `text_too_small`
-- `ocr_uncertain`
+- `vision_extraction_uncertain`
 - `non_recipe_image`
 
 ---

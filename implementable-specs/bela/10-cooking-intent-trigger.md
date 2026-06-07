@@ -65,7 +65,7 @@ During an active live cooking session, the user mentions mid-session that they a
 
 The cooking AI (Gemini in the CookingAgent DO) extracts this and sends a `missing_ingredient` signal to the Orchestrator. The Orchestrator checks if an AI shopping order can be placed fast enough to be useful for this session (unlikely for an active cooking session, but possible for a "I'm going to start in 2 hours" scenario).
 
-If same-day delivery is available and the user has a funded wallet: the Orchestrator surfaces an offer: "No garlic — do you want me to order some? I can try to get it here within the hour." If the user says yes, an urgent same-day order is placed.
+If same-day delivery is available and the user has a saved payment method: the Orchestrator surfaces an offer: "No garlic — do you want me to order some? I can try to get it here within the hour." If the user says yes, an urgent same-day order is placed through the normal PaymentIntent manual-capture flow.
 
 ---
 

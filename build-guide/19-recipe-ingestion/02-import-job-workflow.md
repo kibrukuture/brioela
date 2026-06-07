@@ -31,7 +31,7 @@ Status rules:
 
 - `queued`: job row exists, workflow not yet started.
 - `classifying`: server is deciding what kind of shared content this is.
-- `extracting`: source fetch/transcript/OCR/page extraction running.
+- `extracting`: source fetch/transcript/GPT-4o mini vision/page extraction running.
 - `normalizing`: model is building the canonical recipe.
 - `routing`: non-recipe content is being routed to the correct Brioela feature/memory.
 - `needs_review`: recipe is usable but has meaningful uncertainty.
@@ -114,7 +114,7 @@ Retry transient failures:
 - source fetch 5xx
 - transcript provider timeout
 - model timeout
-- temporary OCR failure
+- temporary vision extraction failure
 
 Do not retry:
 
@@ -136,7 +136,7 @@ Examples:
 
 - source URL saved, but video transcript unavailable
 - title and thumbnail available, but no recipe steps found
-- screenshot OCR extracted ingredients but not method
+- screenshot vision extraction found ingredients but not method
 - model produced a low-confidence recipe needing review
 - shared place/menu/product content routed successfully, but recipe reconstruction not applicable
 

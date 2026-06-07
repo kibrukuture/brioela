@@ -26,4 +26,4 @@ Recurring pantry replenishment.
 
 Use normal PaymentIntent manual capture flow.
 
-Ignore stale wallet references in source spec.
+Use the normal PaymentIntent manual capture flow.

@@ -17,7 +17,7 @@ When they land, Brioela already knows:
 - local labeling norms
 - community signals from the destination
 - menu/restaurant fit when shared menu intelligence exists
-- OCR language adjustments for food labels and menus
+- GPT-4o mini vision extraction language adjustments for food labels and menus
 
 No setup. No dashboard. No generic travel guide.
 
@@ -78,7 +78,7 @@ type TravelPreloadPackage = {
   localProductHints: unknown[]
   localLabelingNotes: unknown[]
   menuFitSummaries: unknown[]
-  ocrLanguageHints: string[]
+  visionExtractionLanguageHints: string[]
   createdAt: number
   expiresAt: number
 }
@@ -91,7 +91,7 @@ Contents:
 - government food database priority for that country
 - nearby healthy food places and markets
 - local certification bodies if relevant to the user's dietary identity
-- OCR language hints for labels and menus
+- Vision extraction language hints for labels and menus
 - shared menu intelligence for restaurants near likely destination areas, if available
 
 Menu intelligence is public/shared, but final dish verdicts are not precomputed globally. They are recomputed against the user's private profile.
@@ -127,7 +127,7 @@ On app open, if device location is in the destination region:
 
 1. Mark travel intent `active`.
 2. Switch scan resolution priority to local data sources.
-3. Apply local food labeling notes to scan and OCR interpretation.
+3. Apply local food labeling notes to scan and GPT-4o mini vision extraction interpretation.
 4. Load destination map cache.
 5. Surface one quiet in-app/push moment if allowed by notification rules.
 

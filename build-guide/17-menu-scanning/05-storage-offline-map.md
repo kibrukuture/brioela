@@ -10,9 +10,9 @@ The data retention boundary, offline partial mode, map/community overlay, and Lu
 
 Raw menu content is transient by default.
 
-The backend may hold raw OCR text and parsed dish results only for the active request/session. Raw OCR text is discarded after processing unless the user explicitly saves the menu to their profile.
+The backend may hold raw extracted menu text and parsed dish results only for the active request/session. Raw extracted text is discarded after processing unless the user explicitly saves the menu to their profile.
 
-This protects private scans and avoids storing messy raw OCR as if it were reliable menu data. Normalized public menu facts are different: after filtering and validation, they can feed the shared restaurant intelligence tables described in `06-shared-menu-intelligence.md`.
+This protects private scans and avoids storing messy raw extracted text as if it were reliable menu data. Normalized public menu facts are different: after filtering and validation, they can feed the shared restaurant intelligence tables described in `06-shared-menu-intelligence.md`.
 
 ---
 
@@ -26,7 +26,7 @@ type MenuScan = {
   userId: string
   restaurantId: string | null
   photoCount: number
-  ocrText: string | null
+  extractedText: string | null
   createdAt: number
   savedAt: number | null
 }
@@ -43,7 +43,7 @@ type MenuScanResult = {
 
 Implementation notes:
 
-- `ocrText` is `null` for unsaved scans after processing completes.
+- `extractedText` is `null` for unsaved scans after processing completes.
 - Saved scans require explicit user action.
 - Unsaved scan results can remain in client/session memory for navigation within the active screen.
 - If persisted server-side for an active session, expire aggressively.
@@ -71,7 +71,7 @@ type MenuScanMemoryEvent = {
 }
 ```
 
-Do not store OCR text, full dish descriptions, or waiter questions in `memory_event` unless the user saves the menu and the save flow makes that clear. The private event can remember that the user scanned a place and what the aggregate outcome was; the shared database can remember public menu facts without attaching the user's health profile.
+Do not store extracted menu text, full dish descriptions, or waiter questions in `memory_event` unless the user saves the menu and the save flow makes that clear. The private event can remember that the user scanned a place and what the aggregate outcome was; the shared database can remember public menu facts without attaching the user's health profile.
 
 ---
 
@@ -82,14 +82,14 @@ Restaurants often have weak connectivity. Offline partial mode uses the last-kno
 Offline behavior:
 
 - Use cached constraints only.
-- Run local deterministic matching when OCR/text is available locally.
+- Run local deterministic matching when extracted text is available locally.
 - Show a visible "offline partial result" banner.
 - Do not show real-time community notes.
 - Do not write shared restaurant intelligence until the device is back online and the contribution can pass validation.
 - Do not imply the profile is current.
 - Queue a lightweight `menu_scanned` event for later sync if event logging is enabled.
 
-If server OCR is unavailable offline, the first implementation can support offline only for already extracted URL/text or future on-device OCR. The UI must be honest about this boundary.
+If server vision extraction is unavailable offline, the first implementation can support offline only for already extracted URL/text. The UI must be honest about this boundary.
 
 ---
 
@@ -137,4 +137,4 @@ Track aggregate product metrics without retaining raw menu content:
 - Repeat menu scanning per month.
 - First menu-scan upgrade conversion.
 
-Metric events must not include raw OCR text or full menu descriptions.
+Metric events must not include raw extracted text or full menu descriptions.

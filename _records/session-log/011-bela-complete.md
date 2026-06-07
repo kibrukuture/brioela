@@ -58,5 +58,5 @@ Before writing, read:
 ## Blockers / Decisions
 
 - Bela final payment model is no wallet, no Stripe Issuing, PaymentIntent manual capture, shopper dedicated Bela card, Stripe Connect Express payout.
-- Stale wallet references in source specs are ignored in build-guide.
+- Source specs and build-guide now use the final no-wallet payment model.
 - Product sightings belong to `10-map`; Ground owns Finds and `location_signal_summary`.

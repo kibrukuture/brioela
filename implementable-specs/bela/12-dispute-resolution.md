@@ -119,9 +119,7 @@ For auto-resolved disputes (types 1, 2, 3 in clear-cut cases):
 Dispute resolved ✓
 
 [Item name] was not delivered as expected.
-$4.80 has been returned to your wallet.
-
-Your wallet balance: $27.40
+$4.80 has been refunded to your original payment method.
 ```
 
 ---

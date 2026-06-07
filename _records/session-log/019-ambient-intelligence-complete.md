@@ -52,7 +52,7 @@ Before writing, read:
 - latest session log
 - `build-guide/19-recipe-ingestion/00-overview.md`
 - `brioela-specs/02-recipe-ingestion-from-shared-content.md`
-- dependencies: Orchestrator, Memory Engine, Cooking Session, Scanner/OCR if screenshots are involved
+- dependencies: Orchestrator, Memory Engine, Cooking Session, Scanner vision extraction if screenshots are involved
 
 ## Blockers / Decisions
 

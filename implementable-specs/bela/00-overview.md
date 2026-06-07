@@ -109,7 +109,7 @@ The OrderAgent is created when a shopper accepts an order. It is archived (no lo
 | `12-dispute-resolution.md` | Wrong/missing items, photo proof, automatic refunds |
 | `13-data-model.md` | All SQL tables for the shopping system |
 | `14-shopper-ai-assistant.md` | Voice + vision AI for the shopper during the shopping session — same Gemini Live stack as cooking session |
-| `15-checkout-payment.md` | Stripe Issuing virtual card → Apple Pay / Google Pay at the store till, funded from user's wallet escrow |
+| `15-checkout-payment.md` | Shopper pays with registered Bela card; user PaymentIntent is captured after delivery confirmation |
 
 ---
 

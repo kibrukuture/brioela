@@ -37,7 +37,7 @@ The live AI cooking coach: voice + camera, Gemini 3.1 Flash Live, CookingAgent D
 
 ## Key Decisions From Specs
 
-- **Cloudflare Realtime (RealtimeKit) — NOT LiveKit.** LiveKit cannot deliver media to a DO without egress infrastructure. Cloudflare Realtime's WebSocket adapter pushes PCM audio + JPEG frames directly to the DO. Decision documented in `implementable-specs/cooking-session/00-overview.md` line 73.
+- **Cloudflare Realtime / RealtimeKit.** RealtimeKit handles room lifecycle and media transport. Its WebSocket adapter pushes PCM audio and periodic JPEG frames directly to the CookingAgent DO. Decision documented in `implementable-specs/cooking-session/00-overview.md` line 73.
 - DO ID: `idFromName(\`cooking:${sessionId}\`)` — one DO per session
 - Mobile has two connections: WebRTC to CF Realtime (sends audio/video), WebSocket to DO (receives Gemini audio back)
 - Gemini model: `gemini-3.1-flash-live-preview` — audio in + JPEG frames in + audio out in one model

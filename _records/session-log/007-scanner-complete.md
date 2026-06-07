@@ -19,7 +19,7 @@ Written — `build-guide/07-scanner/`:
 - `02-product-resolution.md` — three-layer stack (Redis → Supabase → OFF + gov DBs), products + product_origin schema, pending scan queue
 - `03-constraint-check.md` — check-constraint tool (five types, synonym resolution, drug interactions, fail-open, proposal surfacing)
 - `04-scan-result-ui.md` — verdict schema, base score rules, compact/expanded UI, hard allergy interrupt, boycott/origin display, follow-up actions
-- `05-ocr-fallback.md` — OCR trigger, Gemini Vision call, contrast enhancement, confidence schema, menu scanning reuse, folder structure
+- `05-gpt4o-mini-vision-fallback.md` — vision extraction trigger, GPT-4o mini call, contrast enhancement, confidence schema, menu scanning reuse, folder structure
 
 Written — `_records/connections/02-scanner-connections.md`
 
@@ -35,7 +35,7 @@ Nothing half-done.
 
 ## What Is Next
 
-`08-cooking-session/` — the live AI cooking coach. This is one of the most complex features: CookingAgent DO, Gemini Live WebSocket, LiveKit SFU for multi-person, proactive speech engine, timers via alarms, transcript storage, session-end recipe capture, reconnection logic.
+`08-cooking-session/` — the live AI cooking coach. This is one of the most complex features: CookingAgent DO, Gemini Live WebSocket, Cloudflare Realtime / RealtimeKit for multi-person, proactive speech engine, timers via alarms, transcript storage, session-end recipe capture, reconnection logic.
 
 Source specs to read before writing 08-cooking-session:
 - implementable-specs/cooking-session/00-overview.md through 10-human-behaviors.md (all 11 files)
@@ -51,7 +51,7 @@ Files to write for 08-cooking-session:
 - 02-gemini-live-connection.md — WebSocket setup, audio stream, video frame pipeline, reconnection
 - 03-proactive-speech-engine.md — silence tracker, visual change detector, adaptive frequency, response filter
 - 04-tool-protocol.md — tools available in cooking session, forwarding to Orchestrator
-- 05-livekit-multi-person.md — multi-person room lifecycle, SFU setup, participant management
+- 05-realtimekit-multi-person.md — multi-person room lifecycle, realtime room setup, participant management
 - 06-session-end-and-recipe.md — session end, recipe decision tree, transcript summary, memory writes
 
 ## Blockers

@@ -12,7 +12,7 @@ The share-sheet pipeline: a user shares food-related content from TikTok, YouTub
 |---|---|
 | `01-share-sheet-entry.md` | iOS/Android share extension, 2-second confirmation, background import start |
 | `02-import-job-workflow.md` | `recipe_import_job`, durable async processing, status polling, retry behavior |
-| `03-source-extraction.md` | URL/video/page/screenshot extraction, transcript/caption/OCR/page text artifacts |
+| `03-source-extraction.md` | URL/video/page/screenshot extraction, transcript/caption/GPT-4o mini vision/page text artifacts |
 | `04-recipe-normalization.md` | canonical recipe schema, ingredient/step/timing/serving extraction, no fabrication |
 | `05-confidence-and-constraints.md` | uncertain quantities, missing steps, user constraint checks, re-rankable recipes |
 | `06-storage-and-library.md` | recipe persistence in Orchestrator SQLite, source artifacts, memory events |
@@ -55,7 +55,7 @@ user_recipe:         user_id, recipe_id, title, ingredients_json, steps_json, cu
 - `05-orchestrator` — completed recipes written to user's recipe library in Orchestrator DO SQLite
 - `03-foundation` — Upstash Workflow runs the multi-step import job (fetch → extract → normalize → store); share-sheet extension is a native iOS/Android target registered in the Cloudflare Worker
 - `06-memory-engine` — `recipes`, `memory_event`, and session context schema
-- `07-scanner` — screenshot/OCR ingestion reuses server-side image OCR patterns and confidence caveats
+- `07-scanner` — screenshot image extraction reuses server-side GPT-4o mini vision patterns and confidence caveats
 - `08-cooking-session` — imported recipes must be immediately cookable by the cooking agent
 - `10-map` — place shares can route to place/map memory rather than recipe import
 - `13-receipt-intelligence` — receipt-like shares can route to receipt processing rather than recipe import

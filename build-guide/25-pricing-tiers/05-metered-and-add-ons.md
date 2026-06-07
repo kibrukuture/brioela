@@ -15,7 +15,7 @@ Spec baseline:
 - multi-person room: `$0.50/session`, up to 4 participants, 45 minutes
 - credits do not expire
 
-Before launch, re-check current Gemini Live / Cloudflare Realtime costs. The spec cost table references older LiveKit assumptions in places, while the current build-guide uses Cloudflare Realtime.
+Before launch, re-check current Gemini Live / Cloudflare Realtime / RealtimeKit costs.
 
 ---
 

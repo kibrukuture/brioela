@@ -12,7 +12,7 @@ Convert food content shared from TikTok, YouTube, Instagram, or web recipe URLs 
 - Mobile share-sheet ingestion.
 - URL ingestion.
 - Video transcript extraction when available.
-- OCR of on-screen ingredient text.
+- GPT-4o mini vision extraction of on-screen ingredient text.
 - Recipe normalization into a canonical schema.
 
 ## Out of Scope

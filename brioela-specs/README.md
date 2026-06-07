@@ -11,7 +11,7 @@ Rules:
 ## Foundations (Read These First)
 
 - `00-product-philosophy-and-ux.md` — The ambient, voice-first, Shazam-for-food design law that governs every other spec.
-- `24-technical-architecture-backbone.md` — Full tech stack: Cloudflare Workers + Hono.js, CF Agent SDK (Durable Objects), Gemini Live, LiveKit Cloud, Upstash (QStash + Redis + Workflow).
+- `24-technical-architecture-backbone.md` — Full tech stack: Cloudflare Workers + Hono.js, CF Agent SDK (Durable Objects), Gemini Live, Cloudflare Realtime / RealtimeKit, Upstash (QStash + Redis + Workflow).
 
 ## Core Product Features
 
@@ -32,7 +32,7 @@ Rules:
 
 - `10-voice-cooking-agent.md` — Gemini Live full-duplex voice session, single-user.
 - `11-live-vision-cooking-coach.md` — Gemini Live audio + video simultaneously, premium tier.
-- `12-multi-person-cooking-rooms.md` — LiveKit Cloud WebRTC rooms, remote family and friends.
+- `12-multi-person-cooking-rooms.md` — Cloudflare Realtime / RealtimeKit rooms, remote family and friends.
 - `13-generational-recipe-capture.md`
 - `14-fridge-and-pantry-ingredient-rescue.md`
 

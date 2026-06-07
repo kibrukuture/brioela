@@ -58,7 +58,7 @@ Yellow is the default for uncertainty. Unknown means ask, not assume safe.
 Return yellow when:
 
 - Ingredient detail is missing or too sparse.
-- OCR or parser confidence is low enough to affect safety.
+- Vision extraction or parser confidence is low enough to affect safety.
 - A cooking method creates likely cross-contact risk, such as shared fryer for gluten, shellfish, or peanuts.
 - A dish category often depends on hidden ingredients, such as sauces, marinades, dressings, broths, batters, or desserts.
 - A soft conflict exists but not enough evidence for red.

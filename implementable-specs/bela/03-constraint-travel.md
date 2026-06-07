@@ -198,7 +198,7 @@ If the shopper scans a product that does not resolve in the `product_profile` ta
 2. The shopper is shown the user's hard block list in plain text: "Check this product does not contain: sesame, peanuts, dairy"
 3. The shopper can tap "Ingredients checked — not in user's blocked list" to add it to the order
 4. This manual check is logged as `kind = 'unresolved_product_manual_check'` in order_events
-5. The scan event is flagged for product database enrichment — a background job will attempt OCR + AI classification from the product photo taken by the scanner
+5. The scan event is flagged for product database enrichment — a background job will attempt GPT-4o mini vision extraction and classification from the product photo taken by the scanner
 
 Unresolved products are NOT soft-approved automatically. The shopper must manually confirm the check before the product can be added to the order.
 

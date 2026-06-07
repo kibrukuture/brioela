@@ -20,8 +20,8 @@ Deep read pass before writing:
 Written/updated — `build-guide/17-menu-scanning/`:
 - `00-overview.md` — expanded to include QR auto-loading, shared menu intelligence, and personalized discovery
 - `01-input-capture.md` — added QR code capture as first-class menu URL resolution path
-- `02-menu-ocr-and-parsing.md` — added QR URL source and resolved URL output
-- `05-storage-offline-map.md` — clarified raw OCR transient boundary versus normalized shared menu facts
+- `02-menu-gpt4o-mini-vision-and-parsing.md` — added QR URL source and resolved URL output
+- `05-storage-offline-map.md` — clarified raw extracted text transient boundary versus normalized shared menu facts
 - `06-shared-menu-intelligence.md` — new shared restaurant/menu data model and privacy boundary
 - `07-personalized-restaurant-discovery.md` — new user-specific restaurant ranking and map-discovery design
 

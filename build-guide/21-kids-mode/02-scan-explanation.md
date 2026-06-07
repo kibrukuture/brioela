@@ -12,7 +12,7 @@ Kids Mode augments the scan verdict. It never replaces it.
 
 The standard scanner pipeline runs first:
 
-1. barcode/OCR resolution
+1. barcode or GPT-4o mini vision extraction resolution
 2. product data confidence
 3. user constraint check
 4. adult scan verdict

@@ -1,14 +1,18 @@
-# Receipt Intelligence — OCR And Normalization
+# Receipt Intelligence — GPT-4o Mini Vision And Normalization
 
 ## What This File Covers
 
-Receipt OCR, merchant normalization, line extraction, and uncertainty handling.
+Receipt image extraction with GPT-4o mini, merchant normalization, line extraction, and uncertainty handling.
 
 ## Source Specs
 
 - `brioela-specs/06-receipt-spend-intelligence.md`
 
-## OCR Output
+## GPT-4o Mini Vision Output
+
+GPT-4o mini returns structured output validated by Zod. Product logic reads only validated fields,
+not prose. If the model output fails schema validation, the receipt stays unresolved and can be
+retried or reviewed later.
 
 Capture:
 

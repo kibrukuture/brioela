@@ -22,7 +22,7 @@ Warnings should be specific:
 - "Quantities estimated from video transcript."
 - "Steps may be incomplete."
 - "Cooking time not found."
-- "Ingredient list came from screenshot OCR."
+- "Ingredient list came from GPT-4o mini screenshot extraction."
 
 ---
 

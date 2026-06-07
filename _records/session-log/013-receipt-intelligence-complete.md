@@ -16,7 +16,7 @@ Deep read pass before writing:
 Written — `build-guide/13-receipt-intelligence/`:
 - `00-overview.md` — updated to complete, file list added
 - `01-receipt-ingestion.md`
-- `02-ocr-and-normalization.md`
+- `02-gpt4o-mini-vision-and-normalization.md`
 - `03-line-item-product-matching.md`
 - `04-spend-summaries.md`
 - `05-price-history-and-alerts.md`
@@ -55,4 +55,4 @@ Before writing, read:
 
 - Personal price history is private Orchestrator DO data.
 - Shared anonymized price trends can feed Map.
-- Receipt raw OCR must be preserved separately from normalized results.
+- Receipt raw GPT-4o mini vision extraction output must be preserved separately from normalized results.

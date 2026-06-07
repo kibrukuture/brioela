@@ -50,7 +50,7 @@ The first shared model should be explicit and conservative:
 restaurant_menu_source (
   source_id uuid primary key,
   place_id uuid not null,
-  source_type text check (source_type in ('qr_url','url','photo_ocr','merchant_feed')),
+  source_type text check (source_type in ('qr_url','url','photo_vision_extraction','merchant_feed')),
   resolved_url text,
   url_hash text,
   first_seen_at timestamptz not null,
@@ -135,7 +135,7 @@ Fingerprint rules:
 - Do not include user verdicts in the fingerprint.
 - If the fingerprint changes materially, create a new `restaurant_menu_version`.
 
-This lets Brioela know when a QR menu has changed without keeping raw OCR forever.
+This lets Brioela know when a QR menu has changed without keeping raw extracted text forever.
 
 ---
 
@@ -160,7 +160,7 @@ Validation checks:
 - No personal health profile or private user note is included.
 - Duplicate scans increment observations instead of creating duplicates.
 
-For photo OCR, shared contribution should be more conservative than for QR/URL because OCR can misread dish names.
+For photo vision extraction, shared contribution should be more conservative than for QR/URL because image extraction can misread dish names.
 
 ---
 

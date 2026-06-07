@@ -9,7 +9,7 @@ Turn grocery receipts into structured spend data that connects cost, food qualit
 - Spend is summarized by healthy vs less healthy, recurring items, and cheaper alternatives.
 
 ## In Scope
-- Receipt OCR.
+- Receipt image extraction with GPT-4o mini.
 - Merchant normalization.
 - Item matching to canonical products when possible.
 - Weekly and category spend aggregation.
@@ -34,7 +34,7 @@ Turn grocery receipts into structured spend data that connects cost, food qualit
 - `GET /api/spend/summary`
 
 ## Technical Notes
-- OCR results should be stored separately from normalized results to allow model upgrades later.
+- Raw GPT-4o mini extraction results should be stored separately from normalized results to allow model upgrades later.
 - Budget-aware recommendations should read from this feature but not be implemented here.
 
 ## Success Metrics
