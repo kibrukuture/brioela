@@ -8,6 +8,7 @@
 
 Written:
 - `build-guide/27-generative-grammar/20-contracts-and-stage-delivery.md`
+- `build-guide/27-generative-grammar/21-contract-spine-hardening.md`
 
 Updated:
 - `build-guide/27-generative-grammar/00-overview.md`
@@ -28,6 +29,11 @@ Updated:
 - Do not add a `services/` layer by default if the project standard is route + handler + helper.
 - Axios can stay as transport, but new code should use contract-aware request helpers instead of blind `api.get<T>()`/`api.post<T>()` generics.
 - TanStack Query stays as the query/mutation layer.
+- The stricter standard is the Contract Spine: if it crosses a process boundary, it crosses through a contract.
+- Routine endpoint schemas stay co-located in the feature contract file by default.
+- Separate schema files are allowed only for true cross-feature/domain primitives such as `stageSchema`, API error envelope, or shared food audience.
+- Query keys should be contract-derived with `contractKey(contract, input)`, not manually maintained global constants.
+- New code should eventually ban raw Axios, blind generic API calls, raw route strings, loose stream event parsers, and direct backend success responses outside contract helpers.
 
 ## Evidence From Repo Audit
 
@@ -38,4 +44,4 @@ Updated:
 
 ## What Is Next
 
-Before coding, reconcile the older docs that still mention `GenerativeDecision`, `src/design-system`, and `use-stage` inside `mobile/grammar/`. Then implement one vertical slice: `shared/grammar` Stage schema, one scan contract, contract-aware Axios request helper, one backend scan handler, and one mobile render path.
+Before coding, reconcile the older docs that still mention `GenerativeDecision`, `src/design-system`, and `use-stage` inside `mobile/grammar/`. Then implement one vertical slice: `shared/grammar` Stage schema, `shared/contracts/contract.ts`, one scan contract with co-located endpoint schemas, contract-aware Axios request helper, contract-derived query key, one backend scan handler using contract helpers, and one mobile render path.
