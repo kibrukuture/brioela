@@ -138,9 +138,44 @@ Why better:
 
 ---
 
-### 2. Replace `scheduled_alarms` As The Execution Engine
+### 2. `scheduled_alarms` Stores Alarm Data; SDK `schedule()` Wakes The Agent
 
-Older docs make `scheduled_alarms` the execution queue. Current Agents SDK has SQLite-backed scheduling:
+A Durable Object has one physical alarm slot. Brioela still needs many logical future tasks:
+
+```text
+session watchdog
+curator run
+pattern detection
+weekly summary
+sickness follow-up
+travel preload
+scan follow-up
+recall check
+```
+
+Brioela separates alarm data from alarm wakeup.
+
+```text
+scheduled_alarms = data table
+Agents SDK schedule() = wake/call mechanism
+```
+
+`scheduled_alarms` stores what needs to happen:
+
+- alarm type
+- payload
+- source event
+- product reason
+- priority
+- status
+- cancellation state
+- failure reason
+- debug/audit history
+
+Agents SDK `schedule()` wakes the Orchestrator and calls the method at the right time.
+
+When the method runs, it reads `scheduled_alarms` to get the alarm details, performs the work, and
+updates the row status.
 
 ```typescript
 await this.schedule(new Date(fireAt), "runSicknessFollowup", {
@@ -152,19 +187,55 @@ await this.schedule("0 8 * * 0", "runWeeklyFoodSummary", {
 })
 ```
 
-Use `this.schedule()` / `this.scheduleEvery()` as the execution engine.
+The SDK call should pass only the minimum pointer needed to load the table row:
 
-`scheduled_alarms` may still exist as a Brioela domain/audit table if product needs it, but it should not be the primary scheduler unless SDK scheduling cannot express the use case.
+```typescript
+await this.schedule(new Date(fireAt), "runScheduledAlarm", {
+  scheduledAlarmId,
+})
+```
+
+The scheduled method loads the full alarm data from the table:
+
+```typescript
+async runScheduledAlarm(payload: { scheduledAlarmId: string }) {
+  const alarm = await loadScheduledAlarm(payload.scheduledAlarmId)
+
+  if (!alarm || alarm.status !== "pending") {
+    return
+  }
+
+  await markScheduledAlarmRunning(alarm.id)
+
+  try {
+    await dispatchScheduledAlarm(alarm)
+    await markScheduledAlarmCompleted(alarm.id)
+  } catch (error) {
+    await markScheduledAlarmFailed(alarm.id, String(error))
+    throw error
+  }
+}
+```
+
+The SDK wakes and calls. The table stores and explains.
+
+Hard rule:
+
+```text
+`scheduled_alarms` stores alarm data.
+Agents SDK `schedule()` wakes the Orchestrator and calls the method.
+The method reads and updates `scheduled_alarms`.
+```
 
 Why better:
 
-- built-in persistence
+- less custom wakeup code
 - delayed/date/cron/interval support
 - idempotency options
 - list/cancel APIs
 - retry options
 - sub-agent schedule routing
-- no custom alarm dispatcher required for normal cases
+- `scheduled_alarms` remains available for Data Studio debugging, audit, cancellation, and product metadata
 
 ---
 
@@ -544,7 +615,7 @@ These files contain older manual patterns and should be reconciled before coding
 - `02-tool-protocol.md` — keep AI SDK tools, but add shared tool contracts and safer permission metadata.
 - `03-session-lifecycle.md` — compare custom compression with Cloudflare Session API patterns, but do not adopt experimental API blindly.
 - `04-sub-agents.md` — replace `/internal/tool-call` HTTP forwarding with `subAgent()`, `parentAgent()`, `agentTool()`, or `runAgentTool()` where possible.
-- `05-alarm-system.md` — make SDK schedule/queue the execution engine; keep custom tables only for domain audit if needed.
+- `05-alarm-system.md` — keep `scheduled_alarms` permanently as product truth. Prefer Agents SDK `schedule()` for wake/execution when possible; keep custom DO `setAlarm()` dispatch only as fallback for behavior SDK scheduling cannot express.
 - `08-cooking-session/*` — use `keepAliveWhile()`/`runFiber()` for recovery, keep Gemini Live media bridge custom.
 
 ---
