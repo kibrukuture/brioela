@@ -96,7 +96,7 @@ type ProductFactEvidence = {
   productId: string
   productFieldName: string
   evidenceSourceType:
-    | "label_gpt4o_mini"
+    | "gpt4o_mini_label"
     | "open_food_facts"
     | "gs1_verified"
     | "usda_fdc"

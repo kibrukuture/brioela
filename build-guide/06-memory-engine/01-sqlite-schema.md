@@ -2,9 +2,9 @@
 
 ## What This File Covers
 
-Every table in the `BrioelOrchestrator` DO SQLite — CREATE TABLE SQL, Drizzle schema, column decisions, indexes, write rules, and read rules for all 12 tables. This is the complete data layer of the user's private brain.
+Every table in the `BrioelOrchestrator` DO SQLite — CREATE TABLE SQL, Drizzle schema, column decisions, indexes, write rules, and read rules for the core memory tables plus feature-owned private extensions. This is the complete data layer of the user's private brain.
 
-All 12 tables live in one SQLite file per user, managed by Drizzle over `this.ctx.storage`. The schema is version-controlled in `backend/src/agents/orchestrator/migrations/`. No table is shared across users. No Supabase.
+All private tables live in one SQLite file per user, managed by Drizzle over `this.ctx.storage`. The schema is version-controlled in `backend/src/agents/orchestrator/migrations/`. No table is shared across users. No Supabase.
 
 ---
 
@@ -479,6 +479,91 @@ export const recipes = sqliteTable('recipes', {
   updatedAt:     integer('updated_at').notNull(),
 })
 ```
+
+---
+
+## Health Intelligence Extension Tables
+
+Health Intelligence adds three private tables to the same Orchestrator DO SQLite file. They are not
+Supabase tables and are not shared across users. `user_memory.health.*` can mirror summaries for prompt
+context, but these tables are the operational source for scan safety logic, reminders, and Health
+Agent passes.
+
+### `medications`
+
+```sql
+CREATE TABLE medications (
+  id                  TEXT PRIMARY KEY,
+  user_id             TEXT NOT NULL,
+  medication_name     TEXT NOT NULL,
+  medication_category TEXT NOT NULL,
+  dose_mg             REAL,
+  dose_unit           TEXT,
+  frequency           TEXT NOT NULL,
+  reminder_times      TEXT NOT NULL,
+  with_food           INTEGER,
+  notes               TEXT,
+  source              TEXT NOT NULL,
+  active              INTEGER NOT NULL DEFAULT 1,
+  started_at          INTEGER,
+  ended_at            INTEGER,
+  created_at          INTEGER NOT NULL,
+  updated_at          INTEGER NOT NULL
+);
+
+CREATE INDEX idx_medications_active ON medications (user_id, active, medication_category);
+```
+
+### `health_events`
+
+```sql
+CREATE TABLE health_events (
+  id                    TEXT PRIMARY KEY,
+  user_id               TEXT NOT NULL,
+  event_type            TEXT NOT NULL,
+  severity              INTEGER,
+  onset_at              INTEGER NOT NULL,
+  logged_at             INTEGER NOT NULL,
+  source                TEXT NOT NULL,
+  payload_json          TEXT NOT NULL,
+  possible_associations TEXT,
+  resolved_at           INTEGER,
+  created_at            INTEGER NOT NULL
+);
+
+CREATE INDEX idx_health_events_recent ON health_events (user_id, onset_at DESC);
+CREATE INDEX idx_health_events_type   ON health_events (user_id, event_type, onset_at DESC);
+```
+
+### `health_captures`
+
+```sql
+CREATE TABLE health_captures (
+  id                   TEXT PRIMARY KEY,
+  user_id              TEXT NOT NULL,
+  capture_type         TEXT NOT NULL,
+  domain               TEXT NOT NULL,
+  metric_key           TEXT,
+  value_json           TEXT NOT NULL,
+  unit                 TEXT,
+  source_type          TEXT NOT NULL,
+  source_detail        TEXT,
+  source_connection_id TEXT,
+  captured_at          INTEGER NOT NULL,
+  ingested_at          INTEGER NOT NULL,
+  confidence           REAL,
+  tags                 TEXT,
+  created_at           INTEGER NOT NULL
+);
+
+CREATE INDEX idx_health_captures_recent ON health_captures (user_id, captured_at DESC);
+CREATE INDEX idx_health_captures_source ON health_captures (user_id, source_connection_id);
+```
+
+**Routing:** prescription photos create a `health_captures` evidence row and a normalized
+`medications` row. Symptoms/stool/rash/negative responses create `health_events`. Wearable summaries
+and lab/measurement captures create `health_captures`. Stable user-facing summaries may mirror into
+`user_memory`, but `user_memory` is not the operational source for these health records.
 
 ---
 

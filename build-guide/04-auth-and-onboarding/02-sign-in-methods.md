@@ -27,9 +27,9 @@ Current sign-in methods in the mobile app.
 - Receives Apple `identityToken`.
 - Calls `supabase.auth.signInWithIdToken({ provider: "apple" })`.
 
-### Email / Password
+### Email / Password Legacy Surface
 
-- Current code still supports email/password sign-in and sign-up.
+- Current code may still support email/password sign-in and sign-up during transition.
 - Validation uses `signInSchema`, `signUpSchema`, and `forgotPasswordSchema`.
 - Sign-up stores temporary credentials and moves to email verification flow.
 
@@ -42,11 +42,4 @@ Current sign-in methods in the mobile app.
 
 `brioela-specs/21-onboarding.md` says Apple/Google only and no email/password forms.
 
-Current code still has email/password fallback.
-
-Decision needed later:
-
-- keep email/password as fallback, or
-- remove it to match onboarding spec.
-
-Do not remove it during documentation cleanup.
+Target product surface is Apple/Google account linking from a Supabase anonymous user. Email/password is legacy/current-code surface only unless explicitly re-approved.

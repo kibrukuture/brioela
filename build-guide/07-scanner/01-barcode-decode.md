@@ -137,6 +137,8 @@ import { supabase } from '@/core/db/supabase.client'
 import { resolveProduct }    from '../_helpers/resolve.product.helper'
 import { checkConstraints }  from '../_helpers/check.constraints.helper'
 import { buildVerdict }      from '../_helpers/build.verdict.helper'
+import { buildResolvedProductFactSnapshot } from '../_helpers/product-fact-snapshot.helper'
+import { getProductCommunityHealthSummary } from '../_helpers/community-health-summary.helper'
 import type { AppContext } from '@/index'
 
 export async function resolveScan(c: AppContext) {
@@ -177,11 +179,17 @@ export async function resolveScan(c: AppContext) {
     }
   }
 
+  // Build scanner-ready product facts with evidence/confidence before any safety decision.
+  const productFactSnapshot = await buildResolvedProductFactSnapshot(product, c.env)
+
+  // Cached/materialized community overlay. This is never a live full-table association query.
+  const communityHealth = await getProductCommunityHealthSummary(product.id, c.env)
+
   // Check constraints against Orchestrator DO (see 03-constraint-check.md)
-  const constraintResult = await checkConstraints(product, userId, c.env)
+  const constraintResult = await checkConstraints(productFactSnapshot, userId, c.env)
 
   // Build final verdict (see 04-scan-result-ui.md)
-  const verdict = buildVerdict(product, constraintResult)
+  const verdict = buildVerdict(productFactSnapshot, constraintResult, communityHealth)
 
   // Update scan_event with resolved product
   await supabase.from('scan_events')
@@ -207,7 +215,7 @@ export async function resolveScan(c: AppContext) {
     }),
   }))
 
-  return { scanEventId, product, verdict, constraintResult }
+  return { scanEventId, product, productFactSnapshot, verdict, constraintResult, communityHealth }
 }
 ```
 

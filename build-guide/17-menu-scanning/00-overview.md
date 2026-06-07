@@ -30,15 +30,15 @@ The larger product angle: every menu scan also improves Brioela's restaurant int
 - Waiter script: pre-formulated, specific, non-awkward — removes anxiety of not knowing what to ask
 - Raw extracted text discarded after processing; results stored for session only unless user saves
 - Normalized public menu facts can feed shared restaurant intelligence after privacy filtering
-- Offline: cached constraint profile enables local constraint matching; community notes unavailable offline
-- Map integration: if restaurant is in healthy food map, community notes about that place overlay the menu scan result
+- Offline: cached constraint profile enables local constraint matching; live Ground signals unavailable offline
+- Map integration: if restaurant is in healthy food map, Ground signals about that place can overlay the menu scan result
 - Discovery: Brioela should eventually show the best places for this user, not a generic list of all restaurants
 - Upgrade trigger: Sapor users hit menu scan → Luma upgrade prompt
 
 ## What This Folder Depends On
 - `05-orchestrator` — user's full constraint profile (allergies, dietary identity, medical conditions, medications)
 - `07-scanner` — GPT-4o mini vision extraction pattern reused for menu photo processing
-- `10-map` — restaurant's community notes for trust layer overlay
+- `10-map` — restaurant Ground signals for place context overlay
 
 ## What Depends On This Folder
 - `10-map` — can use shared menu intelligence to rank and render restaurants more personally

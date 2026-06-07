@@ -38,7 +38,7 @@ import { brioela } from './brioela'
 
 export const anonymousHealthGroups = brioela.table('anonymous_health_groups', {
   id:                     uuid('id').primaryKey().defaultRandom(),
-  kAnonymityGroupSize:    integer('k_anonymity_group_size').notNull(),
+  kAnonymityGroupSize:    integer('k_anonymity_group_size').notNull(), // DB CHECK: >= 100
   ageBucket:              text('age_bucket').notNull(),
   sexBucket:              text('sex_bucket'),
   regionBucket:           text('region_bucket').notNull(),
@@ -162,7 +162,7 @@ export const anonymousMedicationFoodEventAssociations = brioela.table('anonymous
   clinicalEvidence:     text('clinical_evidence'),
   severityCategory:     text('severity_category').notNull(),
 
-  cohortCount:          integer('cohort_count').notNull(),
+  healthGroupCount:     integer('health_group_count').notNull(),
   observationCount:     integer('observation_count').notNull(),
   clinicalSources:      text('clinical_sources').array(),
 
@@ -214,7 +214,7 @@ export const anonymousResearchAssociationCandidates = brioela.table('anonymous_r
 
   exposureFeature:      jsonb('exposure_feature').notNull(),
   postExposureEventFeature: jsonb('post_exposure_event_feature').notNull(),
-  cohortFeature:        jsonb('cohort_feature').notNull(),
+  anonymousHealthGroupFeature: jsonb('anonymous_health_group_feature').notNull(),
 
   effectSize:           real('effect_size').notNull(),
   pValue:               real('p_value').notNull(),
@@ -233,6 +233,25 @@ export const anonymousResearchAssociationCandidates = brioela.table('anonymous_r
   lastReplicatedAt:     timestamp('last_replicated_at', { withTimezone: true }).notNull().defaultNow(),
 })
 ```
+
+---
+
+## Publishable Signal Thresholds
+
+`anonymous_health_groups.k_anonymity_group_size >= 100` is necessary but not enough by itself. A
+publishable association also needs enough observations inside the specific exposure/event cell.
+
+Do not materialize scanner-readable signals until all are true:
+
+- the anonymous health group has `k_anonymity_group_size >= 100`
+- `exposure_count` meets the configured minimum for that event kind
+- `post_exposure_event_count` meets the configured minimum for that event kind
+- `supporting_health_group_count >= 3` for scanner-facing ingredient indexes
+- rare exposure keys are suppressed or rolled up to a broader exposure kind
+
+Sub-threshold contributions stay pending/private to the aggregation job. They are not exposed through
+`product_community_health_summary`, `anonymous_ingredient_event_association_index`, or materialized
+views.
 
 ---
 
@@ -285,6 +304,8 @@ CREATE OR REPLACE FUNCTION brioela.upsert_exposure_event_association(
   p_exposure_kind     TEXT,
   p_exposure_key      TEXT,
   p_post_exposure_event_kind TEXT,
+  p_exposure_count    INTEGER,
+  p_post_exposure_event_count INTEGER,
   p_onset_lag_hours   REAL,
   p_severity          REAL
 ) RETURNS void AS $$
@@ -307,14 +328,17 @@ BEGIN
     p_post_exposure_event_kind,
     p_severity, p_severity,
     p_onset_lag_hours, p_onset_lag_hours, p_onset_lag_hours,
-    1, 1, 1.0, false,
+    p_exposure_count,
+    p_post_exposure_event_count,
+    p_post_exposure_event_count::REAL / NULLIF(p_exposure_count, 0),
+    false,
     1.0, now(), now()
   )
   ON CONFLICT (anonymous_health_group_id, exposure_kind, exposure_key, post_exposure_event_kind)
   DO UPDATE SET
-    post_exposure_event_count = anonymous_exposure_event_associations.post_exposure_event_count + 1,
-    exposure_count    = anonymous_exposure_event_associations.exposure_count + 1,
-    post_exposure_event_rate = (anonymous_exposure_event_associations.post_exposure_event_count + 1.0) / (anonymous_exposure_event_associations.exposure_count + 1),
+    post_exposure_event_count = anonymous_exposure_event_associations.post_exposure_event_count + p_post_exposure_event_count,
+    exposure_count = anonymous_exposure_event_associations.exposure_count + p_exposure_count,
+    post_exposure_event_rate = (anonymous_exposure_event_associations.post_exposure_event_count + p_post_exposure_event_count)::REAL / NULLIF(anonymous_exposure_event_associations.exposure_count + p_exposure_count, 0),
     event_severity_average = (anonymous_exposure_event_associations.event_severity_average + p_severity) / 2,
     onset_lag_hours_avg = (anonymous_exposure_event_associations.onset_lag_hours_avg + p_onset_lag_hours) / 2,
     recency_weight    = 1.0,    -- fresh observation re-lifts the signal to full weight

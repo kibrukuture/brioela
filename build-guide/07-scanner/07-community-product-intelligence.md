@@ -275,7 +275,7 @@ CREATE INDEX idx_rep_conditions ON brioela.anonymous_region_event_patterns USING
 
 ### Table 8 — `anonymous_research_association_candidates`
 
-AI/research-ready rows. Each row is a validated association hypothesis with full statistics — ready for ML training or epidemiological research export without any further processing. These are association records, not clinical conclusions.
+AI/research-ready rows. Each row is a reviewed association hypothesis with full statistics for downstream review. These are association records, not clinical conclusions and not automatic research export approvals.
 
 ```sql
 CREATE TABLE brioela.anonymous_research_association_candidates (

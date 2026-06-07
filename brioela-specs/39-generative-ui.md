@@ -10,50 +10,34 @@ Most food apps show the same scan card every time. The same verdict layout, the 
 
 Brioela's generative UI layer lets the AI decide — given who you are, what you just scanned, and what the result means for you specifically — how the interface should *feel* in this moment. Same information. Different emotional register.
 
-The AI does not write code at runtime. It selects from a predefined component library and fills in typed props. The component library is entirely developer-controlled. The AI only decides which variant fits and what to pass in.
+The AI does not write code at runtime. It returns a `BrioelaGenerativeUiDocument`: typed JSON that selects emotional tone, layout template, content, motion, typography, and background treatment from developer-controlled primitives.
 
 ## Technology
 
-**React Native: `react-native-gen-ui`**
+Implementation lives in `build-guide/27-generative-grammar/`. React Native renders validated Brioela
+Generative UI documents through compiled primitives. Web/PWA can reuse the same document shape with a
+web renderer later; runtime JSX streaming is not the product architecture.
 
-A React Native generative UI library built for mobile. The LLM acts as a decision engine — returning a JSON tool call describing which component to render and what props to pass. The client maps this to the actual React Native component.
-
-**Web/PWA: Vercel AI SDK `streamUI`**
-
-For the PWA surface, Vercel AI SDK's `streamUI` streams React components directly from the LLM response. Same pattern, web-native implementation.
-
-**The Pattern (both platforms):**
+**The Pattern:**
 
 ```typescript
 // The AI returns this — never JSX, always typed JSON
 {
-  "component": "ScanVerdictCard",
-  "variant": "celebratory",
-  "props": {
-    "verdict": "perfect",
+  "surface": "scan_explanation_brioela_generative_ui",
+  "emotionalTone": "positive_confirming",
+  "backgroundEffect": "verdict_color_background",
+  "layoutTemplate": "scan_explanation_focus_layout",
+  "content": {
     "headline": "Made for you",
-    "tone": "delightful",
-    "animation": "warm_pulse",
-    "accentColor": "sage_green"
-  }
-}
-
-// The client maps to the actual component
-const componentMap = {
-  ScanVerdictCard: ScanVerdictCard,
-  WeeklySummaryLayout: WeeklySummaryLayout,
-  RecipeCard: RecipeCard,
-  IllnessResultCard: IllnessResultCard,
-  CookingSessionOpener: CookingSessionOpener,
-}
-
-function renderGenerativeComponent(decision: AIComponentDecision) {
-  const Component = componentMap[decision.component]
-  return <Component variant={decision.variant} {...decision.props} />
+    "reason": "Clean ingredients and no profile conflicts.",
+    "details": ["low sugar", "no hard constraints"]
+  },
+  "entranceMotion": "slide_primary_then_details_entrance",
+  "typographyStyle": "typography_confident"
 }
 ```
 
-The AI cannot reference a component that isn't in `componentMap`. It cannot pass props that aren't in the component's typed schema. It cannot write layout logic. It selects and populates — nothing else.
+The AI cannot reference primitives outside the schema. It cannot write layout logic or runtime code. It selects and populates a validated document — nothing else.
 
 ## Generative Surfaces
 

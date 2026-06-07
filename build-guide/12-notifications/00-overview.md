@@ -27,8 +27,8 @@ The ambient notification strategy — when Brioela speaks and when it stays sile
 - No push during active voice/cooking sessions — queue and deliver after
 - Quiet hours: 11pm–7am local time (except critical safety alerts)
 - Suppression: 2 dismissals of same type → 14-day auto-suppress; 3 dismissals → permanent suppress
-- Permission request: NOT at install — after 3rd scan or contextual community note moment
-- In-app surfaces: community notes appear below scan verdict automatically; map pre-filtered by constraints; no setup needed
+- Permission request: NOT at install — after 3rd scan or contextual Ground Find moment
+- In-app surfaces: Ground signals can appear near scan/map contexts automatically; map pre-filtered by constraints; no setup needed
 - Each push carries ONE piece of information and ONE optional action — no multi-part messages
 
 ## Tools Built In This Feature

@@ -13,7 +13,7 @@ Full spec read pass before writing (no rushing):
 - brioela-specs/08-personal-food-memory-engine.md
 
 Written — `build-guide/06-memory-engine/`:
-- `00-overview.md` — updated to [x] complete, all four files listed
+- `00-overview.md` — updated to [x] complete, all files listed; later Health Intelligence extends the schema
 - `01-sqlite-schema.md` — all 12 tables: CREATE TABLE SQL, Drizzle schema, column decisions, indexes, write/read rules, DO startup sequence
 - `02-curator-passes.md` — CuratorAgent three passes (skill maintenance with mass-archive guard, trait decay with strength delta rules, trait inference), PatternDetectionAgent behavioral pass
 - `03-vectorize.md` — Cohere multilingual, 20-shard structure, wrangler.jsonc bindings, fire-and-forget embedding, semantic query, failure handling, account setup checklist

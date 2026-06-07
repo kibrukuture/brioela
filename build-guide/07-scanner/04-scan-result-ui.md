@@ -23,7 +23,7 @@ export const VerdictSchema = z.object({
   reason:     z.string().max(120),          // one sentence — the primary visible text
   score:      z.number().min(0).max(100),   // base health score before constraint overlay
   constraint: z.object({                   // null if no constraint matched
-    level:    z.enum(['block', 'boycott', 'warn', 'deprioritize']),
+    level:    z.enum(['block', 'boycott', 'warn', 'deprioritize', 'guardrails_unavailable']),
     matches:  z.array(ConstraintMatchSchema),
     medicationFoodInteractions: z.array(MedicationFoodInteractionSchema),
     communityHealthAssociations: z.array(CommunityHealthAssociationSchema),
@@ -130,6 +130,18 @@ export function buildVerdict(
 ): Verdict {
   const baseScore = computeBaseScore(product)
   const communityOverlay = buildCommunityHealthVerdictOverlay(communityHealth, constraintResult)
+
+  if (constraintResult.level === 'guardrails_unavailable') {
+    return {
+      level:      baseScore >= 40 ? 'yellow' : 'red',
+      reason:     'Product facts are available, but personal safety checks are unavailable right now.',
+      score:      baseScore,
+      constraint: constraintResult,
+      communityHealth,
+      origin:     buildOrigin(product),
+      expandedDetail: buildExpandedDetail(product),
+    }
+  }
 
   // Constraint overrides base score
   if (constraintResult.level === 'block' || constraintResult.level === 'boycott') {
@@ -340,7 +352,7 @@ Available after any scan verdict:
 | Action | What it does |
 |---|---|
 | Save | Adds product to user's saved scan history |
-| Add Note | Opens Ground note creation pre-filled with this product |
+| Add Find | Opens a Ground Find draft pre-filled with public product/place facts only |
 | Map | Opens map view filtered to products/places near this scan's geoHash |
 | Avoid | Calls `propose_user_constraint` with `type: 'dislike'` for primary concerning ingredient |
 | Share | Generates share card with verdict and product name |
@@ -353,4 +365,4 @@ Avoid is shown only when the verdict is yellow or red with an identifiable ingre
 
 From spec 19: unlimited scanning is free forever. No cap, no paywall, no tier gate. The scan result, including constraint check and verdict, is available to all users regardless of tier.
 
-The only gating that happens at the scan level: advanced features triggered from the scan result (community note authoring requires Luma, certain map features require Luma). The verdict itself is always free.
+The only gating that happens at the scan level: advanced features triggered from the scan result (Ground Find authoring requires Luma, certain map features require Luma). The verdict itself is always free.

@@ -96,4 +96,4 @@ Updated:
 
 ## What Is Next
 
-Before coding, reconcile the older docs that still mention `GenerativeDecision`, `src/design-system`, and `use-stage` inside `mobile/grammar/`. Then implement one vertical slice: `shared/grammar` Stage schema, `shared/contracts/index.ts` re-exporting `@ts-rest/core`, `shared/contracts/contract-key.ts`, one scan contract with co-located endpoint schemas and Stage metadata, a Hono route mounted with `@ts-rest/serverless/fetch`, `mobile/network/tsr.ts`, a feature hook wrapping `tsr.scan.scanProduct.useMutation`, and one mobile render path.
+Before coding, reconcile older generated UI implementation notes inside `mobile/grammar/`. Then implement one vertical slice: `shared/grammar` `BrioelaGenerativeUiDocument` schema, `shared/contracts/index.ts` re-exporting `@ts-rest/core`, `shared/contracts/contract-key.ts`, one scan contract with co-located endpoint schemas and Brioela Generative UI metadata, a Hono route mounted with `@ts-rest/serverless/fetch`, `mobile/network/tsr.ts`, a feature hook wrapping `tsr.scan.scanProduct.useMutation`, and one mobile render path.

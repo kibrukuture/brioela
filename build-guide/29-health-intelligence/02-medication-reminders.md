@@ -56,7 +56,7 @@ case 'medication_reminder': {
     })
   } else {
     // Direct to push
-    await triggerMedicationPush({ drugName, doseInfo, userId: alarm.userId, env })
+    await triggerMedicationPush({ drugName, doseInfo, reminderId: alarm.id, userId: alarm.userId, env })
     await updateReminderStatus(db, alarm.id, 'notified')
   }
 
@@ -66,7 +66,7 @@ case 'medication_reminder': {
   break
 }
 
-const HIGH_STAKES_DRUG_CATEGORIES = [
+const HIGH_STAKES_MEDICATION_CATEGORIES = [
   'anticoagulant',     // Warfarin, Eliquis
   'insulin',           // any insulin type
   'immunosuppressant', // transplant medications
@@ -75,6 +75,7 @@ const HIGH_STAKES_DRUG_CATEGORIES = [
   'cardiac',           // heart rhythm medications
 ]
 ```
+
 
 ---
 
@@ -102,7 +103,7 @@ export async function triggerMedicationCall(params: {
     actionOutcomeJson: JSON.stringify({ provider: 'vapi', call_started_at: Date.now() }),
   }, env)
 
-  const resp = await fetch(`${VAPI_BASE}/call/phone`, {
+  const resp = await fetch(`${VAPI_BASE}/call`, {
     method: 'POST',
     headers: {
       'Authorization': `Bearer ${env.VAPI_API_KEY}`,
@@ -123,7 +124,7 @@ export async function triggerMedicationCall(params: {
             content: `You are a health reminder assistant for Brioela. 
 Keep it brief. Ask if the user took their ${drugName} (${doseInfo}). 
 If they say yes: thank them and end the call.
-If they say no or not yet: gently remind them to take it when they can and end the call.
+If they say no or not yet: acknowledge it and tell them to follow their prescribed instructions or contact their clinician/pharmacist for missed-dose guidance.
 If they say they already took it earlier: note that and end the call.
 Never discuss medical advice. Never suggest dose changes. One topic only: did they take the medication.`,
           }],
@@ -147,7 +148,7 @@ Never discuss medical advice. Never suggest dose changes. One topic only: did th
   if (!resp.ok) {
     // Vapi call failed — fall through to push notification
     console.error('Vapi call failed:', await resp.text())
-    await triggerMedicationPush({ drugName, doseInfo: params.doseInfo, userId, env })
+    await triggerMedicationPush({ drugName, doseInfo: params.doseInfo, reminderId, userId, env })
     await updateReminderStatusViaOrchestrator(userId, reminderId, 'notified', env)
   }
   // If call succeeded: Vapi will fire the webhook when the call completes
@@ -171,12 +172,9 @@ export async function handleReminderWebhook(c: AppContext): Promise<Response> {
   const { reminderId, userId } = body.call.metadata as { reminderId: string; userId: string }
   const transcript = body.transcript?.toLowerCase() ?? ''
 
-  // Parse response from transcript
-  const took = transcript.includes('yes') || transcript.includes('already')
-    ? 1
-    : transcript.includes('no') || transcript.includes('not yet')
-    ? 0
-    : null
+  // Prefer provider structured analysis/final output. Transcript substring parsing is not reliable
+  // enough for adherence. Fall back to null when no structured result is available.
+  const took = body.analysis?.structuredData?.took ?? null
 
   // Record the outcome on the firing scheduled_alarms row (Orchestrator DO SQLite)
   const orchestratorId = c.env.ORCHESTRATOR.idFromName(userId)
@@ -187,7 +185,7 @@ export async function handleReminderWebhook(c: AppContext): Promise<Response> {
     body: JSON.stringify({
       alarmId:      reminderId,        // reminderId IS the scheduled_alarms row id
       actionOutcomeStatus: 'answered',
-      actionOutcomeJson:   JSON.stringify({ took, call_sid: body.call.id, answered_at: Date.now() }),
+      actionOutcomeJson:   JSON.stringify({ took, provider_call_id: body.call.id, answered_at: Date.now(), raw_end_reason: body.endedReason }),
     }),
   }))
 
@@ -205,8 +203,12 @@ If Vapi fires the call but gets no answer (voicemail, declined, phone off):
 // Vapi webhook body.endedReason tells us why
 if (body.endedReason === 'no-answer' || body.endedReason === 'voicemail') {
   // Fall through to OneSignal push
-  await triggerMedicationPush({ drugName, doseInfo, userId, env })
-  await updateReminderStatus(reminderId, 'notified', userId, env)
+  await triggerMedicationPush({ drugName, doseInfo, reminderId, userId, env })
+  await updateReminderStatus(reminderId, 'missed', userId, env, {
+    answered: false,
+    call_ended_reason: body.endedReason,
+    fallback_push_sent: true,
+  })
 }
 ```
 
@@ -216,21 +218,24 @@ if (body.endedReason === 'no-answer' || body.endedReason === 'voicemail') {
 export async function triggerMedicationPush(params: {
   drugName:  string
   doseInfo:  string
+  reminderId: string
   userId:    string
   env:       Env
 }): Promise<void> {
-  const { drugName, doseInfo, userId, env } = params
+  const { drugName, doseInfo, reminderId, userId, env } = params
 
-  await fetch('https://onesignal.com/api/v1/notifications', {
+  await fetch('https://api.onesignal.com/notifications?c=push', {
     method: 'POST',
     headers: {
-      'Authorization': `Basic ${env.ONESIGNAL_REST_API_KEY}`,
+      'Authorization': `Key ${env.ONESIGNAL_REST_API_KEY}`,
       'Content-Type':  'application/json',
     },
     body: JSON.stringify({
       app_id:            env.ONESIGNAL_APP_ID,
       include_aliases:   { external_id: [userId] },
       target_channel:    'push',
+      idempotency_key:   reminderId,
+      collapse_id:       `medication_reminder:${reminderId}`,
       headings:          { en: `Time for your ${drugName}` },
       contents:          { en: `${drugName} ${doseInfo} — tap to confirm you took it.` },
       priority:          10,
@@ -240,6 +245,10 @@ export async function triggerMedicationPush(params: {
   })
 }
 ```
+
+Push taps deep-link to a confirmation screen with `alarm_id`. Confirming updates the same
+`scheduled_alarms` row with `action_outcome_status = 'confirmed'` and
+`action_outcome_json.confirmed_at`.
 
 ---
 
@@ -254,7 +263,9 @@ export async function triggerMedicationPush(params: {
 
 ## Bland AI as Alternative
 
-If Vapi is unavailable or too expensive at scale, Bland AI offers a simpler API and lower per-minute cost. The integration is identical in structure — different base URL and auth. The `env.CALL_PROVIDER` flag switches between them:
+If Vapi is unavailable or too expensive at scale, Bland AI can be evaluated behind the same provider
+adapter contract. It is not assumed to be identical. The `env.CALL_PROVIDER` flag switches between
+provider adapters:
 
 ```typescript
 const CALL_PROVIDER = env.CALL_PROVIDER ?? 'vapi'   // 'vapi' | 'bland'

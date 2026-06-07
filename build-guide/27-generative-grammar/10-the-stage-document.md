@@ -6,7 +6,7 @@ The Brioela Generative UI document: Brioela's central generative document. Earli
 this a "Stage" as a theater metaphor. Code, contracts, and API responses must not use that poetic
 term. Use `BrioelaGenerativeUiDocument` and `brioelaGenerativeUi`.
 
-This document extends the base `GenerativeUIDocument` from `02-grammar-document.md` with the six
+This document extends the base `BrioelaGenerativeUiDocument` from `02-grammar-document.md` with the six
 expressive layers that make a moment feel art-directed instead of assembled. This file defines the
 shape; the catalog of what can go in each layer is in `11-composition-catalog-and-scale.md`.
 

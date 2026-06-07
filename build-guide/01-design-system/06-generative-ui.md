@@ -14,7 +14,7 @@ This is not a gimmick. It is the mechanism that allows a single AI verdict to pr
 
 **The pattern is decided. The implementation is Brioela Generative Grammar.**
 
-The decision object, component registry, Zod validation layer, and 400ms rule are all determined. The runtime architecture is defined in `27-generative-grammar`: AI composes a typed `GenerativeUIDocument`, not arbitrary JSX.
+The document object, primitive catalog, Zod validation layer, and 400ms rule are all determined. The runtime architecture is defined in `27-generative-grammar`: AI composes a typed `BrioelaGenerativeUiDocument`, not arbitrary JSX.
 
 **Option A — Build custom.** The full pattern described in this file is straightforward to implement from scratch. A custom build has no external dependencies, no library lock-in, and can be tuned precisely to Brioela's AI infrastructure (Claude/Gemini, not OpenAI).
 
@@ -31,23 +31,23 @@ This decision is made when `01-design-system` is implemented, not before. Do not
 
 ---
 
-## The Decision Object
+## The Document Object
 
-Every AI response that drives a generative surface returns a `GenerativeDecision` alongside the primary response data:
+Every AI response that drives a generative surface returns a `BrioelaGenerativeUiDocument` alongside the primary response data:
 
 ```ts
-type GenerativeDecision = {
-  component: string        // must match a key in COMPONENT_REGISTRY
-  variant: string          // component-specific variant name
-  props: Record<string, unknown>  // Zod-validated at the boundary
+type BrioelaGenerativeUiDocument = {
+  surface: string
+  emotionalTone: string
+  backgroundEffect: string | null
+  layoutTemplate: string
+  content: Record<string, unknown>
+  entranceMotion: string | null
+  typographyStyle: string
 }
 ```
 
-The `component` field is a string key. If it does not match anything in `COMPONENT_REGISTRY`, the client falls back to the default static layout. No error is thrown to the user.
-
-The `variant` field is component-specific — each registered component defines its own valid variant names. The client passes `variant` as a prop.
-
-The `props` object is validated against a Zod schema before the component renders. If validation fails, the static fallback renders. The user never sees a blank surface or a crash.
+The document is validated against the Brioela Generative Grammar schema before render. If validation fails, the static fallback renders. The user never sees a blank surface or a crash.
 
 ---
 
@@ -114,18 +114,18 @@ Generative surfaces must never block initial render. The pattern:
 Implementation:
 ```ts
 // The generative slot starts as null — static content renders
-const [generativeDecision, setGenerativeDecision] = useState<GenerativeDecision | null>(null)
+const [brioelaGenerativeUi, setBrioelaGenerativeUi] = useState<BrioelaGenerativeUiDocument | null>(null)
 
 // On receiving the decision (via websocket, streaming, or poll):
 const result = REGISTRY_SCHEMAS[decision.component].safeParse(decision.props)
 if (result.success) {
-  setGenerativeDecision({ ...decision, props: result.data })
+  setBrioelaGenerativeUi(result.data)
 }
-// If validation fails: generativeDecision stays null, static layout stays
+// If validation fails: brioelaGenerativeUi stays null, static layout stays
 
 // In JSX:
-{generativeDecision
-  ? <GenerativeSlot decision={generativeDecision} />
+{brioelaGenerativeUi
+  ? <BrioelaGenerativeUiRenderer document={brioelaGenerativeUi} />
   : <StaticFallback data={primaryData} />
 }
 ```
@@ -154,13 +154,13 @@ The principle: if being wrong could cause harm or confusion during a critical mo
 
 The generative decision is generated server-side by the Orchestrator DO / feature-specific Worker. The client receives it as part of an API response or streamed via WebSocket. The model used to generate decisions is determined by each feature spec — it is not defined here.
 
-The generative UI system on the client is model-agnostic. It receives a `GenerativeDecision` object — it does not know or care which model produced it. The server-side prompt engineering that drives the AI toward valid registry keys and valid prop shapes is defined in each feature's AI layer, not here.
+The generative UI system on the client is model-agnostic. It receives a `BrioelaGenerativeUiDocument` object — it does not know or care which model produced it. The server-side prompt engineering that drives the AI toward valid document values is defined in each feature's AI layer, not here.
 
 ---
 
 ## Rules
 
-- `GenerativeDecision` type is defined once in `src/generative-ui/types.ts`. All features import from there.
+- `BrioelaGenerativeUiDocument` type is defined once in the shared grammar package. All features import from there.
 - The 400ms deadline is a hard ceiling — not a target. Design for 200ms, enforce 400ms.
 - Never show a loading spinner in a generative slot. Either the static layout or the generative component renders — never a "loading" state.
 - Never let a Zod validation failure surface to the user. Always fall back silently to static.

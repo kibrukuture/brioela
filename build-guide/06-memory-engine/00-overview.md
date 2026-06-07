@@ -2,16 +2,16 @@
 
 ## What This Folder Covers
 
-The Orchestrator DO's data layer: all 12 SQLite table definitions, the Curator maintenance passes, Cloudflare Vectorize semantic search integration, and the universal visual intake pipeline. This is the data side of the Orchestrator. The agent behavior, tool protocol, and session lifecycle live in `05-orchestrator/`.
+The Orchestrator DO's data layer: core SQLite table definitions plus private feature extensions, the Curator maintenance passes, Cloudflare Vectorize semantic search integration, and the universal visual intake pipeline. This is the data side of the Orchestrator. The agent behavior, tool protocol, and session lifecycle live in `05-orchestrator/`.
 
 ## Status
-[x] complete — four files written
+[x] complete — Health Intelligence extends the private SQLite schema in `01-sqlite-schema.md`
 
 ## Files In This Folder
 
 | File | Contents |
 |---|---|
-| `01-sqlite-schema.md` | All 12 tables: CREATE TABLE SQL, Drizzle schema, column decisions, indexes, write rules, read rules. Full DO startup sequence. |
+| `01-sqlite-schema.md` | Core tables plus Health Intelligence private extensions: CREATE TABLE SQL, Drizzle schema, column decisions, indexes, write rules, read rules. Full DO startup sequence. |
 | `02-curator-passes.md` | CuratorAgent three passes: skill maintenance (archive stale user skills), trait decay (update strength, archive low-strength traits), trait inference (create new personality traits from user_memory patterns). PatternDetectionAgent behavioral pattern pass. |
 | `03-vectorize.md` | Cohere embed-multilingual-v2.0, 20-shard index structure, shard assignment, wrangler.jsonc bindings, fire-and-forget embedding at session close, semantic query path, failure handling, account setup checklist. |
 | `04-visual-intake.md` | Single Gemini vision call, structured JSON output, memory vs skills decision, memory routing by category, medication photo chain, stool Bristol Scale classification, discard decision rules. |

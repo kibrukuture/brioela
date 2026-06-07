@@ -280,6 +280,33 @@ resolved_product_fact_snapshot   = resolved view/cache used by scanner
 product_community_health_summary = reported event overlay
 ```
 
+The scanner hot path consumes a single resolved snapshot, not raw provider responses:
+
+```typescript
+type ResolvedProductFactSnapshot = {
+  productId: string
+  upc: string | null
+  name: string
+  brand: string | null
+  ingredients: string[]
+  nutrients: Record<string, number>
+  additives: string[]
+  allergens: string[]
+  origin: {
+    country: string | null
+    parentCompany: string | null
+  } | null
+  factEvidence: ProductFactEvidence[]
+  confidence: number
+  approvedForSafetyDecisions: boolean
+  builtAt: number
+}
+```
+
+`buildResolvedProductFactSnapshot()` is the scanner boundary. It combines `products`,
+`product_origin`, and `product_fact_evidence` into the object used by scoring, constraint checks, and
+UI. Raw provider facts should not bypass this snapshot in the scan hot path.
+
 ---
 
 ## Product Fact Provenance

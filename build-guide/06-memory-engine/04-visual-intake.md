@@ -244,16 +244,16 @@ export async function processVisualIntake(
 
 ## Medication Photo — What Actually Changes
 
-The memory write is primary. Downstream behavioral effects are driven by the fact existing in `user_memory.health.medications`, not by a special trigger.
+The structured health write is primary. Prescription photos create `health_captures` evidence and a normalized `medications` row. `user_memory.health.medications` can mirror a prompt-ready summary, but it is not the operational source for scan checks or reminders.
 
 **After the write:**
-- Every product scan automatically checks medication-food interactions for any entry under `health.medications`
+- Every product scan automatically checks medication-food interactions for active rows in the private `medications` table
 - Recipe suggestions filter against the same interaction rules
 - Voice session context includes the medication list — the AI can mention interactions proactively
 - Interaction rules live in Supabase as versioned config — updated without a deploy
 
 **If the agent creates a skill** (not always):
-Skill example: "When this user asks about any food or product, always check `user_memory.health.medications` for interactions before responding." This is created when the medication implies a meaningful, reusable behavioral change that the agent cannot derive from the fact alone — e.g., a medication with many known food interactions (Warfarin, MAOIs, statins). For most medications, the memory fact alone is sufficient.
+Skill example: "When this user asks about any food or product, always check their active medication categories for interactions before responding." This is created when the medication implies a meaningful, reusable behavioral change that the agent cannot derive from the structured medication row alone — e.g., a medication with many known food interactions (Warfarin, MAOIs, statins). For most medications, the structured row plus summary mirror is sufficient.
 
 **Cumulative:** multiple medication photos → multiple entries. All checked on every scan. "I stopped taking X" → agent sets `active = 0` on that entry. Interaction checks for that drug stop immediately.
 

@@ -2,7 +2,7 @@
 
 ## What This File Covers
 
-The Health Agent: a weekly per-user background agent that reads all private health data, detects food-health correlations, enforces k-anonymity, and writes anonymized signals to community Postgres tables. The mechanism that turns individual private health data into collective public intelligence.
+The Health Agent: a weekly per-user background agent that reads bounded private health data, detects food-health correlations, enforces explicit contribution consent and k-anonymity, and writes eligible anonymized aggregate evidence to community Postgres tables.
 
 ---
 
@@ -35,7 +35,7 @@ Detects correlations → builds anonymized signals
 k-anonymity check via Supabase:
   Does the cohort have >= 100 members?
   No → Orchestrator stores pending contribution in agent_state, retry next week
-  Yes → write to community Postgres tables
+  Yes + user opted in → write eligible aggregate evidence to community Postgres tables
   ↓
 Orchestrator writes action outcome to scheduled_alarms.action_outcome_status/action_outcome_json and schedules next health_agent_run
 ```
@@ -96,6 +96,8 @@ Return JSON array:
   "post_exposure_event_kind": string,
   "onset_lag_hours": number,
   "confidence": number,
+  "exposure_count": number,
+  "post_exposure_event_count": number,
   "occurrence_count": number,
   "plain_language": string   // "You tend to feel tired about 4 hours after eating X"
 }]
@@ -104,7 +106,7 @@ Return empty array if no meaningful correlations found. Never fabricate correlat
 `
 ```
 
-Detected correlations are written to `user_memory` under `patterns.*` namespace (personal, private). If the user consents and the anonymous health group has k ≥ 100 members, they are also written to `anonymous_exposure_event_associations` (anonymous, community).
+Detected correlations are written to `user_memory` under `patterns.*` namespace (personal, private). If the user explicitly opted into health contribution and the anonymous health group has k ≥ 100 members, eligible aggregate fields are also written to `anonymous_exposure_event_associations` (anonymous, community).
 
 ---
 
@@ -122,7 +124,7 @@ Also cross-references active medications against product scans:
 
 ### Pass 3 — k-Anonymous Community Contribution
 
-This is the pass that makes Brioela's data better for everyone.
+This is the pass that makes Brioela's data better for everyone who opted into health contribution.
 
 ```typescript
 async function runCommunityContributionPass(
@@ -131,7 +133,9 @@ async function runCommunityContributionPass(
   db:            DrizzleDB,
   env:           Env,
 ): Promise<void> {
-  // Build user's anonymous health group fingerprint from their private health profile
+  if (!hasHealthContributionOptIn(db, userId)) return
+
+  // Build user's anonymous health group fingerprint from approved derived fields only.
   const anonymousHealthGroupFingerprint = buildAnonymousHealthGroupFingerprint(db, userId)
 
   // Check if this anonymous health group exists in Supabase — and if it has >= 100 members
@@ -159,12 +163,14 @@ async function runCommunityContributionPass(
   for (const correlation of correlations) {
     if (correlation.confidence < 0.60) continue   // below confidence floor — do not contribute
 
-    // Upsert into anonymous_exposure_event_associations
+    // Upsert into anonymous_exposure_event_associations with separately counted exposure denominator.
     await supabase.rpc('upsert_exposure_event_association', {
       p_anonymous_health_group_id: anonymousHealthGroup.id,
       p_exposure_kind:     correlation.exposureType,
       p_exposure_key:      correlation.exposureKey,
       p_post_exposure_event_kind: correlation.postExposureEventKind,
+      p_exposure_count:    correlation.exposureCount,
+      p_post_exposure_event_count: correlation.postExposureEventCount,
       p_onset_lag_hours:   correlation.onsetLagHours,
       p_severity:          correlation.severity,
     })
@@ -178,7 +184,7 @@ async function runCommunityContributionPass(
         p_post_exposure_event_kind: correlation.postExposureEventKind,
         p_event_association_score: correlation.confidence,
         p_severity:         correlation.severity,
-        p_health_group_count: 1,
+        p_supporting_health_group_count: 1,
         p_exposure_count:   1,
         p_post_exposure_event_count: 1,
       })
@@ -200,7 +206,7 @@ function buildAnonymousHealthGroupFingerprint(db: DrizzleDB, userId: string): An
   const activeMeds        = db.select().from(medications).where(eq(medications.active, 1)).all()
   const activeConstraints = db.select().from(constraints).where(eq(constraints.status, 'confirmed')).all()
   const memories          = db.select().from(userMemory).where(and(eq(userMemory.namespace, 'health'), eq(userMemory.active, 1))).all()
-  const captures          = db.select().from(healthCaptures).all()
+  const captures          = getApprovedDerivedHealthFeatures(db, userId)
   const scanHistory       = db.select().from(memoryEvent).where(eq(memoryEvent.eventType, 'scan')).all()
 
   const conditionTags        = extractConditionTags(memories, activeConstraints)
@@ -211,7 +217,7 @@ function buildAnonymousHealthGroupFingerprint(db: DrizzleDB, userId: string): An
 
   // ── Enrichment: makes cohorts homogeneous so aggregated signals are not noise ──
   // "50s + west_africa + hypertension" alone can hold 10k members with wildly
-  // different diets and metabolic states. These three fields sharpen the cohort.
+  // different diets and metabolic states. These three fields sharpen the anonymous health group.
   const dietaryPatternSignature = computeDietaryPatternSignature(scanHistory)  // e.g. 'high_sodium_ultra_processed' | 'whole_food_low_carb'
   const cuisineProfile          = inferCuisineProfile(scanHistory)             // {"west_african":0.6,"western_packaged":0.3,"south_asian":0.1}
   const metabolicMarkerBucket   = computeMetabolicMarkerBucket(captures, conditionTags)  // 'low' | 'moderate' | 'elevated' | 'high' — from glucose/HbA1c/BP captures
@@ -234,11 +240,12 @@ function buildAnonymousHealthGroupFingerprint(db: DrizzleDB, userId: string): An
 
 The Health Agent enforces these before any community write:
 
-1. **k-anonymity ≥ 100.** No row is written to community tables unless the anonymous health group has at least 100 members in Supabase.
-2. **Category-level only.** Drug names become drug categories. Specific conditions become condition tags. Geographic data becomes region buckets.
-3. **No temporal precision.** Timestamps contributed to community tables are rounded to the week.
-4. **No linking.** A user's individual contributions across multiple weeks cannot be linked — each contribution uses the anonymous health group hash, not any user identifier.
-5. **Opt-out.** If the user says "stop sharing my data with the community" — `agent_state` key `health_agent.community_opt_out = "1"` is set and Pass 3 is skipped permanently.
+1. **Explicit opt-in.** No health-derived community contribution is written unless the user opted into health contribution.
+2. **k-anonymity ≥ 100.** No row is written to community tables unless the anonymous health group has at least 100 members in Supabase.
+3. **Category-level only.** Medication names become medication categories. Specific conditions become condition tags. Geographic data becomes region buckets or approved coarse geography.
+4. **No temporal precision.** Timestamps contributed to community tables are rounded to the week.
+5. **No linking.** A user's individual contributions across multiple weeks cannot be linked — each contribution uses the anonymous health group hash, not any user identifier.
+6. **Stop sharing.** If the user says "stop sharing my data with the community" — `agent_state` key `health_agent.community_contribution_opt_in = "0"` is set and Pass 3 is skipped permanently until the user opts back in.
 
 ---
 
@@ -266,6 +273,6 @@ The Health Agent re-schedules itself at the end of each run. It runs at a time t
 
 - Never modifies `constraints` — safety-critical, only the agent and user interaction can do that
 - Never deletes `health_events` or `medications` — these are permanent records
-- Never writes community data if the user has opted out
+- Never writes community data unless the user explicitly opted in
 - Never runs while a cooking session or active voice/session flow is active (checks `active_session_id` in agent_state)
 - Never creates clinical conclusions — the `plain_language_association_summary` in `anonymous_research_association_candidates` describes patterns, not clinical conclusions

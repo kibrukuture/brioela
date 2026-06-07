@@ -48,7 +48,7 @@ shared/grammar/
   index.ts                         # public exports
   version.ts                       # grammarVersion + version policy
   schema/
-    document.ts                    # base GenerativeUIDocument (Zod)
+    document.ts                    # base BrioelaGenerativeUiDocument (Zod)
     brioela-generative-ui.ts       # BrioelaGenerativeUiDocument (extends document with the 6 layers)
     surfaces.ts                    # GenerativeSurface enum
     tokens/

@@ -2,7 +2,7 @@
 
 ## What This Folder Covers
 
-Brioela Generative Grammar is the safe creative UI language for the app. It replaces the false choice between a rigid component registry and unsafe runtime JSX. The AI does not write React Native code. It composes typed primitives, emotional tokens, motion, haptics, and Skia treatments into a `GenerativeUIDocument` that the app renders with compiled, validated components.
+Brioela Generative Grammar is the safe creative UI language for the app. It replaces the false choice between a rigid component registry and unsafe runtime JSX. The AI does not write React Native code. It composes typed primitives, emotional tokens, motion, haptics, and Skia treatments into a `BrioelaGenerativeUiDocument` that the app renders with compiled, validated components.
 
 ## Status
 
@@ -13,7 +13,7 @@ Brioela Generative Grammar is the safe creative UI language for the app. It repl
 | File | Contents |
 |---|---|
 | `01-runtime-boundary.md` | why no runtime JSX/MDX, platform constraints, Expo update boundary |
-| `02-grammar-document.md` | `GenerativeUIDocument`, schema shape, validation, versioning |
+| `02-grammar-document.md` | `BrioelaGenerativeUiDocument`, schema shape, validation, versioning |
 | `03-primitive-families.md` | primitive families: surface, layout, meaning, food, Mesa, memory, share, background effect |
 | `04-emotion-motion-skia.md` | emotional tokens, motion/haptic pairings, Skia treatments |
 | `05-renderer-and-fallback.md` | recursive renderer, static fallback, 400ms rule, error handling |

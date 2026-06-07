@@ -8,7 +8,7 @@ How a resolved product is checked against the user's full constraint profile: ha
 
 ## Core Rule
 
-The constraint check runs against the user's Orchestrator DO — not against Supabase. The DO holds the user's private `constraints` table and `user_memory.health.medications`. Supabase knows nothing about individual user constraints.
+The constraint check runs against the user's Orchestrator DO — not against Supabase. The DO holds the user's private `constraints` and `medications` tables. `user_memory.health.medications` is only a prompt/context mirror, not the operational source for scan safety logic. Supabase knows nothing about individual user constraints.
 
 The check is a single HTTP call to the DO, not a series of calls. The DO reads its own SQLite, does all matching, and returns one structured result.
 
@@ -25,7 +25,7 @@ import { eq, and } from 'drizzle-orm'
 import type { DrizzleDB } from '@/types/db'
 import type { Product } from '@brioela/shared'
 
-export type ConstraintLevel = 'block' | 'warn' | 'deprioritize' | 'boycott' | 'clear'
+export type ConstraintLevel = 'block' | 'warn' | 'deprioritize' | 'boycott' | 'clear' | 'guardrails_unavailable'
 
 export interface ConstraintCheckResult {
   level:   ConstraintLevel          // highest severity match, or 'clear' if no match
@@ -43,7 +43,7 @@ export interface ConstraintMatch {
 }
 
 export interface MedicationFoodInteraction {
-  medication:  string               // medication name from user_memory
+  medication:  string               // medication category or reviewed medication name from private medications table
   ingredient:  string               // ingredient in this product that interacts
   interaction: string               // description of the interaction
   severity:    'high' | 'moderate' | 'note'
@@ -135,14 +135,16 @@ export async function checkProductConstraints(
       }
 
       case 'boycott': {
-        // Brand match or parent company match
+        // Brand match or parent company match. Parent company is joined from product_origin during product resolution.
+        const productParentCompany = (product.origin?.parentCompany ?? '').toLowerCase()
         const brandMatch = productBrand.includes(target) || target.includes(productBrand)
-        if (brandMatch) {
+        const parentCompanyMatch = productParentCompany.length > 0 && (productParentCompany.includes(target) || target.includes(productParentCompany))
+        if (brandMatch || parentCompanyMatch) {
           matches.push({
             constraintId:   constraint.id,
             constraintType: 'boycott',
             entityValue:    constraint.entityValue,
-            matchedVia:     product.brand ?? '',
+            matchedVia:     parentCompanyMatch ? product.origin?.parentCompany ?? '' : product.brand ?? '',
             severity:       'boycott',
           })
         }
@@ -152,18 +154,17 @@ export async function checkProductConstraints(
   }
 
   // Medication-food interaction check
-  // Read medications from user_memory
+  // Read structured active medications from private Orchestrator SQLite.
   const medications = db.select()
-    .from(userMemory)
+    .from(medicationsTable)
     .where(and(
-      eq(userMemory.namespace, 'health.medications'),
-      eq(userMemory.active, 1),
+      eq(medicationsTable.active, 1),
     ))
     .all()
 
   if (medications.length > 0) {
     const interactions = checkMedicationFoodInteractions(
-      medications.map(m => m.key),  // medication names
+      medications.map(m => m.medicationCategory),
       productIngredients,
     )
     medicationFoodInteractions.push(...interactions)
@@ -264,17 +265,17 @@ export async function checkConstraints(
   }))
 
   if (!response.ok) {
-    // Constraint check failed — fail open (return 'clear') to not block scanning
+    // Constraint check failed — return degraded state, not clear/safe.
     // Log failure to agent_state for investigation
     console.error('Constraint check failed:', response.status)
-    return { level: 'clear', matches: [], medicationFoodInteractions: [], communityHealthAssociations: [] }
+    return { level: 'guardrails_unavailable', matches: [], medicationFoodInteractions: [], communityHealthAssociations: [] }
   }
 
   return response.json() as Promise<ConstraintCheckResult>
 }
 ```
 
-**Fail open rule:** if the constraint check fails for any reason (DO timeout, network error), the scan returns a `clear` verdict with a note that the constraint check was unavailable. Scanning is never blocked by a technical failure of the constraint system. Hard allergy protection depends on the system being up — this is a known limitation for a network-dependent feature.
+**Degraded guardrails rule:** if the constraint check fails for any reason (DO timeout, network error), the scan may still return product facts and a base score, but it must not return `clear` or imply personal safety checks passed. The UI shows that personal allergy, medication, and condition checks were unavailable. Scanning is not blocked by a technical failure, but hard allergy protection depends on the system being up — this is a known limitation for a network-dependent feature.
 
 ---
 
@@ -287,6 +288,7 @@ export async function checkConstraints(
 | `warn` | intolerance, high medication-food interaction, strong community health association | Verdict = yellow. Warning visible in expanded view. Does not interrupt primary scan flow. |
 | `deprioritize` | dislike | Verdict unchanged, no badge. Dislike signal logged but not surfaced to user. |
 | `clear` | no match | Verdict determined by base health score only. |
+| `guardrails_unavailable` | DO timeout or internal check failure | Verdict uses product facts only and displays a degraded-state note. Never says personal checks passed. |
 
 A product can have multiple matches at different levels. The highest severity determines the overall verdict level. All matches are shown in the expanded view.
 

@@ -42,7 +42,7 @@ Note on number overlaps: folder names are unique; numbers are hints at build ord
 Actual build order is in `_records/build-order/` (not yet written — next session).
 
 ## Key Discoveries From Reading All Specs
-- `brioela-specs/39-generative-ui.md` exists and specifies `react-native-gen-ui` — critical for design system
+- `brioela-specs/39-generative-ui.md` exists; later docs replace the old library-specific direction with `BrioelaGenerativeUiDocument`
 - `brioela-specs/40-wearables-integration.md` — CGM integration is described as "the killer feature"; personal glucose response to specific foods
 - `brioela-specs/32-grandma-style-flavor-profile.md` — style extraction from generational sessions; lives inside 08-cooking-session build folder
 - `brioela-specs/38-food-time-machine.md` — pure read layer over existing data; no new collection; lives in 18-ambient-intelligence

@@ -15,7 +15,7 @@ Scanner:
 - Updated `build-guide/07-scanner/00-overview.md`.
 
 Health Intelligence:
-- Added `build-guide/29-health-intelligence/` with four files.
+- Added `build-guide/29-health-intelligence/` with five files.
 - Confirmed no separate `medication_reminders` table: medication reminders are `scheduled_alarms` rows.
 - Added `action_outcome_status` and `action_outcome_json` to `scheduled_alarms` in memory schema docs.
 - Replaced narrow biometric/document tables with one generic `health_captures` table.

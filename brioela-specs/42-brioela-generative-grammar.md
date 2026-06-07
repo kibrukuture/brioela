@@ -14,7 +14,7 @@ Brioela needs the middle path: like letters in an alphabet, a small set of expre
 
 The AI does not generate code.
 
-The AI generates a `GenerativeUIDocument`.
+The AI generates a `BrioelaGenerativeUiDocument`.
 
 The client renders that document using compiled React Native components.
 
@@ -31,7 +31,7 @@ Layers:
 ## Generative UI Document
 
 ```typescript
-type GenerativeUIDocument = {
+type BrioelaGenerativeUiDocument = {
   grammarVersion: string
   surface: GenerativeSurface
   safetyLock: boolean

@@ -13,7 +13,7 @@ This folder documents current auth/session behavior and the product onboarding c
 | File | Contents |
 |---|---|
 | `01-supabase-auth-setup.md` | Supabase client, encrypted session storage, token refresh, auth store |
-| `02-sign-in-methods.md` | Google, Apple, email/password fallback, reset password |
+| `02-sign-in-methods.md` | Google, Apple, account linking, reset password |
 | `03-session-and-route-gating.md` | AppGate, protected tabs, sign-out, post-login route |
 | `04-device-biometric-lock.md` | Device auth, local lock overlay, sensitive action gates |
 | `05-onboarding-flow.md` | Practical onboarding contract from specs, Supabase anonymous-to-permanent account path |
@@ -44,4 +44,4 @@ This folder documents current auth/session behavior and the product onboarding c
 
 ## Known Gap
 
-The product spec wants deferred account creation. Use Supabase anonymous auth for guest scan identity, then link the anonymous user to Apple/Google/email when the user chooses to make the account permanent. Do not introduce another auth provider.
+The product spec wants deferred account creation. Use Supabase anonymous auth for first-run scan identity, then link the anonymous user to Apple/Google when the user chooses to make the account permanent. Do not introduce another auth provider.

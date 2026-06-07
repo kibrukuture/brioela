@@ -2,7 +2,7 @@
 
 ## What This File Covers
 
-The `GenerativeUIDocument` contract, layout node schema, validation, grammar versioning, and data binding rules.
+The `BrioelaGenerativeUiDocument` contract, layout node schema, validation, grammar versioning, and data binding rules.
 
 > Note: `10-the-stage-document.md` is the evolved form of this contract — the **Brioela Generative UI document**. There,
 > `layout` is realized as `layoutTemplate` + `content`, plus `backgroundEffect`, `entranceMotion`, and `typographyStyle`. The
@@ -14,7 +14,7 @@ The `GenerativeUIDocument` contract, layout node schema, validation, grammar ver
 ## Document Shape
 
 ```typescript
-type GenerativeUIDocument = {
+type BrioelaGenerativeUiDocument = {
   grammarVersion: "1"
   surface: GenerativeSurface
   safetyLock: boolean

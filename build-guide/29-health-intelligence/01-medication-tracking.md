@@ -124,9 +124,9 @@ Prescription photos, lab results, doctor notes — extracted by GPT-4o mini visi
 
 ---
 
-## Drug-Food Interaction Check at Scan Time
+## Medication-Food Interaction Check at Scan Time
 
-When the scanner runs the constraint check (`07-scanner/03-constraint-check.md`), it now also reads the `medications` table directly (in addition to `user_memory.health.medications`):
+When the scanner runs the constraint check (`07-scanner/03-constraint-check.md`), it reads the private `medications` table directly. `user_memory.health.medications` is only a prompt/session summary mirror.
 
 ```typescript
 // In checkProductConstraints() — new section added
@@ -137,24 +137,31 @@ const activeMedications = db.select()
   .all()
 
 if (activeMedications.length > 0) {
-  // Check community medication-food event association table
-  const interactions = await fetchMedicationFoodEventAssociations(
+  // Reviewed rules can create hard medication-food warnings.
+  const reviewedInteractions = await fetchMedicationFoodInteractionRules(
     activeMedications.map(m => m.medicationCategory),
     product.ingredients,
     env,
   )
 
-  for (const interaction of interactions) {
+  for (const interaction of reviewedInteractions) {
     if (interaction.severityCategory === 'contraindicated' || interaction.severityCategory === 'major') {
-      matches.push({
-        constraintType: 'medication_food_event_association',
-        entityValue:    interaction.foodIngredient,
-        matchedVia:     `${interaction.medicationCategory} × ${interaction.foodIngredient}`,
-        severity:       interaction.severityCategory === 'contraindicated' ? 'block' : 'warn',
-        reason:         interaction.interactionDirection,
+      medicationFoodInteractions.push({
+        medication:  interaction.medicationCategory,
+        ingredient:  interaction.foodIngredient,
+        interaction: interaction.interactionDirection,
+        severity:    interaction.severityCategory === 'contraindicated' ? 'high' : 'moderate',
       })
     }
   }
+
+  // Anonymous community medication-food event associations are caution context only.
+  // They never create a hard block unless separately mapped to a reviewed rule.
+  const communityAssociations = await fetchMedicationFoodEventAssociations(
+    activeMedications.map(m => m.medicationCategory),
+    product.ingredients,
+    env,
+  )
 }
 ```
 

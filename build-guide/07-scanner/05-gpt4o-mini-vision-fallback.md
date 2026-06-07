@@ -111,9 +111,11 @@ export async function visionExtractScan(c: AppContext) {
 
   if (matched) {
     // Known product found — run full constraint check and return verdict
-    const constraintResult = await checkConstraints(matched, userId, c.env)
-    const verdict          = buildVerdict(matched, constraintResult)
-    return { verdict, product: matched, constraintResult, visionExtractionConfidence: extractedData.confidence }
+    const productFactSnapshot = await buildResolvedProductFactSnapshot(matched, c.env)
+    const communityHealth     = await getProductCommunityHealthSummary(matched.id, c.env)
+    const constraintResult    = await checkConstraints(productFactSnapshot, userId, c.env)
+    const verdict             = buildVerdict(productFactSnapshot, constraintResult, communityHealth)
+    return { verdict, product: matched, productFactSnapshot, constraintResult, communityHealth, visionExtractionConfidence: extractedData.confidence }
   }
 
   // No known product matched — build a synthetic product from the extracted label data
@@ -134,13 +136,16 @@ export async function visionExtractScan(c: AppContext) {
     resolvedAt:  Date.now(),
   }
 
-  const constraintResult = await checkConstraints(syntheticProduct, userId, c.env)
-  const verdict          = buildVerdict(syntheticProduct, constraintResult)
+  const productFactSnapshot = await buildResolvedProductFactSnapshot(syntheticProduct, c.env)
+  const constraintResult    = await checkConstraints(productFactSnapshot, userId, c.env)
+  const verdict             = buildVerdict(productFactSnapshot, constraintResult, null)
 
   return {
     verdict,
     product:       syntheticProduct,
+    productFactSnapshot,
     constraintResult,
+    communityHealth: null,
     visionExtractionConfidence: extractedData.confidence,
     isVisionExtracted: true,   // UI shows confidence caveat when this is true
   }

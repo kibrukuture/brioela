@@ -45,6 +45,6 @@ App boot, auth initialization, protected tab access, and route behavior.
 
 ## Known Gaps
 
-- Deferred account creation is specified, but protected tabs currently require a user.
-- Guest mode / anonymous local scan mode needs a separate decision.
-- Orchestrator DO addressing depends on Supabase user ID unless guest ID strategy is added.
+- Deferred account creation uses Supabase anonymous auth, so protected tabs can receive a real Supabase user ID before permanent account linking.
+- Reserve "Guest Mode" for cooking for others. Auth-side first-run identity is "anonymous user" or "anonymous Supabase user," not guest.
+- Orchestrator DO addressing depends on Supabase user ID from anonymous or permanent auth. Do not add another identity strategy.

@@ -86,7 +86,7 @@ Do not use EAS Update for:
 At runtime, AI can only produce:
 
 ```typescript
-type SafeRuntimeUI = GenerativeUIDocument
+type SafeRuntimeUI = BrioelaGenerativeUiDocument
 ```
 
 The client validates, renders, or discards it.
