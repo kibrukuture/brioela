@@ -102,5 +102,5 @@ truly demands it.
 ## What Depends On This File
 
 - `10-the-stage-document.md` — Tiers 1 and 2 are layers of the Stage.
-- `17-tier3-webview-miniapp.md` — the Tier 3 sandbox and its boundary.
+- `18-tier3-webview-miniapp.md` — the Tier 3 sandbox and its boundary.
 - `06-surface-integration.md` — which surfaces are pinned to Tier 0.

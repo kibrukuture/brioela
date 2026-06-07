@@ -58,7 +58,7 @@ tools. One tool, two modes.
 `composition` is a discriminated union keyed on `type`. The model "designing a layout" is
 literally:
 
-1. Pick one `composition.type` from the allowed set (e.g. `food_memory_reverent_scene`).
+1. Pick one `composition.type` from the allowed set (e.g. `memory_recall_reverent`).
 2. Fill that type's required `slots` with content.
 3. Set `mood`, `atmosphere`, `beats`, `voice` from their enums.
 
@@ -118,7 +118,7 @@ gate is a separate, cheap decision *before* `present_moment` is ever offered.
 3. decide_if_worth_enhancing → false? stop, static stands.
 4. true → call model with system prompt + per-surface catalog schema + few-shot + payload.
 5. Model emits a Stage (structured output / present_moment call).
-6. Validate (Zod) → safety/privacy filter → stamp grammarVersion → stream to client. (see 14)
+6. Validate (Zod) → safety/privacy filter → stamp grammarVersion → stream to client. (see 15)
 7. Client validates again → renders within 400ms, or static stands.
 ```
 
@@ -132,4 +132,4 @@ gate is a separate, cheap decision *before* `present_moment` is ever offered.
 
 ## What Depends On This File
 
-- `14-validation-and-repair.md` — what happens to the model's output after it is emitted.
+- `15-validation-and-repair.md` — what happens to the model's output after it is emitted.

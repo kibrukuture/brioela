@@ -17,12 +17,15 @@ vocabulary layers, and confusing them makes the system look tiny when it is not:
 | Layer | What it is | Should it be small? | Target size |
 |---|---|---|---|
 | Tokens | enums for every visual value (mood, tone, voice, spacing) | **Yes — small on purpose** | tight, fixed sets |
-| Primitives | the atoms / words (a headline, a metric, a thread) | Medium | ~60–90 |
+| Primitives | the atoms / words — in three layers: structural, expressive, domain | Mostly reusable | ~40 generic + ~20 domain (growing) |
 | Compositions | the art-directed scenes — *where soul lives* | **No — generous and growing** | start ~30, grow to 80–150+ |
 | Atmospheres | Skia shader families, each parameterized | Effectively infinite within taste | ~10–15 families |
 
 Small tokens are a *feature* — they guarantee consistency. A small set of *compositions* would
-be the failure. The two are not the same layer.
+be the failure. The two are not the same layer. And the "~60 primitives" is not 60 split across
+features — it is ~40 generic atoms every feature reuses plus ~20 domain atoms that grow over
+time. See `14-primitive-layers-and-reuse.md` for the full layering and why shopper, Bela, and
+every future feature already have UI.
 
 ---
 
@@ -42,8 +45,8 @@ Soul does not come from *more values*. It comes from *better-art-directed compos
 ## Where Soul Actually Lives: Compositions
 
 A composition is **not a tiny component.** It is a complete, hand-art-directed scene — a full
-editorial layout with a focal point, deliberate asymmetry, cathedral negative space, a real
-type hierarchy, an atmosphere binding, and a choreographed entrance. A single composition
+editorial layout with a focal point, deliberate asymmetry, expansive negative space (`space_2xl`),
+a real type hierarchy, an atmosphere binding, and a choreographed entrance. A single composition
 component may be hundreds of lines of Skia + Reanimated + layout. It is a *work of design*, not
 a wrapper around a `<View>`.
 
@@ -102,7 +105,7 @@ before it enters the catalog (this extends the promotion checklist in
 
 - Has a single, unambiguous focal point.
 - Uses generous, intentional negative space (spacing tokens, never cramped).
-- Has a dramatic type hierarchy (a real `voice.display` moment where appropriate).
+- Has a dramatic type hierarchy (a real `voice_display` moment where appropriate).
 - Looks beautiful with the *longest* allowed content and the *shortest*.
 - Looks beautiful with empty/optional slots omitted.
 - Binds to at least one atmosphere and one beat sequence tastefully.
@@ -138,6 +141,7 @@ it. The vocabulary expands over the life of the product without the runtime ever
 
 - `10-the-stage-document.md` — `composition` and `slots` are the layers this catalog fills.
 - `03-primitive-families.md` — the atoms that compositions are built from.
+- `14-primitive-layers-and-reuse.md` — the three primitive layers and the reuse model.
 - `08-build-time-creation-lane.md` — how new compositions enter the catalog.
 
 ## What Depends On This File

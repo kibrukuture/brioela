@@ -30,7 +30,7 @@ A Stage is the base document plus six expressive layers:
 | `composition` | How is the scene *laid out*? | the art-directed scene (discriminated union) |
 | `slots` | What *content* fills the scene? | the meaning the AI writes into named holes |
 | `beats` | How does it *reveal* over time? | the Reanimated choreography sequence |
-| `voice` | What *typographic register*? | the type personality (display / editorial / quiet) |
+| `voice` | What *typographic register*? | the type register (`voice_display` / `voice_title` / `voice_body` / `voice_caption`) |
 
 The split is the whole point: **the AI controls `mood`, `composition` choice, `atmosphere`
 selection, `beats`, and writes the `slots` — but it never controls a pixel, a color, a size, or
@@ -50,10 +50,10 @@ type Stage = {
 
   // the six expressive layers
   mood: UIMood                      // see 04-emotion-motion-skia.md
-  atmosphere: AtmosphereSelection   // Tier 2; see 15-atmosphere-skia-system.md
+  atmosphere: AtmosphereSelection   // Tier 2; see 16-atmosphere-skia-system.md
   composition: CompositionNode      // discriminated union; see 11-composition-catalog-and-scale.md
   slots: SlotContent                // shape determined by the chosen composition
-  beats: BeatSequence               // see 16-motion-beats-system.md
+  beats: BeatSequence               // see 17-motion-beats-system.md
   voice: VoiceRegister              // typography register
 }
 ```
@@ -81,7 +81,7 @@ for that layer. `composition` and its required `slots` are the only hard require
 
 ## Internal Consistency Rules
 
-These are enforced at validation (see `14-validation-and-repair.md`):
+These are enforced at validation (see `15-validation-and-repair.md`):
 
 - A `mood` implies an allowed set of `atmosphere`, `beats`, and `voice`. Invalid pairings fail
   (e.g. `reverent_memory` cannot pair with an urgent atmosphere). Pairing rules live in
