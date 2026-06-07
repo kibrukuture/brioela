@@ -20,3 +20,4 @@
 - Session lifecycle.
 - Agent identity.
 - Alarm system.
+- Agent framework hardening: current Cloudflare Agents SDK primitives are preferred over older manual runtime plumbing where equivalent.

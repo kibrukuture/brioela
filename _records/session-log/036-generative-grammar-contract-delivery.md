@@ -10,10 +10,14 @@ Written:
 - `build-guide/27-generative-grammar/20-contracts-and-stage-delivery.md`
 - `build-guide/27-generative-grammar/21-contract-spine-hardening.md`
 - `build-guide/27-generative-grammar/22-ts-rest-full-stack-standard.md`
+- `build-guide/05-orchestrator/07-agent-framework-hardening.md`
 
 Updated:
 - `build-guide/27-generative-grammar/00-overview.md`
+- `build-guide/05-orchestrator/00-overview.md`
 - `_records/connections/24-generative-grammar-connections.md`
+- `_records/connections/01-orchestrator-connections.md`
+- `_records/build-order/03-layer-orchestrator.md`
 - `_records/session-log/036-generative-grammar-contract-delivery.md`
 
 ## Decisions Captured
@@ -68,6 +72,12 @@ Updated:
   - implementation/design code uses numeric 4pt tokens such as `space.1`, `space.4`, `space.12`
   - Brioela Generative UI documents emit only `space_xs`, `space_sm`, `space_md`, `space_lg`, `space_xl`, `space_2xl`
   - renderer maps ordinal AI tokens to numeric design-system tokens
+- Orchestrator hardening added:
+  - Brioela remains ambient, not chat-first.
+  - Cloudflare Agents SDK owns durable runtime concerns.
+  - Vercel AI SDK remains the model/tool-calling layer.
+  - Prefer `subAgent`, `agentTool`, `runAgentTool`, `schedule`, `queue`, `runFiber`, `startFiber`, `keepAliveWhile`, and Cloudflare Workflows over older manual runtime plumbing where equivalent.
+  - Keep custom Brioela memory schema, safety policy, ambient surfacing, and Gemini Live media bridge.
 
 ## Evidence From Repo Audit
 

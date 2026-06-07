@@ -4,7 +4,7 @@
 The per-user agent brain. One `BrioelOrchestrator` Durable Object per user, forever. This is the critical path — every other feature depends on it. It holds the user's private SQLite database via Drizzle ORM, the complete memory system (user_memory, user_personality, skills, constraints, scan history, recipes, sessions), the tool protocol (every AI-callable tool), the alarm system for ambient intelligence, and the Curator for background maintenance.
 
 ## Status
-[x] complete — six files written
+[x] complete — seven files written; `07` hardens the older manual runtime patterns against current Cloudflare Agents SDK capabilities
 
 ## Files In This Folder
 
@@ -16,6 +16,7 @@ The per-user agent brain. One `BrioelOrchestrator` Durable Object per user, fore
 | `04-sub-agents.md` | Ephemeral DO pattern, CuratorAgent, PatternDetectionAgent, HTTP tool forwarding protocol, caller-based authorization |
 | `05-alarm-system.md` | Alarm dispatch, all alarm types, scheduled_alarms table as queue, keepAlive heartbeat, ambient intelligence loop, first-boot initialization |
 | `06-agent-identity.md` | SOUL document, 800 token cap, system prompt block order, prefix cache contract, update rules |
+| `07-agent-framework-hardening.md` | Brioela-first update: Cloudflare Agents SDK runtime primitives, AI SDK tool layer, replacing custom plumbing without making Brioela chat-first |
 
 ## Specs This Folder Draws From
 - `brioela-specs/09-per-user-agent-orchestrator.md` — full orchestrator spec: DO architecture, memory system, skills, tools, context injection, sub-agent delegation, keepAlive pattern
@@ -26,6 +27,7 @@ The per-user agent brain. One `BrioelOrchestrator` Durable Object per user, fore
 - `implementable-specs/15-curator.md` — CuratorAgent + PatternDetectionAgent: three passes, tool forwarding, TOOL_PERMISSIONS, ephemeral DO pattern
 - `implementable-specs/16-agent-identity.md` — SOUL document, system prompt order, 800 token cap
 - `implementable-specs/17-session-lifecycle.md` — compression triggers, CompressorAgent, abandoned detection, watchdog alarm
+- Current Cloudflare Agents SDK docs — sub-agents, agent tools, schedules, queues, fibers, workflows, sessions, skills
 
 ## Key Decisions From Specs
 - `BrioelOrchestrator extends Agent` (Cloudflare Agent SDK) — not raw DurableObject
@@ -39,6 +41,8 @@ The per-user agent brain. One `BrioelOrchestrator` Durable Object per user, fore
 - Context compression: chat sessions at 40 turns/60k tokens, cooking at 80 turns/100k tokens — CompressorAgent produces four-field summary
 - Abandoned detection: watchdog alarm set at session open, marks sessions abandoned if still active when fired
 - SOUL: 800 token cap, universal constant, block order is fixed for Anthropic prefix caching
+- Brioela is ambient, not chat-first; Cloudflare Agents SDK owns durable runtime, Vercel AI SDK owns model/tool calls, and Brioela owns food memory/safety/surfacing policy.
+- Prefer current Agents SDK primitives (`subAgent`, `agentTool`, `schedule`, `queue`, `runFiber`, `keepAliveWhile`, Workflows) over custom runtime plumbing where they express the same behavior.
 
 ## What This Folder Depends On
 - `03-foundation` — CF Workers, wrangler.jsonc, Drizzle setup
