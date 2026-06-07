@@ -21,7 +21,7 @@ Brioela Generative Grammar is the safe creative UI language for the app. It repl
 | `07-web-and-mobile-strategy.md` | React Native first, PWA/web strategy, CopilotKit/AI SDK/A2UI learnings |
 | `08-build-time-creation-lane.md` | AI-assisted component creation at build time, review, registry promotion |
 | `09-generativity-tiers.md` | the four tiers (static / grammar / canvas / mini-app) and the decision rule |
-| `10-the-stage-document.md` | the Stage: six expressive layers (mood, atmosphere, composition, slots, beats, voice) |
+| `10-the-stage-document.md` | historical Stage concept; implementation name is `BrioelaGenerativeUiDocument` |
 | `11-composition-catalog-and-scale.md` | vocabulary layers, scale/soul answer, combinatorial math, quality bar |
 | `12-naming-law.md` | binding naming law — functional enums, no metaphor in AI vocab, token-axis rule, renames |
 | `13-how-ai-selects.md` | tool calling vs structured output, discriminated-union selection, the silence gate |
@@ -30,8 +30,8 @@ Brioela Generative Grammar is the safe creative UI language for the app. It repl
 | `16-atmosphere-skia-system.md` | Tier 2 Skia: `{character}_field` families, uniform contract, web parity, degradation |
 | `17-motion-beats-system.md` | the `beats` choreography layer, Reanimated 4 mapping, reduced-motion contract |
 | `19-code-package-structure.md` | the grammar mapped to real dirs: `shared/grammar/`, `mobile/grammar/`, `backend/src/core/generative-grammar/`; build order |
-| `20-contracts-and-stage-delivery.md` | contract-first API boundary, HTTP/realtime Stage delivery, no normal grammar route, end-to-end examples |
-| `21-contract-spine-hardening.md` | stricter contract spine: co-located schemas, stage policy, contract-derived query keys, lint/CI rules |
+| `20-contracts-and-stage-delivery.md` | contract-first API boundary, HTTP/realtime Brioela Generative UI delivery, no normal grammar route, end-to-end examples |
+| `21-contract-spine-hardening.md` | stricter contract spine: co-located schemas, Brioela Generative UI policy, contract-derived query keys, lint/CI rules |
 | `22-ts-rest-full-stack-standard.md` | ts-rest full-stack HTTP standard, React Query wrapper, feature hooks, no normal `.api.ts`, contract-derived keys |
 | `research/` | five full-text 2025–2026 research reports + index (substrate, frameworks, beauty stack) |
 
@@ -56,8 +56,8 @@ Brioela Generative Grammar is the safe creative UI language for the app. It repl
 - React Native is first-class; PWA/web can render the same grammar.
 - Static safety UI always renders first and remains authoritative.
 - The grammar layer is additive and optional.
-- HTTP and realtime features can both receive AI-selected Stages; only delivery differs.
-- Normal product flows do not call a separate grammar route. Feature responses or streams carry optional Stage data.
+- HTTP and realtime features can both receive AI-selected Brioela Generative UI documents; only delivery differs.
+- Normal product flows do not call a separate grammar route. Feature responses or streams carry optional `brioelaGenerativeUi` data.
 - New boundary-crossing code should use the Contract Spine: contract-backed requests, responses, streams, Stage policy, and query keys.
 - New normal HTTP API code should use ts-rest contracts, Hono-mounted `@ts-rest/serverless/fetch` routes, and `@ts-rest/react-query` feature wrappers, not hand-written `.api.ts` files.
 - Skia, Reanimated, and haptics are tokenized grammar outputs, not arbitrary style code.

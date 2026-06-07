@@ -5,7 +5,7 @@
 The mechanism by which the backend AI chooses what UI to produce: tool/function calling vs
 structured output, how a discriminated union turns "designing a layout" into "picking an enum
 and filling slots," and the gate that keeps silence the default. This is the bridge between the
-orchestrator (`05-orchestrator`) and the Stage document (`10`).
+orchestrator (`05-orchestrator`) and the Brioela Generative UI document (`10`).
 
 ---
 
@@ -34,17 +34,17 @@ schema. Best when there is exactly one thing to produce.
 
 | Surface kind | Mechanism | Why |
 |---|---|---|
-| Compose one moment (scan, Mesa, summary, memory) | **Structured output of one Stage** | One call, one object, cheapest, most reliable |
+| Compose one moment (scan, Mesa, summary, memory) | **Structured output of one Brioela Generative UI document** | One call, one object, cheapest, most reliable |
 | Interactive agentic surface (cooking, chat) | **Tool calling** | UI is one of many things the agent does over time, alongside `set_timer`, `write_memory` |
 
 Both are implemented through the same single tool so there is one code path:
 
 ```
 tool: present_moment
-description: "Compose ONE emotional food moment as a Stage. Choose the composition
+description: "Compose ONE emotional food moment as a Brioela Generative UI document. Choose the composition
               whose family matches the emotional weight of the situation. Prefer the
               lowest tier that fits. Never enhance a safety surface."
-input_schema: <the Stage schema, with composition as a discriminated union>
+input_schema: <the Brioela Generative UI schema, with composition as a discriminated union>
 ```
 
 In the one-shot case the orchestrator forces a `present_moment` call (effectively structured
@@ -73,10 +73,10 @@ the same pattern the industry converged on (json-render, tambo, CopilotKit — r
 Two viable shapes; we choose the first:
 
 - **One `present_moment`, composition is a union (chosen).** Single call path, supports
-  multi-scene stages later, keeps the toolbox tiny. The model selects the scene via the
+   multi-scene documents later, keeps the toolbox tiny. The model selects the scene via the
   discriminator, steered by each union member's description.
 - One tool per composition (rejected as default). Makes selection explicit but explodes the
-  toolbox to dozens of tools and makes composing a multi-part Stage awkward.
+   toolbox to dozens of tools and makes composing a multi-part document awkward.
 
 The union members each carry a rich `description` (per `12-naming-law.md`), so selection is just
 as well-steered as separate tools would be, without the tool sprawl.
@@ -90,7 +90,7 @@ as well-steered as separate tools would be, without the tool sprawl.
 3. **Names that carry intent** — `12-naming-law.md` removes gross mis-selection.
 4. **Descriptions that say *when*** — removes fine mis-selection.
 5. **Few required slots, strong defaults** — the minimum the model must produce is the minimum it can get wrong.
-6. **Few-shot gold examples per surface** — 3–4 exemplar Stages in the prompt; models imitate examples far better than they obey rules.
+6. **Few-shot gold examples per surface** — 3–4 exemplar Brioela Generative UI documents in the prompt; models imitate examples far better than they obey rules.
 7. **Per-surface allowlists** — a surface only exposes the composition types it permits, shrinking the choice to the relevant set. Surface enum values must use the explicit `_brioela_generative_ui` suffix.
 
 ---
@@ -104,7 +104,7 @@ genuinely worth surfacing. So before composing anything, the orchestrator runs a
 decide_if_worth_enhancing(payload, context) → boolean
 ```
 
-If the moment is mild, already-surfaced recently, or low-confidence, **no Stage is produced at
+If the moment is mild, already-surfaced recently, or low-confidence, **no Brioela Generative UI document is produced at
 all** and the static Tier-0 UI simply stands. Generation is the exception, not the reflex. This
 gate is a separate, cheap decision *before* `present_moment` is ever offered.
 
@@ -117,7 +117,7 @@ gate is a separate, cheap decision *before* `present_moment` is ever offered.
 2. Orchestrator gathers approved payload + context.
 3. decide_if_worth_enhancing → false? stop, static stands.
 4. true → call model with system prompt + per-surface catalog schema + few-shot + payload.
-5. Model emits a Stage (structured output / present_moment call).
+5. Model emits a Brioela Generative UI document (structured output / present_moment call).
 6. Validate (Zod) → safety/privacy filter → stamp grammarVersion → stream to client. (see 15)
 7. Client validates again → renders within 400ms, or static stands.
 ```
@@ -126,7 +126,7 @@ gate is a separate, cheap decision *before* `present_moment` is ever offered.
 
 ## What This File Depends On
 
-- `10-the-stage-document.md` — the Stage is what the model emits.
+- `10-the-stage-document.md` — the Brioela Generative UI document is what the model emits.
 - `12-naming-law.md` — names + descriptions are what the model selects against.
 - `05-orchestrator` (feature) — owns the gate and the model call.
 
