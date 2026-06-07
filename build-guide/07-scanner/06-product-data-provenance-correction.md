@@ -4,8 +4,8 @@
 
 How Brioela tracks where product facts came from, how conflicting product data is ranked, how GPT-4o
 mini vision extraction fits into product resolution, and how users can correct product data with
-label evidence. This is required for trust: ingredient, allergen, recall, origin, and boycott logic
-must never look like magic.
+label evidence. This is required for evidence-based ingredient, allergen, recall, origin, and boycott
+logic; those decisions must never look like magic.
 
 ---
 
