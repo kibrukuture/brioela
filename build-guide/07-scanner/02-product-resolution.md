@@ -285,7 +285,7 @@ product_community_health_summary = real-world outcome overlay
 ## Product Fact Provenance
 
 Safety-relevant facts should carry provenance. Ingredients, allergens, nutrients, additives, and
-origin must not be trusted just because one provider returned them.
+origin must not be accepted just because one provider returned them.
 
 Add a product fact evidence layer:
 
@@ -332,7 +332,7 @@ GPT-4o mini vision extraction is used as label evidence when:
 - user submits a correction
 - label evidence is required for safety verification
 
-The model returns structured data validated by Zod. Product logic never trusts free-form prose.
+The model returns structured data validated by Zod. Product logic never accepts free-form prose.
 
 Label evidence can be used immediately for the current scan with a confidence caveat. It does not
 silently overwrite the shared `products` table. Conflicts create evidence records and can become
@@ -340,9 +340,9 @@ correction requests.
 
 ---
 
-## Community Trust Overlay
+## Community Health Summary Overlay
 
-`product_community_health_summary` does not resolve product facts. It adds real-world outcome context.
+`product_community_health_summary` does not resolve product facts. It adds reported event context.
 
 Example:
 
@@ -352,8 +352,8 @@ Community signal: similar users with hypertension reported headaches more often 
 Verdict impact: green can become yellow with careful wording.
 ```
 
-Community signals can add caution. They do not clear allergens and they do not create diagnosis
-language.
+Community signals can add caution. They do not clear allergens and they do not create clinical
+conclusion language.
 
 Allowed wording:
 
