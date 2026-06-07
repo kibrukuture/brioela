@@ -43,6 +43,7 @@ Updated:
 - `mobile/network/tsr.ts` is a tiny initializer only; it must not become an endpoint logic file.
 - Normal HTTP endpoints should not need `.api.ts` files; feature hooks wrap generated ts-rest hooks instead.
 - Query keys are contract-derived with `contractKey(endpoint, input)`, not manually maintained in a global `QUERY_KEYS` object.
+- Generative UI surface names must use lowercase snake_case with the explicit `_brioela_generative_ui` suffix. Example: `scan_explanation_brioela_generative_ui`.
 
 ## Evidence From Repo Audit
 

@@ -206,7 +206,7 @@ Example:
 stage: {
   allowed: true,
   mode: "http_optional",
-  surfaces: ["scan_secondary"],
+  surfaces: ["scan_explanation_brioela_generative_ui"],
   safetyLock: "required_when_hard_blocks",
 }
 ```
@@ -353,7 +353,7 @@ export const COOKING_STREAM_CONTRACT = stream({
   stage: {
     allowed: true,
     mode: "stream_event",
-    surfaces: ["cooking_opener", "recipe_step_focus"],
+    surfaces: ["cooking_opener_brioela_generative_ui", "recipe_step_focus_brioela_generative_ui"],
     safetyLock: "feature_decides",
   },
 })

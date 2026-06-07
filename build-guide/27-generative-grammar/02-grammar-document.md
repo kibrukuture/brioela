@@ -33,18 +33,29 @@ type GenerativeUIDocument = {
 
 ## Surfaces
 
+Surface names must use the explicit Brioela Generative UI suffix so nobody mistakes a generative
+surface for a full product screen or a safety region.
+
+Pattern:
+
+```text
+{feature}_{surface_role}_brioela_generative_ui
+```
+
+Use lowercase snake_case only. Do not use mixed case or uppercase suffixes.
+
 ```typescript
 type GenerativeSurface =
-  | "scan_secondary"
-  | "recipe_card"
-  | "cooking_opener"
-  | "weekly_summary"
-  | "food_time_machine"
-  | "mesa_compatibility"
-  | "menu_scan_summary"
-  | "discovery_card"
-  | "kids_learning"
-  | "savings_story"
+  | "scan_explanation_brioela_generative_ui"
+  | "recipe_card_brioela_generative_ui"
+  | "cooking_opener_brioela_generative_ui"
+  | "weekly_summary_brioela_generative_ui"
+  | "food_time_machine_brioela_generative_ui"
+  | "mesa_compatibility_brioela_generative_ui"
+  | "menu_scan_summary_brioela_generative_ui"
+  | "discovery_card_brioela_generative_ui"
+  | "kids_learning_brioela_generative_ui"
+  | "savings_story_brioela_generative_ui"
 ```
 
 Each surface has an allowlist of permitted node types.

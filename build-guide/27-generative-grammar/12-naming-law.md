@@ -58,6 +58,7 @@ One fixed structure per kind, so the AI never has to guess what shape a name tak
 
 | Kind | Grammar | Examples |
 |---|---|---|
+| Generative surface | `{feature}_{surface_role}_brioela_generative_ui` | `scan_explanation_brioela_generative_ui` · `cooking_opener_brioela_generative_ui` |
 | Primitive (generic) | `{role}_{form}` | `metric_single` · `reason_statement` · `timestamped_note` |
 | Primitive (domain) | `{feature}_{role}` | `recipe_step` · `mesa_member_row` · `ingredient_list` |
 | Composition (scene) | `{surface}_{intent}_{layout}` | `scan_verdict_focus` · `mesa_fit_grid` · `memory_recall_reverent` |
@@ -115,10 +116,15 @@ component:   ScanVerdictFocusScene
 
 | Kind | Enum suffix | Component suffix |
 |---|---|---|
+| Generative surface | `_brioela_generative_ui` | n/a |
 | Primitive | none | `Node` |
 | Composition | none (the 3-part name already signals it) | `Scene` |
 | Atmosphere | `_field` | `Field` |
 | Beat | `_beats` | — |
+
+Generative surface names deliberately carry the explicit `_brioela_generative_ui` suffix. This is
+long on purpose: it prevents confusing an AI-selected enhancement surface with a full product
+screen, a safety region, or a normal backend feature name. Use lowercase snake_case only.
 
 ---
 
@@ -208,6 +214,7 @@ alone is enough.
 - **Inconsistent structure** — a name that doesn't follow its kind's positional grammar.
 - **Web-widget words** — see banned list.
 - **Domain prefix on a generic atom** — `recipe_headline` (see `14`).
+- **Missing Brioela Generative UI suffix on a surface** — `scan_secondary` is ambiguous; use `scan_explanation_brioela_generative_ui`.
 
 ---
 

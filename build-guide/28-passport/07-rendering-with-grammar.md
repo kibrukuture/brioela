@@ -19,7 +19,7 @@ Instruction blocks are validated before rendering.
 Add a Passport surface to Generative Grammar when implementing:
 
 ```typescript
-type GenerativeSurface = "passport"
+type GenerativeSurface = "passport_render_brioela_generative_ui"
 ```
 
 Allowed nodes:

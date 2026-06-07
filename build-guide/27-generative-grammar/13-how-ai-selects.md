@@ -91,7 +91,7 @@ as well-steered as separate tools would be, without the tool sprawl.
 4. **Descriptions that say *when*** — removes fine mis-selection.
 5. **Few required slots, strong defaults** — the minimum the model must produce is the minimum it can get wrong.
 6. **Few-shot gold examples per surface** — 3–4 exemplar Stages in the prompt; models imitate examples far better than they obey rules.
-7. **Per-surface allowlists** — a surface only exposes the composition types it permits, shrinking the choice to the relevant set.
+7. **Per-surface allowlists** — a surface only exposes the composition types it permits, shrinking the choice to the relevant set. Surface enum values must use the explicit `_brioela_generative_ui` suffix.
 
 ---
 

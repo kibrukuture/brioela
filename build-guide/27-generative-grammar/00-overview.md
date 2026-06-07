@@ -51,6 +51,7 @@ Brioela Generative Grammar is the safe creative UI language for the app. It repl
 - No runtime MDX for core app UI.
 - No arbitrary remote code execution.
 - The AI generates typed grammar documents, not components.
+- Generative UI surface names must use lowercase snake_case with the explicit `_brioela_generative_ui` suffix, e.g. `scan_explanation_brioela_generative_ui`.
 - React Native is first-class; PWA/web can render the same grammar.
 - Static safety UI always renders first and remains authoritative.
 - The grammar layer is additive and optional.

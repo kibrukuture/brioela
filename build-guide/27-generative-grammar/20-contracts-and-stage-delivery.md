@@ -266,7 +266,7 @@ export async function onScanProduct(c: AppContext) {
   })
 
   const stage = await composeStage({
-    surface: "scan_secondary",
+    surface: "scan_explanation_brioela_generative_ui",
     payload: buildScanStagePayload({ userId: user.id, scan }),
     safetyLock: scan.hardBlocks.length > 0,
   })
@@ -327,7 +327,7 @@ The model chooses from the Stage schema:
 ```json
 {
   "grammarVersion": "1",
-  "surface": "scan_secondary",
+    "surface": "scan_explanation_brioela_generative_ui",
   "safetyLock": true,
   "mood": "warm_caution",
   "atmosphere": {
@@ -390,7 +390,7 @@ Tool call emitted by the model:
   "tool": "present_moment",
   "arguments": {
     "grammarVersion": "1",
-    "surface": "cooking_opener",
+    "surface": "cooking_opener_brioela_generative_ui",
     "safetyLock": false,
     "mood": "focused_cooking",
     "atmosphere": {
@@ -451,7 +451,7 @@ Wire event:
   "type": "stage",
   "stage": {
     "grammarVersion": "1",
-    "surface": "cooking_opener",
+    "surface": "cooking_opener_brioela_generative_ui",
     "composition": {
       "type": "recipe_steps_rail"
     },

@@ -137,7 +137,7 @@ export const scanContract = c.router(
         stage: {
           allowed: true,
           mode: "http_optional",
-          surfaces: ["scan_secondary"],
+          surfaces: ["scan_explanation_brioela_generative_ui"],
           safetyLock: "required_when_hard_blocks",
         },
       } as const,
@@ -343,7 +343,7 @@ const scanTsRestRouter = tsr.router(API_CONTRACT.scan, {
     })
 
     const stage = await composeStageForContract(API_CONTRACT.scan.scanProduct, {
-      surface: "scan_secondary",
+      surface: "scan_explanation_brioela_generative_ui",
       payload: buildScanStagePayload({ scan }),
       safetyLock: scan.hardBlocks.length > 0,
     })
@@ -393,7 +393,7 @@ export async function onScanProduct(c: AppContext) {
   })
 
   const stage = await composeStageForContract(API_CONTRACT.scan.scanProduct, {
-    surface: "scan_secondary",
+    surface: "scan_explanation_brioela_generative_ui",
     payload: buildScanStagePayload({ scan }),
     safetyLock: scan.hardBlocks.length > 0,
   })
