@@ -110,6 +110,23 @@ The current copied app has good pieces: shared route constants, shared Zod valid
 and TanStack Query. The weakness is that method, path, params, query, body, and response are split
 across multiple files. The contract joins them.
 
+Dependency rule: contract libraries that are used by backend and mobile live in `shared` and are
+re-exported from there, matching the existing `shared/zod/index.ts` pattern. Backend and mobile do
+not import `@ts-rest/core` directly.
+
+```typescript
+// shared/contracts/index.ts
+export { initContract, initClient } from "@ts-rest/core"
+export type {
+  ClientInferRequest,
+  ClientInferResponseBody,
+  ClientInferResponses,
+  ServerInferRequest,
+  ServerInferResponseBody,
+  ServerInferResponses,
+} from "@ts-rest/core"
+```
+
 Target shape:
 
 ```typescript
@@ -580,7 +597,7 @@ It is not part of normal product runtime.
 After `19-code-package-structure.md`, implement contracts before feature/backend/mobile wiring:
 
 1. `shared/grammar/` Stage schema and tiny vertical-slice catalog.
-2. `shared/contracts/` helper and one feature contract, starting with scan.
+2. `shared/contracts/` helper and one feature contract, starting with scan; `@ts-rest/core` lives in `shared` and is re-exported from `@brioela/shared/contracts`.
 3. `mobile/network/core/request(contract, input)` using existing Axios client.
 4. Backend route + handler without controller for one feature.
 5. Backend `composeStage` with structured output or mocked Stage first.

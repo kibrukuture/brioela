@@ -34,6 +34,8 @@ Updated:
 - Separate schema files are allowed only for true cross-feature/domain primitives such as `stageSchema`, API error envelope, or shared food audience.
 - Query keys should be contract-derived with `contractKey(contract, input)`, not manually maintained global constants.
 - New code should eventually ban raw Axios, blind generic API calls, raw route strings, loose stream event parsers, and direct backend success responses outside contract helpers.
+- `@ts-rest/core` follows the shared dependency pattern: it lives in `shared` and is re-exported through `@brioela/shared/contracts`, like Zod is re-exported through `@brioela/shared/zod`.
+- Backend and mobile should not import `@ts-rest/core` directly for normal app code.
 
 ## Evidence From Repo Audit
 
@@ -44,4 +46,4 @@ Updated:
 
 ## What Is Next
 
-Before coding, reconcile the older docs that still mention `GenerativeDecision`, `src/design-system`, and `use-stage` inside `mobile/grammar/`. Then implement one vertical slice: `shared/grammar` Stage schema, `shared/contracts/contract.ts`, one scan contract with co-located endpoint schemas, contract-aware Axios request helper, contract-derived query key, one backend scan handler using contract helpers, and one mobile render path.
+Before coding, reconcile the older docs that still mention `GenerativeDecision`, `src/design-system`, and `use-stage` inside `mobile/grammar/`. Then implement one vertical slice: `shared/grammar` Stage schema, `shared/contracts/index.ts` re-exporting `@ts-rest/core`, `shared/contracts/contract.ts`, one scan contract with co-located endpoint schemas, contract-aware request helper, contract-derived query key, one backend scan handler using contract helpers, and one mobile render path.

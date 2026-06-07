@@ -53,6 +53,32 @@ not:
 api.post<ScanProductResponse>("/v1/scan/product", body)
 ```
 
+Package ownership rule: `@ts-rest/core` lives in `shared`, the same way Zod is centralized behind
+`shared/zod/index.ts`. Backend and mobile import contract helpers from `@brioela/shared/contracts`,
+not from `@ts-rest/core` directly.
+
+```typescript
+// shared/contracts/index.ts
+export { initContract, initClient } from "@ts-rest/core"
+export type {
+  ClientInferRequest,
+  ClientInferResponseBody,
+  ClientInferResponses,
+  ServerInferRequest,
+  ServerInferResponseBody,
+  ServerInferResponses,
+} from "@ts-rest/core"
+```
+
+Allowed package ownership:
+
+```text
+shared  -> @ts-rest/core
+backend -> imports from @brioela/shared/contracts
+mobile  -> imports from @brioela/shared/contracts
+mobile  -> may add @ts-rest/react-query only if we adopt ts-rest's React Query hooks
+```
+
 ---
 
 ## Contract File Rule
@@ -348,6 +374,7 @@ These should become lint/CI rules when coding starts.
 Ban in new code:
 
 - raw `axios` imports outside `mobile/network/core/`
+- direct `@ts-rest/core` imports outside `shared/contracts/`
 - `api.get<T>()`, `api.post<T>()`, `api.patch<T>()`, `api.put<T>()`, `api.del<T>()`
 - route strings like `"/v1/` outside `shared/contracts/`
 - backend `c.json(apiSuccessResponse(` inside `backend/src/api/` handlers
@@ -375,7 +402,7 @@ This makes contracts executable and hardens them before mobile/backend code depe
 
 ## Build Order
 
-1. Implement `shared/contracts/contract.ts` helpers: `endpoint`, `stream`, `contractKey`.
+1. Implement `shared/contracts/index.ts` exports for `@ts-rest/core`, plus `shared/contracts/contract.ts` helpers: `endpoint`, `stream`, `contractKey`.
 2. Implement shared common schemas: API envelope/error and `stageSchema` import from grammar.
 3. Write one contract file: `shared/contracts/scan.contract.ts`.
 4. Write contract tests for scan.
