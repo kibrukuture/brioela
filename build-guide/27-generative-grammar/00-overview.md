@@ -6,7 +6,7 @@ Brioela Generative Grammar is the safe creative UI language for the app. It repl
 
 ## Status
 
-[~] in progress — foundation (01–08) complete; architecture layer (09–13) added; research saved
+[~] in progress — foundation (01–08), architecture (09–17), and research complete; `19` (code tree) next; `18` deferred
 
 ## Files In This Folder
 
@@ -26,15 +26,18 @@ Brioela Generative Grammar is the safe creative UI language for the app. It repl
 | `12-naming-law.md` | binding naming law — functional enums, no metaphor in AI vocab, token-axis rule, renames |
 | `13-how-ai-selects.md` | tool calling vs structured output, discriminated-union selection, the silence gate |
 | `14-primitive-layers-and-reuse.md` | structural/expressive/domain primitives, cross-feature reuse, generic≠shadcn |
+| `15-validation-and-repair.md` | validate twice → fail closed live (400ms) → repair offline; size caps; safety/privacy filter |
+| `16-atmosphere-skia-system.md` | Tier 2 Skia: `{character}_field` families, uniform contract, web parity, degradation |
+| `17-motion-beats-system.md` | the `beats` choreography layer, Reanimated 4 mapping, reduced-motion contract |
 | `research/` | five full-text 2025–2026 research reports + index (substrate, frameworks, beauty stack) |
 
 ## Still To Write
 
-- `15-validation-and-repair.md` — validate → repair → fail closed
-- `16-atmosphere-skia-system.md` — Tier 2 shader system
-- `17-motion-beats-system.md` — choreography / Reanimated
-- `18-tier3-webview-miniapp.md` — sandbox escape hatch + boundary
-- `19-code-package-structure.md` — the shared grammar package + renderer + tools tree
+- `19-code-package-structure.md` — the grammar mapped to the real `shared/` + `mobile/` + `backend/src/` dirs
+
+## Deferred (future, not v1)
+
+- `18-tier3-webview-miniapp.md` — sandboxed WebView mini-app escape hatch (parked; Tier 1+2 cover v1)
 
 ## Specs This Folder Draws From
 
