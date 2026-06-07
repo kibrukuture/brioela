@@ -50,7 +50,7 @@ The renderer is static. The Brioela Generative UI document is AI-selected.
 Static / compiled:
 
 - `BrioelaGenerativeUiRenderer`
-- composition components
+- layout template components
 - primitive node components
 - Skia shaders
 - Reanimated beat presets
@@ -60,13 +60,13 @@ Static / compiled:
 AI-selected:
 
 - whether to produce Brioela Generative UI at all
-- `mood`
-- `composition.type`
-- `atmosphere.family`
-- `beats.preset`
-- `voice`
+- `emotionalTone`
+- `layoutTemplate.type`
+- `backgroundEffect.family`
+- `entranceMotion.preset`
+- `typographyStyle`
 - safe slot copy
-- safe slot ordering/emphasis inside the allowed composition
+- safe content ordering/emphasis inside the allowed layout template
 
 Never AI-selected:
 
@@ -329,16 +329,16 @@ The model chooses from the Brioela Generative UI schema:
   "grammarVersion": "1",
     "surface": "scan_explanation_brioela_generative_ui",
   "safetyLock": true,
-  "mood": "warm_caution",
-  "atmosphere": {
+  "emotionalTone": "warm_caution",
+  "backgroundEffect": {
     "family": "verdict_bloom_field",
     "intensity": "low",
     "tone": "caution"
   },
-  "composition": {
+  "layoutTemplate": {
     "type": "scan_verdict_focus"
   },
-  "slots": {
+  "content": {
     "headline": "This one needs care",
     "caption": "The safety warning above is the source of truth. Here is the plain reason.",
     "reasons": [
@@ -346,11 +346,11 @@ The model chooses from the Brioela Generative UI schema:
       "Avoid this product for your profile."
     ]
   },
-  "beats": {
-    "preset": "settle_calm_beats",
+  "entranceMotion": {
+    "preset": "settle_calm_entrance",
     "stagger": "none"
   },
-  "voice": "voice_body",
+  "typographyStyle": "typography_body",
   "expiresAt": null
 }
 ```
@@ -392,24 +392,24 @@ Tool call emitted by the model:
     "grammarVersion": "1",
     "surface": "cooking_opener_brioela_generative_ui",
     "safetyLock": false,
-    "mood": "focused_cooking",
-    "atmosphere": {
+    "emotionalTone": "focused_cooking",
+    "backgroundEffect": {
       "family": "ambient_grain_field",
       "intensity": "low",
       "tone": "neutral"
     },
-    "composition": {
+    "layoutTemplate": {
       "type": "recipe_steps_rail"
     },
-    "slots": {
+    "content": {
       "headline": "Twenty minutes, no drama",
       "caption": "I’ll keep this tight and skip anything fussy."
     },
-    "beats": {
-      "preset": "lift_soft_beats",
+    "entranceMotion": {
+      "preset": "lift_soft_entrance",
       "stagger": "small"
     },
-    "voice": "voice_body",
+    "typographyStyle": "typography_body",
     "expiresAt": null
   }
 }
@@ -452,10 +452,10 @@ Wire event:
   "brioelaGenerativeUi": {
     "grammarVersion": "1",
     "surface": "cooking_opener_brioela_generative_ui",
-    "composition": {
+    "layoutTemplate": {
       "type": "recipe_steps_rail"
     },
-    "mood": "focused_cooking"
+    "emotionalTone": "focused_cooking"
   }
 }
 ```

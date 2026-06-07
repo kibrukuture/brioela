@@ -44,6 +44,20 @@ Updated:
 - Normal HTTP endpoints should not need `.api.ts` files; feature hooks wrap generated ts-rest hooks instead.
 - Query keys are contract-derived with `contractKey(endpoint, input)`, not manually maintained in a global `QUERY_KEYS` object.
 - Generative UI surface names must use lowercase snake_case with the explicit `_brioela_generative_ui` suffix. Example: `scan_explanation_brioela_generative_ui`.
+- Code-facing Brioela Generative UI naming is explicit, not poetic:
+  - response field: `brioelaGenerativeUi`
+  - metadata key: `brioela_generative_ui`
+  - renderer: `BrioelaGenerativeUiRenderer`
+  - document type: `BrioelaGenerativeUiDocument`
+  - schema: `brioelaGenerativeUiSchema`
+- The old internal/theatrical `Stage` term is historical only and should not appear in API contracts, response fields, renderer props, or new implementation names.
+- Document field names were clarified:
+  - `mood` → `emotionalTone`
+  - `atmosphere` → `backgroundEffect`
+  - `composition` → `layoutTemplate`
+  - `slots` → `content`
+  - `beats` → `entranceMotion`
+  - `voice` → `typographyStyle`
 
 ## Evidence From Repo Audit
 

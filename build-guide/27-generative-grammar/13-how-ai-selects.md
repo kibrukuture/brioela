@@ -4,7 +4,7 @@
 
 The mechanism by which the backend AI chooses what UI to produce: tool/function calling vs
 structured output, how a discriminated union turns "designing a layout" into "picking an enum
-and filling slots," and the gate that keeps silence the default. This is the bridge between the
+and filling content," and the gate that keeps silence the default. This is the bridge between the
 orchestrator (`05-orchestrator`) and the Brioela Generative UI document (`10`).
 
 ---
@@ -41,10 +41,10 @@ Both are implemented through the same single tool so there is one code path:
 
 ```
 tool: present_moment
-description: "Compose ONE emotional food moment as a Brioela Generative UI document. Choose the composition
+description: "Compose ONE emotional food moment as a Brioela Generative UI document. Choose the layout template
               whose family matches the emotional weight of the situation. Prefer the
               lowest tier that fits. Never enhance a safety surface."
-input_schema: <the Brioela Generative UI schema, with composition as a discriminated union>
+input_schema: <the Brioela Generative UI schema, with layoutTemplate as a discriminated union>
 ```
 
 In the one-shot case the orchestrator forces a `present_moment` call (effectively structured
@@ -55,12 +55,12 @@ tools. One tool, two modes.
 
 ## The Discriminated Union Is The Selection Act
 
-`composition` is a discriminated union keyed on `type`. The model "designing a layout" is
+`layoutTemplate` is a discriminated union keyed on `type`. The model "designing a layout" is
 literally:
 
-1. Pick one `composition.type` from the allowed set (e.g. `memory_recall_reverent`).
-2. Fill that type's required `slots` with content.
-3. Set `mood`, `atmosphere`, `beats`, `voice` from their enums.
+1. Pick one `layoutTemplate.type` from the allowed set (e.g. `memory_recall_reverent`).
+2. Fill that type's required `content` fields.
+3. Set `emotionalTone`, `backgroundEffect`, `entranceMotion`, and `typographyStyle` from their enums.
 
 There is no free canvas at any step. Every choice is a closed set the schema enforces. This is
 the same pattern the industry converged on (json-render, tambo, CopilotKit — research `02`,
@@ -72,10 +72,10 @@ the same pattern the industry converged on (json-render, tambo, CopilotKit — r
 
 Two viable shapes; we choose the first:
 
-- **One `present_moment`, composition is a union (chosen).** Single call path, supports
+- **One `present_moment`, layoutTemplate is a union (chosen).** Single call path, supports
    multi-scene documents later, keeps the toolbox tiny. The model selects the scene via the
   discriminator, steered by each union member's description.
-- One tool per composition (rejected as default). Makes selection explicit but explodes the
+- One tool per layout template (rejected as default). Makes selection explicit but explodes the
    toolbox to dozens of tools and makes composing a multi-part document awkward.
 
 The union members each carry a rich `description` (per `12-naming-law.md`), so selection is just
@@ -86,10 +86,10 @@ as well-steered as separate tools would be, without the tool sprawl.
 ## What Makes Selection Reliable
 
 1. **Discriminated unions** — pick one tag, fill one shape.
-2. **Enums over free strings** — `mood`, `tone`, `voice`, `atmosphere`, `beats` are closed sets; the model cannot hallucinate off-brand values.
+2. **Enums over free strings** — `emotionalTone`, `tone`, `typographyStyle`, `backgroundEffect`, `entranceMotion` are closed sets; the model cannot hallucinate off-brand values.
 3. **Names that carry intent** — `12-naming-law.md` removes gross mis-selection.
 4. **Descriptions that say *when*** — removes fine mis-selection.
-5. **Few required slots, strong defaults** — the minimum the model must produce is the minimum it can get wrong.
+5. **Few required content fields, strong defaults** — the minimum the model must produce is the minimum it can get wrong.
 6. **Few-shot gold examples per surface** — 3–4 exemplar Brioela Generative UI documents in the prompt; models imitate examples far better than they obey rules.
 7. **Per-surface allowlists** — a surface only exposes the composition types it permits, shrinking the choice to the relevant set. Surface enum values must use the explicit `_brioela_generative_ui` suffix.
 

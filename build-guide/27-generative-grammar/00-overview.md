@@ -14,7 +14,7 @@ Brioela Generative Grammar is the safe creative UI language for the app. It repl
 |---|---|
 | `01-runtime-boundary.md` | why no runtime JSX/MDX, platform constraints, Expo update boundary |
 | `02-grammar-document.md` | `GenerativeUIDocument`, schema shape, validation, versioning |
-| `03-primitive-families.md` | primitive families: surface, layout, meaning, food, Mesa, memory, share, atmosphere |
+| `03-primitive-families.md` | primitive families: surface, layout, meaning, food, Mesa, memory, share, background effect |
 | `04-emotion-motion-skia.md` | emotional tokens, motion/haptic pairings, Skia treatments |
 | `05-renderer-and-fallback.md` | recursive renderer, static fallback, 400ms rule, error handling |
 | `06-surface-integration.md` | feature surfaces and what is never generative |
@@ -27,8 +27,8 @@ Brioela Generative Grammar is the safe creative UI language for the app. It repl
 | `13-how-ai-selects.md` | tool calling vs structured output, discriminated-union selection, the silence gate |
 | `14-primitive-layers-and-reuse.md` | structural/expressive/domain primitives, cross-feature reuse, generic≠shadcn |
 | `15-validation-and-repair.md` | validate twice → fail closed live (400ms) → repair offline; size caps; safety/privacy filter |
-| `16-atmosphere-skia-system.md` | Tier 2 Skia: `{character}_field` families, uniform contract, web parity, degradation |
-| `17-motion-beats-system.md` | the `beats` choreography layer, Reanimated 4 mapping, reduced-motion contract |
+| `16-atmosphere-skia-system.md` | Tier 2 Skia background effects: `{character}_field` families, uniform contract, web parity, degradation |
+| `17-motion-beats-system.md` | the `entranceMotion` choreography layer, Reanimated 4 mapping, reduced-motion contract |
 | `19-code-package-structure.md` | the grammar mapped to real dirs: `shared/grammar/`, `mobile/grammar/`, `backend/src/core/generative-grammar/`; build order |
 | `20-contracts-and-stage-delivery.md` | contract-first API boundary, HTTP/realtime Brioela Generative UI delivery, no normal grammar route, end-to-end examples |
 | `21-contract-spine-hardening.md` | stricter contract spine: co-located schemas, Brioela Generative UI policy, contract-derived query keys, lint/CI rules |
@@ -52,13 +52,14 @@ Brioela Generative Grammar is the safe creative UI language for the app. It repl
 - No arbitrary remote code execution.
 - The AI generates typed grammar documents, not components.
 - API contracts and feature UI examples use explicit `brioelaGenerativeUi` naming, not poetic/internal names.
+- Brioela Generative UI document fields use descriptive names: `emotionalTone`, `backgroundEffect`, `layoutTemplate`, `content`, `entranceMotion`, `typographyStyle`.
 - Generative UI surface names must use lowercase snake_case with the explicit `_brioela_generative_ui` suffix, e.g. `scan_explanation_brioela_generative_ui`.
 - React Native is first-class; PWA/web can render the same grammar.
 - Static safety UI always renders first and remains authoritative.
 - The grammar layer is additive and optional.
 - HTTP and realtime features can both receive AI-selected Brioela Generative UI documents; only delivery differs.
 - Normal product flows do not call a separate grammar route. Feature responses or streams carry optional `brioelaGenerativeUi` data.
-- New boundary-crossing code should use the Contract Spine: contract-backed requests, responses, streams, Stage policy, and query keys.
+- New boundary-crossing code should use the Contract Spine: contract-backed requests, responses, streams, Brioela Generative UI policy, and query keys.
 - New normal HTTP API code should use ts-rest contracts, Hono-mounted `@ts-rest/serverless/fetch` routes, and `@ts-rest/react-query` feature wrappers, not hand-written `.api.ts` files.
 - Skia, Reanimated, and haptics are tokenized grammar outputs, not arbitrary style code.
 - Build-time AI can propose new `.tsx` components, but humans review and ship them before runtime use.

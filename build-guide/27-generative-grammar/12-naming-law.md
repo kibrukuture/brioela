@@ -2,7 +2,7 @@
 
 ## What This File Covers
 
-How every token, primitive, composition, atmosphere, and beat is named. Names in this grammar
+How every token, primitive, layout template, background effect, and entrance motion is named. Names in this grammar
 are not cosmetic — the AI reads the names to decide what to emit, so a vague, metaphorical, or
 inconsistent name directly causes the wrong UI to render. This file is a binding law, not a
 style preference, and it **supersedes** the illustrative names used in earlier files (`02`,
@@ -63,7 +63,7 @@ One fixed structure per kind, so the AI never has to guess what shape a name tak
 | Primitive (domain) | `{feature}_{role}` | `recipe_step` · `mesa_member_row` · `ingredient_list` |
 | Composition (scene) | `{surface}_{intent}_{layout}` | `scan_verdict_focus` · `mesa_fit_grid` · `memory_recall_reverent` |
 | Atmosphere (shader) | `{character}_field` | `ambient_grain_field` · `verdict_bloom_field` |
-| Beat (choreography) | `{character}_{pace}_beats` | `reveal_slow_beats` · `lift_soft_beats` |
+| Entrance motion | `{character}_{pace}_entrance` | `reveal_slow_entrance` · `lift_soft_entrance` |
 | Token | named on its axis (next section) | — |
 
 Generic primitives take **no** feature prefix (that is what makes them reusable — see
@@ -79,9 +79,9 @@ differently:
 
 | Axis | What it measures | Naming style | Examples |
 |---|---|---|---|
-| **Emotional** | a feeling | emotional words (correct here) | `mood`: `plain_truth` · `warm_caution` · `soft_celebration` |
-| **Character** | a kind/quality of movement or field | descriptive character words | `motion`: `breath` · `soft_lift` · `field_bloom`; atmospheres |
-| **Scalar** | a magnitude on a hierarchy | an ordinal scale, **never** metaphor | `space_xs … space_2xl`; `voice_display … voice_caption` |
+| **Emotional** | a feeling | emotional words (correct here) | `emotionalTone`: `plain_truth` · `warm_caution` · `soft_celebration` |
+| **Character** | a kind/quality of movement or field | descriptive character words | `motion`: `breath` · `soft_lift` · `field_bloom`; background effects |
+| **Scalar** | a magnitude on a hierarchy | an ordinal scale, **never** metaphor | `space_xs … space_2xl`; `typography_display … typography_caption` |
 
 The rule in one line: **emotional names for emotional things, descriptive names for character
 things, an ordinal scale for measurable things — never a metaphor that forces the AI to
@@ -120,7 +120,7 @@ component:   ScanVerdictFocusScene
 | Primitive | none | `Node` |
 | Composition | none (the 3-part name already signals it) | `Scene` |
 | Atmosphere | `_field` | `Field` |
-| Beat | `_beats` | — |
+| Entrance motion | `_entrance` | — |
 
 Generative surface names deliberately carry the explicit `_brioela_generative_ui` suffix. This is
 long on purpose: it prevents confusing an AI-selected enhancement surface with a full product
@@ -185,8 +185,13 @@ New canonical examples in the same grammar: `scan_insight_secondary` · `scan_sw
 | Old | New |
 |---|---|
 | spacing `intimate` / `breath` / `cathedral` | `space_xs` · `space_sm` · `space_md` · `space_lg` · `space_xl` · `space_2xl` |
-| voice `display` / `editorial` / `quiet` | `voice_display` · `voice_title` · `voice_body` · `voice_caption` |
-| `mood` values | unchanged (emotional axis — correct) |
+| voice `display` / `editorial` / `quiet` | `typography_display` · `typography_title` · `typography_body` · `typography_caption` |
+| `mood` field name | `emotionalTone` |
+| `atmosphere` field name | `backgroundEffect` |
+| `composition` field name | `layoutTemplate` |
+| `slots` field name | `content` |
+| `beats` field name | `entranceMotion` |
+| `voice` field name | `typographyStyle` |
 | `tone` values | unchanged (semantic categories — unambiguous) |
 | `motion` values | unchanged (character axis — describe the movement) |
 
@@ -199,7 +204,7 @@ removes the *fine* mis-selection. Every entry carries:
 
 - **What it is** — one plain sentence.
 - **When to use it** — the situation that should trigger this choice.
-- **Emotional register** — the mood it belongs to.
+- **Emotional register** — the emotional tone it belongs to.
 - **One gold example** — drives imitation (see `13-how-ai-selects.md`).
 
 Name gets the model to the right neighborhood; description gets it to the right door. Neither

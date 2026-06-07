@@ -4,8 +4,8 @@
 
 The `GenerativeUIDocument` contract, layout node schema, validation, grammar versioning, and data binding rules.
 
-> Note: `10-the-stage-document.md` is the evolved form of this contract — the **Stage**. There,
-> `layout` is realized as `composition` + `slots`, plus `atmosphere`, `beats`, and `voice`. The
+> Note: `10-the-stage-document.md` is the evolved form of this contract — the **Brioela Generative UI document**. There,
+> `layout` is realized as `layoutTemplate` + `content`, plus `backgroundEffect`, `entranceMotion`, and `typographyStyle`. The
 > node names below have been migrated to the naming law (`12-naming-law.md`) and grouped by the
 > three primitive layers (`14-primitive-layers-and-reuse.md`).
 
@@ -18,11 +18,11 @@ type GenerativeUIDocument = {
   grammarVersion: "1"
   surface: GenerativeSurface
   safetyLock: boolean
-  mood: UIMood
+  emotionalTone: EmotionalTone
   layout: UILayoutNode
   motion: MotionToken | null
   haptics: HapticToken | null
-  skia: SkiaTreatment | null
+  backgroundEffect: BackgroundEffectToken | null
   expiresAt: number | null
 }
 ```

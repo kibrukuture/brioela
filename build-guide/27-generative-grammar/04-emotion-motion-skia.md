@@ -6,10 +6,10 @@ How emotional tone, Reanimated motion, haptics, and Skia visual treatments are r
 
 ---
 
-## Emotional Tokens
+## Emotional Tone Tokens
 
 ```typescript
-type UIMood =
+type EmotionalTone =
   | "plain_truth"
   | "quiet_discovery"
   | "warm_caution"
@@ -21,7 +21,7 @@ type UIMood =
   | "savings_relief"
 ```
 
-Mood controls tone, emphasis, motion, and atmospheric defaults. Mood never changes safety verdicts.
+`emotionalTone` controls tone, emphasis, motion, and background defaults. It never changes safety verdicts.
 
 ---
 
@@ -79,10 +79,10 @@ Hard safety haptics are static and not chosen by generative grammar.
 
 ---
 
-## Skia Treatments
+## Background Effect Tokens
 
 ```typescript
-type SkiaTreatment =
+type BackgroundEffectToken =
   | "none"
   | "ambient_grain_field"
   | "verdict_bloom_field"   // safe vs caution carried by the tone token, not separate treatments
@@ -91,11 +91,11 @@ type SkiaTreatment =
   | "discovery_sheen_field"
 ```
 
-Skia treatments are prebuilt shader/layer configurations selected as the Stage's `atmosphere`
-layer. Names follow the `{character}_field` atmosphere grammar in `12-naming-law.md`; the AI
+Background effects are prebuilt shader/layer configurations selected as the Brioela Generative UI document's `backgroundEffect`
+layer. Names follow the `{character}_field` grammar in `12-naming-law.md`; the AI
 selects a token only and may nudge uniforms within safe ranges. The full atmosphere system
 (shader families, uniform ranges, web/CanvasKit parity, reduced-motion) is specified in
-`16-atmosphere-skia-system.md`. Mood, tone, motion, and haptic tokens above are unchanged.
+`16-atmosphere-skia-system.md`. Emotional tone, tone, motion, and haptic tokens above are unchanged.
 
 ---
 

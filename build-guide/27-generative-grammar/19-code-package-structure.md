@@ -31,8 +31,8 @@ The grammar lives in three places, one per role:
 | Package | Role | Home |
 |---|---|---|
 | `shared` | **the language** — schema + catalog (single source of truth) | `shared/grammar/` |
-| `mobile` | **the renderer** — native components that render a Stage | `mobile/grammar/` |
-| `backend` | **the producer** — AI orchestration that emits a Stage | `backend/src/core/generative-grammar/` |
+| `mobile` | **the renderer** — native components that render a Brioela Generative UI document | `mobile/grammar/` |
+| `backend` | **the producer** — AI orchestration that emits a Brioela Generative UI document | `backend/src/core/generative-grammar/` |
 
 The schema in `shared/grammar` is imported by both the renderer (to validate + map) and the
 producer (to constrain the model). One schema, three consumers — they cannot drift (`13`).
@@ -52,9 +52,9 @@ shared/grammar/
     brioela-generative-ui.ts       # BrioelaGenerativeUiDocument (extends document with the 6 layers)
     surfaces.ts                    # GenerativeSurface enum
     tokens/
-      mood.ts  tone.ts  voice.ts  spacing.ts  motion.ts  haptic.ts  icon.ts
-      atmosphere.ts                # {character}_field tokens + AtmosphereSelection
-      beats.ts                     # beat presets + BeatSequence
+      emotional-tone.ts  tone.ts  typography-style.ts  spacing.ts  motion.ts  haptic.ts  icon.ts
+      background-effect.ts         # {character}_field tokens + BackgroundEffectSelection
+      entrance-motion.ts           # entrance motion presets + EntranceMotion
     primitives/
       structural/                  # one file per atom
         stack.ts  cluster.ts  split.ts  rail.ts  ribbon.ts  constellation.ts
@@ -76,8 +76,8 @@ shared/grammar/
   catalog/
     registry.ts                    # type → { schema, defaults }
     descriptions.ts                # AI-facing descriptions (the steering, 12/13)
-    allowlists.ts                  # per-surface permitted composition types
-    pairing.ts                     # legal mood↔atmosphere↔beats↔voice combinations (04)
+    allowlists.ts                  # per-surface permitted layout template types
+    pairing.ts                     # legal emotionalTone↔backgroundEffect↔entranceMotion↔typographyStyle combinations (04)
 ```
 
 ---
@@ -95,15 +95,15 @@ mobile/grammar/
     structural/  stack-node.tsx  cluster-node.tsx  rail-node.tsx  …
     expressive/  headline-node.tsx  caption-node.tsx  metric-single-node.tsx  …
     domain/      ingredient-list-node.tsx  mesa-member-row-node.tsx  recipe-step-node.tsx  …
-  compositions/                    # one component per scene
+  compositions/                    # one component per layout template scene
     scan-verdict-focus-scene.tsx  mesa-fit-grid-scene.tsx  memory-recall-reverent-scene.tsx  …
-  atmosphere/                      # Tier 2 (16)
-    atmosphere-field.tsx           # selects + renders the Skia field
+  background-effect/               # Tier 2 (16)
+    background-effect-field.tsx     # selects + renders the Skia field
     uniform-ranges.ts             # intensity token → clamped uniform range
     degradation.ts                # full → static → fallback ladder
     shaders/  ambient-grain-field.sksl.ts  verdict-bloom-field.sksl.ts  …
   motion/                          # the beats layer (17)
-    beats.ts                       # preset → Reanimated sequence
+    entrance-motion.ts             # preset → Reanimated sequence
     springs.ts                     # design-system spring configs
     reduced-motion.ts
 ```
@@ -163,20 +163,20 @@ aggregator is later adopted, it re-exports these — no relocation needed.
 
 Bottom-up, so each layer compiles against a finished one beneath it:
 
-1. **`shared/grammar/schema/tokens/`** — the enums (mood, tone, voice, spacing, motion, haptic,
-   atmosphere, beats). Smallest, no dependencies.
+1. **`shared/grammar/schema/tokens/`** — the enums (emotionalTone, tone, typographyStyle, spacing, motion, haptic,
+   backgroundEffect, entranceMotion). Smallest, no dependencies.
 2. **`shared/grammar/schema/primitives/`** — atoms, by layer (structural → expressive → domain).
 3. **`shared/grammar/schema/compositions/` + `document.ts` + `brioela-generative-ui.ts`** — the discriminated
    union and the Brioela Generative UI document.
 4. **`shared/grammar/catalog/`** — registry, descriptions, allowlists, pairing.
 5. **`mobile/grammar/` renderer** — start with `brioela-generative-ui-renderer.tsx`, `node-renderers.ts`,
-   a few structural + expressive nodes, and one composition end-to-end; then `client-validate`,
+   a few structural + expressive nodes, and one layout template end-to-end; then `client-validate`,
    `fallback`.
-6. **`mobile/grammar/atmosphere/` + `motion/`** — Tier 2 + beats (can lag step 5).
+6. **`mobile/grammar/background-effect/` + `motion/`** — Tier 2 + entrance motion (can lag step 5).
 7. **`backend/src/core/generative-grammar/`** — `build-catalog-schema`, `validate-brioela-generative-ui`,
    `safety-filter`, the gate, `present-moment`, prompts/few-shot, `stream-brioela-generative-ui`.
 
-Vertical slice first: one surface (scan), one composition (`scan-verdict-focus`), a handful of
+Vertical slice first: one surface (scan), one layout template (`scan-verdict-focus`), a handful of
 atoms, end to end — prove the whole pipeline before widening the catalog.
 
 ---
