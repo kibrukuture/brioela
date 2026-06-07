@@ -6,7 +6,7 @@ Brioela Generative Grammar is the safe creative UI language for the app. It repl
 
 ## Status
 
-[x] complete — eight files written
+[~] in progress — foundation (01–08) complete; architecture layer (09–13) added; research saved
 
 ## Files In This Folder
 
@@ -20,6 +20,20 @@ Brioela Generative Grammar is the safe creative UI language for the app. It repl
 | `06-surface-integration.md` | feature surfaces and what is never generative |
 | `07-web-and-mobile-strategy.md` | React Native first, PWA/web strategy, CopilotKit/AI SDK/A2UI learnings |
 | `08-build-time-creation-lane.md` | AI-assisted component creation at build time, review, registry promotion |
+| `09-generativity-tiers.md` | the four tiers (static / grammar / canvas / mini-app) and the decision rule |
+| `10-the-stage-document.md` | the Stage: six expressive layers (mood, atmosphere, composition, slots, beats, voice) |
+| `11-composition-catalog-and-scale.md` | vocabulary layers, scale/soul answer, combinatorial math, quality bar |
+| `12-naming-law.md` | binding naming law for AI clarity — role-first, metaphor-anchored, long names fine |
+| `13-how-ai-selects.md` | tool calling vs structured output, discriminated-union selection, the silence gate |
+| `research/` | five full-text 2025–2026 research reports + index (substrate, frameworks, beauty stack) |
+
+## Still To Write
+
+- `14-validation-and-repair.md` — validate → repair → fail closed
+- `15-atmosphere-skia-system.md` — Tier 2 shader system
+- `16-motion-beats-system.md` — choreography / Reanimated
+- `17-tier3-webview-miniapp.md` — sandbox escape hatch + boundary
+- `18-code-package-structure.md` — the shared grammar package + renderer + tools tree
 
 ## Specs This Folder Draws From
 
