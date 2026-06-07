@@ -38,6 +38,8 @@ Updated:
 - `@ts-rest/core` follows the shared dependency pattern: it lives in `shared` and is re-exported through `@brioela/shared/contracts`, like Zod is re-exported through `@brioela/shared/zod`.
 - Backend and mobile should not import `@ts-rest/core` directly for normal app code.
 - New normal HTTP API code should use ts-rest contracts plus `@ts-rest/react-query` feature wrappers.
+- Smoke test confirmed `@ts-rest/serverless/fetch` can run inside Hono while preserving request validation, response validation, status responses, and contract metadata.
+- Normal contract-backed backend routes should prefer Hono-mounted ts-rest fetch runtime over custom parse/send helper code.
 - `mobile/network/tsr.ts` is a tiny initializer only; it must not become an endpoint logic file.
 - Normal HTTP endpoints should not need `.api.ts` files; feature hooks wrap generated ts-rest hooks instead.
 - Query keys are contract-derived with `contractKey(endpoint, input)`, not manually maintained in a global `QUERY_KEYS` object.
@@ -51,4 +53,4 @@ Updated:
 
 ## What Is Next
 
-Before coding, reconcile the older docs that still mention `GenerativeDecision`, `src/design-system`, and `use-stage` inside `mobile/grammar/`. Then implement one vertical slice: `shared/grammar` Stage schema, `shared/contracts/index.ts` re-exporting `@ts-rest/core`, `shared/contracts/contract-key.ts`, one scan contract with co-located endpoint schemas and Stage metadata, `mobile/network/tsr.ts`, a feature hook wrapping `tsr.scan.scanProduct.useMutation`, one backend scan handler using contract helpers, and one mobile render path.
+Before coding, reconcile the older docs that still mention `GenerativeDecision`, `src/design-system`, and `use-stage` inside `mobile/grammar/`. Then implement one vertical slice: `shared/grammar` Stage schema, `shared/contracts/index.ts` re-exporting `@ts-rest/core`, `shared/contracts/contract-key.ts`, one scan contract with co-located endpoint schemas and Stage metadata, a Hono route mounted with `@ts-rest/serverless/fetch`, `mobile/network/tsr.ts`, a feature hook wrapping `tsr.scan.scanProduct.useMutation`, and one mobile render path.

@@ -35,6 +35,7 @@
 		"@tolbel/align": "^1.2.9",
 		"@tolbel/cf-mailer": "^0.0.3",
 		"@trycourier/courier": "^7.11.0",
+		"@ts-rest/serverless": "^3.52.1",
 		"@upstash/qstash": "^2.11.0",
 		"@upstash/redis": "^1.38.0",
 		"base64-arraybuffer-es6": "^3.1.0",

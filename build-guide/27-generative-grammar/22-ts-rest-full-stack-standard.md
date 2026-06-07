@@ -33,9 +33,9 @@ ts-rest replaces the hand-written HTTP client layer for normal request/response 
 Match the existing shared Zod pattern.
 
 ```text
-shared -> @ts-rest/core
-mobile -> @ts-rest/react-query only if using generated hooks
-backend -> no direct @ts-rest/core import in normal app code
+shared  -> @ts-rest/core
+backend -> @ts-rest/serverless for Hono-mounted fetch runtime routes
+mobile  -> @ts-rest/react-query for generated TanStack hooks
 ```
 
 `shared/contracts/index.ts` re-exports what backend/mobile need from `@ts-rest/core`:
@@ -63,6 +63,10 @@ not from:
 ```typescript
 import { initContract } from "@ts-rest/core"
 ```
+
+Backend may import `@ts-rest/serverless/fetch` in the Hono route-mounting layer because that is a
+backend-only runtime adapter. Backend should still not import `@ts-rest/core` directly for normal
+app code.
 
 ---
 
@@ -315,10 +319,69 @@ Normal app API calls use ts-rest generated hooks through feature wrappers.
 Hono remains the app/router.
 
 ```typescript
-scanRouter.post("/product", onScanProduct)
+app.route("/v1/scan", scanRouter)
 ```
 
-The handler uses contract-aware helpers and Brioela Stage policy.
+For contract-backed HTTP routes, prefer mounting the ts-rest fetch runtime under Hono. This keeps
+Hono as the outer app while letting ts-rest handle request parsing, status responses, and response
+validation.
+
+```typescript
+import { Hono } from "hono"
+import { fetchRequestHandler, tsr } from "@ts-rest/serverless/fetch"
+import { API_CONTRACT } from "@brioela/shared/contracts"
+
+const scanRouter = new Hono()
+
+const scanTsRestRouter = tsr.router(API_CONTRACT.scan, {
+  scanProduct: async ({ body }, context) => {
+    const user = getUserFromContext(context)
+
+    const scan = await buildScanVerdict({
+      userId: user.id,
+      barcode: body.barcode,
+    })
+
+    const stage = await composeStageForContract(API_CONTRACT.scan.scanProduct, {
+      surface: "scan_secondary",
+      payload: buildScanStagePayload({ scan }),
+      safetyLock: scan.hardBlocks.length > 0,
+    })
+
+    return {
+      status: 200,
+      body: {
+        scan,
+        stage,
+      },
+    }
+  },
+})
+
+scanRouter.all("/*", (ctx) => {
+  return fetchRequestHandler({
+    request: ctx.req.raw,
+    contract: API_CONTRACT.scan,
+    router: scanTsRestRouter,
+    options: {
+      responseValidation: true,
+    },
+  })
+})
+```
+
+This replaces most custom `parseBody` / `sendContract` helper work for normal HTTP routes.
+
+Brioela still needs small policy helpers around Stage generation:
+
+- `composeStageForContract(...)`
+- `assertStageAllowedByContract(...)`
+- feature auth/context extraction, depending on route setup
+
+Manual Hono handlers remain acceptable for non-standard boundaries, but normal contract-backed
+HTTP should use the ts-rest fetch runtime under Hono.
+
+Fallback manual shape if a route cannot use the fetch runtime:
 
 ```typescript
 export async function onScanProduct(c: AppContext) {
@@ -349,6 +412,9 @@ Backend helpers must:
 - enforce `metadata.stage`
 - wrap the API response consistently
 - log with `metadata.id`
+
+The smoke test confirmed `@ts-rest/serverless/fetch` works inside Hono with request validation,
+response validation, status responses, and Stage metadata preserved.
 
 ---
 
@@ -421,11 +487,10 @@ For new Brioela HTTP code:
 1. `shared/contracts/index.ts` re-exports `@ts-rest/core` and combines feature contracts.
 2. `shared/contracts/contract-key.ts` implements stable contract keys.
 3. `shared/contracts/scan.contract.ts` defines one scan endpoint with Stage metadata.
-4. `mobile/network/tsr.ts` initializes `@ts-rest/react-query/v5`.
-5. `mobile/features/scan/hooks/use-scan-product.ts` wraps generated mutation.
-6. `backend/src/api/scan/scan.route.ts` mounts Hono route.
-7. `backend/src/api/scan/handlers/on-scan-product.ts` parses/sends through contract helpers.
-8. `GrammarRenderer` renders `data.body.stage` with static fallback.
+4. `backend/src/api/scan/scan.route.ts` mounts ts-rest fetch runtime under Hono for the scan contract.
+5. `mobile/network/tsr.ts` initializes `@ts-rest/react-query/v5`.
+6. `mobile/features/scan/hooks/use-scan-product.ts` wraps generated mutation.
+7. `GrammarRenderer` renders `data.body.stage` with static fallback.
 
 Prove this vertical slice before adding more endpoints.
 

@@ -74,10 +74,15 @@ Allowed package ownership:
 
 ```text
 shared  -> @ts-rest/core
-backend -> imports from @brioela/shared/contracts
-mobile  -> imports from @brioela/shared/contracts
-mobile  -> may add @ts-rest/react-query only if we adopt ts-rest's React Query hooks
+backend -> imports contracts from @brioela/shared/contracts
+backend -> may use @ts-rest/serverless/fetch for Hono-mounted contract routes
+mobile  -> imports contracts from @brioela/shared/contracts
+mobile  -> uses @ts-rest/react-query for generated TanStack hooks
 ```
+
+Smoke result: `@ts-rest/serverless/fetch` works inside a Hono route with request validation,
+response validation, status responses, and contract metadata. Prefer that for normal HTTP routes
+instead of writing large custom parse/send adapters.
 
 ---
 
@@ -375,6 +380,7 @@ Ban in new code:
 
 - raw `axios` imports outside `mobile/network/core/`
 - direct `@ts-rest/core` imports outside `shared/contracts/`
+- direct `@ts-rest/serverless/fetch` imports outside backend route-mounting files
 - `api.get<T>()`, `api.post<T>()`, `api.patch<T>()`, `api.put<T>()`, `api.del<T>()`
 - route strings like `"/v1/` outside `shared/contracts/`
 - backend `c.json(apiSuccessResponse(` inside `backend/src/api/` handlers
@@ -406,11 +412,9 @@ This makes contracts executable and hardens them before mobile/backend code depe
 2. Implement shared common schemas: API envelope/error and `stageSchema` import from grammar.
 3. Write one contract file: `shared/contracts/scan.contract.ts`.
 4. Write contract tests for scan.
-5. Harden mobile `request(contract, input)` on top of existing Axios client.
-6. Add backend `parseBody`, `parseQuery`, `parseParams`, `send` helpers.
-7. Implement one scan route + handler using the contract.
-8. Add one mobile hook using `contractKey` and `request`.
-9. Render with `GrammarRenderer stage={data.stage} fallback={...}`.
+5. Mount one scan contract with `@ts-rest/serverless/fetch` inside Hono.
+6. Add one mobile hook using `@ts-rest/react-query` and `contractKey`.
+7. Render with `GrammarRenderer stage={data.stage} fallback={...}`.
 
 No wider API migration until the first vertical slice works.
 

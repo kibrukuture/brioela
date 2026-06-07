@@ -57,7 +57,7 @@ Brioela Generative Grammar is the safe creative UI language for the app. It repl
 - HTTP and realtime features can both receive AI-selected Stages; only delivery differs.
 - Normal product flows do not call a separate grammar route. Feature responses or streams carry optional Stage data.
 - New boundary-crossing code should use the Contract Spine: contract-backed requests, responses, streams, Stage policy, and query keys.
-- New normal HTTP API code should use ts-rest contracts and `@ts-rest/react-query` feature wrappers, not hand-written `.api.ts` files.
+- New normal HTTP API code should use ts-rest contracts, Hono-mounted `@ts-rest/serverless/fetch` routes, and `@ts-rest/react-query` feature wrappers, not hand-written `.api.ts` files.
 - Skia, Reanimated, and haptics are tokenized grammar outputs, not arbitrary style code.
 - Build-time AI can propose new `.tsx` components, but humans review and ship them before runtime use.
 
