@@ -46,10 +46,10 @@ Each node type maps to a compiled component:
 const NODE_RENDERERS = {
   stack: StackNode,
   cluster: ClusterNode,
-  hero_line: HeroLineNode,
-  metric_petal: MetricPetalNode,
-  swap_pair: SwapPairNode,
-  mesa_grid: MesaGridNode,
+  headline: HeadlineNode,
+  metric_single: MetricSingleNode,
+  swap_suggestion: SwapSuggestionNode,
+  mesa_member_row: MesaMemberRowNode,
 } as const
 ```
 

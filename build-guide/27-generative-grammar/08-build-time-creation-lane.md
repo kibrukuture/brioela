@@ -54,10 +54,10 @@ This lane gives us real new UI ideas without runtime risk.
 
 AI can design a new primitive like:
 
-- `sugar_cube_line`
-- `mesa_table_field`
-- `memory_glow`
-- `recipe_step_rail`
+- `sugar_cube_line` (a candidate domain food-data visual)
+- `mesa_table_field` (an atmosphere)
+- `memory_glow_field` (an atmosphere)
+- `recipe_step` (a domain primitive)
 
 But it becomes available only after being built, reviewed, and shipped.
 

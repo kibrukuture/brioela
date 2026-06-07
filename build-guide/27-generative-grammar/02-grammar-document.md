@@ -4,6 +4,11 @@
 
 The `GenerativeUIDocument` contract, layout node schema, validation, grammar versioning, and data binding rules.
 
+> Note: `10-the-stage-document.md` is the evolved form of this contract — the **Stage**. There,
+> `layout` is realized as `composition` + `slots`, plus `atmosphere`, `beats`, and `voice`. The
+> node names below have been migrated to the naming law (`12-naming-law.md`) and grouped by the
+> three primitive layers (`14-primitive-layers-and-reuse.md`).
+
 ---
 
 ## Document Shape
@@ -49,21 +54,27 @@ Each surface has an allowlist of permitted node types.
 ## Layout Node
 
 ```typescript
+// layer tags reference 14-primitive-layers-and-reuse.md
 type UILayoutNode =
+  // structural
   | { type: "stack"; gap: SpacingToken; children: UILayoutNode[] }
   | { type: "cluster"; align: "start" | "center" | "end"; children: UILayoutNode[] }
-  | { type: "hero_line"; text: string; tone: ToneToken }
-  | { type: "whisper_note"; text: string; tone: ToneToken }
-  | { type: "metric_petal"; label: string; value: string; tone: ToneToken }
-  | { type: "ingredient_thread"; items: IngredientThreadItem[] }
-  | { type: "swap_pair"; from: string; to: string; reason: string }
-  | { type: "mesa_grid"; members: MesaMemberVerdict[] }
-  | { type: "recipe_step_rail"; steps: RecipeStepPreview[] }
-  | { type: "memory_moment"; text: string; timestampLabel: string | null }
-  | { type: "discovery_stamp"; label: string; icon: IconToken }
+  // expressive (generic — every feature reuses these)
+  | { type: "headline"; text: string; tone: ToneToken }
+  | { type: "caption"; text: string; tone: ToneToken }
+  | { type: "metric_single"; label: string; value: string; tone: ToneToken }
+  | { type: "swap_suggestion"; from: string; to: string; reason: string }
+  | { type: "timestamped_note"; text: string; timestampLabel: string | null }
+  | { type: "stamp"; label: string; icon: IconToken }
+  // domain (feature-specific data shapes)
+  | { type: "ingredient_list"; items: IngredientItem[] }
+  | { type: "mesa_member_row"; member: MesaMemberVerdict }
+  | { type: "recipe_step"; step: RecipeStepPreview }
 ```
 
-This is the alphabet. Creativity comes from composition.
+This is the alphabet — atoms across the structural, expressive, and domain layers. Multi-item
+arrangements (a grid of members, a rail of steps) come from structural nodes (`grid`, `rail`)
+and compositions (`11`), not from multi-item atoms. Creativity comes from composition.
 
 ---
 

@@ -84,15 +84,18 @@ Hard safety haptics are static and not chosen by generative grammar.
 ```typescript
 type SkiaTreatment =
   | "none"
-  | "ambient_grain"
-  | "verdict_bloom_safe"
-  | "verdict_bloom_caution"
-  | "memory_glow"
+  | "ambient_grain_field"
+  | "verdict_bloom_field"   // safe vs caution carried by the tone token, not separate treatments
+  | "memory_glow_field"
   | "mesa_table_field"
-  | "discovery_sheen"
+  | "discovery_sheen_field"
 ```
 
-Skia treatments are prebuilt shader/layer configurations. The AI selects tokens only.
+Skia treatments are prebuilt shader/layer configurations selected as the Stage's `atmosphere`
+layer. Names follow the `{character}_field` atmosphere grammar in `12-naming-law.md`; the AI
+selects a token only and may nudge uniforms within safe ranges. The full atmosphere system
+(shader families, uniform ranges, web/CanvasKit parity, reduced-motion) is specified in
+`16-atmosphere-skia-system.md`. Mood, tone, motion, and haptic tokens above are unchanged.
 
 ---
 
@@ -100,7 +103,7 @@ Skia treatments are prebuilt shader/layer configurations. The AI selects tokens 
 
 - `urgent_lock` only for static safety surfaces controlled by the feature, not AI-selected generative flavor.
 - `soft_celebration` can use `warm_pulse` or `field_bloom`.
-- `reverent_memory` can use `memory_glow` and slow reveal.
+- `reverent_memory` can use `memory_glow_field` and slow reveal.
 - `gentle_learning` uses soft lift, never urgent motion.
 - `table_care` can use `mesa_table_field`.
 
