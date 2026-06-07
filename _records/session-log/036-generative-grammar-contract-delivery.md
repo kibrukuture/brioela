@@ -64,6 +64,10 @@ Updated:
   - layout templates end in `_layout`, e.g. `scan_explanation_focus_layout`, `scan_detail_insight_layout`, `recipe_steps_horizontal_layout`
   - entrance motion values end in `_entrance`, e.g. `settle_all_entrance`, `slide_primary_then_details_entrance`
   - typography styles use `typography_*`, e.g. `typography_body`
+- Design-system spacing now has a two-layer rule:
+  - implementation/design code uses numeric 4pt tokens such as `space.1`, `space.4`, `space.12`
+  - Brioela Generative UI documents emit only `space_xs`, `space_sm`, `space_md`, `space_lg`, `space_xl`, `space_2xl`
+  - renderer maps ordinal AI tokens to numeric design-system tokens
 
 ## Evidence From Repo Audit
 

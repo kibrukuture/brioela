@@ -29,6 +29,60 @@ No values between the above. If the design needs "a bit more than 24" the answer
 
 ---
 
+## Brioela Generative UI Spacing Tokens
+
+There are two spacing layers:
+
+- **Design-system implementation scale** — numeric 4pt tokens like `space.1`, `space.4`, `space.12`, mapped to NativeWind classes.
+- **Brioela Generative UI grammar scale** — ordinal tokens like `space_xs`, `space_sm`, `space_md`, emitted by AI inside `BrioelaGenerativeUiDocument`.
+
+The AI must never emit numeric spacing tokens, Tailwind classes, or metaphor names.
+
+Allowed in Brioela Generative UI documents:
+
+```typescript
+type BrioelaGenerativeUiSpacingToken =
+  | "space_xs"
+  | "space_sm"
+  | "space_md"
+  | "space_lg"
+  | "space_xl"
+  | "space_2xl"
+```
+
+Forbidden in Brioela Generative UI documents:
+
+```text
+space.1
+space.4
+p-4
+gap-6
+intimate
+breath
+cathedral
+```
+
+Renderer mapping:
+
+| Brioela Generative UI token | Design-system token | Value | Typical use |
+|---|---|---|---|
+| `space_xs` | `space.2` | 8pt | tight inline gap |
+| `space_sm` | `space.3` | 12pt | compact grouping |
+| `space_md` | `space.4` | 16pt | default internal spacing |
+| `space_lg` | `space.6` | 24pt | generous section spacing |
+| `space_xl` | `space.8` | 32pt | major section spacing |
+| `space_2xl` | `space.12` | 48pt | editorial negative space |
+
+Rule:
+
+```text
+AI emits ordinal spacing tokens. Renderer maps them to numeric design-system tokens.
+```
+
+This keeps AI vocabulary simple and consistent while preserving the 4pt implementation grid.
+
+---
+
 ## Safe Areas
 
 Safe area insets are handled via `react-native-safe-area-context`. The `SafeAreaView` or `useSafeAreaInsets()` hook is used on every screen root. Screen content padding is never hardcoded for a specific device — always derived from safe area insets plus a spacing token.
@@ -111,5 +165,6 @@ Border radius maps via `rounded-sm`, `rounded-md`, `rounded-lg`, `rounded-xl`, `
 
 - No `StyleSheet` anywhere in the codebase. NativeWind className strings only.
 - No arbitrary Tailwind values (`p-[17px]`, `m-[13]`) — if the value is not in the scale above, use the next token up.
+- Brioela Generative UI documents use only `space_xs` through `space_2xl`; they never emit numeric design tokens or Tailwind classes.
 - When implementing a screen, start from the grid: outer padding → section gaps → item gaps → internal padding. Never guess a pixel value.
 - If an exact value is needed for a Skia canvas dimension or gesture threshold, it goes in a named constant in the relevant file with a comment explaining why. These are the only permitted exceptions.
