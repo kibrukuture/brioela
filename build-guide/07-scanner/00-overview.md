@@ -19,7 +19,7 @@ Note: restaurant menu scanning has its own folder (`17-menu-scanning`) and reuse
 | `04-scan-result-ui.md` | Verdict structure schema, base health score computation (rule-based), green/yellow/red verdict logic, compact result layout, hard allergy interrupt pattern, expanded result, boycott display, origin display, follow-up actions, free tier rule |
 | `05-gpt4o-mini-vision-fallback.md` | Vision fallback trigger (3s timeout), server-side GPT-4o mini extraction, contrast enhancement, confidence schema, synthetic product construction, menu scanning pattern reuse |
 | `06-product-data-provenance-correction.md` | Source priority, product fact provenance, label evidence, correction flow, safety boundary |
-| `07-community-product-intelligence.md` | Eight anonymized Postgres tables (cohorts, exposure-outcome pairs, ingredient harm index, product community trust, drug-food interactions, temporal patterns, geographic patterns, association candidates), flywheel mechanics, community signals feeding back into constraint check |
+| `07-community-product-intelligence.md` | Eight anonymized Postgres tables (cohorts, exposure-event associations, ingredient event association index, product community health summary, medication-food event associations, time-of-day event patterns, regional event patterns, research association candidates), flywheel mechanics, community signals feeding back into constraint check |
 
 ## Specs This Folder Draws From
 

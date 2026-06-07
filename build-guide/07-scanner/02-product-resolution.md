@@ -273,11 +273,11 @@ The evidence layer is additive. It does not remove or replace the canonical `pro
 Use this mental model:
 
 ```text
-products                 = what product is this?
-product_origin           = where does it come from / who owns it?
-product_fact_source      = how do we know each product fact?
-ProductEvidenceGraph     = resolved view/cache used by scanner
-product_community_trust  = real-world outcome overlay
+products                         = what product is this?
+product_origin                   = where does it come from / who owns it?
+product_fact_evidence            = how do we know each product fact?
+resolved_product_fact_snapshot   = resolved view/cache used by scanner
+product_community_health_summary = real-world outcome overlay
 ```
 
 ---
@@ -287,14 +287,14 @@ product_community_trust  = real-world outcome overlay
 Safety-relevant facts should carry provenance. Ingredients, allergens, nutrients, additives, and
 origin must not be trusted just because one provider returned them.
 
-Add a product fact source layer:
+Add a product fact evidence layer:
 
 ```typescript
-type ProductFactSource = {
-  sourceId: string
+type ProductFactEvidence = {
+  evidenceId: string
   productId: string
-  factPath: string
-  sourceType:
+  productFieldName: string
+  evidenceSourceType:
     | "open_food_facts"
     | "usda_fdc"
     | "gs1_verified"
@@ -302,14 +302,14 @@ type ProductFactSource = {
     | "commercial_product_api"
     | "gpt4o_mini_label"
     | "user_correction"
-  valueJson: string
-  confidence: number
+  observedValueJson: string
+  confidenceScore: number
   observedAt: number
-  acceptedForSafety: boolean
+  approvedForSafetyDecisions: boolean
 }
 ```
 
-Example `factPath` values:
+Example `productFieldName` values:
 
 ```text
 ingredients
@@ -342,7 +342,7 @@ correction requests.
 
 ## Community Trust Overlay
 
-`product_community_trust` does not resolve product facts. It adds real-world outcome context.
+`product_community_health_summary` does not resolve product facts. It adds real-world outcome context.
 
 Example:
 
@@ -377,13 +377,13 @@ Allowed in the hot path:
 
 - Redis product cache.
 - Supabase `products` lookup on cache miss.
-- cached/materialized community trust summary.
+- cached/materialized community health summary.
 - Orchestrator constraint check.
 
 Not allowed in the hot path:
 
 - live joins over large anonymized community health tables.
-- repeated per-scan full reads of ingredient harm tables.
+- repeated per-scan full reads of ingredient event association tables.
 - slow provider fan-out after a confident cache hit.
 
 Community health signals should be refreshed into Redis/materialized summaries by scheduled

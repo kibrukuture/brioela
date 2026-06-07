@@ -91,11 +91,11 @@ type ProductLabelExtraction = {
 ## Provenance Model
 
 ```typescript
-type ProductFactSource = {
-  sourceId: string
+type ProductFactEvidence = {
+  evidenceId: string
   productId: string
-  factPath: string
-  sourceType:
+  productFieldName: string
+  evidenceSourceType:
     | "label_gpt4o_mini"
     | "open_food_facts"
     | "gs1_verified"
@@ -103,14 +103,14 @@ type ProductFactSource = {
     | "government_database"
     | "commercial_product_api"
     | "user_correction"
-  valueJson: string
-  confidence: number
+  observedValueJson: string
+  confidenceScore: number
   observedAt: number
-  acceptedForSafety: boolean
+  approvedForSafetyDecisions: boolean
 }
 ```
 
-Examples of `factPath`:
+Examples of `productFieldName`:
 
 ```text
 ingredients
@@ -141,7 +141,7 @@ Flow:
 2. Brioela asks for a label photo or URL.
 3. GPT-4o mini extracts structured facts from the evidence.
 4. Brioela compares current product facts to extracted facts.
-5. If confidence is high and the correction affects non-critical facts, update product fact source.
+5. If confidence is high and the correction affects non-critical facts, update product fact evidence.
 6. If correction affects allergen/medical/recall logic, mark as `review_required` before shared acceptance.
 7. The current user's scan can still use the visible-label extraction with a clear caveat.
 
@@ -167,15 +167,15 @@ The label photo does not show peanuts, but Open Food Facts lists peanuts. I cann
 ## Data Model Additions
 
 ```sql
-CREATE TABLE product_fact_source (
-  source_id            text primary key,
+CREATE TABLE product_fact_evidence (
+  evidence_id          text primary key,
   product_id           text not null,
-  fact_path            text not null,
-  source_type          text not null,
-  value_json           text not null,
-  confidence           real not null,
+  product_field_name   text not null,
+  evidence_source_type text not null,
+  observed_value_json  text not null,
+  confidence_score     real not null,
   observed_at          integer not null,
-  accepted_for_safety  integer not null default 0
+  approved_for_safety_decisions integer not null default 0
 );
 
 CREATE TABLE product_correction_request (
