@@ -1,0 +1,41 @@
+# Session 036 — Generative Grammar Contract And Stage Delivery
+
+## Date
+
+2026-06-07
+
+## Completed This Session
+
+Written:
+- `build-guide/27-generative-grammar/20-contracts-and-stage-delivery.md`
+
+Updated:
+- `build-guide/27-generative-grammar/00-overview.md`
+- `_records/connections/24-generative-grammar-connections.md`
+- `_records/session-log/036-generative-grammar-contract-delivery.md`
+
+## Decisions Captured
+
+- Generative UI is not static-only. HTTP and realtime features can both carry AI-selected Stages.
+- Delivery differs by transport:
+  - HTTP features return optional `stage` inside the feature response.
+  - Realtime features send `{ type: "stage", stage }` inside the feature stream.
+- Normal product flows do not use a standalone grammar route.
+- Standalone grammar routes are allowed only for internal preview, catalog QA, fixtures, or design review.
+- Feature screens use the preferred render shape:
+  `<GrammarRenderer stage={data.stage} fallback={<StaticScanSecondary scan={data.scan} />} />`
+- Backend shape for new Brioela features should avoid pass-through controllers.
+- Do not add a `services/` layer by default if the project standard is route + handler + helper.
+- Axios can stay as transport, but new code should use contract-aware request helpers instead of blind `api.get<T>()`/`api.post<T>()` generics.
+- TanStack Query stays as the query/mutation layer.
+
+## Evidence From Repo Audit
+
+- Current repo has shared route constants and shared validators, but method/path/body/query/response are split across files.
+- Backend validation is real and common, but response validation is not consistent across every handler.
+- Mobile currently trusts generic `api.get<T>()`/`api.post<T>()` responses without runtime response parsing.
+- Some copied legacy mobile network files still use raw Axios or `unknown`/`any`; new Brioela code should not follow those.
+
+## What Is Next
+
+Before coding, reconcile the older docs that still mention `GenerativeDecision`, `src/design-system`, and `use-stage` inside `mobile/grammar/`. Then implement one vertical slice: `shared/grammar` Stage schema, one scan contract, contract-aware Axios request helper, one backend scan handler, and one mobile render path.

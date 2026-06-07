@@ -6,7 +6,7 @@ Brioela Generative Grammar is the safe creative UI language for the app. It repl
 
 ## Status
 
-[x] design complete — `01–17` + `19` written, research saved; `18` (WebView) deferred to future. Ready to code.
+[x] design complete — `01–17` + `19–20` written, research saved; `18` (WebView) deferred to future. Ready to code.
 
 ## Files In This Folder
 
@@ -30,6 +30,7 @@ Brioela Generative Grammar is the safe creative UI language for the app. It repl
 | `16-atmosphere-skia-system.md` | Tier 2 Skia: `{character}_field` families, uniform contract, web parity, degradation |
 | `17-motion-beats-system.md` | the `beats` choreography layer, Reanimated 4 mapping, reduced-motion contract |
 | `19-code-package-structure.md` | the grammar mapped to real dirs: `shared/grammar/`, `mobile/grammar/`, `backend/src/core/generative-grammar/`; build order |
+| `20-contracts-and-stage-delivery.md` | contract-first API boundary, HTTP/realtime Stage delivery, no normal grammar route, end-to-end examples |
 | `research/` | five full-text 2025–2026 research reports + index (substrate, frameworks, beauty stack) |
 
 ## Deferred (future, not v1)
@@ -51,6 +52,8 @@ Brioela Generative Grammar is the safe creative UI language for the app. It repl
 - React Native is first-class; PWA/web can render the same grammar.
 - Static safety UI always renders first and remains authoritative.
 - The grammar layer is additive and optional.
+- HTTP and realtime features can both receive AI-selected Stages; only delivery differs.
+- Normal product flows do not call a separate grammar route. Feature responses or streams carry optional Stage data.
 - Skia, Reanimated, and haptics are tokenized grammar outputs, not arbitrary style code.
 - Build-time AI can propose new `.tsx` components, but humans review and ship them before runtime use.
 
