@@ -1,6 +1,6 @@
 # Master Inventory — All Spec Files
 
-Total: 114 files across 6 areas.
+Total: 115 files across 6 areas.
 
 Status markers:
 - `[ ]` not yet processed into build-guide
@@ -9,7 +9,7 @@ Status markers:
 
 ---
 
-## Area 1 — brioela-specs/ (44 files)
+## Area 1 — brioela-specs/ (45 files)
 
 Core product philosophy and feature specs. These are the "what and why" layer.
 
@@ -59,6 +59,7 @@ Core product philosophy and feature specs. These are the "what and why" layer.
 | [x] | `40-wearables-integration.md` | Apple Watch, wearable integration |
 | [x] | `41-mesa.md` | Mesa — multi-person food audience and compatibility layer |
 | [x] | `42-brioela-generative-grammar.md` | Brioela Generative Grammar — typed creative UI language |
+| [x] | `43-passport.md` | Passport — temporary privacy-safe food instruction artifact |
 | [ ] | `README.md` | Spec folder overview |
 
 ---
