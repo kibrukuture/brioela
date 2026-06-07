@@ -492,13 +492,15 @@ CREATE TABLE scheduled_alarms (
   user_id        TEXT NOT NULL,
   alarm_type     TEXT NOT NULL,   -- free text — no fixed enum
   payload        TEXT NOT NULL,   -- JSON object — alarm handler reads this
-  status         TEXT NOT NULL DEFAULT 'pending',  -- 'pending' | 'processing' | 'completed' | 'failed' | 'cancelled'
+  status         TEXT NOT NULL DEFAULT 'pending',  -- lifecycle: 'pending' | 'processing' | 'completed' | 'failed' | 'cancelled'
   attempts       INTEGER NOT NULL DEFAULT 0,
   failure_reason TEXT,
   label          TEXT,
   scheduled_at   INTEGER NOT NULL,
   started_at     INTEGER,
   completed_at   INTEGER,
+  action_outcome_status  TEXT,    -- outcome of the action triggered by this alarm, distinct from lifecycle status. NULL until an outcome lands. e.g. 'calling' | 'answered' | 'missed' | 'notified' | 'failed'
+  action_outcome_json    TEXT,    -- JSON — alarm-type-specific action outcome. medication call: {"took":1,"call_sid":"...","answered_at":123}. travel preload: {"products_cached":142}
   created_at     INTEGER NOT NULL
 );
 
@@ -519,9 +521,28 @@ export const scheduledAlarms = sqliteTable('scheduled_alarms', {
   scheduledAt:   integer('scheduled_at').notNull(),
   startedAt:     integer('started_at'),
   completedAt:   integer('completed_at'),
+  actionOutcomeStatus: text('action_outcome_status'), // action outcome — NULL until it lands
+  actionOutcomeJson:   text('action_outcome_json'),   // JSON — alarm-type-specific action outcome payload
   createdAt:     integer('created_at').notNull(),
 })
 ```
+
+### Why `action_outcome_status` + `action_outcome_json` (one generic action outcome surface)
+
+Some alarms have an async outcome that arrives *after* the alarm fires — a medication call the user answers, a travel preload that finishes caching, an illness-detective pass that lands on a culprit. That outcome is alarm-type-specific.
+
+The wrong move is a dedicated table per alarm type (`medication_reminders`, `travel_preloads`, …) — every one duplicates the same shape (a status, an attempt time, a type-specific outcome blob) and forces a schema change for every new alarm type. Instead, two columns on `scheduled_alarms` carry every action outcome:
+
+- `action_outcome_status` — the outcome state from the action the alarm triggered, separate from the row's lifecycle `status`. The alarm `status` is `completed` once it fired and dispatched; `action_outcome_status` tracks what came back (`answered`, `missed`, `notified`, `failed`).
+- `action_outcome_json` — the type-specific action outcome payload.
+
+```
+medication_reminder → action_outcome_status: 'answered'   action_outcome_json: {"took":1,"call_sid":"vapi_xxx","answered_at":1718000000000}
+travel_preload      → action_outcome_status: 'completed'  action_outcome_json: {"products_cached":142,"regions_loaded":3}
+illness_detective   → action_outcome_status: 'completed'  action_outcome_json: {"top_culprit":"product_x","confidence":0.78}
+```
+
+No new alarm type ever needs a new table. This is why there is no separate `medication_reminders` table — the medication-call outcome is just an alarm outcome (`build-guide/29-health-intelligence/02-medication-reminders.md`).
 
 ---
 

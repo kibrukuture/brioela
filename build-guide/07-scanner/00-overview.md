@@ -7,18 +7,19 @@ The core product loop: point camera at a product, get a verdict in under 3 secon
 Note: restaurant menu scanning has its own folder (`17-menu-scanning`) and reuses the GPT-4o mini vision extraction pattern from this folder.
 
 ## Status
-[x] complete — six files written
+[x] complete — seven files written
 
 ## Files In This Folder
 
 | File | Contents |
 |---|---|
 | `01-barcode-decode.md` | On-device barcode detection (Expo Camera), UPC extraction, offline behavior, backend route entry point, Supabase scan_events write, dual write to Orchestrator DO memory_event |
-| `02-product-resolution.md` | Three-layer resolution stack (Redis → Supabase → external APIs), Open Food Facts, country-specific gov DBs, canonical products table schema, product_origin table, pending scan queue for unresolved UPCs |
-| `03-constraint-check.md` | check-constraint tool inside Orchestrator DO, ingredient synonym resolution, five constraint type behaviors (block/warn/deprioritize/boycott/clear), drug-food interaction check via user_memory.health.medications, fail-open rule, proposed constraint surfacing after scan |
-| `04-scan-result-ui.md` | Verdict structure schema, base health score computation (rule-based, no LLM), green/yellow/red verdict logic, compact result layout, hard allergy interrupt pattern, expanded result, boycott display, origin display, follow-up actions (Save/Note/Map/Avoid/Share), free tier rule |
-| `05-gpt4o-mini-vision-fallback.md` | vision fallback trigger (3s timeout), server-side GPT-4o mini vision extraction, contrast enhancement with sharp, confidence schema and UI treatment, synthetic product construction from extracted label data, menu scanning pattern reuse, full folder structure |
-| `06-product-data-provenance-correction.md` | source priority, product fact provenance, GPT-4o mini label evidence, correction flow, safety boundary |
+| `02-product-resolution.md` | Evidence-weighted product graph, parallel fan-out to approved sources (GS1 + Open Food Facts + USDA + country public databases + commercial fallback), field-level confidence, allergen fail-safe resolution, GPT-4o mini label evidence, conflict detection, confidence-based UI treatment |
+| `03-constraint-check.md` | check-constraint tool inside Orchestrator DO, ingredient synonym resolution, five constraint type behaviors (block/warn/deprioritize/boycott/clear), drug-food interaction check via user_memory.health.medications, community health signal overlay, fail-open rule |
+| `04-scan-result-ui.md` | Verdict structure schema, base health score computation (rule-based), green/yellow/red verdict logic, compact result layout, hard allergy interrupt pattern, expanded result, boycott display, origin display, follow-up actions, free tier rule |
+| `05-gpt4o-mini-vision-fallback.md` | Vision fallback trigger (3s timeout), server-side GPT-4o mini extraction, contrast enhancement, confidence schema, synthetic product construction, menu scanning pattern reuse |
+| `06-product-data-provenance-correction.md` | Source priority, product fact provenance, label evidence, correction flow, safety boundary |
+| `07-community-product-intelligence.md` | Eight anonymized Postgres tables (cohorts, exposure-outcome pairs, ingredient harm index, product community trust, drug-food interactions, temporal patterns, geographic patterns, association candidates), flywheel mechanics, community signals feeding back into constraint check |
 
 ## Specs This Folder Draws From
 

@@ -6,6 +6,7 @@ spec: brioela-specs/01-product-health-scanning.md
   → build-guide/07-scanner/04-scan-result-ui.md      [x] done (verdict structure, score, failure handling)
   → build-guide/07-scanner/05-gpt4o-mini-vision-fallback.md [x] done (label image fallback, structured extraction)
   → build-guide/07-scanner/06-product-data-provenance-correction.md [x] done (source priority, correction flow)
+  → build-guide/07-scanner/07-community-product-intelligence.md [x] done (community outcome signal feedback)
 
 spec: brioela-specs/05-origin-supply-chain-and-boycott-filters.md
   → build-guide/07-scanner/03-constraint-check.md    [x] done (boycott constraint type)

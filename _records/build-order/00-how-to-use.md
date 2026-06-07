@@ -17,6 +17,7 @@ then A must be in a lower-numbered layer than B. No exceptions.
 - `07-layer-ground.md`
 - `08-layer-map.md`
 - `09-layer-bela.md`
+- `27-layer-health-intelligence.md`
 
 ## When to update
 When a new dependency is discovered during building, update the relevant layer file.

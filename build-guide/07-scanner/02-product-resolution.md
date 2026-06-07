@@ -255,3 +255,148 @@ The user sees: "We don't recognise this product yet. We'll notify you if we find
 | Gov DB fallback | < 3s |
 
 Total scan-to-verdict: barcode decode (instant, on-device) + product resolution + constraint check + verdict build. Redis cache hit path achieves <1.5s total. External resolution path can reach 2.5–3s — acceptable, still under the 3s target.
+
+---
+
+## Evidence Layer Addendum
+
+The original product-resolution stack stays intact.
+
+```text
+products table       -> canonical grocery/barcode product identity
+product_origin table -> origin/manufacturer/parent-company history
+pending_scans        -> unresolved UPC retry queue
+```
+
+The evidence layer is additive. It does not remove or replace the canonical `products` table.
+
+Use this mental model:
+
+```text
+products                 = what product is this?
+product_origin           = where does it come from / who owns it?
+product_fact_source      = how do we know each product fact?
+ProductEvidenceGraph     = resolved view/cache used by scanner
+product_community_trust  = real-world outcome overlay
+```
+
+---
+
+## Product Fact Provenance
+
+Safety-relevant facts should carry provenance. Ingredients, allergens, nutrients, additives, and
+origin must not be trusted just because one provider returned them.
+
+Add a product fact source layer:
+
+```typescript
+type ProductFactSource = {
+  sourceId: string
+  productId: string
+  factPath: string
+  sourceType:
+    | "open_food_facts"
+    | "usda_fdc"
+    | "gs1_verified"
+    | "government_database"
+    | "commercial_product_api"
+    | "gpt4o_mini_label"
+    | "user_correction"
+  valueJson: string
+  confidence: number
+  observedAt: number
+  acceptedForSafety: boolean
+}
+```
+
+Example `factPath` values:
+
+```text
+ingredients
+allergen_statement
+nutrition.sugar_g
+origin.country
+brand
+product_name
+```
+
+---
+
+## GPT-4o Mini Label Evidence
+
+GPT-4o mini vision extraction is used as label evidence when:
+
+- barcode is missing
+- UPC is unresolved
+- product sources conflict
+- user submits a correction
+- label evidence is required for safety verification
+
+The model returns structured data validated by Zod. Product logic never trusts free-form prose.
+
+Label evidence can be used immediately for the current scan with a confidence caveat. It does not
+silently overwrite the shared `products` table. Conflicts create evidence records and can become
+correction requests.
+
+---
+
+## Community Trust Overlay
+
+`product_community_trust` does not resolve product facts. It adds real-world outcome context.
+
+Example:
+
+```text
+Product facts: product contains MSG.
+Community signal: similar users with hypertension reported headaches more often after products containing MSG.
+Verdict impact: green can become yellow with careful wording.
+```
+
+Community signals can add caution. They do not clear allergens and they do not create diagnosis
+language.
+
+Allowed wording:
+
+```text
+Similar users with hypertension reported headaches more often after products like this. This product contains MSG, which is part of that signal.
+```
+
+Forbidden wording:
+
+```text
+This product is medically unsafe for people with hypertension.
+```
+
+---
+
+## Hot Path Rule
+
+The scan hot path must stay fast.
+
+Allowed in the hot path:
+
+- Redis product cache.
+- Supabase `products` lookup on cache miss.
+- cached/materialized community trust summary.
+- Orchestrator constraint check.
+
+Not allowed in the hot path:
+
+- live joins over large anonymized community health tables.
+- repeated per-scan full reads of ingredient harm tables.
+- slow provider fan-out after a confident cache hit.
+
+Community health signals should be refreshed into Redis/materialized summaries by scheduled
+background jobs, then read quickly during scan.
+
+---
+
+## Correction Flow Links
+
+Product correction and source provenance are detailed in:
+
+- `06-product-data-provenance-correction.md`
+- `07-community-product-intelligence.md`
+
+Those files extend product resolution. They do not remove the `products`, `product_origin`, or
+`pending_scans` model above.

@@ -43,6 +43,7 @@ spec: brioela-specs/35-ground-community-intelligence.md
 - `23-foundational-reconciliation-connections.md`
 - `24-generative-grammar-connections.md`
 - `25-passport-connections.md`
+- `26-health-intelligence-connections.md`
 
 ## When to update
 Every time a build-guide file is written: add the connection here immediately.
