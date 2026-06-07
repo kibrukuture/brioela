@@ -18,7 +18,15 @@ export const VerdictSchema = z.object({
   constraint: z.object({                   // null if no constraint matched
     level:    z.enum(['block', 'boycott', 'warn', 'deprioritize']),
     matches:  z.array(ConstraintMatchSchema),
-    drugInteractions: z.array(DrugInteractionSchema),
+    medicationFoodInteractions: z.array(MedicationFoodInteractionSchema),
+    communityHealthAssociations: z.array(CommunityHealthAssociationSchema),
+  }).nullable(),
+  communityHealth: z.object({              // null if no community overlay exists
+    confidenceScore: z.number().min(0).max(1),
+    evidenceVolumeScore: z.number().min(0).max(1),
+    disagreementScore: z.number().min(0).max(1),
+    reportedEventRate: z.number().nullable(),
+    elevatedConditionTags: z.array(z.string()),
   }).nullable(),
   origin: z.object({
     country:        z.string().nullable(),
@@ -85,8 +93,10 @@ export function computeBaseScore(product: Product): number {
 export function buildVerdict(
   product: Product,
   constraintResult: ConstraintCheckResult,
+  communityHealth: ProductCommunityHealthOverlay | null,
 ): Verdict {
   const baseScore = computeBaseScore(product)
+  const communityOverlay = buildCommunityHealthVerdictOverlay(communityHealth, constraintResult)
 
   // Constraint overrides base score
   if (constraintResult.level === 'block' || constraintResult.level === 'boycott') {
@@ -95,17 +105,23 @@ export function buildVerdict(
       reason:     buildConstraintReason(constraintResult.matches[0]!),
       score:      baseScore,
       constraint: constraintResult,
+      communityHealth,
       origin:     buildOrigin(product),
       expandedDetail: buildExpandedDetail(product),
     }
   }
 
-  if (constraintResult.level === 'warn' || constraintResult.drugInteractions.length > 0) {
+  if (constraintResult.level === 'warn' || constraintResult.medicationFoodInteractions.length > 0) {
+    const warningReason = constraintResult.matches[0]
+      ? buildConstraintReason(constraintResult.matches[0])
+      : communityOverlay.reason ?? buildScoreReason(baseScore, product)
+
     return {
       level:      'yellow',
-      reason:     buildConstraintReason(constraintResult.matches[0]!) ?? buildScoreReason(baseScore, product),
+      reason:     warningReason,
       score:      baseScore,
       constraint: constraintResult,
+      communityHealth,
       origin:     buildOrigin(product),
       expandedDetail: buildExpandedDetail(product),
     }
@@ -113,17 +129,37 @@ export function buildVerdict(
 
   // No constraint match — base score determines verdict
   const level: 'green' | 'yellow' | 'red' =
+    communityOverlay.shouldUpgradeGreenToYellow && baseScore >= 70 ? 'yellow' :
     baseScore >= 70 ? 'green' :
     baseScore >= 40 ? 'yellow' :
     'red'
 
   return {
     level,
-    reason:     buildScoreReason(baseScore, product),
+    reason:     communityOverlay.reason ?? buildScoreReason(baseScore, product),
     score:      baseScore,
     constraint: null,
+    communityHealth,
     origin:     buildOrigin(product),
     expandedDetail: buildExpandedDetail(product),
+  }
+}
+
+function buildCommunityHealthVerdictOverlay(
+  communityHealth: ProductCommunityHealthOverlay | null,
+  constraintResult: ConstraintCheckResult,
+): { shouldUpgradeGreenToYellow: boolean; reason: string | null } {
+  if (!communityHealth) return { shouldUpgradeGreenToYellow: false, reason: null }
+
+  const hasSupportedAssociation = constraintResult.communityHealthAssociations.some(association =>
+    association.eventAssociationScore >= 0.60 && association.supportingHealthGroupCount >= 3,
+  )
+
+  if (!hasSupportedAssociation) return { shouldUpgradeGreenToYellow: false, reason: null }
+
+  return {
+    shouldUpgradeGreenToYellow: true,
+    reason: 'People with a similar profile have reported events after products like this.',
   }
 }
 

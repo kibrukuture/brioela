@@ -277,7 +277,7 @@ products                         = what product is this?
 product_origin                   = where does it come from / who owns it?
 product_fact_evidence            = how do we know each product fact?
 resolved_product_fact_snapshot   = resolved view/cache used by scanner
-product_community_health_summary = real-world outcome overlay
+product_community_health_summary = reported event overlay
 ```
 
 ---

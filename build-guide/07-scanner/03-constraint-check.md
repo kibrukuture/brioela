@@ -2,7 +2,7 @@
 
 ## What This File Covers
 
-How a resolved product is checked against the user's full constraint profile: hard allergy interrupt, intolerance warning, dislike deprioritization, dietary identity filtering, boycott flagging, and medication-food interaction check. All pulled from the Orchestrator DO.
+How a resolved product is checked against the user's full constraint profile: hard allergy interrupt, intolerance warning, dislike deprioritization, dietary identity filtering, boycott flagging, medication-food interaction check, and cached community health associations. User-private checks are pulled from the Orchestrator DO; community summaries are cached/materialized shared evidence.
 
 ---
 
@@ -30,7 +30,8 @@ export type ConstraintLevel = 'block' | 'warn' | 'deprioritize' | 'boycott' | 'c
 export interface ConstraintCheckResult {
   level:   ConstraintLevel          // highest severity match, or 'clear' if no match
   matches: ConstraintMatch[]        // all matched constraints, sorted severity DESC
-  drugInteractions: DrugInteraction[] // medication-ingredient interactions found
+  medicationFoodInteractions: MedicationFoodInteraction[]
+  communityHealthAssociations: CommunityHealthAssociation[]
 }
 
 export interface ConstraintMatch {
@@ -41,19 +42,30 @@ export interface ConstraintMatch {
   severity:       ConstraintLevel
 }
 
-export interface DrugInteraction {
-  drug:        string               // medication name from user_memory
+export interface MedicationFoodInteraction {
+  medication:  string               // medication name from user_memory
   ingredient:  string               // ingredient in this product that interacts
   interaction: string               // description of the interaction
   severity:    'high' | 'moderate' | 'note'
+}
+
+export interface CommunityHealthAssociation {
+  ingredientName: string
+  reportedConditionTag: string
+  postExposureEventKind: string
+  eventAssociationScore: number
+  supportingHealthGroupCount: number
+  plainLanguageAssociationSummary: string
+  severity: 'warn' | 'deprioritize'
 }
 
 export async function checkProductConstraints(
   product: Product,
   db: DrizzleDB,
 ): Promise<ConstraintCheckResult> {
-  const matches:          ConstraintMatch[]  = []
-  const drugInteractions: DrugInteraction[]  = []
+  const matches:                      ConstraintMatch[] = []
+  const medicationFoodInteractions:    MedicationFoodInteraction[] = []
+  const communityHealthAssociations:   CommunityHealthAssociation[] = []
 
   // Load all active confirmed constraints
   const activeConstraints = db.select()
@@ -154,13 +166,35 @@ export async function checkProductConstraints(
       medications.map(m => m.key),  // medication names
       productIngredients,
     )
-    drugInteractions.push(...interactions)
+    medicationFoodInteractions.push(...interactions)
+  }
+
+  // Community health association overlay
+  // Reads cached/materialized summaries; never performs a live full-table community query in the scan path.
+  const userConditionTags = getUserConditionTags(db)
+  const ingredientAssociationSignals = await fetchIngredientEventAssociationSignals(
+    productIngredients,
+    userConditionTags,
+  )
+
+  for (const signal of ingredientAssociationSignals) {
+    if (signal.eventAssociationScore < 0.60 || signal.supportingHealthGroupCount < 3) continue
+
+    communityHealthAssociations.push({
+      ingredientName: signal.ingredientName,
+      reportedConditionTag: signal.reportedConditionTag,
+      postExposureEventKind: signal.postExposureEventKind,
+      eventAssociationScore: signal.eventAssociationScore,
+      supportingHealthGroupCount: signal.supportingHealthGroupCount,
+      plainLanguageAssociationSummary: signal.plainLanguageAssociationSummary,
+      severity: signal.eventAssociationScore > 0.80 ? 'warn' : 'deprioritize',
+    })
   }
 
   // Determine overall severity level
   const severityOrder: ConstraintLevel[] = ['block', 'boycott', 'warn', 'deprioritize', 'clear']
   const highestSeverity = matches.length === 0
-    ? (drugInteractions.some(d => d.severity === 'high') ? 'warn' : 'clear')
+    ? (medicationFoodInteractions.some(d => d.severity === 'high') || communityHealthAssociations.some(a => a.severity === 'warn') ? 'warn' : 'clear')
     : severityOrder.find(s => matches.some(m => m.severity === s)) ?? 'clear'
 
   // Sort matches by severity
@@ -168,7 +202,7 @@ export async function checkProductConstraints(
     severityOrder.indexOf(a.severity) - severityOrder.indexOf(b.severity)
   )
 
-  return { level: highestSeverity, matches, drugInteractions }
+  return { level: highestSeverity, matches, medicationFoodInteractions, communityHealthAssociations }
 }
 ```
 
@@ -233,7 +267,7 @@ export async function checkConstraints(
     // Constraint check failed — fail open (return 'clear') to not block scanning
     // Log failure to agent_state for investigation
     console.error('Constraint check failed:', response.status)
-    return { level: 'clear', matches: [], drugInteractions: [] }
+    return { level: 'clear', matches: [], medicationFoodInteractions: [], communityHealthAssociations: [] }
   }
 
   return response.json() as Promise<ConstraintCheckResult>
@@ -250,11 +284,13 @@ export async function checkConstraints(
 |---|---|---|
 | `block` | hard_allergy, dietary_identity | Verdict = red, hard interrupt. Warning shown before any other content. User must dismiss explicitly. |
 | `boycott` | boycott | Verdict = red, boycott badge shown. "You have this brand blocked." |
-| `warn` | intolerance, high drug interaction | Verdict = yellow. Warning visible in expanded view. Does not interrupt primary scan flow. |
+| `warn` | intolerance, high medication-food interaction, strong community health association | Verdict = yellow. Warning visible in expanded view. Does not interrupt primary scan flow. |
 | `deprioritize` | dislike | Verdict unchanged, no badge. Dislike signal logged but not surfaced to user. |
 | `clear` | no match | Verdict determined by base health score only. |
 
 A product can have multiple matches at different levels. The highest severity determines the overall verdict level. All matches are shown in the expanded view.
+
+Community health associations can upgrade a green base verdict to yellow when the association is strong enough and supported by enough independent anonymous health groups. They never clear hard allergies, never create clinical conclusions, and never create a hard red block by themselves.
 
 ---
 
