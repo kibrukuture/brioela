@@ -49,7 +49,7 @@ shared/grammar/
   version.ts                       # grammarVersion + version policy
   schema/
     document.ts                    # base GenerativeUIDocument (Zod)
-    stage.ts                       # the Stage (extends document with the 6 layers)
+    brioela-generative-ui.ts       # BrioelaGenerativeUiDocument (extends document with the 6 layers)
     surfaces.ts                    # GenerativeSurface enum
     tokens/
       mood.ts  tone.ts  voice.ts  spacing.ts  motion.ts  haptic.ts  icon.ts
@@ -87,12 +87,10 @@ shared/grammar/
 ```
 mobile/grammar/
   index.ts
-  grammar-renderer.tsx             # recursive entry: takes a Stage + fallback (05)
+  brioela-generative-ui-renderer.tsx # recursive entry: takes a BrioelaGenerativeUiDocument + fallback (05)
   node-renderers.ts                # NODE_RENDERERS map: type → component (05)
-  client-validate.ts               # re-validate received Stage (defense in depth, 15)
+  client-validate.ts               # re-validate received Brioela Generative UI document (defense in depth, 15)
   fallback.ts                      # static fallback handling (05)
-  hooks/
-    use-stage.ts                   # receive → validate → 400ms budget (15)
   nodes/                           # one component per primitive, grouped by layer
     structural/  stack-node.tsx  cluster-node.tsx  rail-node.tsx  …
     expressive/  headline-node.tsx  caption-node.tsx  metric-single-node.tsx  …
@@ -123,15 +121,15 @@ Self-contained per build-guide Rule 1; imports the shared LLM client from
 ```
 backend/src/core/generative-grammar/
   index.ts
-  present-moment.ts                # the AI function/tool: arguments = a Stage (13)
+  present-moment.ts                # the AI function/tool: arguments = a BrioelaGenerativeUiDocument (13)
   decide-if-worth-enhancing.ts     # the silence gate (13, product law)
   build-catalog-schema.ts          # zod (@brioela/shared/grammar) → provider input_schema
-  validate-stage.ts                # server-side validation (15)
+  validate-brioela-generative-ui.ts # server-side validation (15)
   safety-filter.ts                 # PII / safety-surface / safetyLock enforcement (15)
-  stream-stage.ts                  # stream to client within budget (05)
+  stream-brioela-generative-ui.ts  # stream to client within budget (05)
   prompts/
     grammar-system.ts              # system prompt
-    fewshot/  scan.ts  mesa.ts  recipe.ts  memory.ts  …   # gold Stage examples (13)
+    fewshot/  scan.ts  mesa.ts  recipe.ts  memory.ts  …   # gold Brioela Generative UI examples (13)
 ```
 
 ---
@@ -141,7 +139,7 @@ backend/src/core/generative-grammar/
 ```
 @brioela/shared/grammar
         │  (schema + catalog — single source of truth)
-        ├──────────────► mobile/grammar/        (validate received Stage, map to components)
+        ├──────────────► mobile/grammar/        (validate received Brioela Generative UI, map to components)
         └──────────────► backend/src/core/generative-grammar/
                                  (build-catalog-schema → constrain the model; validate; safety-filter)
 ```
@@ -168,15 +166,15 @@ Bottom-up, so each layer compiles against a finished one beneath it:
 1. **`shared/grammar/schema/tokens/`** — the enums (mood, tone, voice, spacing, motion, haptic,
    atmosphere, beats). Smallest, no dependencies.
 2. **`shared/grammar/schema/primitives/`** — atoms, by layer (structural → expressive → domain).
-3. **`shared/grammar/schema/compositions/` + `document.ts` + `stage.ts`** — the discriminated
-   union and the Stage.
+3. **`shared/grammar/schema/compositions/` + `document.ts` + `brioela-generative-ui.ts`** — the discriminated
+   union and the Brioela Generative UI document.
 4. **`shared/grammar/catalog/`** — registry, descriptions, allowlists, pairing.
-5. **`mobile/grammar/` renderer** — start with `grammar-renderer.tsx`, `node-renderers.ts`,
+5. **`mobile/grammar/` renderer** — start with `brioela-generative-ui-renderer.tsx`, `node-renderers.ts`,
    a few structural + expressive nodes, and one composition end-to-end; then `client-validate`,
-   `use-stage`, `fallback`.
+   `fallback`.
 6. **`mobile/grammar/atmosphere/` + `motion/`** — Tier 2 + beats (can lag step 5).
-7. **`backend/src/core/generative-grammar/`** — `build-catalog-schema`, `validate-stage`,
-   `safety-filter`, the gate, `present-moment`, prompts/few-shot, `stream-stage`.
+7. **`backend/src/core/generative-grammar/`** — `build-catalog-schema`, `validate-brioela-generative-ui`,
+   `safety-filter`, the gate, `present-moment`, prompts/few-shot, `stream-brioela-generative-ui`.
 
 Vertical slice first: one surface (scan), one composition (`scan-verdict-focus`), a handful of
 atoms, end to end — prove the whole pipeline before widening the catalog.
