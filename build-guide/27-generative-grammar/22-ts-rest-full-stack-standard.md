@@ -4,8 +4,8 @@
 
 The final preferred HTTP API standard for new Brioela code: ts-rest contracts in `shared`,
 ts-rest React Query hooks in mobile, Hono remaining as the backend router, feature wrappers for
-Brioela-specific behavior, Stage delivery through feature contracts, and query keys derived from
-contract identity instead of a manually maintained global key file.
+Brioela-specific behavior, Brioela Generative UI delivery through feature contracts, and query
+keys derived from contract identity instead of a manually maintained global key file.
 
 This file builds on `20-contracts-and-stage-delivery.md` and `21-contract-spine-hardening.md`.
 
@@ -92,7 +92,7 @@ Routine endpoint schemas stay in the feature contract file.
 // shared/contracts/scan.contract.ts
 import { initContract } from "@brioela/shared/contracts"
 import { z } from "@brioela/shared/zod"
-import { stageSchema } from "@brioela/shared/grammar"
+import { brioelaGenerativeUiSchema } from "@brioela/shared/grammar"
 import { apiErrorSchema } from "@brioela/shared/contracts/api-error.schema"
 
 const c = initContract()
@@ -116,7 +116,7 @@ const scanVerdictSchema = z.object({
 
 const scanProductResponseSchema = z.object({
   scan: scanVerdictSchema,
-  stage: stageSchema.nullable().optional(),
+  brioelaGenerativeUi: brioelaGenerativeUiSchema.nullable().optional(),
 })
 
 export const scanContract = c.router(
@@ -134,7 +134,7 @@ export const scanContract = c.router(
       strictStatusCodes: true,
       metadata: {
         id: "scan.product",
-        stage: {
+        brioela_generative_ui: {
           allowed: true,
           mode: "http_optional",
           surfaces: ["scan_explanation_brioela_generative_ui"],
@@ -342,9 +342,9 @@ const scanTsRestRouter = tsr.router(API_CONTRACT.scan, {
       barcode: body.barcode,
     })
 
-    const stage = await composeStageForContract(API_CONTRACT.scan.scanProduct, {
+    const brioelaGenerativeUi = await composeBrioelaGenerativeUiForContract(API_CONTRACT.scan.scanProduct, {
       surface: "scan_explanation_brioela_generative_ui",
-      payload: buildScanStagePayload({ scan }),
+      payload: buildScanBrioelaGenerativeUiPayload({ scan }),
       safetyLock: scan.hardBlocks.length > 0,
     })
 
@@ -352,7 +352,7 @@ const scanTsRestRouter = tsr.router(API_CONTRACT.scan, {
       status: 200,
       body: {
         scan,
-        stage,
+        brioelaGenerativeUi,
       },
     }
   },
@@ -372,10 +372,10 @@ scanRouter.all("/*", (ctx) => {
 
 This replaces most custom `parseBody` / `sendContract` helper work for normal HTTP routes.
 
-Brioela still needs small policy helpers around Stage generation:
+Brioela still needs small policy helpers around Brioela Generative UI generation:
 
-- `composeStageForContract(...)`
-- `assertStageAllowedByContract(...)`
+- `composeBrioelaGenerativeUiForContract(...)`
+- `assertBrioelaGenerativeUiAllowedByContract(...)`
 - feature auth/context extraction, depending on route setup
 
 Manual Hono handlers remain acceptable for non-standard boundaries, but normal contract-backed
@@ -392,15 +392,15 @@ export async function onScanProduct(c: AppContext) {
     barcode: body.barcode,
   })
 
-  const stage = await composeStageForContract(API_CONTRACT.scan.scanProduct, {
+  const brioelaGenerativeUi = await composeBrioelaGenerativeUiForContract(API_CONTRACT.scan.scanProduct, {
     surface: "scan_explanation_brioela_generative_ui",
-    payload: buildScanStagePayload({ scan }),
+    payload: buildScanBrioelaGenerativeUiPayload({ scan }),
     safetyLock: scan.hardBlocks.length > 0,
   })
 
   return sendContract(c, API_CONTRACT.scan.scanProduct, 200, {
     scan,
-    stage,
+    brioelaGenerativeUi,
   })
 }
 ```
@@ -409,31 +409,31 @@ Backend helpers must:
 
 - parse request data from the contract
 - validate response body by status code
-- enforce `metadata.stage`
+- enforce `metadata.brioela_generative_ui`
 - wrap the API response consistently
 - log with `metadata.id`
 
 The smoke test confirmed `@ts-rest/serverless/fetch` works inside Hono with request validation,
-response validation, status responses, and Stage metadata preserved.
+response validation, status responses, and Brioela Generative UI metadata preserved.
 
 ---
 
-## Stage Delivery
+## Brioela Generative UI Delivery
 
-HTTP feature responses include optional Stage in the response body.
+HTTP feature responses include optional Brioela Generative UI in the response body.
 
 ```typescript
 const scanProductResponseSchema = z.object({
   scan: scanVerdictSchema,
-  stage: stageSchema.nullable().optional(),
+  brioelaGenerativeUi: brioelaGenerativeUiSchema.nullable().optional(),
 })
 ```
 
 Mobile render:
 
 ```tsx
-<GrammarRenderer
-  stage={data.body.stage}
+<BrioelaGenerativeUiRenderer
+  document={data.body.brioelaGenerativeUi}
   fallback={<StaticScanSecondary scan={data.body.scan} />}
 />
 ```
@@ -478,7 +478,7 @@ For new Brioela HTTP code:
 - No `.api.ts` for normal ts-rest endpoints.
 - No direct `tsr.*` usage scattered through screens.
 - No global manual `QUERY_KEYS` for contract-backed endpoints.
-- No HTTP feature Stage unless endpoint metadata allows it.
+- No HTTP feature Brioela Generative UI unless endpoint metadata allows it.
 
 ---
 
@@ -486,11 +486,11 @@ For new Brioela HTTP code:
 
 1. `shared/contracts/index.ts` re-exports `@ts-rest/core` and combines feature contracts.
 2. `shared/contracts/contract-key.ts` implements stable contract keys.
-3. `shared/contracts/scan.contract.ts` defines one scan endpoint with Stage metadata.
+3. `shared/contracts/scan.contract.ts` defines one scan endpoint with Brioela Generative UI metadata.
 4. `backend/src/api/scan/scan.route.ts` mounts ts-rest fetch runtime under Hono for the scan contract.
 5. `mobile/network/tsr.ts` initializes `@ts-rest/react-query/v5`.
 6. `mobile/features/scan/hooks/use-scan-product.ts` wraps generated mutation.
-7. `GrammarRenderer` renders `data.body.stage` with static fallback.
+7. `BrioelaGenerativeUiRenderer` renders `data.body.brioelaGenerativeUi` with static fallback.
 
 Prove this vertical slice before adding more endpoints.
 

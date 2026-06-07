@@ -1,9 +1,9 @@
-# Brioela Generative Grammar — Contracts And Stage Delivery
+# Brioela Generative Grammar — Contracts And Brioela Generative UI Delivery
 
 ## What This File Covers
 
 How Brioela Generative Grammar crosses the backend/client boundary without duct tape: endpoint
-contracts, where a Stage is generated, how HTTP and realtime features deliver it, how Axios and
+contracts, where Brioela Generative UI is generated, how HTTP and realtime features deliver it, how Axios and
 TanStack Query fit, and the exact rule that prevents a separate "grammar API" from competing
 with feature APIs.
 
@@ -18,7 +18,7 @@ Generative UI is selected by AI, but delivered by the feature that owns the mome
 
 ```text
 Feature owns the product route or stream.
-Grammar owns the optional Stage.
+Grammar owns the optional Brioela Generative UI document.
 Renderer owns display only.
 ```
 
@@ -35,21 +35,21 @@ That creates two APIs for one user moment and makes the product feel stitched to
 Instead:
 
 ```text
-POST /v1/scan/product        -> { scan, stage? }
-POST /v1/menu/scan           -> { menu, stage? }
-POST /v1/mesa/evaluate       -> { mesaFit, stage? }
-cooking realtime stream      -> { type: "stage", stage }
+POST /v1/scan/product        -> { scan, brioelaGenerativeUi? }
+POST /v1/menu/scan           -> { menu, brioelaGenerativeUi? }
+POST /v1/mesa/evaluate       -> { mesaFit, brioelaGenerativeUi? }
+cooking realtime stream      -> { type: "brioela_generative_ui", brioelaGenerativeUi }
 ```
 
 ---
 
 ## Static vs AI-Selected
 
-The renderer is static. The Stage is AI-selected.
+The renderer is static. The Brioela Generative UI document is AI-selected.
 
 Static / compiled:
 
-- `GrammarRenderer`
+- `BrioelaGenerativeUiRenderer`
 - composition components
 - primitive node components
 - Skia shaders
@@ -59,7 +59,7 @@ Static / compiled:
 
 AI-selected:
 
-- whether to produce a Stage at all
+- whether to produce Brioela Generative UI at all
 - `mood`
 - `composition.type`
 - `atmosphere.family`
@@ -87,8 +87,8 @@ HTTP features can still use AI-selected generative UI.
 Correct mental model:
 
 ```text
-HTTP      -> AI-selected Stage can arrive as data.stage
-Realtime  -> AI-selected Stage can arrive as { type: "stage", stage }
+HTTP      -> AI-selected Brioela Generative UI can arrive as data.brioelaGenerativeUi
+Realtime  -> AI-selected Brioela Generative UI can arrive as { type: "brioela_generative_ui", brioelaGenerativeUi }
 ```
 
 Incorrect mental model:
@@ -159,7 +159,7 @@ Use helpers in actual code so endpoints stay small. The important rule is one en
 
 ```typescript
 import { z } from "@brioela/shared/zod"
-import { stageSchema } from "@brioela/shared/grammar"
+import { brioelaGenerativeUiSchema } from "@brioela/shared/grammar"
 
 export const scanProductBodySchema = z.object({
   barcode: z.string().min(1),
@@ -180,7 +180,7 @@ export const scanVerdictSchema = z.object({
 
 export const scanProductResponseSchema = z.object({
   scan: scanVerdictSchema,
-  stage: stageSchema.nullable().optional(),
+  brioelaGenerativeUi: brioelaGenerativeUiSchema.nullable().optional(),
 })
 
 export const SCAN_CONTRACTS = {
@@ -210,7 +210,7 @@ backend/src/api/scan/
     on-scan-product.ts
   helpers/
     build-scan-verdict.ts
-    build-scan-stage-payload.ts
+    build-scan-brioela-generative-ui-payload.ts
 ```
 
 Avoid pass-through controllers when they only wrap responses. Avoid a `services/` layer by default
@@ -231,7 +231,7 @@ scanRouter.post(SCAN_CONTRACTS.scanProduct.pattern, onScanProduct)
 
 ---
 
-## Backend Handler — HTTP Stage Delivery
+## Backend Handler — HTTP Brioela Generative UI Delivery
 
 The handler owns the feature result and calls the grammar composer as an internal capability.
 
@@ -241,9 +241,9 @@ import { HTTPException } from "hono/http-exception"
 import { ErrorCode } from "@brioela/shared/types/api"
 import { apiSuccessResponse } from "@/lib/response"
 import { SCAN_CONTRACTS } from "@brioela/shared/contracts/scan.contract"
-import { composeStage } from "@/core/generative-grammar/compose-stage"
+import { composeBrioelaGenerativeUi } from "@/core/generative-grammar/compose-brioela-generative-ui"
 import { buildScanVerdict } from "@/api/scan/helpers/build-scan-verdict"
-import { buildScanStagePayload } from "@/api/scan/helpers/build-scan-stage-payload"
+import { buildScanBrioelaGenerativeUiPayload } from "@/api/scan/helpers/build-scan-brioela-generative-ui-payload"
 
 export async function onScanProduct(c: AppContext) {
   const rawBody = await c.req.json()
@@ -265,15 +265,15 @@ export async function onScanProduct(c: AppContext) {
     barcode: parsedBody.data.barcode,
   })
 
-  const stage = await composeStage({
+  const brioelaGenerativeUi = await composeBrioelaGenerativeUi({
     surface: "scan_explanation_brioela_generative_ui",
-    payload: buildScanStagePayload({ userId: user.id, scan }),
+    payload: buildScanBrioelaGenerativeUiPayload({ userId: user.id, scan }),
     safetyLock: scan.hardBlocks.length > 0,
   })
 
   const response = SCAN_CONTRACTS.scanProduct.response.parse({
     scan,
-    stage,
+    brioelaGenerativeUi,
   })
 
   return c.json(apiSuccessResponse(response))
@@ -283,19 +283,19 @@ export async function onScanProduct(c: AppContext) {
 This is the exact backend handoff:
 
 ```typescript
-return c.json(apiSuccessResponse({ scan, stage }))
+return c.json(apiSuccessResponse({ scan, brioelaGenerativeUi }))
 ```
 
-The Stage is part of the scan response. It is not fetched from a second grammar endpoint.
+The Brioela Generative UI document is part of the scan response. It is not fetched from a second grammar endpoint.
 
 ---
 
 ## AI Selection — Structured Output For HTTP
 
-For a one-shot HTTP surface, the backend can ask the model for one Stage directly.
+For a one-shot HTTP surface, the backend can ask the model for one Brioela Generative UI document directly.
 
 ```typescript
-export async function composeStage(input: ComposeStageInput): Promise<Stage | null> {
+export async function composeBrioelaGenerativeUi(input: ComposeBrioelaGenerativeUiInput): Promise<BrioelaGenerativeUiDocument | null> {
   const worthEnhancing = await decideIfWorthEnhancing(input)
 
   if (!worthEnhancing) {
@@ -308,21 +308,21 @@ export async function composeStage(input: ComposeStageInput): Promise<Stage | nu
     safetyLock: input.safetyLock,
   })
 
-  const parsed = stageSchema.safeParse(modelOutput)
+  const parsed = brioelaGenerativeUiSchema.safeParse(modelOutput)
   if (!parsed.success) {
     return null
   }
 
-  const safe = runStageSafetyFilter(parsed.data)
+  const safe = runBrioelaGenerativeUiSafetyFilter(parsed.data)
   if (!safe.ok) {
     return null
   }
 
-  return safe.stage
+  return safe.brioelaGenerativeUi
 }
 ```
 
-The model chooses from the Stage schema:
+The model chooses from the Brioela Generative UI schema:
 
 ```json
 {
@@ -355,7 +355,7 @@ The model chooses from the Stage schema:
 }
 ```
 
-If the model chooses badly, validation fails and `stage` becomes `null`. Static fallback renders.
+If the model chooses badly, validation fails and `brioelaGenerativeUi` becomes `null`. Static fallback renders.
 
 ---
 
@@ -377,8 +377,8 @@ const tools = {
   },
   present_moment: {
     description:
-      "Render one optional Brioela Stage for the current cooking moment. Use only when visual framing helps. Never render safety, timer controls, consent, or destructive actions.",
-    input_schema: stageSchema,
+      "Render one optional Brioela Generative UI document for the current cooking moment. Use only when visual framing helps. Never render safety, timer controls, consent, or destructive actions.",
+    input_schema: brioelaGenerativeUiSchema,
   },
 }
 ```
@@ -415,11 +415,11 @@ Tool call emitted by the model:
 }
 ```
 
-Backend validates `tool.arguments` with `stageSchema`. If valid and safe, it sends a stage event.
+Backend validates `tool.arguments` with `brioelaGenerativeUiSchema`. If valid and safe, it sends a Brioela Generative UI event.
 
 ---
 
-## Realtime Stage Delivery
+## Realtime Brioela Generative UI Delivery
 
 Realtime features use one feature stream. Do not create a second grammar stream.
 
@@ -434,8 +434,8 @@ const cookingSessionEventSchema = z.discriminatedUnion("type", [
     timer: timerSchema,
   }),
   z.object({
-    type: z.literal("stage"),
-    stage: stageSchema,
+    type: z.literal("brioela_generative_ui"),
+    brioelaGenerativeUi: brioelaGenerativeUiSchema,
   }),
   z.object({
     type: z.literal("safety_interrupt"),
@@ -448,8 +448,8 @@ Wire event:
 
 ```json
 {
-  "type": "stage",
-  "stage": {
+  "type": "brioela_generative_ui",
+  "brioelaGenerativeUi": {
     "grammarVersion": "1",
     "surface": "cooking_opener_brioela_generative_ui",
     "composition": {
@@ -462,7 +462,7 @@ Wire event:
 
 This applies to any realtime feature, not only cooking. Bela live order, live menu discussion,
 Mesa co-planning, and future room/session features all follow the same rule: one feature stream,
-with Stage as one event type.
+with Brioela Generative UI as one event type.
 
 ---
 
@@ -535,7 +535,7 @@ The UI does not care whether `scanProduct` uses raw Axios or contract-aware Axio
 
 ## Mobile Render
 
-Feature screen owns the experience. Grammar renderer owns only the Stage.
+Feature screen owns the experience. Brioela Generative UI renderer owns only the document.
 
 ```tsx
 export function ScanResultScreen({ data }: { data: ScanProductResponse }) {
@@ -546,8 +546,8 @@ export function ScanResultScreen({ data }: { data: ScanProductResponse }) {
         hardBlocks={data.scan.hardBlocks}
       />
 
-      <GrammarRenderer
-        stage={data.stage}
+      <BrioelaGenerativeUiRenderer
+        document={data.brioelaGenerativeUi}
         fallback={<StaticScanSecondary scan={data.scan} />}
       />
     </>
@@ -558,13 +558,13 @@ export function ScanResultScreen({ data }: { data: ScanProductResponse }) {
 The preferred renderer call is:
 
 ```tsx
-<GrammarRenderer
-  stage={data.stage}
+<BrioelaGenerativeUiRenderer
+  document={data.brioelaGenerativeUi}
   fallback={<StaticScanSecondary scan={data.scan} />}
 />
 ```
 
-If `stage` is missing, invalid, late, or rejected, fallback stays.
+If `brioelaGenerativeUi` is missing, invalid, late, or rejected, fallback stays.
 
 ---
 
@@ -574,7 +574,7 @@ If `stage` is missing, invalid, late, or rejected, fallback stays.
 - Do not let `mobile/grammar/` fetch data.
 - Do not put TanStack Query hooks inside `mobile/grammar/`.
 - Do not let grammar nodes read app state, local DB, or network.
-- Do not render Stage over a safety block.
+- Do not render Brioela Generative UI over a safety block.
 - Do not use `api.get<T>()` / `api.post<T>()` for new Brioela code when a contract exists.
 
 ---
@@ -585,7 +585,7 @@ A standalone grammar route is allowed only for internal tooling:
 
 - catalog preview
 - dev fixture rendering
-- QA stage validation
+- QA Brioela Generative UI validation
 - design review
 
 It is not part of normal product runtime.
@@ -596,12 +596,12 @@ It is not part of normal product runtime.
 
 After `19-code-package-structure.md`, implement contracts before feature/backend/mobile wiring:
 
-1. `shared/grammar/` Stage schema and tiny vertical-slice catalog.
+1. `shared/grammar/` Brioela Generative UI schema and tiny vertical-slice catalog.
 2. `shared/contracts/` helper and one feature contract, starting with scan; `@ts-rest/core` lives in `shared` and is re-exported from `@brioela/shared/contracts`.
 3. `mobile/network/core/request(contract, input)` using existing Axios client.
 4. Backend route + handler without controller for one feature.
-5. Backend `composeStage` with structured output or mocked Stage first.
-6. Mobile `GrammarRenderer` for one Stage.
+5. Backend `composeBrioelaGenerativeUi` with structured output or mocked Brioela Generative UI first.
+6. Mobile `BrioelaGenerativeUiRenderer` for one document.
 7. TanStack hook remains a thin wrapper over the feature API function.
 
 Prove one feature end-to-end before widening the catalog.
@@ -610,4 +610,4 @@ Prove one feature end-to-end before widening the catalog.
 
 ## One-Line Rule
 
-AI chooses the Stage. The feature delivers the Stage. The renderer renders the Stage.
+AI chooses the Brioela Generative UI. The feature delivers the Brioela Generative UI. The renderer renders the Brioela Generative UI.

@@ -4,7 +4,7 @@
 
 The stricter version of `20-contracts-and-stage-delivery.md`: how to make the API/stream contract
 system hard to disobey, easy for agents to use, and strict enough that runtime data, TypeScript
-types, TanStack Query keys, backend responses, and generative Stage policy all come from one
+types, TanStack Query keys, backend responses, and Brioela Generative UI policy all come from one
 spine.
 
 This file corrects one loose earlier idea: do **not** scatter routine endpoint schemas into many
@@ -21,7 +21,7 @@ Contract owns the boundary.
 Backend obeys the contract.
 Mobile obeys the contract.
 Realtime obeys the contract.
-Generative Stage policy is declared in the contract.
+Brioela Generative UI policy is declared in the contract.
 ```
 
 The contract is executable law, not documentation.
@@ -124,7 +124,7 @@ not merely an endpoint request/response.
 
 Allowed separate schemas:
 
-- `shared/grammar/stage.schema.ts` — used by many feature contracts and renderer/backend grammar.
+- `shared/grammar/brioela-generative-ui.schema.ts` — used by many feature contracts and renderer/backend grammar.
 - `shared/contracts/api-error.schema.ts` — common error envelope.
 - `shared/contracts/contract.ts` — endpoint/stream helper definitions.
 - `shared/domain/food-audience.schema.ts` if used across scan, Mesa, Bela, cooking, Passport.
@@ -166,7 +166,7 @@ type EndpointContract = {
   query?: z.ZodType
   body?: z.ZodType
   responses: Record<number, z.ZodType>
-  stage: StagePolicy
+  brioela_generative_ui: BrioelaGenerativeUiPolicy
 }
 ```
 
@@ -185,12 +185,12 @@ passport.create
 
 ---
 
-## Stage Policy In Contract
+## Brioela Generative UI Policy In Contract
 
-Every endpoint/stream declares whether it may carry a Stage.
+Every endpoint/stream declares whether it may carry Brioela Generative UI.
 
 ```typescript
-type StagePolicy =
+type BrioelaGenerativeUiPolicy =
   | { allowed: false }
   | {
       allowed: true
@@ -203,7 +203,7 @@ type StagePolicy =
 Example:
 
 ```typescript
-stage: {
+brioela_generative_ui: {
   allowed: true,
   mode: "http_optional",
   surfaces: ["scan_explanation_brioela_generative_ui"],
@@ -214,12 +214,12 @@ stage: {
 Safety endpoint:
 
 ```typescript
-stage: { allowed: false }
+brioela_generative_ui: { allowed: false }
 ```
 
-Backend `send()` rejects a response with `stage` if the contract says `allowed: false`.
+Backend delivery rejects a response with `brioelaGenerativeUi` if the contract says `allowed: false`.
 
-Backend `composeStage()` rejects a Stage whose `surface` is not in the endpoint/stream policy.
+Backend `composeBrioelaGenerativeUiForContract()` rejects a document whose `surface` is not in the endpoint/stream policy.
 
 ---
 
@@ -322,11 +322,11 @@ Use contract-aware helpers:
 const body = await parseBody(c, SCAN_CONTRACTS.scanProduct)
 
 const scan = await buildScanVerdict(...)
-const stage = await composeStageForContract(SCAN_CONTRACTS.scanProduct, ...)
+const brioelaGenerativeUi = await composeBrioelaGenerativeUiForContract(SCAN_CONTRACTS.scanProduct, ...)
 
 return send(c, SCAN_CONTRACTS.scanProduct, 200, {
   scan,
-  stage,
+  brioelaGenerativeUi,
 })
 ```
 
@@ -334,7 +334,7 @@ return send(c, SCAN_CONTRACTS.scanProduct, 200, {
 
 - verify the status exists in `contract.responses`
 - parse payload with that response schema
-- enforce Stage policy
+- enforce Brioela Generative UI policy
 - wrap with `apiSuccessResponse`
 - emit telemetry with `contract.id`
 
@@ -350,7 +350,7 @@ export const COOKING_STREAM_CONTRACT = stream({
   auth: "ticket",
   clientEvents: cookingClientEventSchema,
   serverEvents: cookingServerEventSchema,
-  stage: {
+  brioela_generative_ui: {
     allowed: true,
     mode: "stream_event",
     surfaces: ["cooking_opener_brioela_generative_ui", "recipe_step_focus_brioela_generative_ui"],
@@ -385,7 +385,7 @@ Ban in new code:
 - route strings like `"/v1/` outside `shared/contracts/`
 - backend `c.json(apiSuccessResponse(` inside `backend/src/api/` handlers
 - manually maintained global query keys for new contract-backed endpoints
-- Stage in a response whose contract has `stage.allowed: false`
+- Brioela Generative UI in a response whose contract has `brioela_generative_ui.allowed: false`
 
 Allow temporary exceptions only for legacy copied code with explicit migration notes.
 
@@ -398,8 +398,8 @@ Every new feature contract gets a small test fixture set:
 - valid client input parses
 - invalid client input fails
 - valid server response parses
-- response with wrong Stage surface fails
-- response with Stage when `stage.allowed: false` fails
+- response with wrong Brioela Generative UI surface fails
+- response with Brioela Generative UI when `brioela_generative_ui.allowed: false` fails
 - contract key is stable for equivalent input
 
 This makes contracts executable and hardens them before mobile/backend code depends on them.
@@ -409,12 +409,12 @@ This makes contracts executable and hardens them before mobile/backend code depe
 ## Build Order
 
 1. Implement `shared/contracts/index.ts` exports for `@ts-rest/core`, plus `shared/contracts/contract.ts` helpers: `endpoint`, `stream`, `contractKey`.
-2. Implement shared common schemas: API envelope/error and `stageSchema` import from grammar.
+2. Implement shared common schemas: API envelope/error and `brioelaGenerativeUiSchema` import from grammar.
 3. Write one contract file: `shared/contracts/scan.contract.ts`.
 4. Write contract tests for scan.
 5. Mount one scan contract with `@ts-rest/serverless/fetch` inside Hono.
 6. Add one mobile hook using `@ts-rest/react-query` and `contractKey`.
-7. Render with `GrammarRenderer stage={data.stage} fallback={...}`.
+7. Render with `BrioelaGenerativeUiRenderer document={data.brioelaGenerativeUi} fallback={...}`.
 
 No wider API migration until the first vertical slice works.
 

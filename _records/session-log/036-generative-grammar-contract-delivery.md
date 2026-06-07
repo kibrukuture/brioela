@@ -25,7 +25,7 @@ Updated:
 - Normal product flows do not use a standalone grammar route.
 - Standalone grammar routes are allowed only for internal preview, catalog QA, fixtures, or design review.
 - Feature screens use the preferred render shape:
-  `<GrammarRenderer stage={data.stage} fallback={<StaticScanSecondary scan={data.scan} />} />`
+  `<BrioelaGenerativeUiRenderer document={data.brioelaGenerativeUi} fallback={<StaticScanSecondary scan={data.scan} />} />`
 - Backend shape for new Brioela features should avoid pass-through controllers.
 - Do not add a `services/` layer by default if the project standard is route + handler + helper.
 - Axios can stay as transport, but new code should use contract-aware request helpers instead of blind `api.get<T>()`/`api.post<T>()` generics.

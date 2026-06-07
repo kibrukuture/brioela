@@ -2,14 +2,14 @@
 
 ## What This File Covers
 
-The runtime renderer, recursive node rendering, validation failure behavior, static fallback, and the 400ms rule.
+The Brioela Generative UI renderer, recursive node rendering, validation failure behavior, static fallback, and the 400ms rule.
 
 ---
 
 ## Render Flow
 
 1. Feature renders static UI immediately.
-2. Feature asks server for a `GenerativeUIDocument` or receives it with response.
+2. Feature receives `brioelaGenerativeUi` with the feature response or stream event.
 3. Client validates document.
 4. If valid and under 400ms, renderer enhances the static UI.
 5. If invalid or late, static UI remains.
@@ -21,8 +21,8 @@ No spinner. No blank state. No visible failure.
 ## Renderer Shape
 
 ```typescript
-type GrammarRendererProps = {
-  document: GenerativeUIDocument
+type BrioelaGenerativeUiRendererProps = {
+  document: BrioelaGenerativeUiDocument
   fallback: React.ReactNode
 }
 ```
