@@ -2,9 +2,9 @@
 
 ## What It Is
 
-Generative UI is a pattern where the AI — not the developer — selects which component layout to render, and supplies the props for it. The developer defines a fixed registry of components. The AI picks from that registry and returns a typed decision object. The client maps the decision to a component and renders it.
+Generative UI is a pattern where the AI — not the developer — selects how a surface should be composed and framed, while the developer controls every renderable primitive. The full architecture now lives in `build-guide/27-generative-grammar/`. This file remains the design-system foundation: registry, Zod validation, static fallback, and the 400ms rule.
 
-The AI cannot write JSX. It cannot create new layouts. It cannot reference components outside the registry. It returns JSON. The client renders the result.
+The AI cannot write JSX. It cannot create runtime code. It cannot reference primitives outside the grammar registry. It returns typed JSON. The client renders the result.
 
 This is not a gimmick. It is the mechanism that allows a single AI verdict to produce meaningfully different visual presentations based on context, without requiring a developer to hardcode every possible state.
 
@@ -12,9 +12,9 @@ This is not a gimmick. It is the mechanism that allows a single AI verdict to pr
 
 ## Implementation Approach — Not Yet Determined
 
-**The pattern is decided. The implementation is not.**
+**The pattern is decided. The implementation is Brioela Generative Grammar.**
 
-The decision object, component registry, Zod validation layer, and 400ms rule are all determined — they come from the spec. What is not determined is how this pattern is delivered on the client:
+The decision object, component registry, Zod validation layer, and 400ms rule are all determined. The runtime architecture is defined in `27-generative-grammar`: AI composes a typed `GenerativeUIDocument`, not arbitrary JSX.
 
 **Option A — Build custom.** The full pattern described in this file is straightforward to implement from scratch. A custom build has no external dependencies, no library lock-in, and can be tuned precisely to Brioela's AI infrastructure (Claude/Gemini, not OpenAI).
 

@@ -1,6 +1,6 @@
 # Master Inventory — All Spec Files
 
-Total: 113 files across 6 areas.
+Total: 114 files across 6 areas.
 
 Status markers:
 - `[ ]` not yet processed into build-guide
@@ -9,7 +9,7 @@ Status markers:
 
 ---
 
-## Area 1 — brioela-specs/ (43 files)
+## Area 1 — brioela-specs/ (44 files)
 
 Core product philosophy and feature specs. These are the "what and why" layer.
 
@@ -55,9 +55,10 @@ Core product philosophy and feature specs. These are the "what and why" layer.
 | [x] | `36-predictive-pantry-intelligence.md` | Predicting what user will run out of before they do |
 | [x] | `37-guest-and-cooking-for-others.md` | Cooking for guests, dietary handling for multiple people |
 | [x] | `38-food-time-machine.md` | Historical food data — what did I eat this time last year |
-| [~] | `39-generative-ui.md` | Generative UI spec — CRITICAL for design system build |
+| [x] | `39-generative-ui.md` | Generative UI spec — CRITICAL for design system build |
 | [x] | `40-wearables-integration.md` | Apple Watch, wearable integration |
 | [x] | `41-mesa.md` | Mesa — multi-person food audience and compatibility layer |
+| [x] | `42-brioela-generative-grammar.md` | Brioela Generative Grammar — typed creative UI language |
 | [ ] | `README.md` | Spec folder overview |
 
 ---

@@ -41,6 +41,7 @@ spec: brioela-specs/35-ground-community-intelligence.md
 - `21-viral-sharing-connections.md`
 - `22-pricing-tiers-connections.md`
 - `23-foundational-reconciliation-connections.md`
+- `24-generative-grammar-connections.md`
 
 ## When to update
 Every time a build-guide file is written: add the connection here immediately.
