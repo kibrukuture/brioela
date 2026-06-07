@@ -32,7 +32,7 @@ Updated:
 - TanStack Query stays as the query/mutation layer.
 - The stricter standard is the Contract Spine: if it crosses a process boundary, it crosses through a contract.
 - Routine endpoint schemas stay co-located in the feature contract file by default.
-- Separate schema files are allowed only for true cross-feature/domain primitives such as `stageSchema`, API error envelope, or shared food audience.
+- Separate schema files are allowed only for true cross-feature/domain primitives such as `brioelaGenerativeUiSchema`, API error envelope, or shared food audience.
 - Query keys should be contract-derived with `contractKey(contract, input)`, not manually maintained global constants.
 - New code should eventually ban raw Axios, blind generic API calls, raw route strings, loose stream event parsers, and direct backend success responses outside contract helpers.
 - `@ts-rest/core` follows the shared dependency pattern: it lives in `shared` and is re-exported through `@brioela/shared/contracts`, like Zod is re-exported through `@brioela/shared/zod`.
