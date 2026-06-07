@@ -34,124 +34,124 @@ import {
 } from 'drizzle-orm/pg-core'
 import { brioela } from './brioela'
 
-// ── 1. anon_health_cohorts ──────────────────────────────────────────────────
+// ── 1. anonymous_health_groups ───────────────────────────────────────────────
 
-export const anonHealthCohorts = brioela.table('anon_health_cohorts', {
+export const anonymousHealthGroups = brioela.table('anonymous_health_groups', {
   id:                     uuid('id').primaryKey().defaultRandom(),
-  kSize:                  integer('k_size').notNull(),
+  kAnonymityGroupSize:    integer('k_anonymity_group_size').notNull(),
   ageBucket:              text('age_bucket').notNull(),
   sexBucket:              text('sex_bucket'),
   regionBucket:           text('region_bucket').notNull(),
-  conditionTags:          text('condition_tags').array().notNull(),
+  reportedConditionTags:  text('reported_condition_tags').array().notNull(),
   medicationCategories:   text('medication_categories').array().notNull(),
   dietaryTags:            text('dietary_tags').array().notNull(),
 
-  // Enrichment — homogenizes cohorts so aggregated signals are not noise
+  // Enrichment — keeps anonymous groups specific enough that aggregate signals are not noise.
   dietaryPatternSignature: text('dietary_pattern_signature').notNull().default(''),
   cuisineProfile:          jsonb('cuisine_profile').notNull().default({}),
-  metabolicRiskBucket:     text('metabolic_risk_bucket').notNull().default('unknown'),
+  metabolicMarkerBucket:   text('metabolic_marker_bucket').notNull().default('unknown'),
 
-  cohortHash:             text('cohort_hash').notNull().unique(),
+  anonymousHealthGroupHash: text('anonymous_health_group_hash').notNull().unique(),
   createdAt:              timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   updatedAt:              timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
 })
 
-// ── 2. anon_exposure_outcome_pairs ──────────────────────────────────────────
+// ── 2. anonymous_exposure_event_associations ────────────────────────────────
 
-export const anonExposureOutcomePairs = brioela.table('anon_exposure_outcome_pairs', {
+export const anonymousExposureEventAssociations = brioela.table('anonymous_exposure_event_associations', {
   id:                    uuid('id').primaryKey().defaultRandom(),
-  cohortId:              uuid('cohort_id').notNull().references(() => anonHealthCohorts.id),
+  anonymousHealthGroupId: uuid('anonymous_health_group_id').notNull().references(() => anonymousHealthGroups.id),
 
   // Exposure
-  exposureType:          text('exposure_type').notNull(),        // 'product' | 'ingredient' | 'food_category' | 'additive'
+  exposureKind:          text('exposure_kind').notNull(),        // 'product' | 'ingredient' | 'food_category' | 'additive'
   exposureKey:           text('exposure_key').notNull(),         // canonical identity key — NOT NULL, used by the UNIQUE + upsert ON CONFLICT
   exposureProductId:     text('exposure_product_id'),            // mirrors exposureKey when type='product' (keeps idx_eop_product usable)
-  exposureIngredient:    text('exposure_ingredient'),            // mirrors exposureKey when type='ingredient'
+  exposureIngredientName: text('exposure_ingredient_name'),       // mirrors exposureKey when type='ingredient'
   exposureFoodCategory:  text('exposure_food_category'),
   exposureAdditiveCode:  text('exposure_additive_code'),
 
-  // Outcome
-  outcomeEventType:      text('outcome_event_type').notNull(),
-  outcomeSeverityAvg:    real('outcome_severity_avg').notNull(),
-  outcomeSeverityP90:    real('outcome_severity_p90').notNull(),
+  // Post-exposure reported event
+  postExposureEventKind: text('post_exposure_event_kind').notNull(),
+  eventSeverityAverage:  real('event_severity_average').notNull(),
+  eventSeverityP90:      real('event_severity_p90').notNull(),
   onsetLagHoursAvg:      real('onset_lag_hours_avg').notNull(),
   onsetLagHoursP50:      real('onset_lag_hours_p50').notNull(),
   onsetLagHoursP90:      real('onset_lag_hours_p90').notNull(),
 
   // Statistics
   exposureCount:         integer('exposure_count').notNull(),
-  outcomeCount:          integer('outcome_count').notNull(),
-  outcomeRate:           real('outcome_rate').notNull(),
-  baselineRate:          real('baseline_rate'),
-  relativeRisk:          real('relative_risk'),
-  confidenceLow:         real('confidence_low'),
-  confidenceHigh:        real('confidence_high'),
+  postExposureEventCount: integer('post_exposure_event_count').notNull(),
+  postExposureEventRate: real('post_exposure_event_rate').notNull(),
+  comparisonEventRate:   real('comparison_event_rate'),
+  observedRateRatio:     real('observed_rate_ratio'),
+  rateRatioConfidenceLow: real('rate_ratio_confidence_low'),
+  rateRatioConfidenceHigh: real('rate_ratio_confidence_high'),
   pValue:                real('p_value'),
-  isSignificant:         boolean('is_significant').notNull(),
+  statisticalThresholdPassed: boolean('statistical_threshold_passed').notNull(),
 
-  replicationCohortCount: integer('replication_cohort_count').notNull().default(1),
+  supportingHealthGroupCount: integer('supporting_health_group_count').notNull().default(1),
   firstObservedAt:       timestamp('first_observed_at', { withTimezone: true }).notNull().defaultNow(),
   lastUpdatedAt:         timestamp('last_updated_at', { withTimezone: true }).notNull().defaultNow(),
 
-  // Temporal decay — weekly job decays signalWeight unless a fresh observation lands
-  signalWeight:          real('signal_weight').notNull().default(1.0),
+  // Temporal decay — weekly job decays recencyWeight unless a fresh observation lands.
+  recencyWeight:         real('recency_weight').notNull().default(1.0),
   lastReplicatedAt:      timestamp('last_replicated_at', { withTimezone: true }).notNull().defaultNow(),
 }, (t) => ({
-  identity: uniqueIndex('uq_eop_identity').on(t.cohortId, t.exposureType, t.exposureKey, t.outcomeEventType),
+  identity: uniqueIndex('uq_anonymous_exposure_event_association').on(t.anonymousHealthGroupId, t.exposureKind, t.exposureKey, t.postExposureEventKind),
 }))
 
-// ── 3. anon_ingredient_harm_index ───────────────────────────────────────────
+// ── 3. anonymous_ingredient_event_association_index ─────────────────────────
 
-export const anonIngredientHarmIndex = brioela.table('anon_ingredient_harm_index', {
+export const anonymousIngredientEventAssociationIndex = brioela.table('anonymous_ingredient_event_association_index', {
   id:                    uuid('id').primaryKey().defaultRandom(),
   ingredientName:        text('ingredient_name').notNull(),
   ingredientAliases:     text('ingredient_aliases').array().notNull(),
-  conditionTag:          text('condition_tag').notNull(),
+  reportedConditionTag:  text('reported_condition_tag').notNull(),
   medicationCategory:    text('medication_category').notNull().default(''),  // '' = all meds. NOT NULL so the uniqueIndex below cannot be bypassed (Postgres NULL != NULL)
-  eventType:             text('event_type').notNull(),
+  postExposureEventKind: text('post_exposure_event_kind').notNull(),
 
-  harmSignal:            real('harm_signal').notNull(),
-  severityMedian:        real('severity_median').notNull(),
-  severityP90:           real('severity_p90').notNull(),
-  onsetLagHoursMedian:   real('onset_lag_hours_median').notNull(),
-  supportingCohortCount: integer('supporting_cohort_count').notNull(),
+  eventAssociationScore: real('event_association_score').notNull(),
+  eventSeverityMedian:   real('event_severity_median').notNull(),
+  eventSeverityP90:      real('event_severity_p90').notNull(),
+  postExposureLagHoursMedian: real('post_exposure_lag_hours_median').notNull(),
+  supportingHealthGroupCount: integer('supporting_health_group_count').notNull(),
   totalExposureCount:    integer('total_exposure_count').notNull(),
-  totalOutcomeCount:     integer('total_outcome_count').notNull(),
+  totalPostExposureEventCount: integer('total_post_exposure_event_count').notNull(),
 
-  sourceTypes:           text('source_types').array().notNull(),
+  evidenceSourceTypes:   text('evidence_source_types').array().notNull(),
   lastUpdatedAt:         timestamp('last_updated_at', { withTimezone: true }).notNull().defaultNow(),
 }, (t) => ({
-  uniqueSignal: uniqueIndex('uq_ingredient_harm').on(t.ingredientName, t.conditionTag, t.medicationCategory, t.eventType),
+  uniqueSignal: uniqueIndex('uq_ingredient_event_association').on(t.ingredientName, t.reportedConditionTag, t.medicationCategory, t.postExposureEventKind),
 }))
 
-// ── 4. product_community_trust ──────────────────────────────────────────────
+// ── 4. product_community_health_summary ─────────────────────────────────────
 
-export const productCommunityTrust = brioela.table('product_community_trust', {
+export const productCommunityHealthSummary = brioela.table('product_community_health_summary', {
   productId:                  text('product_id').primaryKey(),
 
-  trustScore:                 real('trust_score').notNull(),
-  dataRichness:               real('data_richness').notNull(),
-  controversyScore:           real('controversy_score').notNull(),
+  communityHealthConfidenceScore: real('community_health_confidence_score').notNull(),
+  communityEvidenceVolumeScore: real('community_evidence_volume_score').notNull(),
+  communityEvidenceDisagreementScore: real('community_evidence_disagreement_score').notNull(),
 
   totalScans:                 integer('total_scans').notNull().default(0),
-  uniqueCohortCount:          integer('unique_cohort_count').notNull().default(0),
+  uniqueHealthGroupCount:     integer('unique_health_group_count').notNull().default(0),
 
-  adverseEventRate:           real('adverse_event_rate'),
-  allergenCommunityFlags:     jsonb('allergen_community_flags'),
-  highRiskConditionTags:      text('high_risk_condition_tags').array(),
+  reportedEventRate:          real('reported_event_rate'),
+  reportedAllergenEventRates: jsonb('reported_allergen_event_rates'),
+  conditionTagsWithElevatedEventRates: text('condition_tags_with_elevated_event_rates').array(),
 
-  labelAccuracyScore:         real('label_accuracy_score'),
-  ingredientConflictCount:    integer('ingredient_conflict_count').notNull().default(0),
+  labelMatchScore:            real('label_match_score'),
+  labelIngredientMismatchCount: integer('label_ingredient_mismatch_count').notNull().default(0),
 
   lastScanAt:                 timestamp('last_scan_at', { withTimezone: true }),
   lastUpdatedAt:              timestamp('last_updated_at', { withTimezone: true }).notNull().defaultNow(),
 })
 
-// ── 5. anon_drug_food_interactions ──────────────────────────────────────────
+// ── 5. anonymous_medication_food_event_associations ─────────────────────────
 
-export const anonDrugFoodInteractions = brioela.table('anon_drug_food_interactions', {
+export const anonymousMedicationFoodEventAssociations = brioela.table('anonymous_medication_food_event_associations', {
   id:                   uuid('id').primaryKey().defaultRandom(),
-  drugCategory:         text('drug_category').notNull(),
+  medicationCategory:   text('medication_category').notNull(),
   foodIngredient:       text('food_ingredient').notNull(),
   foodCategory:         text('food_category'),
 
@@ -169,19 +169,19 @@ export const anonDrugFoodInteractions = brioela.table('anon_drug_food_interactio
   firstObservedAt:      timestamp('first_observed_at', { withTimezone: true }).notNull().defaultNow(),
   lastUpdatedAt:        timestamp('last_updated_at', { withTimezone: true }).notNull().defaultNow(),
 }, (t) => ({
-  uniqueInteraction: uniqueIndex('uq_drug_food').on(t.drugCategory, t.foodIngredient, t.interactionType),
+  uniqueInteraction: uniqueIndex('uq_medication_food_event_association').on(t.medicationCategory, t.foodIngredient, t.interactionType),
 }))
 
-// ── 6. anon_temporal_harm_patterns ──────────────────────────────────────────
+// ── 6. anonymous_time_of_day_event_patterns ─────────────────────────────────
 
-export const anonTemporalHarmPatterns = brioela.table('anon_temporal_harm_patterns', {
+export const anonymousTimeOfDayEventPatterns = brioela.table('anonymous_time_of_day_event_patterns', {
   id:               uuid('id').primaryKey().defaultRandom(),
-  cohortId:         uuid('cohort_id').notNull().references(() => anonHealthCohorts.id),
-  exposureType:     text('exposure_type').notNull(),
+  anonymousHealthGroupId: uuid('anonymous_health_group_id').notNull().references(() => anonymousHealthGroups.id),
+  exposureKind:     text('exposure_kind').notNull(),
   exposureKey:      text('exposure_key').notNull(),
-  eventType:        text('event_type').notNull(),
+  postExposureEventKind: text('post_exposure_event_kind').notNull(),
 
-  hourRiskProfile:  jsonb('hour_risk_profile').notNull(),    // {0: 1.0, 6: 0.8, ...}
+  hourEventRateProfile: jsonb('hour_event_rate_profile').notNull(),    // {0: 1.0, 6: 0.8, ...}
   weekdayProfile:   jsonb('weekday_profile'),
   seasonalProfile:  jsonb('seasonal_profile'),
 
@@ -189,16 +189,16 @@ export const anonTemporalHarmPatterns = brioela.table('anon_temporal_harm_patter
   lastUpdatedAt:    timestamp('last_updated_at', { withTimezone: true }).notNull().defaultNow(),
 })
 
-// ── 7. anon_geographic_health_patterns ──────────────────────────────────────
+// ── 7. anonymous_region_event_patterns ──────────────────────────────────────
 
-export const anonGeographicHealthPatterns = brioela.table('anon_geographic_health_patterns', {
+export const anonymousRegionEventPatterns = brioela.table('anonymous_region_event_patterns', {
   id:                    uuid('id').primaryKey().defaultRandom(),
   geohash5:              text('geohash_5').notNull(),
   observationPeriod:     text('observation_period').notNull(),   // '2026-Q2'
 
-  conditionPrevalence:   jsonb('condition_prevalence').notNull(),
+  reportedConditionDistribution: jsonb('reported_condition_distribution').notNull(),
   topScannedIngredients: text('top_scanned_ingredients').array().notNull(),
-  highRiskIngredients:   jsonb('high_risk_ingredients'),
+  ingredientsWithElevatedEventRates: jsonb('ingredients_with_elevated_event_rates'),
   topEventTypes:         jsonb('top_event_types').notNull(),
 
   populationSizeBucket:  text('population_size_bucket').notNull(),
@@ -207,13 +207,13 @@ export const anonGeographicHealthPatterns = brioela.table('anon_geographic_healt
   uniqueGeoperiod: uniqueIndex('uq_geo_period').on(t.geohash5, t.observationPeriod),
 }))
 
-// ── 8. anon_association_candidates ──────────────────────────────────────────
+// ── 8. anonymous_research_association_candidates ────────────────────────────
 
-export const anonAssociationCandidates = brioela.table('anon_association_candidates', {
+export const anonymousResearchAssociationCandidates = brioela.table('anonymous_research_association_candidates', {
   id:                   uuid('id').primaryKey().defaultRandom(),
 
   exposureFeature:      jsonb('exposure_feature').notNull(),
-  outcomeFeature:       jsonb('outcome_feature').notNull(),
+  postExposureEventFeature: jsonb('post_exposure_event_feature').notNull(),
   cohortFeature:        jsonb('cohort_feature').notNull(),
 
   effectSize:           real('effect_size').notNull(),
@@ -226,9 +226,9 @@ export const anonAssociationCandidates = brioela.table('anon_association_candida
   biasFlags:            text('bias_flags').array(),
   strengthRating:       text('strength_rating').notNull(),
 
-  plainLanguageFinding: text('plain_language_finding').notNull(),
+  plainLanguageAssociationSummary: text('plain_language_association_summary').notNull(),
 
-  promotedToHarmIndex:  boolean('promoted_to_harm_index').default(false),
+  promotedToSignalIndex: boolean('promoted_to_signal_index').default(false),
   firstObservedAt:      timestamp('first_observed_at', { withTimezone: true }).notNull().defaultNow(),
   lastReplicatedAt:     timestamp('last_replicated_at', { withTimezone: true }).notNull().defaultNow(),
 })
@@ -239,37 +239,37 @@ export const anonAssociationCandidates = brioela.table('anon_association_candida
 ## Indexes
 
 ```sql
--- anon_exposure_outcome_pairs
-CREATE INDEX idx_eop_product     ON brioela.anon_exposure_outcome_pairs (exposure_product_id, outcome_event_type, is_significant);
-CREATE INDEX idx_eop_ingredient  ON brioela.anon_exposure_outcome_pairs (exposure_ingredient, outcome_event_type, is_significant);
-CREATE INDEX idx_eop_rr          ON brioela.anon_exposure_outcome_pairs (relative_risk DESC) WHERE is_significant = true;
-CREATE INDEX idx_eop_cohort      ON brioela.anon_exposure_outcome_pairs (cohort_id, is_significant);
+-- anonymous_exposure_event_associations
+CREATE INDEX idx_eea_product     ON brioela.anonymous_exposure_event_associations (exposure_product_id, post_exposure_event_kind, statistical_threshold_passed);
+CREATE INDEX idx_eea_ingredient  ON brioela.anonymous_exposure_event_associations (exposure_ingredient_name, post_exposure_event_kind, statistical_threshold_passed);
+CREATE INDEX idx_eea_ratio       ON brioela.anonymous_exposure_event_associations (observed_rate_ratio DESC) WHERE statistical_threshold_passed = true;
+CREATE INDEX idx_eea_group       ON brioela.anonymous_exposure_event_associations (anonymous_health_group_id, statistical_threshold_passed);
 
--- anon_ingredient_harm_index
-CREATE INDEX idx_ihi_ingredient  ON brioela.anon_ingredient_harm_index (ingredient_name, harm_signal DESC);
-CREATE INDEX idx_ihi_condition   ON brioela.anon_ingredient_harm_index (condition_tag, harm_signal DESC);
-CREATE INDEX idx_ihi_aliases     ON brioela.anon_ingredient_harm_index USING GIN (ingredient_aliases);
+-- anonymous_ingredient_event_association_index
+CREATE INDEX idx_ieai_ingredient ON brioela.anonymous_ingredient_event_association_index (ingredient_name, event_association_score DESC);
+CREATE INDEX idx_ieai_condition  ON brioela.anonymous_ingredient_event_association_index (reported_condition_tag, event_association_score DESC);
+CREATE INDEX idx_ieai_aliases    ON brioela.anonymous_ingredient_event_association_index USING GIN (ingredient_aliases);
 
--- product_community_trust
-CREATE INDEX idx_pct_adverse     ON brioela.product_community_trust (adverse_event_rate DESC NULLS LAST);
-CREATE INDEX idx_pct_trust       ON brioela.product_community_trust (trust_score);
-CREATE INDEX idx_pct_flags       ON brioela.product_community_trust USING GIN (allergen_community_flags);
-CREATE INDEX idx_pct_conditions  ON brioela.product_community_trust USING GIN (high_risk_condition_tags);
+-- product_community_health_summary
+CREATE INDEX idx_pchs_event_rate ON brioela.product_community_health_summary (reported_event_rate DESC NULLS LAST);
+CREATE INDEX idx_pchs_confidence ON brioela.product_community_health_summary (community_health_confidence_score);
+CREATE INDEX idx_pchs_allergens  ON brioela.product_community_health_summary USING GIN (reported_allergen_event_rates);
+CREATE INDEX idx_pchs_conditions ON brioela.product_community_health_summary USING GIN (condition_tags_with_elevated_event_rates);
 
--- anon_drug_food_interactions
-CREATE INDEX idx_dfi_drug        ON brioela.anon_drug_food_interactions (drug_category, severity_category);
-CREATE INDEX idx_dfi_ingredient  ON brioela.anon_drug_food_interactions (food_ingredient, severity_category);
+-- anonymous_medication_food_event_associations
+CREATE INDEX idx_mfea_medication ON brioela.anonymous_medication_food_event_associations (medication_category, severity_category);
+CREATE INDEX idx_mfea_ingredient ON brioela.anonymous_medication_food_event_associations (food_ingredient, severity_category);
 
--- anon_cohorts
-CREATE INDEX idx_cohorts_conditions  ON brioela.anon_health_cohorts USING GIN (condition_tags);
-CREATE INDEX idx_cohorts_medications ON brioela.anon_health_cohorts USING GIN (medication_categories);
+-- anonymous_health_groups
+CREATE INDEX idx_ahg_conditions  ON brioela.anonymous_health_groups USING GIN (reported_condition_tags);
+CREATE INDEX idx_ahg_medications ON brioela.anonymous_health_groups USING GIN (medication_categories);
 
--- anon_geographic
-CREATE INDEX idx_ghp_geohash     ON brioela.anon_geographic_health_patterns (geohash_5);
+-- anonymous_region_event_patterns
+CREATE INDEX idx_rep_geohash     ON brioela.anonymous_region_event_patterns (geohash_5);
 
--- anon_association_candidates
-CREATE INDEX idx_ac_strength     ON brioela.anon_association_candidates (strength_rating, replication_count DESC);
-CREATE INDEX idx_ac_promoted     ON brioela.anon_association_candidates (promoted_to_harm_index) WHERE promoted_to_harm_index = false;
+-- anonymous_research_association_candidates
+CREATE INDEX idx_rac_strength    ON brioela.anonymous_research_association_candidates (strength_rating, replication_count DESC);
+CREATE INDEX idx_rac_promoted    ON brioela.anonymous_research_association_candidates (promoted_to_signal_index) WHERE promoted_to_signal_index = false;
 ```
 
 ---
@@ -279,45 +279,45 @@ CREATE INDEX idx_ac_promoted     ON brioela.anon_association_candidates (promote
 The Health Agent calls these via `supabase.rpc()`. They handle upsert logic, statistical recomputation, and significance testing atomically.
 
 ```sql
--- Upsert an exposure-outcome pair, recomputing statistics
-CREATE OR REPLACE FUNCTION brioela.upsert_exposure_outcome_pair(
-  p_cohort_id         UUID,
-  p_exposure_type     TEXT,
+-- Upsert an exposure-event association, recomputing statistics
+CREATE OR REPLACE FUNCTION brioela.upsert_exposure_event_association(
+  p_anonymous_health_group_id UUID,
+  p_exposure_kind     TEXT,
   p_exposure_key      TEXT,
-  p_outcome_event_type TEXT,
+  p_post_exposure_event_kind TEXT,
   p_onset_lag_hours   REAL,
   p_severity          REAL
 ) RETURNS void AS $$
 BEGIN
-  INSERT INTO brioela.anon_exposure_outcome_pairs (
-    cohort_id, exposure_type, exposure_key,
-    exposure_product_id, exposure_ingredient, exposure_food_category, exposure_additive_code,
-    outcome_event_type,
-    outcome_severity_avg, outcome_severity_p90,
+  INSERT INTO brioela.anonymous_exposure_event_associations (
+    anonymous_health_group_id, exposure_kind, exposure_key,
+    exposure_product_id, exposure_ingredient_name, exposure_food_category, exposure_additive_code,
+    post_exposure_event_kind,
+    event_severity_average, event_severity_p90,
     onset_lag_hours_avg, onset_lag_hours_p50, onset_lag_hours_p90,
-    exposure_count, outcome_count, outcome_rate, is_significant,
-    signal_weight, last_replicated_at, last_updated_at
+    exposure_count, post_exposure_event_count, post_exposure_event_rate, statistical_threshold_passed,
+    recency_weight, last_replicated_at, last_updated_at
   ) VALUES (
-    p_cohort_id, p_exposure_type, p_exposure_key,
+    p_anonymous_health_group_id, p_exposure_kind, p_exposure_key,
     -- route the canonical key into the matching type-specific column so its index stays usable
-    CASE WHEN p_exposure_type = 'product'       THEN p_exposure_key END,
-    CASE WHEN p_exposure_type = 'ingredient'    THEN p_exposure_key END,
-    CASE WHEN p_exposure_type = 'food_category' THEN p_exposure_key END,
-    CASE WHEN p_exposure_type = 'additive'      THEN p_exposure_key END,
-    p_outcome_event_type,
+    CASE WHEN p_exposure_kind = 'product'       THEN p_exposure_key END,
+    CASE WHEN p_exposure_kind = 'ingredient'    THEN p_exposure_key END,
+    CASE WHEN p_exposure_kind = 'food_category' THEN p_exposure_key END,
+    CASE WHEN p_exposure_kind = 'additive'      THEN p_exposure_key END,
+    p_post_exposure_event_kind,
     p_severity, p_severity,
     p_onset_lag_hours, p_onset_lag_hours, p_onset_lag_hours,
     1, 1, 1.0, false,
     1.0, now(), now()
   )
-  ON CONFLICT (cohort_id, exposure_type, exposure_key, outcome_event_type)
+  ON CONFLICT (anonymous_health_group_id, exposure_kind, exposure_key, post_exposure_event_kind)
   DO UPDATE SET
-    outcome_count     = anon_exposure_outcome_pairs.outcome_count + 1,
-    exposure_count    = anon_exposure_outcome_pairs.exposure_count + 1,
-    outcome_rate      = (anon_exposure_outcome_pairs.outcome_count + 1.0) / (anon_exposure_outcome_pairs.exposure_count + 1),
-    outcome_severity_avg = (anon_exposure_outcome_pairs.outcome_severity_avg + p_severity) / 2,
-    onset_lag_hours_avg  = (anon_exposure_outcome_pairs.onset_lag_hours_avg + p_onset_lag_hours) / 2,
-    signal_weight     = 1.0,    -- fresh observation re-lifts the signal to full weight
+    post_exposure_event_count = anonymous_exposure_event_associations.post_exposure_event_count + 1,
+    exposure_count    = anonymous_exposure_event_associations.exposure_count + 1,
+    post_exposure_event_rate = (anonymous_exposure_event_associations.post_exposure_event_count + 1.0) / (anonymous_exposure_event_associations.exposure_count + 1),
+    event_severity_average = (anonymous_exposure_event_associations.event_severity_average + p_severity) / 2,
+    onset_lag_hours_avg = (anonymous_exposure_event_associations.onset_lag_hours_avg + p_onset_lag_hours) / 2,
+    recency_weight    = 1.0,    -- fresh observation re-lifts the signal to full weight
     last_replicated_at = now(),
     last_updated_at   = now();
 END;
@@ -326,12 +326,12 @@ $$ LANGUAGE plpgsql;
 -- Weekly temporal decay — runs from the same background job that refreshes the
 -- materialized views. Any pair not replicated in the last week loses weight; an
 -- 18-month-old signal with no new evidence decays toward zero instead of sitting
--- at full strength forever. Fresh observations reset signal_weight to 1.0 above.
-CREATE OR REPLACE FUNCTION brioela.decay_exposure_outcome_weights()
+-- at full strength forever. Fresh observations reset recency_weight to 1.0 above.
+CREATE OR REPLACE FUNCTION brioela.decay_exposure_event_recency_weights()
 RETURNS void AS $$
 BEGIN
-  UPDATE brioela.anon_exposure_outcome_pairs
-  SET signal_weight = GREATEST(
+  UPDATE brioela.anonymous_exposure_event_associations
+  SET recency_weight = GREATEST(
         0.0,
         -- 0.92 per week since last replication ≈ half-life of ~8 weeks
         POWER(0.92, EXTRACT(EPOCH FROM (now() - last_replicated_at)) / (7 * 24 * 3600))
@@ -344,11 +344,11 @@ $$ LANGUAGE plpgsql;
 CREATE OR REPLACE FUNCTION brioela.increment_product_conflict(p_product_id TEXT)
 RETURNS void AS $$
 BEGIN
-  INSERT INTO brioela.product_community_trust (product_id, trust_score, data_richness, controversy_score, ingredient_conflict_count, last_updated_at)
+  INSERT INTO brioela.product_community_health_summary (product_id, community_health_confidence_score, community_evidence_volume_score, community_evidence_disagreement_score, label_ingredient_mismatch_count, last_updated_at)
   VALUES (p_product_id, 0.5, 0.1, 0.5, 1, now())
   ON CONFLICT (product_id) DO UPDATE SET
-    ingredient_conflict_count = product_community_trust.ingredient_conflict_count + 1,
-    controversy_score = LEAST(1.0, product_community_trust.controversy_score + 0.05),
+    label_ingredient_mismatch_count = product_community_health_summary.label_ingredient_mismatch_count + 1,
+    community_evidence_disagreement_score = LEAST(1.0, product_community_health_summary.community_evidence_disagreement_score + 0.05),
     last_updated_at = now();
 END;
 $$ LANGUAGE plpgsql;
@@ -361,36 +361,36 @@ $$ LANGUAGE plpgsql;
 Two materialized views for the highest-frequency query patterns. Refreshed weekly by the background job.
 
 ```sql
--- Top ingredient-harm pairs across all cohorts — refreshed weekly
-CREATE MATERIALIZED VIEW brioela.mv_top_ingredient_harms AS
+-- Top ingredient-event associations across all anonymous health groups — refreshed weekly
+CREATE MATERIALIZED VIEW brioela.mv_top_ingredient_event_associations AS
 SELECT
   ingredient_name,
-  condition_tag,
-  event_type,
-  MAX(harm_signal)            AS max_harm_signal,
+  reported_condition_tag,
+  post_exposure_event_kind,
+  MAX(event_association_score) AS max_event_association_score,
   SUM(total_exposure_count)   AS total_exposures,
-  SUM(total_outcome_count)    AS total_outcomes,
-  array_agg(DISTINCT source_types) AS all_sources
-FROM brioela.anon_ingredient_harm_index
-WHERE harm_signal > 0.5 AND supporting_cohort_count >= 3
-GROUP BY ingredient_name, condition_tag, event_type
-ORDER BY max_harm_signal DESC;
+  SUM(total_post_exposure_event_count) AS total_post_exposure_events,
+  array_agg(DISTINCT evidence_source_types) AS all_sources
+FROM brioela.anonymous_ingredient_event_association_index
+WHERE event_association_score > 0.5 AND supporting_health_group_count >= 3
+GROUP BY ingredient_name, reported_condition_tag, post_exposure_event_kind
+ORDER BY max_event_association_score DESC;
 
-CREATE UNIQUE INDEX ON brioela.mv_top_ingredient_harms (ingredient_name, condition_tag, event_type);
+CREATE UNIQUE INDEX ON brioela.mv_top_ingredient_event_associations (ingredient_name, reported_condition_tag, post_exposure_event_kind);
 
 -- Products with elevated adverse rates — refreshed weekly
 CREATE MATERIALIZED VIEW brioela.mv_flagged_products AS
 SELECT
   p.id, p.name, p.upc,
-  pct.trust_score,
-  pct.adverse_event_rate,
-  pct.allergen_community_flags,
-  pct.high_risk_condition_tags,
-  pct.controversy_score
-FROM brioela.product_community_trust pct
-JOIN brioela.products p ON p.id = pct.product_id
-WHERE pct.adverse_event_rate > 0.01   -- > 1 adverse event per 100 scans
-   OR pct.controversy_score > 0.6;
+  pchs.community_health_confidence_score,
+  pchs.reported_event_rate,
+  pchs.reported_allergen_event_rates,
+  pchs.condition_tags_with_elevated_event_rates,
+  pchs.community_evidence_disagreement_score
+FROM brioela.product_community_health_summary pchs
+JOIN brioela.products p ON p.id = pchs.product_id
+WHERE pchs.reported_event_rate > 0.01   -- > 1 reported event per 100 scans
+   OR pchs.community_evidence_disagreement_score > 0.6;
 
 CREATE UNIQUE INDEX ON brioela.mv_flagged_products (id);
 ```
