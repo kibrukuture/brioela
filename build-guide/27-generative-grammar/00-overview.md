@@ -6,7 +6,7 @@ Brioela Generative Grammar is the safe creative UI language for the app. It repl
 
 ## Status
 
-[~] in progress — foundation (01–08), architecture (09–17), and research complete; `19` (code tree) next; `18` deferred
+[x] design complete — `01–17` + `19` written, research saved; `18` (WebView) deferred to future. Ready to code.
 
 ## Files In This Folder
 
@@ -29,11 +29,8 @@ Brioela Generative Grammar is the safe creative UI language for the app. It repl
 | `15-validation-and-repair.md` | validate twice → fail closed live (400ms) → repair offline; size caps; safety/privacy filter |
 | `16-atmosphere-skia-system.md` | Tier 2 Skia: `{character}_field` families, uniform contract, web parity, degradation |
 | `17-motion-beats-system.md` | the `beats` choreography layer, Reanimated 4 mapping, reduced-motion contract |
+| `19-code-package-structure.md` | the grammar mapped to real dirs: `shared/grammar/`, `mobile/grammar/`, `backend/src/core/generative-grammar/`; build order |
 | `research/` | five full-text 2025–2026 research reports + index (substrate, frameworks, beauty stack) |
-
-## Still To Write
-
-- `19-code-package-structure.md` — the grammar mapped to the real `shared/` + `mobile/` + `backend/src/` dirs
 
 ## Deferred (future, not v1)
 
