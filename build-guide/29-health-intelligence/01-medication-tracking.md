@@ -126,15 +126,14 @@ Prescription photos, lab results, doctor notes — extracted by GPT-4o mini visi
 
 ## Medication-Food Interaction Check at Scan Time
 
-When the scanner runs the constraint check (`07-scanner/03-constraint-check.md`), it reads the private `medications` table directly. `user_memory.health.medications` is only a prompt/session summary mirror.
+When the scanner runs the constraint check (`07-scanner/03-constraint-check.md`), it asks the Brain for active medications through typed Brain RPC. The Brain reads the private `medications` table through its Drizzle repository. `user_memory.health.medications` is only a prompt/session summary mirror.
 
 ```typescript
 // In checkProductConstraints() — new section added
 
-const activeMedications = db.select()
-  .from(medications)
-  .where(and(eq(medications.active, 1), eq(medications.userId, userId)))
-  .all()
+const activeMedications = await brain.readActiveMedicationsForConstraintCheck({
+  userId,
+})
 
 if (activeMedications.length > 0) {
   // Reviewed rules can create hard medication-food warnings.

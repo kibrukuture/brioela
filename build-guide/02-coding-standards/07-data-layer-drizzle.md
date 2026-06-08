@@ -98,9 +98,25 @@ Cloudflare Workers are stateless — the `_db` module-level variable persists wi
 
 ## Query Patterns
 
-### Never write raw SQL
+### Drizzle Is The Only Database Gatekeeper
 
-Drizzle's typed query builder catches column name typos, wrong types, and missing fields at compile time. Raw SQL (`db.execute(sql\`...\``) loses all of this.
+Production code never reaches a database directly. The database engine is not the application interface.
+
+```text
+Community/shared data: Supabase Postgres -> Drizzle -> typed repositories/stores -> app code
+Private Brain data:    Cloudflare DO SQLite -> Drizzle -> typed repositories/stores -> app code
+```
+
+Hard rules:
+
+- No direct Supabase data queries in production code.
+- No direct Postgres client data queries in production code.
+- No direct Durable Object SQLite queries in production code.
+- No raw Drizzle SQL in production runtime code.
+- No handwritten SQLite migration runner.
+- No database reads or writes outside typed Drizzle repositories/stores.
+
+Drizzle's typed query builder catches column name typos, wrong types, and missing fields at compile time. Raw SQL (`db.execute(sql\`...\``) loses all of this and is illegal in production runtime code.
 
 ```ts
 // ✓ typed query builder
@@ -109,13 +125,13 @@ const product = await db.query.products.findFirst({
   with: { sightings: true },
 })
 
-// ✗ raw SQL — loses type safety
+// ✗ raw SQL — illegal in Brioela production runtime
 const product = await db.execute(sql`SELECT * FROM products WHERE id = ${upc}`)
 ```
 
-Raw SQL is only permitted for Supabase Postgres when Drizzle cannot express the operation, such as carefully documented full-text search. Product code must not use raw SQL for normal reads, writes, updates, or deletes.
+Generated Drizzle migration artifacts and Drizzle schema declarations are approved Drizzle-owned boundaries. Application runtime code does not use raw SQL as an escape hatch. If Drizzle cannot express a future production query, treat that as an architecture event: design an approved adapter or generated boundary, document it, and gate it mechanically before shipping.
 
-Brain SQLite is stricter: raw Durable Object SQLite is metal, not Brioela's application language. Product Brain code must not call `ctx.storage.sql`, `.storage.sql`, `db.run`, `db.get`, `db.all`, `db.values`, or `sql\`...\`` directly. The only approved raw boundary is Drizzle itself and the tiny Brain database adapter/runtime layer that wires Cloudflare DO storage to Drizzle and, when unavoidable, configures SQLite pragmas. All Brain feature code talks through typed Drizzle repositories/stores.
+Raw Durable Object SQLite is metal, not Brioela's application language. Product Brain code must not call `ctx.storage.sql`, `.storage.sql`, `db.run`, `db.get`, `db.all`, `db.values`, or `sql\`...\`` directly. The only approved metal boundary is Drizzle itself and the tiny Brain database adapter/runtime layer that wires Cloudflare DO storage to Drizzle and, when unavoidable, configures SQLite pragmas. All Brain feature code talks through typed Drizzle repositories/stores.
 
 ### Transactions
 
@@ -191,7 +207,9 @@ All user-private data lives in DO SQLite, not Supabase. Supabase contains only s
 ## Rules
 
 - Never `this.ctx.storage.get/put` for structured data — use Drizzle.
-- Never use `ctx.storage.sql` or raw Drizzle SQL in Brain product code. Only the approved Brain database adapter/runtime boundary may touch metal SQLite, and only for Drizzle wiring or unavoidable SQLite configuration.
+- Never use raw SQL in production runtime code for Supabase Postgres or Brain SQLite.
+- Never use direct Supabase/Postgres/SQLite data access in production runtime code. Drizzle is the gatekeeper.
+- Only approved Drizzle schema files, generated Drizzle migrations, and tiny database adapter/runtime boundaries may touch database-specific primitives.
 - Never `JSON.parse` or `JSON.stringify` at the query layer — Drizzle's `jsonb` handles it for Postgres; for DO SQLite, parse at the repository function level, not inside components or route handlers.
 - Column names in SQL: `snake_case`. TypeScript property names: `camelCase`. Drizzle maps them — declare both.
 - Never expose raw Drizzle types in HTTP responses or mobile types. Map to Zod-validated response schemas before returning.

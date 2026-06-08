@@ -145,7 +145,7 @@ export function getDb() {
 
 ## Supabase Client — Backend
 
-The Supabase client is used for auth only. Data queries use Drizzle directly.
+The Supabase client is used for auth only. Data queries use Drizzle-backed repositories/stores. Production code must not use the Supabase client, a Postgres client, or raw SQL as a data access path.
 
 ```ts
 // backend/src/core/clients/supabase.client.ts
@@ -167,7 +167,7 @@ The service role key bypasses RLS — it is never exposed to clients. Mobile use
 
 Each DO has its own isolated SQLite database via `this.ctx.storage`. Cloudflare provides the storage engine. Drizzle is Brioela's database language for that storage: schema definitions, generated migrations, migration application, and normal ORM queries all go through `drizzle-orm/durable-sqlite`.
 
-Raw DO SQLite is metal. Product code does not call `ctx.storage.sql` or raw SQL directly. The only approved metal boundary is the tiny Brain database adapter/runtime layer that wires Cloudflare storage to Drizzle and handles unavoidable SQLite configuration.
+Raw database access is metal. Product code does not call Supabase data APIs, Postgres clients, `ctx.storage.sql`, or raw SQL directly. The only approved metal boundaries are Drizzle itself, generated Drizzle migration artifacts, and tiny database adapter/runtime layers that wire storage engines to Drizzle.
 
 ```ts
 // backend/src/agents/brain/_schema/memory.schema.ts
@@ -231,7 +231,8 @@ All user-private behavioral data (scans, constraints, recipes, sessions, memory)
 ## Rules
 
 - Never mix schemas: Supabase tables never reference DO SQLite and vice versa.
-- Never bypass Drizzle for Brain SQLite reads, writes, or migrations.
+- Never bypass Drizzle for Supabase Postgres or Brain SQLite reads, writes, or migrations.
+- Never use raw SQL in production runtime code. Drizzle is the database gatekeeper.
 - Never expose raw Drizzle types to the API. Map through the entity validator before returning.
 - All timestamps use `withTimezone: true` in Postgres. DO SQLite uses `integer` with `mode: 'timestamp'`.
 - Shared Postgres `drizzle.config.ts` points to `drizzle/schema/index.ts` — never individual files. Brain SQLite has its own Drizzle config pointing at the Brain schema entry point.

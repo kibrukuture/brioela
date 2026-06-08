@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-06-08T09:54:57.676Z",
+  "generatedAt": "2026-06-08T11:16:42.873Z",
   "violations": [
     {
       "rule": "ban-any",
@@ -809,6 +809,46 @@
       "column": 20,
       "message": "Non-null assertion `!` is illegal because it bypasses null safety.",
       "suggestion": "Handle the missing case explicitly or narrow before use."
+    },
+    {
+      "rule": "ban-raw-database-access",
+      "path": "backend/src/api/banking/handlers/statements/generate-statement.handler.ts",
+      "line": 43,
+      "column": 5,
+      "message": "Raw SQL template tags are illegal in production runtime code.",
+      "suggestion": "Use Drizzle query builder. Keep SQL in Drizzle-generated migrations or approved schema definitions only."
+    },
+    {
+      "rule": "ban-raw-database-access",
+      "path": "backend/src/api/banking/handlers/transactions/list-banking-transactions.handler.ts",
+      "line": 37,
+      "column": 50,
+      "message": "Raw SQL template tags are illegal in production runtime code.",
+      "suggestion": "Use Drizzle query builder. Keep SQL in Drizzle-generated migrations or approved schema definitions only."
+    },
+    {
+      "rule": "ban-raw-database-access",
+      "path": "backend/src/api/banking/helpers/offramp-outbox/claim-offramp-outbox.ts",
+      "line": 36,
+      "column": 7,
+      "message": "Raw SQL template tags are illegal in production runtime code.",
+      "suggestion": "Use Drizzle query builder. Keep SQL in Drizzle-generated migrations or approved schema definitions only."
+    },
+    {
+      "rule": "ban-raw-database-access",
+      "path": "backend/src/api/users/handlers/delete-user.handler.tsx",
+      "line": 34,
+      "column": 25,
+      "message": "Raw SQL template tags are illegal in production runtime code.",
+      "suggestion": "Use Drizzle query builder. Keep SQL in Drizzle-generated migrations or approved schema definitions only."
+    },
+    {
+      "rule": "ban-raw-database-access",
+      "path": "backend/src/api/users/handlers/delete-user.handler.tsx",
+      "line": 37,
+      "column": 4,
+      "message": "Raw SQL template tags are illegal in production runtime code.",
+      "suggestion": "Use Drizzle query builder. Keep SQL in Drizzle-generated migrations or approved schema definitions only."
     },
     {
       "rule": "ban-type-assertion",

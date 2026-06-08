@@ -56,7 +56,7 @@ health_insight: [
   // Write tools
   'write_user_memory',                    // write detected patterns to user_memory (patterns.* namespace)
   'schedule_user_alarm',                  // create next scheduled_alarms row
-  // Community write (direct Supabase — not via Brain SQLite)
+  // Community write through shared Drizzle repository — not via Brain SQLite
   'write_community_health_signal',        // writes to anonymized community Postgres tables after k-anonymity
 ]
 ```
