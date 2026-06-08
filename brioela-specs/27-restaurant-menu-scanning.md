@@ -19,6 +19,7 @@ Brioela already knows everything about the user: their allergies (confirmed or i
   - Red: contains a confirmed allergen or hard constraint violation — do not order.
 - User can tap any dish to see exactly why it was flagged and what to ask the waiter.
 - If a dish has a yellow flag, Brioela generates the exact question to ask: "Does this contain [ingredient]? Is it cooked in a shared fryer with [allergen]?"
+- If the menu or waiter uses another language, Brioela can show a translated menu overlay and speak the question to staff in their language when the user asks.
 
 ## Input Handling
 
@@ -34,6 +35,7 @@ Brioela already knows everything about the user: their allergies (confirmed or i
 3. Each dish is evaluated against the user's full constraint profile pulled from their Orchestrator DO.
 4. Dishes missing ingredient detail are flagged yellow by default (unknown = ask, not assume safe).
 5. Results returned as a structured list with per-dish verdict, reason, and suggested waiter question.
+6. If needed, Language Bridge turns the waiter question into a two-way food conversation between user and staff.
 
 The processing model is a standard text call (not Gemini Live) — this is a one-shot structured extraction, not a conversation. Latency target: under 3 seconds from photo to results.
 
@@ -52,6 +54,10 @@ For yellow-flagged dishes, Brioela generates a short, specific, non-awkward ques
 "I'm allergic to [X]. Does [dish name] contain [X] or is it prepared in contact with [X]?"
 
 The question is pre-formulated, not generic. This removes the anxiety of not knowing what to ask.
+
+If the user says "Brioela, talk to the waiter," Brioela uses the same question, the user's constraint
+profile, and the detected staff language to ask on the user's behalf. It asks ingredient/preparation
+questions only and summarizes the answer back to the user before ordering.
 
 ## Offline Partial Mode
 

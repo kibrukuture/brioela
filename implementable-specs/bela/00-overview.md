@@ -49,6 +49,21 @@ DO ID: `env.ORDER_AGENT.idFromName(orderId)`
 
 The OrderAgent is created when a shopper accepts an order. It is archived (no longer addressed) after completion or cancellation. All order state is flushed to Supabase Postgres before the DO can be evicted.
 
+The live scan-together loop is Bela's core trust primitive. The shopper is not just buying a list;
+they are temporarily acting as the user's hands in the store while Brioela carries the user's food
+rules into every scan. The user sees the same scanner judgment they would see if they were holding the
+product themselves, without exposing the full private profile to the shopper.
+
+Example:
+
+```text
+Shopper scans substitute cereal.
+OrderAgent checks the user's constraint snapshot.
+Scanner blocks sesame.
+Shopper hears: "Not this one. Sesame conflicts with the order."
+User sees the blocked scan in the live order view.
+```
+
 ---
 
 ## Architecture: How an Order Flows

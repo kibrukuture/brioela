@@ -270,6 +270,11 @@ pending_scans        -> unresolved UPC retry queue
 
 The evidence layer is additive. It does not remove or replace the canonical `products` table.
 
+This forms Brioela's **Label Truth Graph**: a product fact is not accepted because one provider says
+it. Each important field is backed by one or more evidence records — public database, GS1 identity,
+government source, label photo, correction, recall notice, or later receipt/product exposure evidence.
+Scanner uses the resolved graph, not a single raw provider response.
+
 Use this mental model:
 
 ```text
@@ -307,6 +312,19 @@ type ResolvedProductFactSnapshot = {
 `buildResolvedProductFactSnapshot()` is the scanner boundary. It combines `products`,
 `product_origin`, and `product_fact_evidence` into the object used by scoring, constraint checks, and
 UI. Raw provider facts should not bypass this snapshot in the scan hot path.
+
+Example:
+
+```text
+Open Food Facts: ingredients = oats, sugar, natural flavor
+Label photo: ingredients = oats, sugar, MSG
+User correction: confirms MSG on current package
+Resolved graph: contains MSG, label evidence wins for current scan, shared product update requires review
+```
+
+This fixes the failure mode where Brioela simply fetches a public database and repeats stale label
+data. The user gets the current scan caveat immediately, while the shared product record remains
+reviewable and traceable.
 
 ---
 

@@ -30,6 +30,31 @@ Personalized food recall detection. FDA / EFSA / CFIA / RASFF recall feeds polle
 - Retracted recall: send follow-up "recall has been cleared — no action needed"
 - Geo-scoped: FDA alerts for US products; EFSA/RASFF for EU; CFIA for Canada
 
+## Product Exposure Ledger
+
+Recall matching must target a unified private product exposure ledger from the first shipped product,
+not barcode scans alone. A user can be exposed to a product through several paths:
+
+- barcode scan
+- receipt line-item match
+- Bela checkout receipt proof
+- pantry confirmation
+- manual product log
+
+`scan_event` is one exposure source, not the exposure model. Receipt matches, Bela checkout proof,
+pantry confirmations, and manual logs must also create product exposure records. This fixes the
+failure mode where a recalled product appears on a receipt or Bela order but was never individually
+scanned by the user.
+
+Example:
+
+```text
+Receipt: "Danone yogurt 4pk" matched to product_123 with 0.88 confidence.
+Recall: product_123 recalled for lot range A12-A19.
+User never scanned barcode.
+Recall still creates a candidate exposure match, with confidence tied to receipt match quality.
+```
+
 ## What This Folder Depends On
 - `07-scanner` — `scan_event` rows in Supabase are the match target
 - `12-notifications` — push delivery through notification system

@@ -25,7 +25,7 @@ This is not Gemini Live. There is no conversation, streaming video, or real-time
 
 Menu scanning reuses these scanner pieces from `07-scanner`:
 
-- Gemini Vision call pattern for arbitrary text extraction.
+- GPT-4o mini vision extraction pattern for arbitrary menu text extraction.
 - Server-side contrast enhancement for low-light images.
 - Confidence and warning behavior.
 - JPEG upload conventions.

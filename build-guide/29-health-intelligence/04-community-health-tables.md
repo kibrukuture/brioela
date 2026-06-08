@@ -253,6 +253,24 @@ Sub-threshold contributions stay pending/private to the aggregation job. They ar
 `product_community_health_summary`, `anonymous_ingredient_event_association_index`, or materialized
 views.
 
+### Cohort Ladder
+
+When a highly specific anonymous health group does not reach the threshold, Brioela should climb a
+privacy ladder instead of publishing a tiny cell or throwing away the signal immediately.
+
+```text
+condition + medication + region + cuisine + metabolic marker
+→ condition + medication + region + cuisine
+→ condition + medication + region
+→ condition + medication
+→ condition only
+```
+
+Each published signal stores the ladder level used by the aggregation job. More specific groups can
+carry more weight. Broader groups carry weaker explanatory language. This fixes the failure mode where
+Brioela either leaks a rare profile or loses useful evidence because the most specific group is too
+small.
+
 ---
 
 ## Indexes

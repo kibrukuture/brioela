@@ -38,6 +38,18 @@ Passport is Brioela's temporary, privacy-safe food instruction artifact for real
 - Passport can be translated.
 - Passport can render on screen, image, PDF, QR link, or text.
 - Passport uses Generative Grammar for presentation, but safety content is static/validated.
+- Passport should feel like a food boarding pass: action-first, temporary, scannable by a human in a few seconds, and useful without explaining Brioela.
+
+Example:
+
+```text
+Please avoid peanuts and sesame.
+Ask about sauces and shared fryers.
+This expires tonight.
+```
+
+This fixes the failure mode where Passport becomes a profile page. Passport is not "about the user";
+it is a temporary instruction artifact for the person helping them eat safely.
 
 ## What This Folder Depends On
 

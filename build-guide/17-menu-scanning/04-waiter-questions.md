@@ -12,6 +12,10 @@ Yellow means the user should ask before ordering. The product value is not just 
 
 Every yellow dish must return a question the user can show to staff or read aloud.
 
+If the user and staff do not share a language, the same question can be passed to Language Bridge
+(`08-language-bridge.md`) so Brioela can speak it in the staff language and summarize the answer back
+to the user.
+
 ---
 
 ## Question Rules
@@ -102,6 +106,8 @@ The large-text view should be easy to show across a table in dim lighting. It sh
 type WaiterQuestion = {
   dishId: string
   primaryQuestion: string
+  translatedQuestion: string | null
+  staffLanguage: string | null
   riskIngredient: string
   questionType: "contains" | "shared_prep" | "hidden_component" | "cooking_method"
   secondaryQuestions: string[]

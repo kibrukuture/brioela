@@ -84,7 +84,7 @@ Offline behavior:
 - Use cached constraints only.
 - Run local deterministic matching when extracted text is available locally.
 - Show a visible "offline partial result" banner.
-- Do not show real-time community notes.
+- Do not show real-time Ground signals.
 - Do not write shared restaurant intelligence until the device is back online and the contribution can pass validation.
 - Do not imply the profile is current.
 - Queue a lightweight `menu_scanned` event for later sync if event logging is enabled.
@@ -93,15 +93,15 @@ If server vision extraction is unavailable offline, the first implementation can
 
 ---
 
-## Map And Community Overlay
+## Map And Ground Overlay
 
-If `restaurantId` maps to a place in `10-map`, the menu scan can overlay place-level community context.
+If `restaurantId` maps to a place in `10-map`, the menu scan can overlay place-level Ground context.
 
 Examples:
 
 - "3 people with gluten sensitivity reported this restaurant handles gluten well."
-- "Recent notes mention shared fryer uncertainty."
-- "No community notes yet for this place."
+- "Recent Ground Finds mention shared fryer uncertainty."
+- "No Ground signals yet for this place."
 
 Boundary:
 

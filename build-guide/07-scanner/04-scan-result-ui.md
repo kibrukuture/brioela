@@ -336,6 +336,10 @@ The expanded view should feel like a guided product explanation, not a database 
 like `Name:`, `Age:`, `Origin:`, or `Source:` unless the whole surface is intentionally technical. Use
 natural lines, short clauses, and grouped rhythm.
 
+Evidence-first does not mean score-first. The product answer comes first, then the evidence that
+changed or supported it. The score is supporting context, not the headline. See
+`01-design-system/13-evidence-first-ui.md` for the cross-product rule.
+
 ```
 ┌─────────────────────────────────┐
 │  Worth caution                  │
