@@ -254,4 +254,83 @@ The script should exit non-zero in `check:names`. In `watch:names`, it should co
 }
 ```
 
-The script implementation comes later. This file defines the contract it must enforce.
+---
+
+## Implemented Guard
+
+The guard lives at:
+
+```text
+tools/brioela-name-guard/
+```
+
+The executable is:
+
+```text
+tools/brioela-name-guard/run.brioela.name.guard.handler.ts
+```
+
+The guard currently supports:
+
+- one-shot check mode: `bun run check:names`
+- continuous watch mode: `bun run watch:names`
+- baseline refresh: `bun run update:name-baseline`
+- repo walking over Brioela-owned folders
+- ignored generated/vendor paths such as `node_modules`, `.expo`, `.wrangler`, `mobile/ios/Pods`
+- role suffix validation
+- dot-case TypeScript file validation
+- banned generic names
+- underscore folder allowlist
+- required `index.ts` inside underscore folders
+- barrel-only `index.ts` checks
+- test-file pairing checks
+- `@callable()` RPC boundary checks
+- optional context-aware scope rules through `naming.scope.json`
+
+---
+
+## Baseline Rule
+
+The current repo contains legacy code from the old app. Those violations are intentionally captured in:
+
+```text
+tools/brioela-name-guard/name.guard.baseline.json
+```
+
+The baseline does not make bad names acceptable. It only prevents old legacy drift from blocking the new app. The rule from now on is stricter:
+
+```text
+Existing baseline violations may remain until migrated.
+New violations fail immediately.
+The baseline should only shrink over time.
+```
+
+Do not run `bun run update:name-baseline` casually. Refreshing the baseline is allowed only when intentionally grandfathering known legacy code or after deleting/fixing old violations.
+
+---
+
+## Context-Aware Scope Files
+
+Advanced folder-specific rules use `naming.scope.json` files. A scope file applies to its folder and descendants until a deeper scope overrides it.
+
+Example:
+
+```json
+{
+  "scope": "food",
+  "allowedSubjects": ["food", "ingredient", "nutrition", "recipe"],
+  "requiredSubject": true,
+  "allowedActions": ["add", "create", "update", "delete", "read", "list", "check"],
+  "allowedRoles": ["handler", "schema", "type", "policy", "mapper", "helper"]
+}
+```
+
+Inside that scope:
+
+```text
+✓ add.food.handler.ts
+✗ add.water.handler.ts      ← water is not an allowed subject in the food scope
+✗ add.food.handling.ts      ← handling is not an approved role suffix
+```
+
+This is how Brioela gets beyond regex naming. The guard can understand where a file lives and whether the subject/action/role belongs in that folder.

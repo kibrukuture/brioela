@@ -3,6 +3,10 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "check:names": "bun tools/brioela-name-guard/run.brioela.name.guard.handler.ts",
+    "watch:names": "bun tools/brioela-name-guard/run.brioela.name.guard.handler.ts --watch",
+    "update:name-baseline": "bun tools/brioela-name-guard/run.brioela.name.guard.handler.ts --update-baseline",
+    "verify": "bun run check:names",
     "deploy:backend": "fly deploy -c backend/fly.toml",
     "deploy:pdf-converter": "fly deploy -c pdf-converter/fly.toml",
     "deploy:universal-file-converter": "fly deploy -c universal-file-converter/fly.toml",

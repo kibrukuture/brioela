@@ -1,0 +1,99 @@
+export const checkedRoots = [
+  'backend',
+  'shared',
+  'mobile',
+  'build-guide',
+  'implementable-specs',
+  'brioela-specs',
+  '_records',
+  'tools',
+] as const
+
+export const ignoredPathParts = new Set([
+  '.git',
+  'node_modules',
+  'dist',
+  'build',
+  '.wrangler',
+  '.expo',
+  '.turbo',
+  'coverage',
+  'Pods',
+  'DerivedData',
+  'xcuserdata',
+])
+
+export const allowedTypeScriptSuffixes = [
+  '.route.ts',
+  '.controller.ts',
+  '.handler.ts',
+  '.helper.ts',
+  '.rpc.ts',
+  '.policy.ts',
+  '.mapper.ts',
+  '.prompt.ts',
+  '.runtime.ts',
+  '.middleware.ts',
+  '.agent.ts',
+  '.tool.ts',
+  '.schema.ts',
+  '.type.ts',
+  '.event.ts',
+  '.job.ts',
+  '.routes.ts',
+  '.lib.ts',
+  '.constant.ts',
+  '.store.ts',
+  '.hook.ts',
+  '.api.ts',
+  '.client.ts',
+  '.feature.tsx',
+  '.variants.ts',
+  '.glsl.ts',
+  '.test.ts',
+] as const
+
+export const allowedUnderscoreFolders = new Set([
+  '_handlers',
+  '_helpers',
+  '_schema',
+  '_types',
+  '_rpc',
+  '_policies',
+  '_mappers',
+  '_prompts',
+  '_runtime',
+  '_schedules',
+  '_subagents',
+  '_hooks',
+  '_components',
+  '_watch',
+])
+
+export const rootUnderscoreFolders = new Set(['_records'])
+
+export const bannedNames = new Set([
+  'utils',
+  'helpers',
+  'manager',
+  'service',
+  'common',
+  'misc',
+  'stuff',
+  'data',
+  'info',
+  'payload',
+  'result',
+  'handler',
+  'agent',
+  'new',
+  'old',
+  'temp',
+  'backup',
+  'v2',
+])
+
+export const allowedStandaloneFiles = new Set([
+  'index.ts',
+  'index.tsx',
+])
