@@ -87,7 +87,7 @@ let _db: ReturnType<typeof drizzle> | null = null
 export function getDb(env: Env) {
   if (_db) return _db
   const client = postgres(env.DATABASE_URL)
-  _db = drizzle(client, { schema })
+  _db = drizzle({ client, schema })
   return _db
 }
 ```
