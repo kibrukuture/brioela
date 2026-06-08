@@ -1,5 +1,7 @@
 # Connections — Brain
 
+Status note: `[x] done` in this file means the spec-to-build-guide connection has been documented. It does not mean the backend implementation exists. Backend implementation status is tracked separately in `_records/implementation-ledger/brain/` and the build-order files.
+
 spec: brioela-specs/09-per-user-brain.md
   → build-guide/05-brain/01-do-class-and-setup.md   [x] done
   → build-guide/05-brain/02-tool-protocol.md         [x] done
@@ -37,7 +39,7 @@ spec: implementable-specs/17-session-lifecycle.md
   → build-guide/05-brain/07-agent-framework-hardening.md [x] done (current schedule/fiber/session hardening)
 
 spec: implementable-specs/brioela-tools/ (tool specs)
-  → build-guide/05-brain/02-tool-protocol.md         [x] done (tool list, definition pattern, TOOL_PERMISSIONS)
+  → build-guide/05-brain/02-tool-protocol.md         [x] guide/spec connection done; backend tool implementation pending (tool list, definition pattern, TOOL_PERMISSIONS)
   → build-guide/05-brain/07-agent-framework-hardening.md [x] done (AI SDK tool layer retained; runtime plumbing hardened)
 
 external docs: Cloudflare Agents SDK current docs, 2026-06-07

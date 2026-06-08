@@ -2,7 +2,7 @@
 
 ## What This File Covers
 
-The complete tool protocol: all 17 AI-callable tools, the tool definition pattern, how tools are registered on the Brain, Zod validation at the tool boundary, caller permissions, and typed Brain RPC wrappers for Brain-owned child agents.
+The tool protocol design contract: all 17 internal SQLite AI-callable tools, the tool definition pattern, how tools are registered on the Brain, Zod validation at the tool boundary, caller permissions, and typed Brain RPC wrappers for Brain-owned child agents. This file describes what must be implemented; it is not proof that `backend/src/agents/brain/_tools/` exists yet.
 
 ---
 

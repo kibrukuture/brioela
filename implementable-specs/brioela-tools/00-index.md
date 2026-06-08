@@ -61,23 +61,27 @@ Tools are the ONLY interface between the agent's language model and the DO's SQL
 
 ## Status
 
+This status table tracks tool specification files only. `DONE` means the markdown contract exists here: purpose, input schema, output, side effects, error cases, and caller rules. It does not mean the backend AI SDK tool implementation exists under `backend/src/agents/brain/_tools/`.
+
+Implementation status at this point: pending. The Brain backend currently has memory-event append/list RPC and readiness RPC, but not the full tool registry.
+
 | Tool | Status |
 |---|---|
-| `log_memory_event` | ✓ DONE |
-| `write_user_memory` | ✓ DONE |
-| `read_user_memory` | ✓ DONE |
-| `create_user_skill` | ✓ DONE |
-| `update_user_skill` | ✓ DONE |
-| `view_user_skill` | ✓ DONE |
-| `archive_user_skill` | ✓ DONE |
-| `delete_user_skill` | ✓ DONE |
-| `propose_user_constraint` | ✓ DONE |
-| `confirm_user_constraint` | ✓ DONE |
-| `schedule_user_alarm` | ✓ DONE |
-| `cancel_user_alarm` | ✓ DONE |
-| `view_user_recipe` | ✓ DONE |
-| `update_user_recipe` | ✓ DONE |
-| `archive_user_recipe` | ✓ DONE |
-| `load_session_context` | ✓ DONE |
-| `search_session_history` | ✓ DONE |
-| `search_web` | ✓ DONE |
+| `log_memory_event` | Spec done; backend pending |
+| `write_user_memory` | Spec done; backend pending |
+| `read_user_memory` | Spec done; backend pending |
+| `create_user_skill` | Spec done; backend pending |
+| `update_user_skill` | Spec done; backend pending |
+| `view_user_skill` | Spec done; backend pending |
+| `archive_user_skill` | Spec done; backend pending |
+| `delete_user_skill` | Spec done; backend pending |
+| `propose_user_constraint` | Spec done; backend pending |
+| `confirm_user_constraint` | Spec done; backend pending |
+| `schedule_user_alarm` | Spec done; backend pending |
+| `cancel_user_alarm` | Spec done; backend pending |
+| `view_user_recipe` | Spec done; backend pending |
+| `update_user_recipe` | Spec done; backend pending |
+| `archive_user_recipe` | Spec done; backend pending |
+| `load_session_context` | Spec done; backend pending |
+| `search_session_history` | Spec done; backend pending |
+| `search_web` | Spec done; backend pending |

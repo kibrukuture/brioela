@@ -4,14 +4,16 @@
 The per-user agent brain. One `BrioelaBrain` Durable Object per user, forever. This is the critical path — every other feature depends on it. It holds the user's private SQLite database via Drizzle ORM, the complete memory system (user_memory, user_personality, skills, constraints, scan history, recipes, sessions), the tool protocol (every AI-callable tool), the alarm system for ambient intelligence, and the Brain maintenance for background maintenance.
 
 ## Status
-[x] complete — eight files written; `07` hardens the older manual runtime patterns against current Cloudflare Agents SDK capabilities, and `08` defines the production-safe per-user SQLite migration runtime
+[x] guide complete — eight guide files written; `07` hardens the older manual runtime patterns against current Cloudflare Agents SDK capabilities, and `08` defines the production-safe per-user SQLite migration runtime
+
+Implementation is not complete. Current backend code has the Brain DO, Drizzle SQLite spine, migration runtime, readiness checks, and memory-event append/list RPC. The full AI-callable tool protocol, session lifecycle, agent identity runtime, alarm runtime, and child-agent runtime remain implementation work before the Brain layer can be treated as complete.
 
 ## Files In This Folder
 
 | File | Contents |
 |---|---|
 | `01-do-class-and-setup.md` | BrioelaBrain class, wrangler.jsonc entries, SQLite init, WAL mode, Drizzle wiring, current Agents SDK runtime primitives |
-| `02-tool-protocol.md` | All 17 AI-callable tools, tool definition pattern, tool registration, Zod validation at boundary, caller permissions, typed Brain RPC wrappers for child agents |
+| `02-tool-protocol.md` | Internal SQLite tool protocol: 17 AI-callable SQLite tools, tool definition pattern, tool registration, Zod validation at boundary, caller permissions, typed Brain RPC wrappers for child agents. This is guide coverage, not proof that `backend/src/agents/brain/_tools/` exists yet. |
 | `03-session-lifecycle.md` | Session open, system prompt construction (BrioelaIdentity + order), compression triggers, SessionContextCompressor, abandoned session detection, watchdog alarm |
 | `04-sub-agents.md` | Brain-owned child Agent pattern, BrainMaintenanceAgent, BehaviorPatternAgent, typed parent-child RPC, retained child runs, caller-based authorization |
 | `05-alarm-system.md` | scheduled_alarms product ledger, Agents SDK schedule wake/callback model, ambient intelligence loop, first-boot initialization |
