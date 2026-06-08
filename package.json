@@ -3,9 +3,24 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "check:names": "bun tools/brioela-name-guard/run.brioela.name.guard.handler.ts",
-    "watch:names": "bun tools/brioela-name-guard/run.brioela.name.guard.handler.ts --watch",
-    "update:name-baseline": "bun tools/brioela-name-guard/run.brioela.name.guard.handler.ts --update-baseline",
+    "name:check": "BRIOELA_WORKSPACE_ROOT=$PWD bun --cwd tools/brioela-name-guard check",
+    "name:watch": "BRIOELA_WORKSPACE_ROOT=$PWD bun --cwd tools/brioela-name-guard watch",
+    "name:baseline:update": "BRIOELA_WORKSPACE_ROOT=$PWD bun --cwd tools/brioela-name-guard baseline:update",
+    "name:daemon:install": "BRIOELA_WORKSPACE_ROOT=$PWD bun --cwd tools/brioela-name-guard daemon:install",
+    "name:daemon:uninstall": "BRIOELA_WORKSPACE_ROOT=$PWD bun --cwd tools/brioela-name-guard daemon:uninstall",
+    "name:daemon:start": "BRIOELA_WORKSPACE_ROOT=$PWD bun --cwd tools/brioela-name-guard daemon:start",
+    "name:daemon:stop": "BRIOELA_WORKSPACE_ROOT=$PWD bun --cwd tools/brioela-name-guard daemon:stop",
+    "name:daemon:status": "BRIOELA_WORKSPACE_ROOT=$PWD bun --cwd tools/brioela-name-guard daemon:status",
+    "name:daemon:print": "BRIOELA_WORKSPACE_ROOT=$PWD bun --cwd tools/brioela-name-guard daemon:print",
+    "name:logs": "BRIOELA_WORKSPACE_ROOT=$PWD bun --cwd tools/brioela-name-guard logs",
+    "name:logs:err": "BRIOELA_WORKSPACE_ROOT=$PWD bun --cwd tools/brioela-name-guard logs:err",
+    "name:logs:out": "BRIOELA_WORKSPACE_ROOT=$PWD bun --cwd tools/brioela-name-guard logs:out",
+    "check:names": "bun run name:check",
+    "watch:names": "bun run name:watch",
+    "update:name-baseline": "bun run name:baseline:update",
+    "install:name-daemon": "bun run name:daemon:install",
+    "uninstall:name-daemon": "bun run name:daemon:uninstall",
+    "status:name-daemon": "bun run name:daemon:status",
     "verify": "bun run check:names",
     "deploy:backend": "fly deploy -c backend/fly.toml",
     "deploy:pdf-converter": "fly deploy -c pdf-converter/fly.toml",
@@ -16,7 +31,8 @@
   "workspaces": [
     "backend",
     "shared",
-    "mobile"
+    "mobile",
+    "tools/brioela-name-guard"
   ],
   "packageManager": "bun@1.2.21",
   "dependencies": {

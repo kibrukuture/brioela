@@ -1,11 +1,11 @@
 #!/usr/bin/env bun
 
-import { cwd, exit } from 'node:process'
-import { formatNamingViolations, runNameGuard } from './_helpers'
+import { exit } from 'node:process'
+import { formatNamingViolations, resolveWorkspaceRoot, runNameGuard } from './_helpers'
 import { watchWorkspace } from './_watch'
 
 const args = new Set(process.argv.slice(2))
-const workspaceRoot = cwd()
+const workspaceRoot = resolveWorkspaceRoot()
 
 if (args.has('--watch')) {
   watchWorkspace(workspaceRoot)
