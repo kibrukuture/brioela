@@ -1,0 +1,27 @@
+import type { LexiconWord } from '../../_types'
+
+export const globalCoreLexicon: LexiconWord[] = [
+  { word: 'action', kind: 'domain', scopes: ['global'], meaning: 'Controlled lexicon category for behavior verbs.' },
+  { word: 'all', kind: 'domain', scopes: ['global'], meaning: 'Complete collected set.' },
+  { word: 'brioela', kind: 'domain', scopes: ['global'], meaning: 'The product and codebase domain.' },
+  { word: 'core', kind: 'domain', scopes: ['global'], meaning: 'Small central vocabulary slice for universal concepts.' },
+  { word: 'domain', kind: 'domain', scopes: ['global'], meaning: 'A meaningful product or system concept.' },
+  { word: 'first', kind: 'domain', scopes: ['global'], meaning: 'First value in a comparison pair.' },
+  { word: 'global', kind: 'domain', scopes: ['global'], meaning: 'Vocabulary available across every repository scope.' },
+  { word: 'id', kind: 'domain', scopes: ['global'], meaning: 'Stable identifier.' },
+  { word: 'kind', kind: 'domain', scopes: ['global'], meaning: 'Finite category of a domain object.' },
+  { word: 'label', kind: 'domain', scopes: ['global'], meaning: 'Human or system readable name.' },
+  { word: 'mode', kind: 'domain', scopes: ['global'], meaning: 'Selected operating behavior for a tool or runtime.' },
+  { word: 'name', kind: 'domain', scopes: ['global'], meaning: 'Human-readable symbol identity.' },
+  { word: 'next', kind: 'domain', scopes: ['global'], meaning: 'Continuation point after the current ordered slice.' },
+  { word: 'page', kind: 'domain', scopes: ['global'], meaning: 'Bounded ordered slice returned from a larger collection.' },
+  { word: 'product', kind: 'domain', scopes: ['global'], meaning: 'Runtime application code, not tooling.' },
+  { word: 'raw', kind: 'domain', scopes: ['global'], meaning: 'Unparsed or uncontracted runtime content.' },
+  { word: 'records', kind: 'domain', scopes: ['global'], meaning: 'Many stored or generated entries.' },
+  { word: 'role', kind: 'domain', scopes: ['global'], meaning: 'File or identifier responsibility category.' },
+  { word: 'scope', kind: 'domain', scopes: ['global'], meaning: 'Bounded ownership area.' },
+  { word: 'second', kind: 'domain', scopes: ['global'], meaning: 'Second value in a comparison pair.' },
+  { word: 'target', kind: 'domain', scopes: ['global'], meaning: 'Destination or second value in a transformation.' },
+  { word: 'tools', kind: 'domain', scopes: ['global'], meaning: 'Repository area that owns local guard and automation code.' },
+  { word: 'word', kind: 'domain', scopes: ['global'], meaning: 'Smallest controlled naming unit.' },
+]
