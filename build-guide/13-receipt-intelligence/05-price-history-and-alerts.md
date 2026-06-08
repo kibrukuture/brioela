@@ -11,7 +11,7 @@ Personal price history, inflation detection, and cheaper equivalent suggestions.
 
 ## Private Price History
 
-Store personal price history in Orchestrator DO SQLite.
+Store personal price history in Brain DO SQLite.
 
 Fields:
 

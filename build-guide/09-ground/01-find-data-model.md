@@ -70,11 +70,11 @@ Fields:
 
 Map rendering must not query individual finds for every visible tile.
 
-## Private Orchestrator DO SQLite
+## Private Brain DO SQLite
 
 ### `user_find_history`
 
-Private per-user table in Orchestrator DO SQLite.
+Private per-user table in Brain DO SQLite.
 
 Fields:
 
@@ -104,6 +104,6 @@ This is private user history. It does not belong in Supabase.
 ## Implementation Notes
 
 - Shared tables live in Supabase.
-- Private history lives in Orchestrator DO.
+- Private history lives in Brain DO.
 - Stale/archive transitions should run as shared-data maintenance, not per-user DO alarms.
 - Supabase scheduled job or a global Worker/QStash job is the better fit for shared Ground aging.

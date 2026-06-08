@@ -45,7 +45,7 @@ The current mobile Supabase auth client, encrypted session storage, token refres
 - Supabase Auth is the only auth provider.
 - Backend validates Supabase access tokens.
 - Mobile attaches Supabase access token to network requests through `mobile/network/core/client.ts`.
-- Private Brioela agent/Orchestrator identity depends on stable Supabase `user.id`.
+- Private Brioela agent/Brain identity depends on stable Supabase `user.id`.
 
 ## Known Gaps
 

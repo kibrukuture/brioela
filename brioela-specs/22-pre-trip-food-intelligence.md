@@ -14,15 +14,15 @@ When a user signals they are traveling to a new location, Brioela pre-loads food
 
 The agent detects travel intent from:
 
-1. **Voice mention during any session**: "going to X", "traveling to X", "visiting X". Picked up from transcript events in any voice session and passed to the Orchestrator DO.
+1. **Voice mention during any session**: "going to X", "traveling to X", "visiting X". Picked up from transcript events in any voice session and passed to the Brain DO.
 2. **Calendar integration (optional, user-granted)**: if the user connects their calendar, flight or accommodation events are parsed for destination and date.
 3. **Manual city search on the map**: if a user searches a city far from their current location more than once, this is a travel intent candidate.
 
-The Orchestrator DO records the inferred destination and departure date. If confidence is high (explicit voice mention or calendar event), it triggers pre-loading without asking. If confidence is low (single map search), it may confirm once: "Are you heading to [city]?"
+The Brain DO records the inferred destination and departure date. If confidence is high (explicit voice mention or calendar event), it triggers pre-loading without asking. If confidence is low (single map search), it may confirm once: "Are you heading to [city]?"
 
 ## What Gets Pre-Loaded
 
-When a confirmed travel destination is detected, the Orchestrator DO schedules a background job via Upstash QStash:
+When a confirmed travel destination is detected, the Brain DO schedules a background job via Upstash QStash:
 
 1. **Community notes for the destination region**: fetch high-trust community notes for top scanned products in that city/country. Store locally for offline access.
 2. **Local product landscape**: what food brands and products are common in that country. What government food databases apply. Update the scan resolution priority to prefer local databases when the user is in that location.
@@ -40,7 +40,7 @@ No dashboard to open. If the user opens the app after arriving, the map and scan
 
 ## Location Switch
 
-When the user's device location changes to the destination region (detected on next app open), the Orchestrator DO:
+When the user's device location changes to the destination region (detected on next app open), the Brain DO:
 - Activates the pre-loaded local database priority.
 - Switches map context to the destination city.
 - Applies any local dietary labeling norms to scan scoring.
@@ -55,13 +55,13 @@ When they return home, the same logic reverts. Travel context is stored as a tim
 
 ## API Surface
 
-- `POST /api/agent/events` with event type `travel.intent_detected` — received by Orchestrator DO.
+- `POST /api/agent/events` with event type `travel.intent_detected` — received by Brain DO.
 - `POST /api/travel/preload` — internal worker-to-worker call, triggered by QStash job.
 - `GET /api/travel/status` — check whether pre-loading is complete for active travel intent.
 
 ## Privacy Note
 
-Travel intent data is stored only in the per-user Orchestrator DO and in the user-scoped travel cache. It is never used for advertising targeting. Destination data is deleted when travel status expires (30 days after estimated return).
+Travel intent data is stored only in the per-user Brain DO and in the user-scoped travel cache. It is never used for advertising targeting. Destination data is deleted when travel status expires (30 days after estimated return).
 
 ## Success Metrics
 

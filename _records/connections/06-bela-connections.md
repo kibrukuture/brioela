@@ -51,7 +51,7 @@ spec: implementable-specs/bela/15-checkout-payment.md
   → build-guide/11-bela/05-payment-and-escrow.md [x] done (no wallet/no Issuing)
   → build-guide/11-bela/15-checkout-payment.md [x] done
 
-build-guide: build-guide/05-orchestrator/
+build-guide: build-guide/05-brain/
   → build-guide/11-bela/03-constraint-travel.md [x] done
   → build-guide/11-bela/10-cooking-intent-trigger.md [x] done
   → build-guide/11-bela/11-for-others.md [x] done

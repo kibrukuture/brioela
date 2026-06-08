@@ -48,7 +48,7 @@ Notes for the shopper: [ text field — "she likes the larger bags, prefers fres
 
 This form is the ONLY place in Brioela where the user fills in a dietary profile manually. It is allowed here because there is no behavioral history to learn from — the recipient has no account, no scan history, no memory events. The AI cannot infer what it has never seen.
 
-4. A `recipient_profile` is stored in the sender's Orchestrator DO SQLite — not in Supabase. It is private to the sender. The sender manages it; it is never shared with Brioela's backend beyond what is needed to run the order.
+4. A `recipient_profile` is stored in the sender's Brain DO SQLite — not in Supabase. It is private to the sender. The sender manages it; it is never shared with Brioela's backend beyond what is needed to run the order.
 
 **What the recipient receives**: an SMS from Brioela (not the sender): "Your groceries from [Sender first name] are on the way — delivery expected [time]." No app required.
 
@@ -56,7 +56,7 @@ This form is the ONLY place in Brioela where the user fills in a dietary profile
 
 ## The Recipient Profile
 
-For non-Brioela recipients, the `recipient_profile` is stored in the sender's Orchestrator DO:
+For non-Brioela recipients, the `recipient_profile` is stored in the sender's Brain DO:
 
 ```sql
 CREATE TABLE recipient_profile (
@@ -71,7 +71,7 @@ CREATE TABLE recipient_profile (
 )
 ```
 
-This table lives in the sender's Orchestrator DO SQLite — not Supabase — because this is personal data the sender manages, not platform data.
+This table lives in the sender's Brain DO SQLite — not Supabase — because this is personal data the sender manages, not platform data.
 
 ---
 
@@ -127,7 +127,7 @@ Linked accounts:
 
 Linking requires mutual consent: both parties must accept the link request. Unlinking is immediate and unilateral (either party can unlink without the other's consent — this is a safety requirement).
 
-Family account linking is stored in Supabase `family_links` table, not in the individual Orchestrator DO, because the link is a relationship between two accounts rather than a fact about one user.
+Family account linking is stored in Supabase `family_links` table, not in the individual Brain DO, because the link is a relationship between two accounts rather than a fact about one user.
 
 ---
 

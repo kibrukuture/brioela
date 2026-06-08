@@ -4,7 +4,7 @@
 
 `search_web` gives the agent access to live web results mid-conversation. The 17 SQLite tools handle everything internal — user facts, skills, recipes, constraints, history. `search_web` handles everything external: current information the DO does not have, ingredient research, nutritional data, cultural food context, recipe inspiration, health guidance.
 
-This tool is different from all other tools in one critical way: it calls an external API, not SQLite. The Orchestrator executes it (same as all tools), but execution involves an outbound HTTP fetch to Tavily or Exa depending on `search_type`.
+This tool is different from all other tools in one critical way: it calls an external API, not SQLite. The Brain executes it (same as all tools), but execution involves an outbound HTTP fetch to Tavily or Exa depending on `search_type`.
 
 ---
 
@@ -63,7 +63,7 @@ export const SearchWebSchema = z.object({
 
 ## Provider Routing — Internal, Not Exposed to Agent
 
-The agent specifies `search_type`. The Orchestrator maps this to a provider internally. The agent never knows or cares which API was called.
+The agent specifies `search_type`. The Brain maps this to a provider internally. The agent never knows or cares which API was called.
 
 | search_type | Provider | API endpoint | Cost |
 |---|---|---|---|
@@ -234,7 +234,7 @@ db.insert(agentState).values({
 
 ## Who Can Call It
 
-Controlled by `TOOL_PERMISSIONS` in the Orchestrator.
+Controlled by `TOOL_PERMISSIONS` in the Brain.
 
 | Caller | Allowed | Reason |
 |---|---|---|

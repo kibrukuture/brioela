@@ -24,15 +24,15 @@ Declare a medical condition once by voice and the entire app adapts permanently:
 - Voice detection: same behavioral inference pipeline as allergy detection (spec 07); proposed once, confirmed once — never asked again
 - Condition flag is SEPARATE from allergy flag in scan result — two distinct rows so user understands why each exists
 - Condition rules: versioned config table in Supabase (`medication_food_interaction_rule` and `condition_rule`) — never hardcoded in DO logic
-- Condition profile loaded into every scan verdict call — part of standard context from Orchestrator DO
+- Condition profile loaded into every scan verdict call — part of standard context from Brain DO
 - Celiac treated as hard allergy equivalent — cross-contamination warnings are red, not yellow
 - Practitioner integration: verified practitioners can view active conditions and push condition-specific guidance (spec 18)
 - Stored encrypted at rest in DO SQLite — most sensitive personal data category
 - Medical condition support narrows food decisions; Brioela does not diagnose, treat, prescribe, or replace clinician guidance
 
 ## What This Folder Depends On
-- `05-orchestrator` — condition profile stored in Orchestrator DO; loaded into all scan and recipe calls
-- `06-memory-engine` — private condition profile data lives in Orchestrator SQLite/user memory path
+- `05-brain` — condition profile stored in Brain DO; loaded into all scan and recipe calls
+- `06-memory-engine` — private condition profile data lives in Brain SQLite/user memory path
 - `07-scanner` — condition flag row appears in scan result alongside standard verdict
 - `20-wearables` — CGM and biometric context can support condition-aware food intelligence when user connects devices
 

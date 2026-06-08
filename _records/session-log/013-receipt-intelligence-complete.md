@@ -11,7 +11,7 @@ Deep read pass before writing:
 - `build-guide/13-receipt-intelligence/00-overview.md`
 - `brioela-specs/06-receipt-spend-intelligence.md`
 - `brioela-specs/29-food-cost-inflation-tracker.md`
-- dependency docs: Scanner, Map, Bela, Orchestrator
+- dependency docs: Scanner, Map, Bela, Brain
 
 Written — `build-guide/13-receipt-intelligence/`:
 - `00-overview.md` — updated to complete, file list added
@@ -49,10 +49,10 @@ Before writing, read:
 - `brioela-specs/16-weekly-food-summary.md`
 - `brioela-specs/33-minimum-spend-meal-plan.md`
 - `brioela-specs/36-predictive-pantry-intelligence.md`
-- dependencies: Orchestrator, Memory Engine, Scanner, Receipt Intelligence, Map, Notifications
+- dependencies: Brain, Memory Engine, Scanner, Receipt Intelligence, Map, Notifications
 
 ## Blockers / Decisions
 
-- Personal price history is private Orchestrator DO data.
+- Personal price history is private Brain DO data.
 - Shared anonymized price trends can feed Map.
 - Receipt raw GPT-4o mini vision extraction output must be preserved separately from normalized results.

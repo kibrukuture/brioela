@@ -136,7 +136,7 @@ The base layer is fully functional standalone. The generative layer is always ad
 
 ## Integration With Memory and Personality
 
-The AI's component selection is informed by context injected from the Orchestrator DO:
+The AI's component selection is informed by context injected from the Brain DO:
 
 - Current user constraints (allergies, medical conditions, dietary identity)
 - Recent emotional signals from session history (anxious cooking sessions → calmer tone)

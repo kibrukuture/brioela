@@ -86,7 +86,7 @@ Avoid medical certainty:
 
 When an imported recipe has allergy/diet conflicts or major uncertainty, Brioela can offer a live review conversation.
 
-This uses the same voice/video assistant stack documented in `08-cooking-session`: Cloudflare Realtime plus Gemini Live, with Orchestrator context and tool forwarding. The surface is not limited to cooking. It can be used anywhere Brioela needs real-time intelligence and conversation: recipe review, shopper help, restaurant/menu questions, or scan follow-up.
+This uses the same voice/video assistant stack documented in `08-cooking-session`: Cloudflare Realtime plus Gemini Live, with Brain context and tool forwarding. The surface is not limited to cooking. It can be used anywhere Brioela needs real-time intelligence and conversation: recipe review, shopper help, restaurant/menu questions, or scan follow-up.
 
 Recipe review examples:
 

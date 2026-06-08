@@ -24,7 +24,7 @@ Core product philosophy and feature specs. These are the "what and why" layer.
 | [x] | `06-receipt-spend-intelligence.md` | Receipt scanning, spend tracking, price intelligence |
 | [x] | `07-allergy-dislike-and-dietary-guardrails.md` | Allergy system, dietary restrictions, hard blocks vs soft guidance |
 | [x] | `08-personal-food-memory-engine.md` | User food memory — what they cook, buy, prefer, avoid |
-| [x] | `09-per-user-agent-orchestrator.md` | Orchestrator DO — the central agent, CRITICAL PATH for everything |
+| [x] | `09-per-user-brain.md` | Brain DO — the central agent, CRITICAL PATH for everything |
 | [x] | `10-voice-cooking-agent.md` | Voice cooking assistant — precursor to cooking session spec |
 | [x] | `11-live-vision-cooking-coach.md` | Camera-based cooking coach — precursor to cooking session spec |
 | [x] | `12-multi-person-cooking-rooms.md` | Multiple people in one cooking session |
@@ -66,7 +66,7 @@ Core product philosophy and feature specs. These are the "what and why" layer.
 
 ## Area 2 — implementable-specs/ root (18 files)
 
-Orchestrator DO SQLite schema and memory system — the data layer everything runs on.
+Brain DO SQLite schema and memory system — the data layer everything runs on.
 
 | Status | File | One-line description |
 |---|---|---|
@@ -177,10 +177,10 @@ When starting the inventory reading pass, read in this order — highest impact 
 
 1. `brioela-specs/00-product-philosophy-and-ux.md` — sets everything
 2. `brioela-specs/24-technical-architecture-backbone.md` — foundation decisions
-3. `brioela-specs/09-per-user-agent-orchestrator.md` — critical path
+3. `brioela-specs/09-per-user-brain.md` — critical path
 4. `brioela-specs/39-generative-ui.md` — needed before any design-system files
 5. `brioela-specs/19-pricing-and-tiers.md` — affects product decisions throughout
-6. `implementable-specs/00-overview.md` through `18-vectorize.md` — Orchestrator DO data layer
+6. `implementable-specs/00-overview.md` through `18-vectorize.md` — Brain DO data layer
 7. `implementable-specs/brioela-tools/` — full tool protocol
 8. `implementable-specs/cooking-session/` — full cooking session
 9. `brioela-specs/35-ground-community-intelligence.md` + `35b-ground-finds-deep-design.md`

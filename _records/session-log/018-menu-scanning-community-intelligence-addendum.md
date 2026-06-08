@@ -34,7 +34,7 @@ Updated records:
 
 - Paper menus, QR menus, and website menus are all first-class inputs.
 - QR codes resolve to the restaurant menu website and Brioela transforms that page into its own green/yellow/red dish view.
-- User health constraints stay private in Orchestrator SQLite.
+- User health constraints stay private in Brain SQLite.
 - Normalized public menu facts and aggregate safety signals can go to shared Postgres/Supabase tables.
 - Repeated menu scans create community restaurant intelligence without exposing user health profiles.
 - At very large scale, Brioela can rank restaurants by personal health fit, menu clarity, affordability, freshness, and community confidence rather than generic popularity.
@@ -52,7 +52,7 @@ Before writing, read:
 - latest session log
 - `build-guide/18-ambient-intelligence/00-overview.md`
 - `brioela-specs/22-pre-trip-food-intelligence.md`
-- dependencies: Map, Notifications, Orchestrator, Memory Engine
+- dependencies: Map, Notifications, Brain, Memory Engine
 
 ## Blockers / Decisions
 

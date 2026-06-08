@@ -13,7 +13,7 @@ actually works (offline, not as a live retry). This is the runtime gate between
 
 A Brioela Generative UI document is validated **twice**, by the same shared schema (`shared/grammar`), on purpose:
 
-1. **Backend, before streaming** — the orchestrator validates the model's output, runs the
+1. **Backend, before streaming** — the brain validates the model's output, runs the
    safety/privacy filter, stamps `grammarVersion`, and only then streams. A bad document never
    leaves the server.
 2. **Client, before rendering** — the renderer re-validates the received document against the same

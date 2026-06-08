@@ -80,7 +80,7 @@ User_id is never attached to community_illness_signal — that table is fully an
 
 ## Technical Constraints
 
-- The illness window lookback queries the user's Orchestrator DO SQLite (scan history + receipt history + recipe session history).
+- The illness window lookback queries the user's Brain DO SQLite (scan history + receipt history + recipe session history).
 - Community signal aggregation runs in Supabase — it is shared data, not per-user data.
 - The recall cross-reference is a real-time check against the recall_entry table populated by spec 26.
 - The ranking model is a structured LLM call with the food history and recall data as context — not a streaming session. Target latency: under 2 seconds.

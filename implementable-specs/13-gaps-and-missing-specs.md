@@ -1,4 +1,4 @@
-# Gaps and Missing Specs — BrioelOrchestrator
+# Gaps and Missing Specs — BrioelaBrain
 
 This file documents everything missing from the current implementable specs. Items are organized by importance. We go through these one by one. Nothing here is resolved until it has its own spec or is explicitly closed with a reason.
 

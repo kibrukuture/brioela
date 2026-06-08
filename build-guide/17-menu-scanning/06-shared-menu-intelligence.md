@@ -21,7 +21,7 @@ If many users scan the same restaurant, Brioela learns which dishes are commonly
 
 ## Private Versus Shared Data
 
-Private data lives in the user's Orchestrator SQLite:
+Private data lives in the user's Brain SQLite:
 
 - User's allergies, diet, dislikes, medical watchlists, and preferences.
 - User scanned a restaurant.

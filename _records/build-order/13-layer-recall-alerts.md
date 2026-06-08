@@ -10,7 +10,7 @@
 
 ## Depends On
 
-- `03-layer-orchestrator.md`
+- `03-layer-brain.md`
 - `05-layer-scanner.md`
 - `10-layer-notifications.md`
 

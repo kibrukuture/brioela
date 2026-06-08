@@ -1,8 +1,8 @@
-# Orchestrator — Tool Protocol
+# Brain — Tool Protocol
 
 ## What This File Covers
 
-The complete tool protocol: all 17 AI-callable tools, the tool definition pattern, how tools are registered on the Orchestrator, Zod validation at the tool boundary, TOOL_PERMISSIONS for sub-agent authorization, and the `/internal/tool-call` forwarding endpoint.
+The complete tool protocol: all 17 AI-callable tools, the tool definition pattern, how tools are registered on the Brain, Zod validation at the tool boundary, TOOL_PERMISSIONS for sub-agent authorization, and the `/internal/tool-call` forwarding endpoint.
 
 ---
 
@@ -16,10 +16,10 @@ Adding a new capability = write one `tool({})` definition. The AI starts using i
 
 ## Tool Definition Pattern
 
-Every tool is a standalone file in `backend/src/agents/orchestrator/_tools/`. It exports one async function and one Vercel AI SDK `tool()` call that wraps it.
+Every tool is a standalone file in `backend/src/agents/brain/_tools/`. It exports one async function and one Vercel AI SDK `tool()` call that wraps it.
 
 ```typescript
-// backend/src/agents/orchestrator/_tools/write-user-memory.tool.ts
+// backend/src/agents/brain/_tools/write-user-memory.tool.ts
 
 import { tool } from 'ai'
 import { z } from 'zod'
@@ -106,12 +106,12 @@ export const writeUserMemoryTool = (db: DrizzleDB) => tool({
 
 ---
 
-## Tool Registration on the Orchestrator
+## Tool Registration on the Brain
 
 Tools are passed to the Agent SDK's `generateText` (or `streamText`) call. They are not pre-registered as class methods. The set of available tools changes per session type — a `chat` session gets the full tool set; an `alarm` session gets a restricted subset.
 
 ```typescript
-// backend/src/agents/orchestrator/_handlers/session.handler.ts
+// backend/src/agents/brain/_handlers/session.handler.ts
 
 import { streamText } from 'ai'
 import { anthropic } from '@ai-sdk/anthropic'
@@ -141,7 +141,7 @@ export async function runSession(
 ```
 
 ```typescript
-// backend/src/agents/orchestrator/_tools/index.ts
+// backend/src/agents/brain/_tools/index.ts
 
 import { writeUserMemoryTool }      from './write-user-memory.tool'
 import { readUserMemoryTool }       from './read-user-memory.tool'
@@ -229,10 +229,10 @@ function buildAllTools(db: DrizzleDB) {
 
 ## `/internal/tool-call` — Sub-Agent Tool Forwarding Endpoint
 
-Sub-agents (CuratorAgent, PatternDetectionAgent, CompressorAgent) have no SQLite. When they call a tool, the call is forwarded over HTTP to the Orchestrator's `/internal/tool-call` endpoint, which executes it against the user's SQLite and returns the result.
+Sub-agents (CuratorAgent, PatternDetectionAgent, CompressorAgent) have no SQLite. When they call a tool, the call is forwarded over HTTP to the Brain's `/internal/tool-call` endpoint, which executes it against the user's SQLite and returns the result.
 
 ```typescript
-// backend/src/agents/orchestrator/_handlers/internal-tool.handler.ts
+// backend/src/agents/brain/_handlers/internal-tool.handler.ts
 
 import { getToolsForSessionType } from '../_tools'
 import type { DrizzleDB } from '@/types/db'

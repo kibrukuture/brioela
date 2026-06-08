@@ -43,7 +43,7 @@ By the time compression triggers, the structured information is already in SQLit
 | `alarm` | N/A — these sessions are short by design | N/A |
 | `background` | N/A | N/A |
 
-The Orchestrator checks both before processing each new user turn:
+The Brain checks both before processing each new user turn:
 
 ```typescript
 const session = db.select({
@@ -73,27 +73,27 @@ Compression always runs BEFORE the new user turn is processed — not after. The
 
 ### CompressorAgent — Architecture
 
-CompressorAgent is a sub-agent DO spun up by the Orchestrator when compression triggers. It is architecturally identical to all other sub-agents — ephemeral DO, dies when done.
+CompressorAgent is a sub-agent DO spun up by the Brain when compression triggers. It is architecturally identical to all other sub-agents — ephemeral DO, dies when done.
 
 ```
 key: idFromName(`compressor_${userId}_${sessionId}`)
 ```
 
-**Key difference from CuratorAgent and PatternDetectionAgent**: CompressorAgent does NOT need tool forwarding. Its input is fixed and bounded — the Orchestrator collects all turns from `session_turns` and passes them as context. CompressorAgent reasons over what it receives and returns structured output. No fetching, no tool calls.
+**Key difference from CuratorAgent and PatternDetectionAgent**: CompressorAgent does NOT need tool forwarding. Its input is fixed and bounded — the Brain collects all turns from `session_turns` and passes them as context. CompressorAgent reasons over what it receives and returns structured output. No fetching, no tool calls.
 
 ```
-Orchestrator:
+Brain:
 1. Reads ALL turns for current session from session_turns ORDER BY turn_number ASC
 2. Spins up CompressorAgent DO
 3. Passes turns as context
 4. CompressorAgent returns four-field summary (structured JSON)
-5. Orchestrator applies compression (writes, creates new session)
+5. Brain applies compression (writes, creates new session)
 6. CompressorAgent dies
 ```
 
 This is a pure reasoning task. The agent that has been in the session for 80 turns is the best summarizer of what happened — it has full context. CompressorAgent receives that full context and distills it.
 
-**Tool permission for CompressorAgent in the Orchestrator's TOOL_PERMISSIONS table:**
+**Tool permission for CompressorAgent in the Brain's TOOL_PERMISSIONS table:**
 ```typescript
 compressor: []   // no tool calls — pure reasoning, structured output returned directly
 ```
@@ -151,7 +151,7 @@ export const CompressionSummarySchema = z.object({
 
 ---
 
-### What the Orchestrator Does After CompressorAgent Returns
+### What the Brain Does After CompressorAgent Returns
 
 ```typescript
 async function applyCompression(
@@ -274,13 +274,13 @@ All turns from all sessions in the chain give the complete transcript. `session_
 
 ### The Problem
 
-A session ends uncleanly: app crashes, phone dies, network drops mid-cooking-session. The session row stays at `status = 'active'` indefinitely. Every subsequent session start sees an "active session exists" flag from the Orchestrator's active session check. The Curator defers indefinitely. `load_session_context` returns stale context.
+A session ends uncleanly: app crashes, phone dies, network drops mid-cooking-session. The session row stays at `status = 'active'` indefinitely. Every subsequent session start sees an "active session exists" flag from the Brain's active session check. The Curator defers indefinitely. `load_session_context` returns stale context.
 
 This needs a concrete detection mechanism. Nothing in the current spec detects it.
 
 ### The Mechanism — session_watchdog Alarm
 
-When ANY session starts (chat, cooking, alarm, background), the Orchestrator inserts a `session_watchdog` alarm into `scheduled_alarms`:
+When ANY session starts (chat, cooking, alarm, background), the Brain inserts a `session_watchdog` alarm into `scheduled_alarms`:
 
 ```typescript
 db.insert(scheduledAlarms).values({
@@ -380,7 +380,7 @@ function buildAbandonedSummary(session: Session, lastTurn: SessionTurn | null): 
 
 ### Cancelling the Watchdog on Clean Session Close
 
-When a session ends cleanly (user closes app, cooking session finishes, alarm completes), the Orchestrator cancels the pending watchdog alarm:
+When a session ends cleanly (user closes app, cooking session finishes, alarm completes), the Brain cancels the pending watchdog alarm:
 
 ```typescript
 async function closeSession(sessionId: string, endReason: string, outcomeSummary: string) {

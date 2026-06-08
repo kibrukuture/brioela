@@ -64,7 +64,7 @@ Before writing:
 - latest session log
 - `build-guide/25-pricing-tiers/00-overview.md`
 - `brioela-specs/19-pricing-and-tiers.md`
-- dependencies: Auth/Onboarding, Orchestrator, features with tier gates, Mesa overview
+- dependencies: Auth/Onboarding, Brain, features with tier gates, Mesa overview
 
 ## Blockers / Decisions
 

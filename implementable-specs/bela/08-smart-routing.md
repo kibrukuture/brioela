@@ -47,7 +47,7 @@ This answers: is this store generally good for this type of shopping?
 
 ### 4. User Preference History
 
-From the user's Orchestrator DO: which stores has this user bought from before (from `place_visited` events in `memory_event`)? A store the user visits regularly is preferred over an unfamiliar one — the user already knows the layout, already trusts the produce, already has reasons for going there.
+From the user's Brain DO: which stores has this user bought from before (from `place_visited` events in `memory_event`)? A store the user visits regularly is preferred over an unfamiliar one — the user already knows the layout, already trusts the produce, already has reasons for going there.
 
 This answers: is this a store the user trusts?
 

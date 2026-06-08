@@ -17,7 +17,7 @@ Every file has a suffix that declares its role. The suffix comes after the descr
 | `.handler.ts` | Pure business logic — returns data, never c.json | `create.scan.handler.ts` |
 | `.helper.ts` | Pure utility function | `build.verdict.helper.ts` |
 | `.middleware.ts` | Hono middleware | `auth.middleware.ts` |
-| `.agent.ts` | Durable Object class | `orchestrator.agent.ts` |
+| `.agent.ts` | Durable Object class | `brain.agent.ts` |
 | `.tool.ts` | AI-callable tool function | `write.user.memory.tool.ts` |
 | `.schema.ts` | Drizzle table definition (backend `db/` and `_schema/`) — or Zod entity/input schema (shared `validator/`) | `products.schema.ts`, `scan.schema.ts` |
 | `.type.ts` | Pure TypeScript type declarations — only when not derivable from a Zod schema | `user.id.type.ts` |
@@ -49,7 +49,7 @@ File names are `kebab-case`. The descriptive part comes first, the suffix last.
 ✓ create.scan.handler.ts              — handler that creates a scan
 ✓ write.user.memory.tool.ts           — AI tool that writes user memory
 ✓ build.verdict.response.helper.ts    — pure helper that formats a verdict
-✓ orchestrator.agent.ts               — the BrioelOrchestrator DO class
+✓ brain.agent.ts               — the BrioelaBrain DO class
 ✓ use.scanner.hook.ts                 — custom React hook for the scanner
 ✓ ambient.glsl.ts                     — ambient SkSL shader source string
 

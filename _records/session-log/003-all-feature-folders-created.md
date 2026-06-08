@@ -16,9 +16,9 @@
 02-coding-standards
 03-foundation
 04-auth-and-onboarding
-05-orchestrator          ← per-user agent DO, the critical path
+05-brain          ← per-user agent DO, the critical path
 07-scanner               ← number overlap intentional; build-order clarifies sequence
-06-memory-engine         ← data layer for orchestrator (SQLite schema, Curator, Vectorize)
+06-memory-engine         ← data layer for brain (SQLite schema, Curator, Vectorize)
 08-cooking-session
 09-ground
 11-bela                  ← number overlap with 10-map; both valid, different features
@@ -55,14 +55,14 @@ Actual build order is in `_records/build-order/` (not yet written — next sessi
 - `brioela-specs/20-platform-and-app-distribution.md`
 - `implementable-specs/13-gaps-and-missing-specs.md` ← READ BEFORE BUILDING ANYTHING
 - All implementable-specs root files (01-18) — detailed schema files, read when building 06-memory-engine
-- All implementable-specs/brioela-tools/ files — read when building 05-orchestrator tools section
+- All implementable-specs/brioela-tools/ files — read when building 05-brain tools section
 
 ## What Is Next
 1. Fill `_records/build-order/` layer files — the actual dependency sequence
 2. Fill `_records/connections/` files — which spec connects to which build-guide folder
 3. Start actual building: tackle one feature folder at a time, fully, in dependency order
    - First feature to build: 01-design-system (requires web research)
-   - After design system: 02-coding-standards, then 03-foundation, then 04-auth-and-onboarding, then 05-orchestrator
+   - After design system: 02-coding-standards, then 03-foundation, then 04-auth-and-onboarding, then 05-brain
 
 ## Blockers
 - READ `implementable-specs/13-gaps-and-missing-specs.md` before building any feature — it documents known gaps

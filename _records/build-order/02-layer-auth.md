@@ -16,7 +16,7 @@
 
 - Stable Supabase auth/session contract.
 - Route gating contract.
-- User ID source for Orchestrator DO addressing.
+- User ID source for Brain DO addressing.
 - Clear separation between auth docs and cinematic onboarding docs.
 
 ## Known Issue

@@ -2,13 +2,13 @@
 
 ## What This File Covers
 
-How the mobile client turns raw wearable data into small daily summaries before anything reaches the Orchestrator DO.
+How the mobile client turns raw wearable data into small daily summaries before anything reaches the Brain DO.
 
 ---
 
 ## Core Rule
 
-Never stream raw sensor data to the Orchestrator DO.
+Never stream raw sensor data to the Brain DO.
 
 Raw wearable data is too frequent, too sensitive, and too noisy. The client reads provider data locally, derives food-relevant summaries, and sends compact JSON.
 
@@ -101,7 +101,7 @@ type WearableDailySummaryResponse = {
 }
 ```
 
-The endpoint forwards accepted summaries to the user's Orchestrator DO for memory routing.
+The endpoint forwards accepted summaries to the user's Brain DO for memory routing.
 
 ---
 
@@ -124,4 +124,4 @@ Reject invalid fields, not necessarily the whole summary. For example, invalid b
 
 Wearable summaries are not app analytics.
 
-Do not pipe them into generic event tracking. Do not send them to product analytics, crash logs, or shared tables. They go to Orchestrator DO only.
+Do not pipe them into generic event tracking. Do not send them to product analytics, crash logs, or shared tables. They go to Brain DO only.

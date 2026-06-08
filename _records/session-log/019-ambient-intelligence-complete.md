@@ -14,7 +14,7 @@ Deep read pass before writing:
 - `brioela-specs/22-pre-trip-food-intelligence.md`
 - `brioela-specs/38-food-time-machine.md`
 - `brioela-specs/37-guest-and-cooking-for-others.md`
-- dependency docs: Orchestrator alarm system/sub-agents, Memory Engine SQLite schema, Cooking Session session end, Map overview, Notifications overview/surfaces/delivery rules, Menu Scanning addendum
+- dependency docs: Brain alarm system/sub-agents, Memory Engine SQLite schema, Cooking Session session end, Map overview, Notifications overview/surfaces/delivery rules, Menu Scanning addendum
 
 Written — `build-guide/18-ambient-intelligence/`:
 - `00-overview.md` — updated to complete, file list added, dependency graph updated
@@ -52,13 +52,13 @@ Before writing, read:
 - latest session log
 - `build-guide/19-recipe-ingestion/00-overview.md`
 - `brioela-specs/02-recipe-ingestion-from-shared-content.md`
-- dependencies: Orchestrator, Memory Engine, Cooking Session, Scanner vision extraction if screenshots are involved
+- dependencies: Brain, Memory Engine, Cooking Session, Scanner vision extraction if screenshots are involved
 
 ## Blockers / Decisions
 
 - Ambient Intelligence is not a dashboard.
 - Pattern insights are surfaced conversationally, max one new pattern per week.
-- Ambient jobs use the same Orchestrator DO alarm system, but feature cadences differ.
+- Ambient jobs use the same Brain DO alarm system, but feature cadences differ.
 - Travel context is temporary and user-scoped.
 - Food Time Machine moments are private and non-gamified.
 - Guest Mode stores constraint patterns, not guest identities.

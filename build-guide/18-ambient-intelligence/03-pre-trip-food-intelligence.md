@@ -53,7 +53,7 @@ High-confidence sources, such as explicit voice or calendar events, can confirm 
 
 ## Scheduling Preload
 
-Once travel intent is confirmed, schedule `travel_preload` in the Orchestrator alarm queue.
+Once travel intent is confirmed, schedule `travel_preload` in the Brain alarm queue.
 
 Timing:
 
@@ -61,7 +61,7 @@ Timing:
 - If departure is within 48 hours: schedule as soon as idle.
 - If no departure date exists: create a candidate but do not preload until confirmed or repeated.
 
-The Orchestrator can use Upstash QStash for worker-to-worker destination preload jobs because destination data may come from shared map/product/community sources outside the user's DO. User-scoped state remains in the Orchestrator and travel cache.
+The Brain can use Upstash QStash for worker-to-worker destination preload jobs because destination data may come from shared map/product/community sources outside the user's DO. User-scoped state remains in the Brain and travel cache.
 
 ---
 

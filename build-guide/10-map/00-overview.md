@@ -33,7 +33,7 @@ The healthy food map — location-aware discovery of nearby healthy food options
 - Travel intent detected from: voice mention, optional calendar integration, repeat map search of distant city
 
 ## What This Folder Depends On
-- `05-orchestrator` — user constraint profile for filtering
+- `05-brain` — user constraint profile for filtering
 - `09-ground` — Ground signal layer overlays on this map
 - `03-foundation` — Supabase for shared map tables, Upstash Redis for geo cache
 

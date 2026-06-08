@@ -13,7 +13,7 @@ import { authMiddleware } from '@/core/middleware/auth.middleware'
 import { errorMiddleware } from '@/core/middleware/error.middleware'
 
 // DO exports — CF requires all DO classes exported from the worker entry point
-export { BrioelOrchestrator } from './agents/orchestrator'
+export { BrioelaBrain } from './agents/brain'
 export { CookingAgent } from './agents/cooking'
 
 export const app = new Hono<{
@@ -122,9 +122,9 @@ export async function createScan(c: AppContext) {
 
   const { upc } = CreateScanSchema.parse(body)
 
-  const id = c.env.ORCHESTRATOR.idFromName(userId)
-  const orchestrator = c.env.ORCHESTRATOR.get(id)
-  const scan = await orchestrator.fetch(c.req.raw).then(r => r.json())
+  const id = c.env.BRAIN.idFromName(userId)
+  const brain = c.env.BRAIN.get(id)
+  const scan = await brain.fetch(c.req.raw).then(r => r.json())
 
   // return plain data — controller wraps in apiSuccessResponse
   return { scan }
@@ -236,12 +236,12 @@ Route handlers access DOs only via `c.env.DO_BINDING.idFromName(userId)`. Always
 
 ```ts
 // ✓ — always idFromName with userId
-const id = c.env.ORCHESTRATOR.idFromName(userId)
-const stub = c.env.ORCHESTRATOR.get(id)
+const id = c.env.BRAIN.idFromName(userId)
+const stub = c.env.BRAIN.get(id)
 return stub.fetch(c.req.raw)
 
 // ✗ — never random IDs
-const id = c.env.ORCHESTRATOR.newUniqueId()
+const id = c.env.BRAIN.newUniqueId()
 ```
 
 ---

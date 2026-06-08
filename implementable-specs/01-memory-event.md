@@ -126,7 +126,7 @@ CREATE INDEX idx_memory_event_session     ON memory_event (session_id) WHERE ses
 
 ## Write Rules
 
-- Written by the Orchestrator DO every time a meaningful user action occurs.
+- Written by the Brain DO every time a meaningful user action occurs.
 - Written by the `log_memory_event` tool when the agent logs a durable outcome.
 - NEVER updated after insert. NEVER deleted.
 - `ingested_at` is always `Date.now()` at insert time, set by the DO, never by the caller.

@@ -10,5 +10,5 @@
 
 ## Depends On
 
-- `03-layer-orchestrator.md`
+- `03-layer-brain.md`
 - `04-layer-memory-engine.md`

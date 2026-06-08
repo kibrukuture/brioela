@@ -17,7 +17,7 @@ During or after a cooking session, the user mentions wanting to cook something s
 - "I've been thinking about making kitfo"
 - "Let me make berbere this weekend — I think I have most of what I need"
 
-The AI detects cooking intent from the conversation (this is part of the Orchestrator AI's standard pattern — it already extracts `travel_intent`; `cooking_intent` is the same mechanism applied to food preparation).
+The AI detects cooking intent from the conversation (this is part of the BrioelaBrain's standard pattern — it already extracts `travel_intent`; `cooking_intent` is the same mechanism applied to food preparation).
 
 A `cooking_intent` event is written to `memory_event`:
 ```json
@@ -63,9 +63,9 @@ During an active live cooking session, the user mentions mid-session that they a
 - "Oh no, I don't have enough garlic"
 - "I forgot to buy onions, I have none left"
 
-The cooking AI (Gemini in the CookingAgent DO) extracts this and sends a `missing_ingredient` signal to the Orchestrator. The Orchestrator checks if an AI shopping order can be placed fast enough to be useful for this session (unlikely for an active cooking session, but possible for a "I'm going to start in 2 hours" scenario).
+The cooking AI (Gemini in the CookingAgent DO) extracts this and sends a `missing_ingredient` signal to the Brain. The Brain checks if an AI shopping order can be placed fast enough to be useful for this session (unlikely for an active cooking session, but possible for a "I'm going to start in 2 hours" scenario).
 
-If same-day delivery is available and the user has a saved payment method: the Orchestrator surfaces an offer: "No garlic — do you want me to order some? I can try to get it here within the hour." If the user says yes, an urgent same-day order is placed through the normal PaymentIntent manual-capture flow.
+If same-day delivery is available and the user has a saved payment method: the Brain surfaces an offer: "No garlic — do you want me to order some? I can try to get it here within the hour." If the user says yes, an urgent same-day order is placed through the normal PaymentIntent manual-capture flow.
 
 ---
 
@@ -152,7 +152,7 @@ This feature requires a new event kind in the `memory_event` table (spec 01). Th
 ```
 cooking_intent  — user expressed intent to cook a specific dish in the near future
                   payload: { dish: string, timeframe: string|null, confidence: number }
-                  written by: Orchestrator AI (via log_memory_event tool)
+                  written by: BrioelaBrain (via log_memory_event tool)
                   session_id: the session where the intent was expressed (nullable if detected from saved recipe)
 ```
 

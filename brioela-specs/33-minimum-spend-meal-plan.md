@@ -30,7 +30,7 @@ No meal planning app has this combination. Generic apps generate plans from a ge
 
 ## Plan Generation Logic
 
-1. **Inventory snapshot**: pull from the user's Orchestrator DO — products scanned and bought recently that have not been used in logged recipes yet. Receipt data contributes estimated quantities.
+1. **Inventory snapshot**: pull from the user's Brain DO — products scanned and bought recently that have not been used in logged recipes yet. Receipt data contributes estimated quantities.
 2. **Constraint filter**: every meal must clear allergies, dietary identity, and active medical conditions. Non-negotiable.
 3. **Recipe pool**: prioritize recipes the user has saved, made before, or explicitly liked. Second priority: recipes from the community that match the constraint profile. Third priority: new recipes generated from available ingredients.
 4. **Waste minimization**: rank recipe combinations by how many at-home ingredients they consume before they expire. Produce bought 4 days ago ranks higher than pantry staples that will last months.
@@ -83,8 +83,8 @@ Both share the same inventory model and constraint pipeline. They are different 
 
 - Plan generation is a single LLM structured call with the full inventory snapshot, recipe pool, and constraints as context. Not a streaming session.
 - Target latency: under 5 seconds.
-- The inventory snapshot is assembled by the Orchestrator DO from its SQLite state — no external query required.
-- The plan is stored per-user in the Orchestrator DO, not in Supabase (it is personal, not shared data).
+- The inventory snapshot is assembled by the Brain DO from its SQLite state — no external query required.
+- The plan is stored per-user in the Brain DO, not in Supabase (it is personal, not shared data).
 - Plan generation is available in Core tier and above. Free users can see a single-day plan as a preview with an upgrade prompt for the full week.
 
 ## Success Metrics

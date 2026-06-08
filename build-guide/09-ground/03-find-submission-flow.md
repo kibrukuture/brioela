@@ -75,6 +75,6 @@ Rules:
 ## Data Writes
 
 - Shared Find writes to Supabase after gate passes.
-- Private submit history writes to Orchestrator DO `user_find_history`.
+- Private submit history writes to Brain DO `user_find_history`.
 - Ground does not write to `user_memory` by default.
 - Downstream actions may write memory later.

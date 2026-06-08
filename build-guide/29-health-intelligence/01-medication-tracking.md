@@ -2,18 +2,18 @@
 
 ## What This File Covers
 
-New private SQLite tables in the Orchestrator DO: `medications`, `health_events`, and one generic `health_captures` table that holds every captured measurement, lab result, prescription, and medical document. How users add data (voice, photo, wearable). How medication data feeds into medication-food interaction checks at scan time.
+New private SQLite tables in the Brain DO: `medications`, `health_events`, and one generic `health_captures` table that holds every captured measurement, lab result, prescription, and medical document. How users add data (voice, photo, wearable). How medication data feeds into medication-food interaction checks at scan time.
 
 ---
 
 ## New DO SQLite Tables
 
-Three tables are added to the Orchestrator DO schema alongside the existing 12. They follow all the same rules: per-user private, never shared, Drizzle ORM, WAL mode.
+Three tables are added to the Brain DO schema alongside the existing 12. They follow all the same rules: per-user private, never shared, Drizzle ORM, WAL mode.
 
 There is no `medication_reminders` table — the medication-call outcome is recorded on the firing alarm via `scheduled_alarms.action_outcome_status` + `action_outcome_json` (see `06-memory-engine/01-sqlite-schema.md`). There is no `biometric_readings` or `medical_documents` table either — both fold into the single generic `health_captures` table below.
 
 ```typescript
-// backend/src/agents/orchestrator/_schema/medications.schema.ts
+// backend/src/agents/brain/_schema/medications.schema.ts
 
 export const medications = sqliteTable('medications', {
   id:            text('id').primaryKey(),        // UUID

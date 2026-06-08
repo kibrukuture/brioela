@@ -10,7 +10,7 @@ How a fresh Find can trigger a cooking journey when it matches a user's ingredie
 - `brioela-specs/10-voice-cooking-agent.md`
 - `brioela-specs/13-generational-recipe-capture.md`
 - `build-guide/08-cooking-session/`
-- `build-guide/05-orchestrator/`
+- `build-guide/05-brain/`
 
 ## Status
 
@@ -20,7 +20,7 @@ Second-release feature. Not required for basic Ground.
 
 1. New Find enters Ground.
 2. Ground routing identifies nearby users whose memory/cooking context matches the ingredient/product.
-3. Orchestrator checks whether the item closes a cooking gap.
+3. Brain checks whether the item closes a cooking gap.
 4. If high-confidence, Brioela surfaces an ambient card.
 
 Example:

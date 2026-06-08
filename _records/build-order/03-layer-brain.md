@@ -1,4 +1,4 @@
-# Layer 03 — Orchestrator
+# Layer 03 — Brain
 
 ## Status
 
@@ -6,7 +6,7 @@
 
 ## Build-Guide Folder
 
-- `build-guide/05-orchestrator/`
+- `build-guide/05-brain/`
 
 ## Depends On
 
@@ -15,7 +15,7 @@
 
 ## Required Before Next Layer
 
-- Per-user Orchestrator DO.
+- Per-user Brain DO.
 - Tool protocol.
 - Session lifecycle.
 - Agent identity.

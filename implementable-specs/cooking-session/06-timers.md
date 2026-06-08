@@ -24,7 +24,7 @@ Gemini: speaks "Your eggs are done! Take them off the heat."
 
 ## Timer Tool Implementation
 
-`schedule_timer` is handled directly by the CookingAgent DO — not forwarded to the Orchestrator. The DO has direct access to its own alarm mechanism.
+`schedule_timer` is handled directly by the CookingAgent DO — not forwarded to the Brain. The DO has direct access to its own alarm mechanism.
 
 ```typescript
 private activeTimers = new Map<string, { alarmTime: number; alarmId: string }>()
@@ -50,8 +50,8 @@ async scheduleTimer(label: string, seconds: number): Promise<string> {
   // Schedule the alarm for the earliest pending timer
   await this.rescheduleAlarm()
 
-  // Persist to scheduled_alarms table via Orchestrator
-  await this.forwardToolToOrchestrator('schedule_user_alarm', {
+  // Persist to scheduled_alarms table via Brain
+  await this.forwardToolToBrain('schedule_user_alarm', {
     alarm_id:   alarmId,
     label,
     fires_at:   firesAt,
@@ -132,7 +132,7 @@ private async fireTimer(label: string): Promise<void> {
   await this.state.storage.delete(`timer:${timer.alarmId}`)
 
   // Mark as fired in scheduled_alarms
-  await this.forwardToolToOrchestrator('cancel_user_alarm', {
+  await this.forwardToolToBrain('cancel_user_alarm', {
     alarm_id: timer.alarmId,
     reason:   'fired',
   })
@@ -170,7 +170,7 @@ async cancelTimer(label: string): Promise<void> {
   this.activeTimers.delete(label)
   await this.state.storage.delete(`timer:${timer.alarmId}`)
 
-  await this.forwardToolToOrchestrator('cancel_user_alarm', {
+  await this.forwardToolToBrain('cancel_user_alarm', {
     alarm_id: timer.alarmId,
     reason:   'user_cancelled',
   })

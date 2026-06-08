@@ -84,7 +84,7 @@ Thresholds:
 - Dietary drift: minimum 30 days of changed behavior, confidence >= 0.7.
 - Post-sickness association: minimum 3 illness-linked instances, but only as a soft candidate, never a cause claim.
 
-The general PatternDetectionAgent rule from `05-orchestrator/04-sub-agents.md` allows 3 evidence points for lower-risk patterns. Ambient wellbeing patterns use stricter thresholds.
+The general PatternDetectionAgent rule from `05-brain/04-sub-agents.md` allows 3 evidence points for lower-risk patterns. Ambient wellbeing patterns use stricter thresholds.
 
 ---
 

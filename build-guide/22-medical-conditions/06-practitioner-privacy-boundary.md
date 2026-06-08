@@ -59,7 +59,7 @@ Practitioner note: keep vitamin K intake consistent rather than avoiding greens 
 
 ## Privacy Non-Negotiables
 
-- Conditions live in Orchestrator DO private storage.
+- Conditions live in Brain DO private storage.
 - Conditions never go to Ground/community notes.
 - Conditions never go to shared menu/map/product tables.
 - Conditions are never used for ads.

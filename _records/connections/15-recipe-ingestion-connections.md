@@ -23,7 +23,7 @@ spec: brioela-specs/25-viral-growth-and-sharing.md
 build-guide: build-guide/03-foundation/
   → build-guide/19-recipe-ingestion/02-import-job-workflow.md [x] done
 
-build-guide: build-guide/05-orchestrator/
+build-guide: build-guide/05-brain/
   → build-guide/19-recipe-ingestion/05-confidence-and-constraints.md [x] done
   → build-guide/19-recipe-ingestion/06-storage-and-library.md [x] done
   → build-guide/19-recipe-ingestion/08-shared-content-router.md [x] done

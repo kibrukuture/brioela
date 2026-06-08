@@ -152,7 +152,7 @@ The principle: if being wrong could cause harm or confusion during a critical mo
 
 ## Model Integration
 
-The generative decision is generated server-side by the Orchestrator DO / feature-specific Worker. The client receives it as part of an API response or streamed via WebSocket. The model used to generate decisions is determined by each feature spec — it is not defined here.
+The generative decision is generated server-side by the Brain DO / feature-specific Worker. The client receives it as part of an API response or streamed via WebSocket. The model used to generate decisions is determined by each feature spec — it is not defined here.
 
 The generative UI system on the client is model-agnostic. It receives a `BrioelaGenerativeUiDocument` object — it does not know or care which model produced it. The server-side prompt engineering that drives the AI toward valid document values is defined in each feature's AI layer, not here.
 

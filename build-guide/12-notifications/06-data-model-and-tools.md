@@ -8,7 +8,7 @@ Notification tables, queueing, and feature tools.
 
 - `brioela-specs/23-ambient-notification-strategy.md`
 
-## Orchestrator DO Tables
+## Brain DO Tables
 
 ### `notification_log`
 
@@ -51,4 +51,4 @@ Under `tools/notifications/` later:
 
 ## Execution Rule
 
-All delivery checks run through Orchestrator DO so suppression and active-session state are respected.
+All delivery checks run through Brain DO so suppression and active-session state are respected.

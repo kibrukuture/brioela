@@ -24,19 +24,19 @@ Provider direction: Brioela owns wearable connectors directly. Do not add a thir
 
 ## Key Decisions From Specs
 - NEVER stream raw sensor data to the DO — client produces one daily summary JSON per device, ~500 bytes
-- Client-side aggregation (background task) → daily summary → Orchestrator DO via HTTP on app open
-- Memory routing: `health.biometrics`, `health.sleep`, `health.activity`, `health.glucose` namespaces through the Orchestrator memory-write path
+- Client-side aggregation (background task) → daily summary → Brain DO via HTTP on app open
+- Memory routing: `health.biometrics`, `health.sleep`, `health.activity`, `health.glucose` namespaces through the Brain memory-write path
 - Personality layer: 30+ day sustained patterns only → `user_personality` trait upgrade (not from single day)
 - CGM: 2-hour observation window opened on each scan event; 15-min glucose readings during window; derived values (peak, AUC, time-to-peak) stored; raw readings deleted after derivation
-- `glucose_meal_window` table in Orchestrator DO SQLite — private, never Supabase
+- `glucose_meal_window` table in Brain DO SQLite — private, never Supabase
 - 3+ CGM correlation events for same product → `spike_trigger` memory fact with confidence
 - Disconnect: all `health.*` memory entries sourced from that device deleted on request; derived personality traits flagged for Curator review
 - Health data encrypted at rest in DO SQLite — most sensitive data in the entire app
 - Current platform docs check: Apple/Dexcom docs were JS-gated from this environment; Oura docs confirm V2/OAuth path; implementation docs here stay at permission/OAuth/aggregation boundaries, not exact SDK calls
 
 ## What This Folder Depends On
-- `05-orchestrator` — all wearable data routes to Orchestrator DO memory namespaces
-- `06-memory-engine` — `user_memory`, `user_personality`, and private CGM tables live in Orchestrator SQLite
+- `05-brain` — all wearable data routes to Brain DO memory namespaces
+- `06-memory-engine` — `user_memory`, `user_personality`, and private CGM tables live in Brain SQLite
 - `07-scanner` — CGM correlation triggered by scan events
 - `18-ambient-intelligence` — wearable data corroborates ambient wellbeing patterns
 - `12-notifications` — any wearable-driven surfacing obeys notification suppression and quiet rules

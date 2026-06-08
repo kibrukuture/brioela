@@ -26,7 +26,7 @@ Rules:
 ## Agent and Memory Layer
 
 - `08-personal-food-memory-engine.md`
-- `09-per-user-agent-orchestrator.md` — Hermes-architecture isolated per-user agent built on CF Agent SDK + Upstash.
+- `09-per-user-brain.md` — Hermes-architecture isolated per-user agent built on CF Agent SDK + Upstash.
 
 ## Cooking Intelligence
 

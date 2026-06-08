@@ -12,7 +12,7 @@ spec: brioela-specs/19-pricing-and-tiers.md
 build-guide: build-guide/04-auth-and-onboarding/
   → build-guide/25-pricing-tiers/04-access-checks-and-tools.md [x] done
 
-build-guide: build-guide/05-orchestrator/
+build-guide: build-guide/05-brain/
   → build-guide/25-pricing-tiers/04-access-checks-and-tools.md [x] done
 
 build-guide: build-guide/08-cooking-session/

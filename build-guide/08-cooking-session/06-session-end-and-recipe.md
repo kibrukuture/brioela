@@ -2,7 +2,7 @@
 
 ## What This File Covers
 
-Four ways a session ends, the end sequence step by step, the recipe decision tree, outcome_summary construction, and memory consolidation back to the Orchestrator DO.
+Four ways a session ends, the end sequence step by step, the recipe decision tree, outcome_summary construction, and memory consolidation back to the Brain DO.
 
 ---
 
@@ -71,15 +71,15 @@ export async function endSession(
     await runSessionEndProcessing(reason, cookingDo)
   })
 
-  // 8. Finalize session row via Orchestrator
-  await forwardToolToOrchestrator('finalize_session', {
+  // 8. Finalize session row via Brain
+  await forwardToolToBrain('finalize_session', {
     sessionId:  state.sessionId,
     endReason:  reason,
     endedAt:    Date.now(),
   }, state, cookingDo.env)
 
   // 9. Clear turn counter and active_session_id from agent_state
-  await forwardToolToOrchestrator('clear_session_state', {
+  await forwardToolToBrain('clear_session_state', {
     sessionId: state.sessionId,
   }, state, cookingDo.env)
 
@@ -121,7 +121,7 @@ async function runSessionEndProcessing(
   switch (decision.action) {
     case 'create_new_recipe': {
       const recipe = await reconstructRecipe(turns, sessionNotes, cookingDo.env)
-      await forwardToolToOrchestrator('create_recipe', {
+      await forwardToolToBrain('create_recipe', {
         title:         recipe.title,
         source:        'cooking_session',
         sourceSession: state.sessionId,
@@ -131,7 +131,7 @@ async function runSessionEndProcessing(
     }
 
     case 'update_existing': {
-      await forwardToolToOrchestrator('update_recipe', {
+      await forwardToolToBrain('update_recipe', {
         recipeId: decision.existingRecipeId,
         updates:  decision.updates,
         note:     `Updated from cooking session ${state.sessionId}`,
@@ -140,7 +140,7 @@ async function runSessionEndProcessing(
     }
 
     case 'increment_cook_count': {
-      await forwardToolToOrchestrator('increment_cook_count', {
+      await forwardToolToBrain('increment_cook_count', {
         recipeId: decision.existingRecipeId,
       }, state, cookingDo.env)
       break
@@ -154,7 +154,7 @@ async function runSessionEndProcessing(
 
   // Always write outcome_summary
   const summary = await buildOutcomeSummary(turns, sessionNotes, decision, cookingDo.env)
-  await forwardToolToOrchestrator('write_outcome_summary', {
+  await forwardToolToBrain('write_outcome_summary', {
     sessionId: state.sessionId,
     summary,
   }, state, cookingDo.env)

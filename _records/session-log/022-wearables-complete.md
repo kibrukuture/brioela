@@ -52,14 +52,14 @@ Before writing, read:
 - latest session log
 - `build-guide/21-kids-mode/00-overview.md`
 - `brioela-specs/31-kids-food-literacy-mode.md`
-- dependencies: Scanner, Cooking Session, Orchestrator, Notifications/pricing if needed
+- dependencies: Scanner, Cooking Session, Brain, Notifications/pricing if needed
 
 ## Blockers / Decisions
 
-- Never stream raw wearable sensor data to the Orchestrator DO.
+- Never stream raw wearable sensor data to the Brain DO.
 - Client sends compact daily summaries; CGM has short scan-triggered windows only.
-- Wearable-derived facts route through the Orchestrator memory-write path, not direct external SQLite writes.
-- Wearable data is private Orchestrator SQLite only, never Supabase/Ground/shared tables.
+- Wearable-derived facts route through the Brain memory-write path, not direct external SQLite writes.
+- Wearable data is private Brain SQLite only, never Supabase/Ground/shared tables.
 - CGM personal response is observational, not medical advice.
 - Disconnection must stop sync and optionally delete already stored device data.
 - No creative addendum was added beyond the spec; this pass focused on safe architecture and privacy boundaries.

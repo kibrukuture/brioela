@@ -5,11 +5,11 @@
 | Store | What lives there |
 |---|---|
 | **Supabase Postgres** | orders, order_items, order_events, shoppers, shopper_scan_log, standing_orders, standing_order_cycles, order_payment_events, family_links, disputes |
-| **Orchestrator DO SQLite** (per user) | recipient_profiles, pantry_model (agent_state keys), user_find_history (see spec 35) |
+| **Brain DO SQLite** (per user) | recipient_profiles, pantry_model (agent_state keys), user_find_history (see spec 35) |
 | **OrderAgent DO** (per order) | Active order state machine, live scan session WebSocket relay, constraint snapshot cache |
 | **Cloudflare R2** | Delivery photos, dispute photos |
 
-Orders and shoppers are shared, community-level data — they belong in Supabase. User dietary profiles are per-user, private data — they belong in the Orchestrator DO. Bela does not use a user wallet balance.
+Orders and shoppers are shared, community-level data — they belong in Supabase. User dietary profiles are per-user, private data — they belong in the Brain DO. Bela does not use a user wallet balance.
 
 ---
 
@@ -142,7 +142,7 @@ CREATE TABLE standing_orders (
   standing_order_id  uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id            text NOT NULL,
   recipient_user_id  text,           -- if for another user
-  recipient_profile_id text,         -- if for a non-Brioela recipient (stored in Orchestrator DO, referenced here)
+  recipient_profile_id text,         -- if for a non-Brioela recipient (stored in Brain DO, referenced here)
   frequency          text NOT NULL CHECK (frequency IN ('weekly','biweekly','monthly')),
   day_of_week        int CHECK (day_of_week BETWEEN 0 AND 6),  -- 0=Sunday for weekly/biweekly; NULL for monthly
   day_of_month       int CHECK (day_of_month BETWEEN 1 AND 28),  -- for monthly
@@ -257,9 +257,9 @@ CREATE INDEX idx_family_links_user_b ON family_links (user_id_b) WHERE status = 
 
 ---
 
-## Orchestrator DO SQLite Tables
+## Brain DO SQLite Tables
 
-These live in the per-user Orchestrator DO SQLite database, not in Supabase.
+These live in the per-user Brain DO SQLite database, not in Supabase.
 
 ```sql
 -- Non-Brioela recipients managed by this user

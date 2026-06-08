@@ -2,7 +2,7 @@
 
 ## What This File Covers
 
-Device phases, user permission flow, supported integration categories, and the boundary between platform APIs, client code, and the Orchestrator DO.
+Device phases, user permission flow, supported integration categories, and the boundary between platform APIs, client code, and the Brain DO.
 
 ---
 
@@ -67,7 +67,7 @@ Flow:
 3. User grants specific data types.
 4. Brioela records connection metadata.
 5. Client produces first daily summary when data is available.
-6. Summary syncs to Orchestrator DO.
+6. Summary syncs to Brain DO.
 
 Permission rules:
 

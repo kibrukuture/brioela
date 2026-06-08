@@ -46,14 +46,14 @@ Before writing:
 - latest session log
 - `build-guide/23-verified-profiles/00-overview.md`
 - `brioela-specs/18-verified-business-and-practitioner-profiles.md`
-- dependencies: Auth/Onboarding, Map, Orchestrator, Medical Conditions, Pricing Tiers if needed
+- dependencies: Auth/Onboarding, Map, Brain, Medical Conditions, Pricing Tiers if needed
 
 ## Blockers / Decisions
 
 - Medical conditions are never assumed; user confirmation is required.
 - Condition flags are separate from allergy/constraint flags in scan UI.
 - Condition rules are versioned config, not hardcoded DO logic.
-- Active condition data is private Orchestrator storage only.
+- Active condition data is private Brain storage only.
 - Practitioner integration depends on future Verified Profiles and explicit user consent; Medical Conditions only defines the privacy/annotation boundary.
 - Brioela narrows food decisions; it does not diagnose, treat, prescribe, or replace clinician guidance.
 - No super-creative addendum was added beyond the spec; this pass focused on safety, rule governance, and privacy.

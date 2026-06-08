@@ -1,4 +1,4 @@
-# 09. Per-User Agent Orchestrator
+# 09. Per-User Agent Brain
 
 ## Goal
 
@@ -10,24 +10,24 @@ The per-user agent is inspired by the Hermes agent architecture — specifically
 
 What Brioela builds: a custom lightweight agent using the Cloudflare Agent SDK on top of Durable Objects. It takes Hermes as inspiration for the memory architecture and event-driven self-improvement loop but is built natively on Cloudflare so it runs at the edge, isolated per user, at global scale.
 
-## Architecture: One Orchestrator DO Per User
+## Architecture: One Brain DO Per User
 
-Each user has exactly one `BrioelOrchestrator` — a Cloudflare Durable Object using the Agent SDK. This object:
+Each user has exactly one `BrioelaBrain` — a Cloudflare Durable Object using the Agent SDK. This object:
 - Is always addressable by userId.
 - Has its own private SQLite database via `drizzle(this.ctx.storage, { schema })`.
 - Hibernates when idle — near-zero cost.
 - Wakes in milliseconds on any incoming event.
 - Lives forever (until user deletes their account).
 
-This is NOT a pooled or shared agent. One user's orchestrator never touches another user's data. The isolation comes from the DO's unique name — `idFromName(userId)` always returns the same instance, always private to that user.
+This is NOT a pooled or shared agent. One user's brain never touches another user's data. The isolation comes from the DO's unique name — `idFromName(userId)` always returns the same instance, always private to that user.
 
 ## Two DO Roles
 
-### BrioelOrchestrator (Permanent Brain)
+### BrioelaBrain (Permanent Brain)
 Always exists per user. Holds all private SQLite memory. Handles real-time inline events (scan personalization, allergen checks, recipe reranking). Fires async jobs to Upstash for multi-step work. Sets alarms on itself for ambient intelligence.
 
 ### CookingAgent DO (Live Session Brain)
-Spun up per cooking session. Named by `cook-{userId}-{recipeId}` so it's always the same instance for a given session. Holds live session state: current step, transcript accumulation, participant list, real-time context window. After session ends, fires summarization to Upstash Workflow and writes durable facts back to the Orchestrator DO's SQLite.
+Spun up per cooking session. Named by `cook-{userId}-{recipeId}` so it's always the same instance for a given session. Holds live session state: current step, transcript accumulation, participant list, real-time context window. After session ends, fires summarization to Upstash Workflow and writes durable facts back to the Brain DO's SQLite.
 
 ## When to Use a Sub-Agent DO vs a Plain Function
 
@@ -44,7 +44,7 @@ This is a critical architectural decision:
 - The task completes in one request lifecycle.
 - No state needs to live between calls.
 
-A product scan does NOT need a sub-agent DO. It calls `analyzeProduct(productId, env)` — a plain async function — and the Orchestrator DO saves the result to its SQLite. A cooking session DOES need a sub-agent DO because it's long-lived, stateful, and must survive disconnection.
+A product scan does NOT need a sub-agent DO. It calls `analyzeProduct(productId, env)` — a plain async function — and the Brain DO saves the result to its SQLite. A cooking session DOES need a sub-agent DO because it's long-lived, stateful, and must survive disconnection.
 
 ## DO Hidden Capabilities Used by Brioela
 
@@ -59,13 +59,13 @@ wrangler.toml must declare the SQLite class:
 ```
 [[migrations]]
 tag = "v1"
-new_sqlite_classes = ["BrioelOrchestrator"]
+new_sqlite_classes = ["BrioelaBrain"]
 ```
 Without this line, the DO only has KV storage, not SQLite.
 
 ### DO Alarms — the Ambient Intelligence Engine
 
-This is how the ambient features work without cron jobs. The Orchestrator DO can schedule its own wake-up call at any future time:
+This is how the ambient features work without cron jobs. The Brain DO can schedule its own wake-up call at any future time:
 
 ```
 await this.ctx.storage.setAlarm(timestamp)
@@ -122,7 +122,7 @@ Upstash Box was evaluated as an alternative for running per-user agents. Decisio
 
 Reason: Cloudflare Durable Objects run at the actual edge — automatically provisioned geographically close to where first requested. For a Brioela user scanning a product, their personal agent responds in under a second because it's physically close to them. Upstash Box is a managed compute environment that cannot do geographic edge co-location at that granularity. The latency difference matters for real-time scan personalization. Upstash remains the right choice for QStash, Redis, and Workflow — not for running the agent itself.
 
-## Event Types the Orchestrator DO Receives
+## Event Types the Brain DO Receives
 
 - Product scanned (product_id, geo_hash, verdict, match results).
 - Recipe imported (recipe_id, source, confidence).
@@ -138,11 +138,11 @@ Reason: Cloudflare Durable Objects run at the actual edge — automatically prov
 
 ## Agent Tool Set (AI-Callable Tools)
 
-The Orchestrator DO registers all capabilities as callable tools using the Vercel AI SDK `tool()` pattern. The AI agent decides which tools to call based on context — tools are never pre-selected or pre-injected by developer logic. The agent sees all tool schemas and calls what it needs, chains calls in any sequence, and discards what is irrelevant.
+The Brain DO registers all capabilities as callable tools using the Vercel AI SDK `tool()` pattern. The AI agent decides which tools to call based on context — tools are never pre-selected or pre-injected by developer logic. The agent sees all tool schemas and calls what it needs, chains calls in any sequence, and discards what is irrelevant.
 
 This means adding a new capability is always: write one `tool({})` definition. The AI starts using it automatically. No routing logic, no pre-filtering, no threshold tuning.
 
-Tools registered on the Orchestrator DO:
+Tools registered on the Brain DO:
 
 **Skill management tools (the foundation — always registered):**
 - `skill_view(name)` — load the full markdown content of a named skill from SQLite; increments use_count.
@@ -272,7 +272,7 @@ The Curator is a background maintenance pass that runs automatically against use
 - Patches drift: if a skill's instructions reference a workflow that has since changed (e.g., an API the agent no longer uses), the Curator flags it for review.
 
 **When it runs:**
-The Curator is triggered by a DO alarm — not a cron daemon. On every Orchestrator DO wake, it checks two conditions:
+The Curator is triggered by a DO alarm — not a cron daemon. On every Brain DO wake, it checks two conditions:
 1. Has enough time passed since the last Curator run? (Default interval: 7 days.)
 2. Has the agent been idle long enough that running now won't interrupt active work? (Default: 2+ hours since last user interaction.)
 
@@ -306,11 +306,11 @@ When `skill_create` is called, a background QStash job embeds the new skill's de
 
 ## Context Injection into Live Sessions
 
-When a cooking session starts, the Orchestrator DO builds a context payload: user name, hard allergies, active dislikes, dietary identity, current recipe with steps, prior notes on this recipe, relevant behavioral patterns, recent negative outcomes, and the skills index. This is injected into Gemini Live as system instructions at session connect time. Changes during the session are pushed into the live WebSocket via `send_realtime_input`.
+When a cooking session starts, the Brain DO builds a context payload: user name, hard allergies, active dislikes, dietary identity, current recipe with steps, prior notes on this recipe, relevant behavioral patterns, recent negative outcomes, and the skills index. This is injected into Gemini Live as system instructions at session connect time. Changes during the session are pushed into the live WebSocket via `send_realtime_input`.
 
-## Memory Domains in the Orchestrator DO SQLite
+## Memory Domains in the Brain DO SQLite
 
-The Orchestrator DO is not just a food database. It holds every dimension of what the agent knows about this user:
+The Brain DO is not just a food database. It holds every dimension of what the agent knows about this user:
 
 | Domain | What it holds | Schema type |
 |---|---|---|
@@ -560,16 +560,16 @@ Zod enforces the envelope at the write boundary. You enforce the content schema 
 
 ## Data Boundaries
 
-- Per-user Orchestrator DO SQLite: all memory domains listed above. Private. Never in shared databases.
-- CookingAgent DO: ephemeral session state. Flushed after session closes and key facts written to Orchestrator.
+- Per-user Brain DO SQLite: all memory domains listed above. Private. Never in shared databases.
+- CookingAgent DO: ephemeral session state. Flushed after session closes and key facts written to Brain.
 - Shared data (product corpus, community notes, map): Supabase Postgres. Readable by Workers. Never stored in DO.
 - Cache: Upstash Redis. TTL-bound, disposable.
 
 ## API Surface
 
-- `POST /api/agent/events` — receive any product event, route to correct Orchestrator DO via RPC.
+- `POST /api/agent/events` — receive any product event, route to correct Brain DO via RPC.
 - `GET /api/agent/context` — return user's memory context for session initialization.
-- Internal DO-to-DO RPC: CookingAgent DO calls Orchestrator DO for context and emits events back.
+- Internal DO-to-DO RPC: CookingAgent DO calls Brain DO for context and emits events back.
 
 ## Success Metrics
 

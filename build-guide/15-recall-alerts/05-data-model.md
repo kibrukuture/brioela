@@ -46,8 +46,8 @@ Fields:
 - scan event user ID
 - recall match user ID
 
-## Orchestrator Boundary
+## Brain Boundary
 
 Recall entries and matches are shared processing data.
 
-Notification/suppression/device token handling belongs to the user's Orchestrator DO.
+Notification/suppression/device token handling belongs to the user's Brain DO.

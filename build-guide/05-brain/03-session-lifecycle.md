@@ -1,4 +1,4 @@
-# Orchestrator — Session Lifecycle
+# Brain — Session Lifecycle
 
 ## What This File Covers
 
@@ -11,7 +11,7 @@ Session open, system prompt construction (SOUL + order), compression triggers, C
 When a user initiates any interaction, a session row is created in the `sessions` table and the system prompt is assembled once for the lifetime of that session.
 
 ```typescript
-// backend/src/agents/orchestrator/_handlers/session.handler.ts
+// backend/src/agents/brain/_handlers/session.handler.ts
 
 export async function openSession(
   db: DrizzleDB,
@@ -53,7 +53,7 @@ export async function openSession(
 The order of blocks in the system prompt is governed by Anthropic's prefix caching. Static content must appear before dynamic content. Any deviation invalidates the cache prefix and the static block is billed at full cost on every turn.
 
 ```typescript
-// backend/src/agents/orchestrator/_handlers/system-prompt.builder.ts
+// backend/src/agents/brain/_handlers/system-prompt.builder.ts
 
 import { SOUL } from '../soul'                     // 800-token constant string
 import type { DrizzleDB } from '@/types/db'
@@ -142,7 +142,7 @@ Checked before processing each new user turn. Whichever threshold hits first:
 | `background` | N/A | N/A |
 
 ```typescript
-// backend/src/agents/orchestrator/_handlers/session.handler.ts
+// backend/src/agents/brain/_handlers/session.handler.ts
 
 export async function checkCompressionNeeded(
   db: DrizzleDB,
@@ -172,7 +172,7 @@ Compression runs BEFORE the new user turn is processed. The new turn goes into t
 CompressorAgent is an ephemeral sub-agent DO. It receives all turns from the current session, reasons over them, and returns a four-field structured summary. It calls no tools — pure reasoning with structured output.
 
 ```typescript
-// backend/src/agents/orchestrator/_handlers/session.handler.ts
+// backend/src/agents/brain/_handlers/session.handler.ts
 
 const CompressionSummarySchema = z.object({
   intent:       z.string().min(1).max(500),
@@ -194,8 +194,8 @@ export async function runCompression(
     .all()
 
   // Spin up CompressorAgent DO — ephemeral, dies when work is done
-  const compressorId = env.ORCHESTRATOR.idFromName(`compressor_${userId}_${sessionId}`)
-  const compressorStub = env.ORCHESTRATOR.get(compressorId)
+  const compressorId = env.BRAIN.idFromName(`compressor_${userId}_${sessionId}`)
+  const compressorStub = env.BRAIN.get(compressorId)
 
   const { object: summary } = await generateObject({
     model: anthropic('claude-haiku-4-5-20251001'),  // fast + cheap for compression
@@ -282,7 +282,7 @@ export async function closeSession(
 At session open, a watchdog alarm is set (2h for chat, 4h for cooking). When the watchdog fires and the session is still `active`, it was abandoned — the app crashed, the network dropped, the user closed without finishing.
 
 ```typescript
-// backend/src/agents/orchestrator/_handlers/alarm.handler.ts
+// backend/src/agents/brain/_handlers/alarm.handler.ts
 
 case 'session_watchdog': {
   const { sessionId } = JSON.parse(alarm.payload) as { sessionId: string }

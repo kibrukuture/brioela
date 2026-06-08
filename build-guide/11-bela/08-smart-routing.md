@@ -16,7 +16,7 @@ Store selection and route planning for a Bela order.
 - `price_sighting`
 - `map_place_signal`
 - `location_signal_summary`
-- user preference/history from Orchestrator
+- user preference/history from Brain
 
 ## Scoring
 

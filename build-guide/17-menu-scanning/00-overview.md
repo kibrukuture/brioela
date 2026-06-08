@@ -3,7 +3,7 @@
 ## What This Folder Covers
 Point camera at a restaurant menu, scan a restaurant QR code, or share a menu URL, then get a fully parsed, per-dish decision surface in under 3 seconds. Each dish is green (likely OK), yellow (ask waiter), or red (hard constraint violation) for this specific user. For yellow dishes, Brioela generates the exact question to ask: "Does this contain [X]? Is it cooked in a shared fryer with [allergen]?" Works on paper menus, screen menus, multi-page menus, QR menus, and digital menus via URL. If the menu or staff language is different from the user's language, Brioela can virtualize the menu in the user's language and, when asked, speak to the waiter as a food-context language bridge. Low-connectivity offline partial mode uses the cached constraint profile when possible.
 
-The larger product angle: every menu scan also improves Brioela's restaurant intelligence layer. Private health constraints stay in the user's Orchestrator SQLite, while normalized restaurant/menu facts and aggregate safety signals can improve future scans, map ranking, and personalized restaurant discovery for other users.
+The larger product angle: every menu scan also improves Brioela's restaurant intelligence layer. Private health constraints stay in the user's Brain SQLite, while normalized restaurant/menu facts and aggregate safety signals can improve future scans, map ranking, and personalized restaurant discovery for other users.
 
 ## Status
 [x] complete — eight files written
@@ -25,7 +25,7 @@ The larger product angle: every menu scan also improves Brioela's restaurant int
 - `brioela-specs/27-restaurant-menu-scanning.md` — full menu scan spec: input handling, AI processing, constraint profile used, waiter script generation, offline mode, map integration
 
 ## Key Decisions From Specs
-- Processing: GPT-4o mini vision extraction → LLM parses menu into structured dishes → each dish evaluated against constraint profile from Orchestrator DO
+- Processing: GPT-4o mini vision extraction → LLM parses menu into structured dishes → each dish evaluated against constraint profile from Brain DO
 - Standard text LLM call (NOT Gemini Live) — one-shot structured extraction, <3s latency
 - Dishes with no ingredient detail flagged yellow by default (unknown = ask, never assume safe)
 - Waiter script: pre-formulated, specific, non-awkward — removes anxiety of not knowing what to ask
@@ -38,7 +38,7 @@ The larger product angle: every menu scan also improves Brioela's restaurant int
 - Upgrade trigger: Sapor users hit menu scan → Luma upgrade prompt
 
 ## What This Folder Depends On
-- `05-orchestrator` — user's full constraint profile (allergies, dietary identity, medical conditions, medications)
+- `05-brain` — user's full constraint profile (allergies, dietary identity, medical conditions, medications)
 - `07-scanner` — GPT-4o mini vision extraction pattern reused for menu photo processing
 - `10-map` — restaurant Ground signals for place context overlay
 

@@ -26,8 +26,8 @@ spec: brioela-specs/20-platform-and-app-distribution.md
 spec: brioela-specs/24-technical-architecture-backbone.md
   → build-guide/03-foundation/00-overview.md [x] done
   → build-guide/03-foundation/02-backend-worker-setup.md [x] done
-  → build-guide/05-orchestrator/01-do-class-and-setup.md [x] done
-  → build-guide/05-orchestrator/03-session-lifecycle.md [x] done
+  → build-guide/05-brain/01-do-class-and-setup.md [x] done
+  → build-guide/05-brain/03-session-lifecycle.md [x] done
   → build-guide/06-memory-engine/01-sqlite-schema.md [x] done
   → build-guide/08-cooking-session/00-overview.md [x] done
   note: current realtime architecture is Cloudflare Realtime / RealtimeKit in current build-guide
@@ -37,10 +37,10 @@ spec: brioela-specs/39-generative-ui.md
   note: core pattern is captured; deeper product design for feature-specific generative surfaces is intentionally deferred
 
 spec: implementable-specs/13-gaps-and-missing-specs.md
-  → build-guide/05-orchestrator/02-tool-protocol.md [x] done
-  → build-guide/05-orchestrator/03-session-lifecycle.md [x] done
-  → build-guide/05-orchestrator/04-sub-agents.md [x] done
-  → build-guide/05-orchestrator/05-alarm-system.md [x] done
-  → build-guide/05-orchestrator/06-agent-identity.md [x] done
+  → build-guide/05-brain/02-tool-protocol.md [x] done
+  → build-guide/05-brain/03-session-lifecycle.md [x] done
+  → build-guide/05-brain/04-sub-agents.md [x] done
+  → build-guide/05-brain/05-alarm-system.md [x] done
+  → build-guide/05-brain/06-agent-identity.md [x] done
   → build-guide/06-memory-engine/03-vectorize.md [x] done
   note: source file contains historical OPEN text for Curator in one table, but current implementable specs/build-guides close those gaps

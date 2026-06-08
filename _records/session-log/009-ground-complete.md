@@ -11,7 +11,7 @@ Deep read pass before writing:
 - `build-guide/09-ground/00-overview.md`
 - `brioela-specs/35-ground-community-intelligence.md`
 - `brioela-specs/35b-ground-finds-deep-design.md`
-- dependency docs: `05-orchestrator`, `07-scanner`, `10-map`
+- dependency docs: `05-brain`, `07-scanner`, `10-map`
 
 Written — `build-guide/09-ground/`:
 - `00-overview.md` — updated to complete, file list added, release split added

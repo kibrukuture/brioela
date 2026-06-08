@@ -2,13 +2,13 @@
 
 ## What This File Covers
 
-How each parsed dish becomes green, yellow, or red using the user's constraint profile from the Orchestrator. This file owns the safety rules for dish-level verdicts.
+How each parsed dish becomes green, yellow, or red using the user's constraint profile from the Brain. This file owns the safety rules for dish-level verdicts.
 
 ---
 
 ## Constraint Profile Source
 
-Menu scanning pulls the user's active constraint profile from the Orchestrator DO. It does not re-derive allergies or dietary rules from scratch per scan.
+Menu scanning pulls the user's active constraint profile from the Brain DO. It does not re-derive allergies or dietary rules from scratch per scan.
 
 Required profile inputs:
 

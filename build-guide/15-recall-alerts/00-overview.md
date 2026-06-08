@@ -12,7 +12,7 @@ Personalized food recall detection. FDA / EFSA / CFIA / RASFF recall feeds polle
 |---|---|
 | `01-recall-feed-polling.md` | FDA/EFSA/RASFF/CFIA polling, diffing, queueing |
 | `02-recall-matching.md` | UPC/lot/date matching against scan history |
-| `03-critical-notification.md` | Orchestrator delivery, critical priority, content rules |
+| `03-critical-notification.md` | Brain delivery, critical priority, content rules |
 | `04-recall-detail-and-resolution.md` | detail screen, official notice, discard/resolve flow |
 | `05-data-model.md` | recall_entry, recall_scan_match, processing state |
 
@@ -24,7 +24,7 @@ Personalized food recall detection. FDA / EFSA / CFIA / RASFF recall feeds polle
 - Match query: one query per recall entry against ALL scan_events in Supabase — batch-efficient, not per-user
 - Confirmed match (lot number matches scan): "you have this" — not "you might have"
 - Broad match (all lots recalled, within 90 days of scan): "you may have this"
-- Push delivery: routed through each matching user's Orchestrator DO (respects device token and notification state)
+- Push delivery: routed through each matching user's Brain DO (respects device token and notification state)
 - Critical priority: no suppression, no quiet hours — Listeria recall does not care it is 2am
 - Recall detail screen: product photo from scan history, verbatim recall reason, lot numbers, what to do, link to official notice, "I discarded it" confirmation
 - Retracted recall: send follow-up "recall has been cleared — no action needed"

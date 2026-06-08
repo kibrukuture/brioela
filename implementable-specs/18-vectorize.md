@@ -43,7 +43,7 @@ Brioela's core user base speaks Amharic, Arabic, and English. A grandmother's co
 
 768 dimensions fits well within the 1536 hard cap and halves dimension volume cost compared to 1536-dim models. Cohere's multilingual model is well-established for production use.
 
-**Embedding API call** (made from the Orchestrator DO at session close):
+**Embedding API call** (made from the Brain DO at session close):
 
 ```typescript
 const response = await fetch('https://api.cohere.ai/v1/embed', {
@@ -177,7 +177,7 @@ interface SessionVectorMetadata {
 }
 ```
 
-`recipe_id` is stored as metadata but NOT given a metadata index (max 10 indexes, and recipe_id queries are rare). Recipe filtering is done post-retrieval in the Orchestrator — check the returned metadata, filter out non-matching recipe_ids. Only `session_type` and `ended_at` get metadata indexes for fast filtered search.
+`recipe_id` is stored as metadata but NOT given a metadata index (max 10 indexes, and recipe_id queries are rare). Recipe filtering is done post-retrieval in the Brain — check the returned metadata, filter out non-matching recipe_ids. Only `session_type` and `ended_at` get metadata indexes for fast filtered search.
 
 ---
 

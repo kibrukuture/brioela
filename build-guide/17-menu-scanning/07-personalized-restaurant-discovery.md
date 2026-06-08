@@ -48,7 +48,7 @@ Personalized restaurant discovery can combine:
 
 - `restaurant_fit_summary` from shared menu intelligence.
 - Dish-level parsed menu data.
-- User constraints from Orchestrator SQLite.
+- User constraints from Brain SQLite.
 - User preferences and food memory.
 - Map place quality and distance from `10-map`.
 - Ground signal density and freshness from `09-ground`.

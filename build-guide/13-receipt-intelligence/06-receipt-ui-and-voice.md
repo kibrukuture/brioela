@@ -42,4 +42,4 @@ Supported questions:
 
 ## Rule
 
-Voice answers must read from private Orchestrator price history, not shared aggregate data, unless asking about nearby public prices.
+Voice answers must read from private Brain price history, not shared aggregate data, unless asking about nearby public prices.

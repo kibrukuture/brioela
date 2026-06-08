@@ -141,4 +141,4 @@ Storage rules:
 - Do not scrape private content behind authentication unless the platform provides a safe user-granted media reference.
 - Strip unnecessary personal data from shared captions/comments.
 
-The user's private recipe lives in Orchestrator SQLite. Source artifacts can live in backend storage tied to the import job, with access scoped to the user.
+The user's private recipe lives in Brain SQLite. Source artifacts can live in backend storage tied to the import job, with access scoped to the user.

@@ -2,7 +2,7 @@
 
 ## What This File Covers
 
-The three CuratorAgent passes (skill maintenance, trait decay, trait inference) and the PatternDetectionAgent pass. This file covers only the logic of the passes — the DO architecture and HTTP forwarding protocol that makes them run is documented in `05-orchestrator/04-sub-agents.md`.
+The three CuratorAgent passes (skill maintenance, trait decay, trait inference) and the PatternDetectionAgent pass. This file covers only the logic of the passes — the DO architecture and HTTP forwarding protocol that makes them run is documented in `05-brain/04-sub-agents.md`.
 
 ---
 

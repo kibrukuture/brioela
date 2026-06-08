@@ -12,7 +12,7 @@ Deep read pass before writing:
 - `brioela-specs/41-mesa.md`
 - `build-guide/26-mesa/00-overview.md`
 - `build-guide/04-auth-and-onboarding/03-session-and-route-gating.md`
-- `build-guide/05-orchestrator/02-tool-protocol.md`
+- `build-guide/05-brain/02-tool-protocol.md`
 - dependency docs: Ambient alarm loop, Guest Mode, Pantry Meal Plan, Menu Scanning dish verdicts, Kids co-scan, Pricing Mesa add-on
 
 Written — `build-guide/26-mesa/`:
@@ -46,7 +46,7 @@ Updated records:
 - Mesa is a first-class shipped feature, not just a future note.
 - Mesa setup is conversational and no-form.
 - Users can add people by talking to Brioela.
-- Mesa has private Orchestrator SQLite tables and AI-callable tools.
+- Mesa has private Brain SQLite tables and AI-callable tools.
 - Brioela can infer potential Mesa members from repeated patterns, but must ask before adding anyone.
 - Use wording like "keep in mind" or "remember food needs for," not "track family."
 - Invited contributors can enrich Mesa with selected scans/events without sharing their private Brioela memory.

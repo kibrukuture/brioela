@@ -8,7 +8,7 @@ The versioned rule configuration that maps medical conditions to food flags, ing
 
 ## Core Rule
 
-Condition rules are not hardcoded in Orchestrator DO logic.
+Condition rules are not hardcoded in Brain DO logic.
 
 Rules live in versioned Supabase configuration and are cached by the backend. This allows updates without code deploy when guidance changes or rule quality improves.
 

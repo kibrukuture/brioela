@@ -40,7 +40,7 @@ type UserEntitlement = {
 }
 ```
 
-Tier state should be available from auth/session profile and mirrored into Orchestrator context where needed.
+Tier state should be available from auth/session profile and mirrored into Brain context where needed.
 
 ---
 

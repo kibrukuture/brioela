@@ -8,7 +8,7 @@ How wearable daily summaries become private `health.*` memories and how sustaine
 
 ## Routing Target
 
-Wearable-derived facts live in Orchestrator DO SQLite.
+Wearable-derived facts live in Brain DO SQLite.
 
 Primary tables:
 
@@ -49,7 +49,7 @@ type WearableMemoryWrite = {
 }
 ```
 
-Use the existing Orchestrator tool boundary for writes. Do not let the wearable ingestion endpoint write SQLite directly outside the Orchestrator's validated path.
+Use the existing Brain tool boundary for writes. Do not let the wearable ingestion endpoint write SQLite directly outside the Brain's validated path.
 
 ---
 

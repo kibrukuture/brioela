@@ -18,11 +18,11 @@ The user is never prompted to rate how they feel, log their energy, or track the
 
 ## How Energy and Wellbeing Signals Are Captured
 
-During a cooking session or voice interaction, the Gemini Live model processes the user's full audio context. When the user mentions feeling tired, energized, unwell, or any related state, the transcript event is passed to the Orchestrator DO as a `wellbeing_signal` event.
+During a cooking session or voice interaction, the Gemini Live model processes the user's full audio context. When the user mentions feeling tired, energized, unwell, or any related state, the transcript event is passed to the Brain DO as a `wellbeing_signal` event.
 
 The signal is not acted on immediately. It is logged with a timestamp and linked to the user's recent food context (what was scanned or eaten in the preceding 12–48 hours from scan and receipt history).
 
-Over time, the Orchestrator DO's weekly alarm cycle runs a correlation pass: are there foods or food categories that consistently precede low-energy signals? High-energy signals? Digestive complaints?
+Over time, the Brain DO's weekly alarm cycle runs a correlation pass: are there foods or food categories that consistently precede low-energy signals? High-energy signals? Digestive complaints?
 
 When a correlation reaches sufficient confidence (minimum 5 consistent signal instances with the same food association), the pattern is written to `behavior_pattern` and optionally surfaced — not as a notification, but as a natural comment during a future relevant conversation: "I've noticed you tend to feel sluggish on days after eating [X]. Want me to keep an eye on that?"
 
@@ -86,7 +86,7 @@ pattern_intervention (
 
 ## Technical Notes
 - Pattern generation uses explicit thresholds and evidence storage — not soft ML inference without audit trail.
-- Wellbeing signals are extracted by the Orchestrator DO when it processes transcript events from cooking and voice sessions.
+- Wellbeing signals are extracted by the Brain DO when it processes transcript events from cooking and voice sessions.
 - Interventions must be sparse to avoid feeling invasive. Maximum one new pattern insight per week.
 - Sensitive patterns (health correlations) require higher confidence thresholds than behavioral patterns (brand aversion).
 - Pattern correlation runs as part of the weekly DO alarm cycle — not on every session end.

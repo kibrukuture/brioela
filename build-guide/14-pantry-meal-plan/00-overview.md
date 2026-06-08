@@ -26,15 +26,15 @@ Four interconnected features that form the "what should I eat this week" surface
 ## Key Decisions From Specs
 - Fridge rescue: operates on snapshots, not continuous live inventory
 - Predictive pantry: median purchase interval from receipt history; high confidence (5+ events) = quiet notification + auto-add; low confidence = list only, no notification
-- Meal plan: single LLM structured call, <5s, inventory snapshot from Orchestrator DO SQLite — no external query
+- Meal plan: single LLM structured call, <5s, inventory snapshot from Brain DO SQLite — no external query
 - Waste minimization: produce bought 4 days ago ranks higher than pantry staples for meal plan inclusion
 - Shopping list: delta between plan ingredients and estimated inventory; sorted by store department; estimated cost from price history
-- Meal plan stored in Orchestrator DO (personal) not Supabase
+- Meal plan stored in Brain DO (personal) not Supabase
 - Weekly summary: DO alarm fires Sunday morning; delivered as push (medium priority, spec 23 rules apply)
 - All four run on the DO alarm cycle — no separate scheduler needed
 
 ## What This Folder Depends On
-- `05-orchestrator` — inventory state, purchase history, constraint profile all in Orchestrator DO SQLite
+- `05-brain` — inventory state, purchase history, constraint profile all in Brain DO SQLite
 - `13-receipt-intelligence` — receipt history drives pantry state and price estimates
 - `10-map` — shopping list store suggestions from community price data
 

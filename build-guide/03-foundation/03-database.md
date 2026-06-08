@@ -168,7 +168,7 @@ The service role key bypasses RLS — it is never exposed to clients. Mobile use
 Each DO has its own isolated SQLite database via `this.ctx.storage`. Drizzle manages the schema.
 
 ```ts
-// backend/src/agents/orchestrator/_schema/memory.schema.ts
+// backend/src/agents/brain/_schema/memory.schema.ts
 import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core'
 
 export const userMemory = sqliteTable('user_memory', {
@@ -186,7 +186,7 @@ export const memoryEvents = sqliteTable('memory_events', {
 ```
 
 ```ts
-// backend/src/agents/orchestrator/_schema/constraints.schema.ts
+// backend/src/agents/brain/_schema/constraints.schema.ts
 import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core'
 
 export const constraints = sqliteTable('constraints', {

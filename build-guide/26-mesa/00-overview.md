@@ -12,7 +12,7 @@ Mesa is Brioela's multi-person food intelligence layer. It lets the app evaluate
 
 | File | Contents |
 |---|---|
-| `01-mesa-data-model.md` | Orchestrator SQLite tables for Mesa, members, constraints, audience, candidates, invites |
+| `01-mesa-data-model.md` | Brain SQLite tables for Mesa, members, constraints, audience, candidates, invites |
 | `02-conversational-setup.md` | no-form Mesa creation, voice/chat member addition, confirmation language |
 | `03-mesa-tools.md` | AI-callable Mesa tools under `tools/mesa/` and permissions |
 | `04-food-audience.md` | just me / Mesa / selected members / guest session audience model |
@@ -45,7 +45,7 @@ Mesa is Brioela's multi-person food intelligence layer. It lets the app evaluate
 
 ## What This Folder Depends On
 
-- `05-orchestrator` — private per-user brain; Mesa owner state and permissioned writes need Orchestrator boundaries
+- `05-brain` — private per-user brain; Mesa owner state and permissioned writes need Brain boundaries
 - `06-memory-engine` — member/constraint/audience data eventually needs private schema design
 - `07-scanner` — product compatibility is the first obvious Mesa surface
 - `14-pantry-meal-plan` — meal/grocery planning for more than one person

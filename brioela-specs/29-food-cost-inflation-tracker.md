@@ -66,7 +66,7 @@ User can ask at any time:
 - "Am I spending more on groceries this month?"
 - "What's the cheapest place to buy [product] near me?"
 
-The Orchestrator DO holds the price history. The voice agent queries it directly at session start as part of context injection.
+The Brain DO holds the price history. The voice agent queries it directly at session start as part of context injection.
 
 ## Data Model
 
@@ -75,7 +75,7 @@ The Orchestrator DO holds the price history. The voice agent queries it directly
 
 ## Technical Constraints
 
-- Price history is stored in the user's Orchestrator DO SQLite, not in Supabase — it is personal data, not shared data.
+- Price history is stored in the user's Brain DO SQLite, not in Supabase — it is personal data, not shared data.
 - Aggregated price trend data (anonymized, no user attribution) can be stored in Supabase to power the "nearby store has it cheaper" query across users.
 - Price computation runs as part of the DO alarm cycle — not on every receipt scan. The alarm fires weekly and computes the rolling averages in batch.
 

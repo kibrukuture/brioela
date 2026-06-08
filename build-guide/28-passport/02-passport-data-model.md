@@ -8,7 +8,7 @@ Passport records, instruction blocks, expiration, revocation, and audit state.
 
 ## Storage Rule
 
-Passport records live in the user's Orchestrator DO SQLite.
+Passport records live in the user's Brain DO SQLite.
 
 Passport links may use server routes for QR/link display, but the source data remains private and scoped.
 

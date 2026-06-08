@@ -49,7 +49,7 @@ Allow a user to point the camera at a grocery product and receive an immediate h
 - Community evidence overlay can add yellow caution context when anonymous users with similar profiles report post-exposure events.
 - Response returns a compact payload for immediate UI display.
 
-The scanner is not a simple external-score fetcher. External datasets answer "what is this product?" and "what does the label/source say?" Brioela combines those facts with product-fact evidence, private Orchestrator DO memory, and anonymous community event associations before returning the final verdict.
+The scanner is not a simple external-score fetcher. External datasets answer "what is this product?" and "what does the label/source say?" Brioela combines those facts with product-fact evidence, private Brain DO memory, and anonymous community event associations before returning the final verdict.
 
 Computation spine:
 

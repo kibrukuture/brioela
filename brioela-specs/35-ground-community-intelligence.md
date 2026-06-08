@@ -170,7 +170,7 @@ location_signal_summary (
 )
 
 -- User's own find history (local reference, not shared)
--- Stored in Orchestrator DO SQLite, not Supabase
+-- Stored in Brain DO SQLite, not Supabase
 user_find_history (
   find_id       text,
   submitted_at  integer,
@@ -182,7 +182,7 @@ user_find_history (
 
 `find` and `location_signal_summary` live in **Supabase Postgres** — they are shared, community data.
 
-`user_find_history` lives in the **Orchestrator DO SQLite** — it is private, per-user, and never synced to the community tables.
+`user_find_history` lives in the **Brain DO SQLite** — it is private, per-user, and never synced to the community tables.
 
 ## Technical Constraints
 

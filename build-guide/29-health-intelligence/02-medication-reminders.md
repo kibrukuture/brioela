@@ -27,7 +27,7 @@ Voice calls are used sparingly — only for medications flagged as high-stakes. 
 
 ## Alarm Fire — What Happens
 
-When a `medication_reminder` alarm fires in the Orchestrator DO alarm handler:
+When a `medication_reminder` alarm fires in the Brain DO alarm handler:
 
 ```typescript
 // In alarm.handler.ts — medication_reminder case
@@ -97,8 +97,8 @@ export async function triggerMedicationCall(params: {
   const { phone, drugName, doseInfo, reminderId, userId, env } = params
 
   // Update alarm outcome state to 'calling'
-  // (done via Orchestrator DO — reminder is a scheduled_alarms row)
-  await updateAlarmResultViaOrchestrator(userId, reminderId, {
+  // (done via Brain DO — reminder is a scheduled_alarms row)
+  await updateAlarmResultViaBrain(userId, reminderId, {
     actionOutcomeStatus: 'calling',
     actionOutcomeJson: JSON.stringify({ provider: 'vapi', call_started_at: Date.now() }),
   }, env)
@@ -149,7 +149,7 @@ Never discuss medical advice. Never suggest dose changes. One topic only: did th
     // Vapi call failed — fall through to push notification
     console.error('Vapi call failed:', await resp.text())
     await triggerMedicationPush({ drugName, doseInfo: params.doseInfo, reminderId, userId, env })
-    await updateReminderStatusViaOrchestrator(userId, reminderId, 'notified', env)
+    await updateReminderStatusViaBrain(userId, reminderId, 'notified', env)
   }
   // If call succeeded: Vapi will fire the webhook when the call completes
 }
@@ -176,10 +176,10 @@ export async function handleReminderWebhook(c: AppContext): Promise<Response> {
   // enough for adherence. Fall back to null when no structured result is available.
   const took = body.analysis?.structuredData?.took ?? null
 
-  // Record the outcome on the firing scheduled_alarms row (Orchestrator DO SQLite)
-  const orchestratorId = c.env.ORCHESTRATOR.idFromName(userId)
-  const orchestrator   = c.env.ORCHESTRATOR.get(orchestratorId)
-  await orchestrator.fetch(new Request('https://internal/update-alarm-result', {
+  // Record the outcome on the firing scheduled_alarms row (Brain DO SQLite)
+  const brainId = c.env.BRAIN.idFromName(userId)
+  const brain   = c.env.BRAIN.get(brainId)
+  await brain.fetch(new Request('https://internal/update-alarm-result', {
     method: 'POST',
     headers: { 'Authorization': `Bearer ${c.env.INTERNAL_SECRET}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({

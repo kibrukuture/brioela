@@ -237,7 +237,7 @@ The AI checks this connection every time a high-relevance find enters the user's
 
 1. A new Find enters the database: "Fresh injera flour just arrived — [store], [location]"
 2. Ground routing checks which users near this location have `injera` or `teff` in their cooking memory
-3. For each matched user: the Orchestrator AI checks whether injera or teff is in their "ingredients I want to find" context (derived from cooking sessions, recipe saves, or memory events where the user mentioned needing something)
+3. For each matched user: the user's BrioelaBrain checks whether injera or teff is in their "ingredients I want to find" context (derived from cooking sessions, recipe saves, or memory events where the user mentioned needing something)
 4. If there is a match: the AI surfaces a connected suggestion
 
 **What the user sees** (not a notification — surfaces in the ambient notification surface, spec 23):
@@ -266,7 +266,7 @@ She had forgotten she was looking for them. The AI did not. This is the ambient 
 ### What This Feature Requires (not all of it exists yet)
 
 - `ingredient_not_found` memory event kind (new — not currently in spec 01's event type list)
-- Ground routing that can match incoming finds against user cooking context (currently Ground has no connection to the Orchestrator AI)
+- Ground routing that can match incoming finds against user cooking context (currently Ground has no connection to the user's BrioelaBrain)
 - The ambient notification surface (spec 23) must be able to render a two-action card tied to a specific Find
 
 These are design dependencies, not blockers. They define what needs to be connected before this angle is live.
@@ -364,7 +364,7 @@ They close the list and keep exploring. They have learned the entire interface i
 | 1 — Personalized map | Proximity + recency sorting | Relevance scoring against user ingredient profile | API must accept user profile at map load time |
 | 2 — AI-drafted finds | Voice-to-find flow | AI draft card below scan result | Draft generation logic in scan API response |
 | 3 — Haptic walking | Ambient contribution prompt (text) | Background relevance check, single haptic, location history from memory | `ingredient_not_found` event kind in spec 01 |
-| 4 — Find-to-cooking | No connection to cooking session | Full trigger flow from fresh find to recipe suggestion | Ground routing connected to Orchestrator AI; ambient notification two-action card (spec 23) |
+| 4 — Find-to-cooking | No connection to cooking session | Full trigger flow from fresh find to recipe suggestion | Ground routing connected to the user's BrioelaBrain; ambient notification two-action card (spec 23) |
 | 5 — Pulse animation | "Pulsing signal dots" described | Full animation spec: pulse speed table, dot sizing, cluster behavior, building highlight | Native animation implementation on Mapbox GL layer |
 
-None of these are blockers for shipping a basic Ground. Angles 1, 2, and 5 can ship with the first version of Ground. Angles 3 and 4 require additional infrastructure (background location opt-in, Orchestrator AI connection) and are second-release features.
+None of these are blockers for shipping a basic Ground. Angles 1, 2, and 5 can ship with the first version of Ground. Angles 3 and 4 require additional infrastructure (background location opt-in, BrioelaBrain connection) and are second-release features.

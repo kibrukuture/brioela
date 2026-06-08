@@ -12,11 +12,11 @@ The live AI cooking coach: voice + camera, Gemini 3.1 Flash Live, CookingAgent A
 | File | Contents |
 |---|---|
 | `01-room-lifecycle.md` | RealtimeKit Meeting creation, participant token, SFU track adapter configuration, mobile join flow, active-session teardown, environment variables |
-| `02-cooking-agent-do.md` | CookingAgent DO class, endpoints (/init /stream /audio /alarm-fired), in-memory state, initialization, DO eviction recovery, Orchestrator tool forwarding, agent_state keys |
+| `02-cooking-agent-do.md` | CookingAgent DO class, endpoints (/init /stream /audio /alarm-fired), in-memory state, initialization, DO eviction recovery, Brain tool forwarding, agent_state keys |
 | `03-gemini-live-session.md` | Model selection, latency reality, opening the session, setup message, system instruction construction (SOUL + constraints + memory + skills), audio forwarding (PCM), video forwarding (JPEG as client_content not realtime_input.video), proactive reconnect at 90s, tool call handling (BLOCKING), session chaining |
 | `04-proactive-speech-engine.md` | ProactiveSpeechEngine interface, silence tracker, visual change detector, adaptive frequency, prompt builder, response filter, suppression rules, human behaviors (non-response, adaptive verbosity, phase awareness) |
 | `05-timers.md` | Timer tool implementation, Agents SDK schedule callbacks, timer fire dispatch, timer cancellation, session end timer cleanup |
-| `06-session-end-and-recipe.md` | Four end types, end sequence (close Gemini → cancel timers → close room → processing), recipe decision tree, outcome_summary construction, memory consolidation via Orchestrator, session row finalization |
+| `06-session-end-and-recipe.md` | Four end types, end sequence (close Gemini → cancel timers → close room → processing), recipe decision tree, outcome_summary construction, memory consolidation via Brain, session row finalization |
 
 ## Specs This Folder Draws From
 
@@ -50,11 +50,11 @@ The live AI cooking coach: voice + camera, Gemini 3.1 Flash Live, CookingAgent A
 
 Under `tools/cooking-agent/`:
 - `schedule_timer`, `cancel_timer` — handled directly by CookingAgent using Agents SDK schedules
-- `write_session_note`, `write_memory`, `propose_constraint`, `view_recipe` — forwarded to Orchestrator DO
+- `write_session_note`, `write_memory`, `propose_constraint`, `view_recipe` — forwarded to Brain DO
 
 ## What This Folder Depends On
 
-- `05-orchestrator` — user context loaded at session start; facts, constraints, skills written back at session end
+- `05-brain` — user context loaded at session start; facts, constraints, skills written back at session end
 - `06-memory-engine` — session_turns schema, sessions schema, recipes schema
 - `03-foundation` — Cloudflare RealtimeKit/SFU env (`CLOUDFLARE_ACCOUNT_ID`, `REALTIMEKIT_APP_ID`, optional `REALTIME_SFU_APP_ID`), Gemini API key
 

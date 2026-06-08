@@ -85,7 +85,7 @@ The distinction is not about location detection — it is about user intent. Whe
 
 The `newSkill` field is null in the vast majority of cases. The model only proposes a skill when it identifies a genuinely reusable procedure — not just a fact.
 
-3. The Orchestrator DO handler parses the JSON, writes `memoryUpdates` to the appropriate tables, and conditionally calls `skill_create` if `newSkill.create` is true.
+3. The Brain DO handler parses the JSON, writes `memoryUpdates` to the appropriate tables, and conditionally calls `skill_create` if `newSkill.create` is true.
 4. Everything is silent. The user receives a one-line confirmation only when a new skill is created for the first time.
 
 ## Classification Domains
@@ -174,7 +174,7 @@ The user can access a "what Brioela knows about me" screen in settings that show
 
 - Medication profile feeds into spec 28 (medical condition food profile) — medications are treated like a medical condition modifier on top of any declared condition.
 - Health signals feed into spec 30 (food illness detective) — stool and symptom photos are additional input to the illness investigation pipeline.
-- `user_memory` and `user_personality` feed into spec 09 (orchestrator DO) context injection — every session is enriched by the full picture of who the user is.
+- `user_memory` and `user_personality` feed into spec 09 (brain DO) context injection — every session is enriched by the full picture of who the user is.
 - Location photos feed into spec 22 (pre-trip food intelligence) — `user_memory.location.visited_places` signals travel context without the user ever saying where they are going.
 - Recipe session context is enriched by personality traits — the agent knows it is cooking for someone with an infant (faster prep), or a fitness-focused person (protein-dense options), purely from observed patterns.
 
@@ -296,7 +296,7 @@ The metformin entry is untouchable — high read, updated multiple times, core t
 ## Technical Constraints
 
 - Classification is a single Gemini vision call (standard, not Live). Not a streaming session. Target latency: under 2 seconds.
-- The classification result is a structured JSON object parsed by the Orchestrator DO handler — not a free-text response.
+- The classification result is a structured JSON object parsed by the Brain DO handler — not a free-text response.
 - All memory writes go through `memory_update` — the single write path. The AI never writes directly to SQLite.
 - Medication-food interaction rules live in Supabase as a versioned config table: `medication_food_interaction_rule` (medication_category, food_ingredient, interaction_type, severity, description). Updated without a deploy.
 - `read_count` increments are fire-and-forget — never awaited, never allowed to block a session response.

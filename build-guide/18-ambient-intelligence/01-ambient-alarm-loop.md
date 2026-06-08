@@ -2,15 +2,15 @@
 
 ## What This File Covers
 
-The shared background execution model for Ambient Intelligence: Orchestrator DO alarms, idle checks, candidate queues, and why there is no separate cron or dashboard system.
+The shared background execution model for Ambient Intelligence: Brain DO alarms, idle checks, candidate queues, and why there is no separate cron or dashboard system.
 
 ---
 
 ## Core Rule
 
-Ambient Intelligence runs from the user's Orchestrator DO. It does not create a new backend service.
+Ambient Intelligence runs from the user's Brain DO. It does not create a new backend service.
 
-The Orchestrator already owns:
+The Brain already owns:
 
 - private SQLite memory
 - scheduled alarms
@@ -26,7 +26,7 @@ So ambient jobs run where the user's private context already lives.
 
 ## Shared Cadence
 
-The ambient layer uses the existing DO alarm queue from `05-orchestrator/05-alarm-system.md`.
+The ambient layer uses the existing DO alarm queue from `05-brain/05-alarm-system.md`.
 
 Existing alarm types involved:
 
@@ -92,7 +92,7 @@ type AmbientCandidate = {
 }
 ```
 
-Implementation can store candidates in feature-specific tables or `agent_state` for the first version. If the schema grows, create explicit tables inside the Orchestrator SQLite migration.
+Implementation can store candidates in feature-specific tables or `agent_state` for the first version. If the schema grows, create explicit tables inside the Brain SQLite migration.
 
 ---
 

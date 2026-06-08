@@ -13,7 +13,7 @@ Passport is Brioela's temporary, privacy-safe food instruction artifact for real
 | File | Contents |
 |---|---|
 | `01-passport-types.md` | Passport kinds, use cases, audience model |
-| `02-passport-data-model.md` | Orchestrator/private schema, instruction blocks, expiration/revocation |
+| `02-passport-data-model.md` | Brain/private schema, instruction blocks, expiration/revocation |
 | `03-generation-flow.md` | generation triggers, source selection, privacy minimization |
 | `04-privacy-and-consent.md` | sensitive fields, redaction, explicit inclusion, non-medical boundary |
 | `05-translation-and-display.md` | translation, show-screen/image/PDF/QR/text display modes |
@@ -53,7 +53,7 @@ it is a temporary instruction artifact for the person helping them eat safely.
 
 ## What This Folder Depends On
 
-- `05-orchestrator` — private user/Mesa/condition data and Passport records
+- `05-brain` — private user/Mesa/condition data and Passport records
 - `17-menu-scanning` — waiter questions and restaurant/menu triggers
 - `22-medical-conditions` — condition food rules and non-medical boundary
 - `26-mesa` — multi-person Food Audience

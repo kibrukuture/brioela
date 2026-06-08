@@ -27,7 +27,7 @@ This is the safety claim that no competitor can make.
 ```
 User App                    Shopper App Mode               Backend
 ────────────────────        ────────────────────           ────────────────────────────
-Order creation flow    →    Order queue + map              Orchestrator DO (per user)
+Order creation flow    →    Order queue + map              Brain DO (per user)
 AI list generation          Constraint-enforced scanner    CookingAgent DO (session link)
 Live scan-together view     Live scan sync                 OrderAgent DO (per order)
 Authorization + confirm UI  Delivery confirmation          Stripe Connect (hold + payout)
@@ -41,7 +41,7 @@ Dispute submission          Routing map
 Each active order gets its own `OrderAgent` DO, keyed by `order_id`. It controls:
 - Order state machine (created → accepted → shopping → in-transit → delivered → completed)
 - Live scan-together WebSocket relay (shopper scans → user sees result)
-- Constraint enforcement lookup (reads from user's Orchestrator DO)
+- Constraint enforcement lookup (reads from user's Brain DO)
 - Delivery confirmation and escrow release trigger
 - Dispute state if raised
 
@@ -98,7 +98,7 @@ User sees the blocked scan in the live order view.
 | Order state | OrderAgent Durable Object | Session-scoped, survives eviction, WebSocket relay |
 | Shared tables | Supabase Postgres | orders, order_items, shoppers, disputes — shared across all users |
 | Escrow + payout | Stripe Connect | PaymentIntent manual capture for authorization hold; Express accounts for shopper payout |
-| User constraint data | Orchestrator DO SQLite | Read at order creation, cached in OrderAgent for scanner enforcement |
+| User constraint data | Brain DO SQLite | Read at order creation, cached in OrderAgent for scanner enforcement |
 | Delivery photos | Cloudflare R2 | Shopper uploads; user views; retained for dispute window |
 | Routing intelligence | Ground `location_signal_summary` + `product_sighting` | Price and availability signals for multi-store routing |
 | Shopper KYC | Veriff (or equivalent) | ID verification + criminal background check |

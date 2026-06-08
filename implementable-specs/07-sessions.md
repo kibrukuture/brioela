@@ -14,13 +14,13 @@ Not all sessions are user-initiated conversations. There are four types:
 
 **`cooking`** — a live cooking session. Spawned by the `CookingAgent` DO. Has a recipe, has WebSocket, has voice. Can run 2+ hours. Produces a transcript summary and writes facts back to `user_memory` when it ends.
 
-**`alarm`** — the `BrioelOrchestrator` DO woke up from a DO alarm and ran an autonomous job. No user present. The agent read an event, did something (sent a notification, pre-loaded travel data, ran illness detective), and wrote results. This is still a session — it consumed tokens, it produced outcomes, it must be tracked.
+**`alarm`** — the `BrioelaBrain` DO woke up from a DO alarm and ran an autonomous job. No user present. The agent read an event, did something (sent a notification, pre-loaded travel data, ran illness detective), and wrote results. This is still a session — it consumed tokens, it produced outcomes, it must be tracked.
 
 **`background`** — a Curator pass, a skill deduplication job, a pattern detection run. Similar to alarm but not necessarily triggered by a DO alarm — could be triggered by an Upstash Workflow step.
 
 ## Decision: Both DOs Write to the Same Table
 
-`BrioelOrchestrator` and `CookingAgent` both write sessions here. `session_type` distinguishes them. The `CookingAgent` DO writes its session row when the cooking session starts and updates it when it ends. The Orchestrator DO reads that row when `CookingAgent` calls back with its summary. One table, one place to look for all session history.
+`BrioelaBrain` and `CookingAgent` both write sessions here. `session_type` distinguishes them. The `CookingAgent` DO writes its session row when the cooking session starts and updates it when it ends. The Brain DO reads that row when `CookingAgent` calls back with its summary. One table, one place to look for all session history.
 
 ## Decision: parent_session_id for Compression Chains
 
@@ -164,7 +164,7 @@ CREATE INDEX idx_sessions_active         ON sessions (status) WHERE status = 'ac
 - `turn_count`, `skills_created`, `constraints_proposed`, `memory_writes` incremented during the session as events occur — fire and forget, never awaited.
 - At session end: `status`, `ended_at`, `end_reason`, `outcome_summary`, all token counts, `estimated_cost_usd` written in a single update.
 - Compression: old session's `status` set to `'compressed'`. New session inserted with `parent_session_id` pointing to old session's `id`.
-- `CookingAgent` DO writes and owns its own session row. When the cooking session ends, it updates its row and calls the `BrioelOrchestrator` DO with the outcome summary.
+- `CookingAgent` DO writes and owns its own session row. When the cooking session ends, it updates its row and calls the `BrioelaBrain` DO with the outcome summary.
 
 ## Read Rules
 

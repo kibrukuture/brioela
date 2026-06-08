@@ -11,7 +11,7 @@ Deep read pass before writing:
 - `_records/session-log/016-illness-detective-complete.md`
 - `build-guide/17-menu-scanning/00-overview.md`
 - `brioela-specs/27-restaurant-menu-scanning.md`
-- dependency docs: Scanner GPT-4o mini vision fallback, Map overview, Orchestrator tool protocol, Memory Engine SQLite schema
+- dependency docs: Scanner GPT-4o mini vision fallback, Map overview, Brain tool protocol, Memory Engine SQLite schema
 
 Written — `build-guide/17-menu-scanning/`:
 - `00-overview.md` — updated to complete, file list added, pricing trigger boundary noted
@@ -44,7 +44,7 @@ Before writing, read:
 - latest session log
 - `build-guide/18-ambient-intelligence/00-overview.md`
 - `brioela-specs/22-pre-trip-food-intelligence.md`
-- likely dependencies: Map, Notifications, Orchestrator, Memory Engine
+- likely dependencies: Map, Notifications, Brain, Memory Engine
 
 ## Blockers / Decisions
 

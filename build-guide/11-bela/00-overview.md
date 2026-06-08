@@ -22,7 +22,7 @@ Brioela's personal grocery delivery service. The user's constraint profile trave
 | `10-cooking-intent-trigger.md` | cooking session / recipe gap to Bela order |
 | `11-for-others.md` | ordering for family/non-users and recipient profiles |
 | `12-dispute-resolution.md` | evidence, windows, refunds, constraint violation incidents |
-| `13-data-model.md` | Supabase, Orchestrator, OrderAgent, R2 tables/state |
+| `13-data-model.md` | Supabase, Brain, OrderAgent, R2 tables/state |
 | `14-shopper-ai-assistant.md` | Gemini Live shopper assistant using cooking-session stack |
 | `15-checkout-payment.md` | store receipt scan, door scan, auto-capture timer |
 
@@ -48,7 +48,7 @@ Under `tools/bela/`:
 - `connect-transfer.ts` — payout to shopper
 
 ## What This Folder Depends On
-- `05-orchestrator` — user constraint profile (copied to OrderAgent at order acceptance)
+- `05-brain` — user constraint profile (copied to OrderAgent at order acceptance)
 - `07-scanner` — constraint enforcement pipeline reused for shopper scanner
 - `08-cooking-session` — shopper AI uses same Gemini Live connection pattern
 - `09-ground` — Ground finds and location_signal_summary inform routing

@@ -165,7 +165,7 @@ DO SQLite migrations are declared in `wrangler.jsonc`:
 ```toml
 [[migrations]]
 tag = "v1"
-new_sqlite_classes = ["BrioelOrchestrator"]
+new_sqlite_classes = ["BrioelaBrain"]
 
 [[migrations]]
 tag = "v2"

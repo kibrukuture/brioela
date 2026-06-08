@@ -185,7 +185,7 @@ export async function resolveScan(c: AppContext) {
   // Cached/materialized community overlay. This is never a live full-table association query.
   const communityHealth = await getProductCommunityHealthSummary(product.id, c.env)
 
-  // Check constraints against Orchestrator DO (see 03-constraint-check.md)
+  // Check constraints against Brain DO (see 03-constraint-check.md)
   const constraintResult = await checkConstraints(productFactSnapshot, userId, c.env)
 
   // Build final verdict (see 04-scan-result-ui.md)
@@ -200,10 +200,10 @@ export async function resolveScan(c: AppContext) {
     })
     .eq('id', scanEventId)
 
-  // Also write to Orchestrator DO memory (scan history for illness detective + recall alerts)
-  const orchestratorId = c.env.ORCHESTRATOR.idFromName(userId)
-  const orchestrator   = c.env.ORCHESTRATOR.get(orchestratorId)
-  await orchestrator.fetch(new Request('https://internal/log-scan', {
+  // Also write to Brain DO memory (scan history for illness detective + recall alerts)
+  const brainId = c.env.BRAIN.idFromName(userId)
+  const brain   = c.env.BRAIN.get(brainId)
+  await brain.fetch(new Request('https://internal/log-scan', {
     method: 'POST',
     body: JSON.stringify({
       scanEventId,
@@ -248,4 +248,4 @@ export const scanEvents = brioela.table('scan_events', {
 **Why Supabase, not DO SQLite only:**
 Recall alerts (spec 26) must match a single product recall against all users who scanned that product. That cross-user query is impossible if scan history is siloed in per-user DO SQLite. Supabase is the shared cross-user store — scan_events lands there so recall matching can run globally.
 
-The Orchestrator DO also logs scan events to its own `memory_event` table — that copy is for per-user illness detective and behavioral pattern detection, which only need the individual user's history.
+The Brain DO also logs scan events to its own `memory_event` table — that copy is for per-user illness detective and behavioral pattern detection, which only need the individual user's history.

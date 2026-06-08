@@ -19,7 +19,7 @@ During any voice session, the user says something like:
 - "I'm cooking for four people, one of them has celiac."
 - "My friend can't eat shellfish."
 
-The Orchestrator DO detects the guest constraint signal from the transcript and does two things:
+The Brain DO detects the guest constraint signal from the transcript and does two things:
 1. Creates a `guest_session` with the stated constraints.
 2. Responds: "Got it — keeping that in mind for everything today. I'll flag anything that doesn't work for them."
 
@@ -36,7 +36,7 @@ If multiple guests have different constraints, all are tracked. The system finds
 
 ## Session End and Archiving
 
-When the cooking session ends (or after 24 hours of inactivity on the guest session), the guest constraints are not deleted. They move to `guest_session_archive` in the Orchestrator DO SQLite.
+When the cooking session ends (or after 24 hours of inactivity on the guest session), the guest constraints are not deleted. They move to `guest_session_archive` in the Brain DO SQLite.
 
 What is archived:
 - The guest constraint set (dietary restrictions, allergens)
@@ -52,7 +52,7 @@ Guest constraints are fully removed from active filtering immediately when the s
 
 This is where the feature becomes intelligent over time.
 
-The Orchestrator DO's weekly alarm cycle includes a guest pattern review. The review asks: has the user cooked with overlapping guest constraint sets multiple times?
+The Brain DO's weekly alarm cycle includes a guest pattern review. The review asks: has the user cooked with overlapping guest constraint sets multiple times?
 
 If yes, the AI evaluates whether to promote the pattern to real memory. This is an AI judgment call using the session archive — not a hard threshold rule.
 
@@ -96,7 +96,7 @@ The AI writes to memory using the standard `memory_update` tool if it decides a 
 
 ## Data Model
 
-Stored in Orchestrator DO SQLite (private, per-user):
+Stored in Brain DO SQLite (private, per-user):
 
 ```sql
 guest_session (

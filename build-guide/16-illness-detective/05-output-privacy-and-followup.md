@@ -8,7 +8,7 @@ Result screen, safety advice, privacy, and follow-up alarm.
 
 - `brioela-specs/30-food-illness-detective.md`
 - `build-guide/12-notifications/`
-- `build-guide/05-orchestrator/05-alarm-system.md`
+- `build-guide/05-brain/05-alarm-system.md`
 
 ## Result Screen
 
@@ -30,7 +30,7 @@ If symptoms are severe, see a doctor immediately.
 
 ## Follow-Up
 
-Schedule `sickness_followup` after 24h through Orchestrator alarm system.
+Schedule `sickness_followup` after 24h through Brain alarm system.
 
 ## Privacy
 

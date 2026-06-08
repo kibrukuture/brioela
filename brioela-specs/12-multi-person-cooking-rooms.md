@@ -46,7 +46,7 @@ The Cloudflare Realtime adapter delivers PCM audio and periodic JPEG frames to t
 
 ## AI Agent in the Room
 
-The CookingAgent DO receives room media through the Cloudflare Realtime adapter. Before the session begins, it pulls full context from each participant's Orchestrator DO (their individual allergies, dislikes, dietary identity, prior recipe history).
+The CookingAgent DO receives room media through the Cloudflare Realtime adapter. Before the session begins, it pulls full context from each participant's Brain DO (their individual allergies, dislikes, dietary identity, prior recipe history).
 
 The AI agent's voice goes back through the RealtimeKit room so all participants hear it simultaneously.
 
@@ -54,7 +54,7 @@ The AI agent uses `gemini-3.1-flash-live-preview` as its brain — the same mode
 
 ## Per-Participant Constraint Handling
 
-Each participant in the room has their own Orchestrator DO with their own constraints. The CookingAgent DO fetches all constraints at session start and merges them:
+Each participant in the room has their own Brain DO with their own constraints. The CookingAgent DO fetches all constraints at session start and merges them:
 
 - Hard allergies from any participant: the AI never suggests that ingredient to anyone without flagging it loudly.
 - Dietary identity conflicts: surfaced proactively before cooking begins, not mid-session.
@@ -89,7 +89,7 @@ Each participant in the room has their own Orchestrator DO with their own constr
 On session end, the CookingAgent DO fires a job to Upstash Workflow:
 1. Compile full multi-speaker transcript.
 2. Reconstruct any taught recipe variations (especially grandma-style variations from spec 13).
-3. Write finalized recipe and session summary to each participant's Orchestrator DO individually.
+3. Write finalized recipe and session summary to each participant's Brain DO individually.
 4. Notify each participant their recipe has been saved.
 
 Each participant's memory is updated independently — they each own their own copy of what was learned.

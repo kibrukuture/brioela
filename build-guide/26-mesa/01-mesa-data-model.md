@@ -2,13 +2,13 @@
 
 ## What This File Covers
 
-The private Orchestrator SQLite schema for Mesa: Mesa records, members, constraints, active food audiences, compatibility events, potential members, invites, and contribution logs.
+The private Brain SQLite schema for Mesa: Mesa records, members, constraints, active food audiences, compatibility events, potential members, invites, and contribution logs.
 
 ---
 
 ## Storage Rule
 
-Mesa lives in the Mesa owner's Orchestrator DO SQLite.
+Mesa lives in the Mesa owner's Brain DO SQLite.
 
 Mesa is private by default. It is not Supabase community data. It is not Ground. It is not a public family graph.
 
@@ -16,7 +16,7 @@ Mesa is private by default. It is not Supabase community data. It is not Ground.
 
 ## Tables
 
-Add these tables to the Orchestrator schema when implementing Mesa:
+Add these tables to the Brain schema when implementing Mesa:
 
 ```sql
 CREATE TABLE mesa (

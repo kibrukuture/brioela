@@ -13,7 +13,7 @@ spec: brioela-specs/31-kids-food-literacy-mode.md
 build-guide: build-guide/01-design-system/
   → build-guide/21-kids-mode/04-share-card.md [x] done
 
-build-guide: build-guide/05-orchestrator/
+build-guide: build-guide/05-brain/
   → build-guide/21-kids-mode/01-kids-profile.md [x] done
   → build-guide/21-kids-mode/03-voice-mode.md [x] done
   → build-guide/21-kids-mode/06-data-model-and-metrics.md [x] done

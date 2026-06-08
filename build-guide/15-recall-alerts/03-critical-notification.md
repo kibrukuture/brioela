@@ -24,8 +24,8 @@ Rules:
 ## Delivery Path
 
 1. Match worker creates `recall_scan_match`.
-2. User Orchestrator DO receives match event.
-3. Orchestrator checks device token/current state.
+2. User Brain DO receives match event.
+3. Brain checks device token/current state.
 4. Push is sent through notification delivery path.
 5. Notification log is written.
 

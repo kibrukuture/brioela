@@ -28,7 +28,7 @@ Unmatched lines stay uncategorized.
 
 Run summary computation on schedule, not on every receipt view.
 
-Use Orchestrator alarm cycle for private user summaries.
+Use Brain alarm cycle for private user summaries.
 
 ## Boundary
 

@@ -20,7 +20,7 @@ Brioela returns a 7-day plan using what the user already has where possible.
 
 ## Generation Inputs
 
-- inventory snapshot from Orchestrator DO
+- inventory snapshot from Brain DO
 - recent receipt history
 - recipe pool
 - active constraints
@@ -31,7 +31,7 @@ Brioela returns a 7-day plan using what the user already has where possible.
 
 - single structured LLM call
 - target under 5 seconds
-- stored in Orchestrator DO SQLite
+- stored in Brain DO SQLite
 - no external query during generation
 - no repeated recipe type within 3 consecutive days
 - avoid main protein repetition on back-to-back days

@@ -22,7 +22,7 @@ build-guide: build-guide/07-scanner/
   → build-guide/17-menu-scanning/01-input-capture.md [x] done
   → build-guide/17-menu-scanning/02-menu-gpt4o-mini-vision-and-parsing.md [x] done
 
-build-guide: build-guide/05-orchestrator/
+build-guide: build-guide/05-brain/
   → build-guide/17-menu-scanning/03-dish-verdicts.md [x] done
   → build-guide/17-menu-scanning/05-storage-offline-map.md [x] done
 

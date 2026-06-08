@@ -77,7 +77,7 @@ No runtime dependencies beyond Zod and Drizzle in the shared package. The shared
 | Package | Purpose |
 |---|---|
 | `@google/genai` | Google Gemini SDK — Gemini Live for cooking sessions |
-| `@anthropic-ai/sdk` | Anthropic Claude SDK — orchestrator reasoning |
+| `@anthropic-ai/sdk` | Anthropic Claude SDK — brain reasoning |
 
 ### IDs and Utilities
 

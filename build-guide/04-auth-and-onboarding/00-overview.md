@@ -39,7 +39,7 @@ This folder documents current auth/session behavior and the product onboarding c
 
 ## What Depends On This Folder
 
-- `05-orchestrator` — Orchestrator DO is keyed by userId from auth
+- `05-brain` — Brain DO is keyed by userId from auth
 - Every feature that checks `useAuthStore` for user or session
 
 ## Known Gap

@@ -11,7 +11,7 @@ Deep read pass before writing:
 - `build-guide/10-map/00-overview.md`
 - `brioela-specs/04-healthy-food-map.md`
 - `brioela-specs/15-hyperlocal-price-and-availability-alerts.md`
-- dependency docs: `09-ground`, `07-scanner`, `05-orchestrator`
+- dependency docs: `09-ground`, `07-scanner`, `05-brain`
 - current Mapbox docs for iOS, Android, and GL JS
 
 Written — `build-guide/10-map/`:
@@ -46,7 +46,7 @@ Before writing, read:
 - latest session log
 - `build-guide/11-bela/00-overview.md`
 - all `implementable-specs/bela/*.md`
-- dependencies: `05-orchestrator`, `07-scanner`, `08-cooking-session`, `09-ground`, `10-map`
+- dependencies: `05-brain`, `07-scanner`, `08-cooking-session`, `09-ground`, `10-map`
 
 ## Blockers / Decisions
 

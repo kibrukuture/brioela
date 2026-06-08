@@ -28,7 +28,7 @@ type KidsModeScanEvent = {
 }
 ```
 
-This data can live in Orchestrator/private app storage. If analytics events are needed, they must not include child identity or private allergy details.
+This data can live in Brain/private app storage. If analytics events are needed, they must not include child identity or private allergy details.
 
 ---
 

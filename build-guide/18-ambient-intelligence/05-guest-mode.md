@@ -165,7 +165,7 @@ These prompts should be rare and contextual. Do not turn guest mode into a socia
 
 ## Privacy Boundary
 
-Guest Mode is private to the user's Orchestrator SQLite.
+Guest Mode is private to the user's Brain SQLite.
 
 - No shared community signals.
 - No public guest profile.

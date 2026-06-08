@@ -26,12 +26,12 @@ When the user says they feel sick, Brioela looks at the last 24-72 hours of thei
 - Community signal: if user confirms others got sick too → anonymized illness report logged → 3+ reports in 72h at same product/location → community alert in Ground notes
 - User opt-in before any data shared with food safety authorities
 - Ranking model: single structured LLM call, not streaming — <2s latency
-- Illness window queries Orchestrator DO SQLite (scan history + receipt + recipe sessions)
+- Illness window queries Brain DO SQLite (scan history + receipt + recipe sessions)
 - Community signal aggregation in Supabase (shared, fully anonymized — no user_id, no sub-24h timestamp precision)
 - The app never diagnoses — it narrows and advises; diagnosis is medical
 
 ## What This Folder Depends On
-- `05-orchestrator` — food history window (scan events, receipts, recipe sessions) from DO SQLite
+- `05-brain` — food history window (scan events, receipts, recipe sessions) from DO SQLite
 - `15-recall-alerts` — active recall_entry table checked for cross-reference
 - `09-ground` — community illness signals appear as Ground notes
 - `12-notifications` — follow-up alarm 24h after illness report

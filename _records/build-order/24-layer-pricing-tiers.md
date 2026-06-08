@@ -11,7 +11,7 @@
 ## Depends On
 
 - `02-layer-auth.md`
-- `03-layer-orchestrator.md`
+- `03-layer-brain.md`
 - `06-layer-cooking-session.md`
 - `15-layer-menu-scanning.md`
 - `19-layer-kids-mode.md`

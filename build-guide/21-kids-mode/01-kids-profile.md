@@ -61,7 +61,7 @@ type KidsModeProfile = {
 }
 ```
 
-This can live in the user's private Orchestrator context or app profile state. It is a parent preference, not child data.
+This can live in the user's private Brain context or app profile state. It is a parent preference, not child data.
 
 ---
 

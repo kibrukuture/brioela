@@ -28,7 +28,7 @@ Agents SDK schedules are durable Agent runtime callbacks. Delivery is at-least-o
 
 ## Timer Tool — `schedule_timer`
 
-Handled directly by CookingAgent — not forwarded to Orchestrator for firing. Timer management requires immediate access to the live Gemini session and local Agent storage. Orchestrator can receive an audit mirror, but it is not the source of timer firing.
+Handled directly by CookingAgent — not forwarded to Brain for firing. Timer management requires immediate access to the live Gemini session and local Agent storage. Brain can receive an audit mirror, but it is not the source of timer firing.
 
 ```typescript
 // backend/src/agents/cooking/_handlers/alarm.handler.ts
@@ -80,10 +80,10 @@ export async function scheduleTimer(
 
   cookingDo.activeTimers.set(label, { firesAt, timerId, sdkScheduleId: schedule.id })
 
-  // Also persist to scheduled_alarms table via Orchestrator (audit trail)
+  // Also persist to scheduled_alarms table via Brain (audit trail)
   // Fire-and-forget — timer functionality does not depend on this write completing
   cookingDo.ctx.waitUntil(
-    forwardToolToOrchestrator('schedule_user_alarm', {
+    forwardToolToBrain('schedule_user_alarm', {
       alarm_id:   timerId,
       label,
       fires_at:   firesAt,

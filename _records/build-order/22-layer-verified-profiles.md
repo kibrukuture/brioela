@@ -11,7 +11,7 @@
 ## Depends On
 
 - `02-layer-auth.md`
-- `03-layer-orchestrator.md`
+- `03-layer-brain.md`
 - `08-layer-map.md`
 - `15-layer-menu-scanning.md`
 - `17-layer-recipe-ingestion.md`

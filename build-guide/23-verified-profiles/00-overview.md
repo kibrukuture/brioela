@@ -34,7 +34,7 @@ Verified profiles on the Brioela platform, split into exactly two top-level lane
 - This is a Signet revenue stream, not a consumer social feature
 
 ## What This Folder Depends On
-- `05-orchestrator` — practitioner reads client condition data from DO (with client permission)
+- `05-brain` — practitioner reads client condition data from DO (with client permission)
 - `10-map` — verified listing appears on healthy food map
 - `04-auth-and-onboarding` — practitioner role gating and verification flow
 - `22-medical-conditions` — active conditions and practitioner annotation boundary

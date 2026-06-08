@@ -19,7 +19,7 @@ Global recall feed polling, diffing, and queueing.
 
 Recall polling is global.
 
-It does not run inside per-user Orchestrator DOs.
+It does not run inside per-user Brain DOs.
 
 Use Upstash QStash cron or equivalent global scheduled worker.
 

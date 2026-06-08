@@ -2,7 +2,7 @@
 
 ## How Tools Work During a Live Session
 
-Gemini 3.1 Flash Live supports BLOCKING tool calls. When Gemini decides to call a tool, its audio output pauses. The DO executes the tool (either directly or by forwarding to the Orchestrator DO) and sends a `tool_response` back to Gemini. Gemini resumes speaking.
+Gemini 3.1 Flash Live supports BLOCKING tool calls. When Gemini decides to call a tool, its audio output pauses. The DO executes the tool (either directly or by forwarding to the Brain DO) and sends a `tool_response` back to Gemini. Gemini resumes speaking.
 
 The pause is imperceptible for fast tools (timers, memory writes — under 200ms). It is brief but noticeable for complex tool calls. Gemini handles this naturally: it says something like "let me set that" before calling the tool, then continues after the response arrives.
 
@@ -102,7 +102,7 @@ async executeToolCall(name: string, args: unknown): Promise<unknown> {
     return this.executeDirectly(name, args)
   }
   if (FORWARD_TOOLS.has(name)) {
-    return this.forwardToolToOrchestrator(name, args)
+    return this.forwardToolToBrain(name, args)
   }
   throw new Error(`Unknown tool: ${name}`)
 }
@@ -112,11 +112,11 @@ async executeToolCall(name: string, args: unknown): Promise<unknown> {
 - `schedule_timer` — writes to DO alarm, updates `scheduled_alarms` table
 - `cancel_timer` — clears DO alarm, updates `scheduled_alarms` table
 
-**Forwarded tools** (handled by Orchestrator DO via SQLite):
-- `write_memory` → calls `write_user_memory` tool on Orchestrator
-- `propose_constraint` → calls `propose_user_constraint` tool on Orchestrator
-- `view_recipe` → calls `view_user_recipe` tool on Orchestrator
-- `write_session_note` → logs to `memory_event` on Orchestrator
+**Forwarded tools** (handled by Brain DO via SQLite):
+- `write_memory` → calls `write_user_memory` tool on Brain
+- `propose_constraint` → calls `propose_user_constraint` tool on Brain
+- `view_recipe` → calls `view_user_recipe` tool on Brain
+- `write_session_note` → logs to `memory_event` on Brain
 
 ---
 
@@ -145,14 +145,14 @@ private async executeDirectly(name: string, args: unknown): Promise<unknown> {
 
 ---
 
-## Tool Execution — Forward to Orchestrator
+## Tool Execution — Forward to Brain
 
 ```typescript
-private async forwardToolToOrchestrator(name: string, args: unknown): Promise<unknown> {
-  const orchestratorId = this.env.ORCHESTRATOR.idFromName(this.sessionState.userId)
-  const orchestrator   = this.env.ORCHESTRATOR.get(orchestratorId)
+private async forwardToolToBrain(name: string, args: unknown): Promise<unknown> {
+  const brainId = this.env.BRAIN.idFromName(this.sessionState.userId)
+  const brain   = this.env.BRAIN.get(brainId)
 
-  // Map cooking agent tool names to Orchestrator tool names
+  // Map cooking agent tool names to Brain tool names
   const toolMap: Record<string, string> = {
     write_memory:      'write_user_memory',
     propose_constraint: 'propose_user_constraint',
@@ -160,8 +160,8 @@ private async forwardToolToOrchestrator(name: string, args: unknown): Promise<un
     write_session_note: 'log_memory_event',
   }
 
-  const orchestratorToolName = toolMap[name]
-  if (!orchestratorToolName) throw new Error(`No mapping for tool: ${name}`)
+  const brainToolName = toolMap[name]
+  if (!brainToolName) throw new Error(`No mapping for tool: ${name}`)
 
   // Add sessionId context for write_session_note
   const enrichedArgs = name === 'write_session_note'
@@ -173,7 +173,7 @@ private async forwardToolToOrchestrator(name: string, args: unknown): Promise<un
       }
     : args
 
-  const resp = await orchestrator.fetch('/internal/tool-call', {
+  const resp = await brain.fetch('/internal/tool-call', {
     method: 'POST',
     headers: {
       'Authorization': `Bearer ${this.env.DO_INTERNAL_SECRET}`,
@@ -181,7 +181,7 @@ private async forwardToolToOrchestrator(name: string, args: unknown): Promise<un
     },
     body: JSON.stringify({
       caller:  'cooking',
-      tool:    orchestratorToolName,
+      tool:    brainToolName,
       args:    enrichedArgs,
       session: this.sessionState.sessionId,
     }),
@@ -189,7 +189,7 @@ private async forwardToolToOrchestrator(name: string, args: unknown): Promise<un
 
   if (!resp.ok) {
     const body = await resp.text()
-    throw new Error(`Orchestrator tool failed: ${resp.status} ${body}`)
+    throw new Error(`Brain tool failed: ${resp.status} ${body}`)
   }
 
   return resp.json()
@@ -235,9 +235,9 @@ Error result (tool failed — Gemini can acknowledge and move on):
 |---|---|---|
 | `schedule_timer` | CookingAgent | CookingAgent DO (direct) |
 | `cancel_timer` | CookingAgent | CookingAgent DO (direct) |
-| `write_session_note` | CookingAgent | Orchestrator DO → `log_memory_event` |
-| `write_memory` | CookingAgent | Orchestrator DO → `write_user_memory` |
-| `propose_constraint` | CookingAgent | Orchestrator DO → `propose_user_constraint` |
-| `view_recipe` | CookingAgent | Orchestrator DO → `view_user_recipe` |
+| `write_session_note` | CookingAgent | Brain DO → `log_memory_event` |
+| `write_memory` | CookingAgent | Brain DO → `write_user_memory` |
+| `propose_constraint` | CookingAgent | Brain DO → `propose_user_constraint` |
+| `view_recipe` | CookingAgent | Brain DO → `view_user_recipe` |
 
-No tool in the cooking session can delete rows, confirm constraints, archive skills, or touch any other user's data. The `TOOL_PERMISSIONS` map in the Orchestrator enforces this at execution time regardless of what the agent requests.
+No tool in the cooking session can delete rows, confirm constraints, archive skills, or touch any other user's data. The `TOOL_PERMISSIONS` map in the Brain enforces this at execution time regardless of what the agent requests.

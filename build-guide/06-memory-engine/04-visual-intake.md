@@ -39,7 +39,7 @@ Single Gemini vision call (not streaming, not Live)
       ↓
 Structured JSON output — not free text
       ↓
-Orchestrator DO handler parses JSON
+Brain DO handler parses JSON
       ↓
   shouldProcess = false → discard silently
   shouldProcess = true  →
@@ -57,7 +57,7 @@ One-line confirmation shown to user ONLY if a new skill was created
 ## Gemini Vision Call
 
 ```typescript
-// backend/src/agents/orchestrator/_handlers/visual-intake.handler.ts
+// backend/src/agents/brain/_handlers/visual-intake.handler.ts
 
 import { GoogleGenerativeAI } from '@google/generative-ai'
 import { z } from 'zod'

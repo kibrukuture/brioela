@@ -1,8 +1,8 @@
-# Implementable Specs — BrioelOrchestrator SQLite Brain
+# Implementable Specs — BrioelaBrain SQLite Brain
 
 These documents are NOT feature specs. They are implementation decisions.
 
-Each file covers one SQLite table (or virtual table group) in the BrioelOrchestrator Durable Object. It contains:
+Each file covers one SQLite table (or virtual table group) in the BrioelaBrain Durable Object. It contains:
 - The exact CREATE TABLE SQL
 - The Drizzle schema
 - Every column with its type, constraints, and reason for existing
@@ -31,7 +31,7 @@ Each file covers one SQLite table (or virtual table group) in the BrioelOrchestr
 
 ## Stack
 
-- Runtime: Cloudflare Durable Objects (BrioelOrchestrator + CookingAgent)
+- Runtime: Cloudflare Durable Objects (BrioelaBrain + CookingAgent)
 - ORM: Drizzle ORM with `drizzle-orm/durable-sqlite` adapter
 - SQLite: per-user, physically isolated, accessed via `this.ctx.storage`
 - FTS: SQLite FTS5 module — keyword search inside DO, zero external latency
@@ -40,7 +40,7 @@ Each file covers one SQLite table (or virtual table group) in the BrioelOrchestr
 
 ## WAL Mode
 
-Every BrioelOrchestrator DO must run this pragma at initialization before any reads or writes:
+Every BrioelaBrain DO must run this pragma at initialization before any reads or writes:
 
 ```sql
 PRAGMA journal_mode=WAL;
@@ -112,7 +112,7 @@ Every table exists because data must persist and be queried. If something can be
 | skills | Agent (create/update/archive) + Curator (update/archive) |
 | skill_versions | update_user_skill execution path only |
 | constraints | Agent only (propose/confirm/reject) |
-| sessions | BrioelOrchestrator + CookingAgent (each owns its own row) |
+| sessions | BrioelaBrain + CookingAgent (each owns its own row) |
 | session_turns | Agent (during active session) |
 | recipes | Agent |
 | scheduled_alarms | Agent + DO alarm handler |

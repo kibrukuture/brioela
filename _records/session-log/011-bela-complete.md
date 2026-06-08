@@ -10,7 +10,7 @@ Deep read pass before writing:
 - `_records/session-log/010-map-complete.md`
 - `build-guide/11-bela/00-overview.md`
 - all `implementable-specs/bela/*.md`
-- dependencies: `05-orchestrator`, `06-memory-engine`, `07-scanner`, `08-cooking-session`, `09-ground`, `10-map`
+- dependencies: `05-brain`, `06-memory-engine`, `07-scanner`, `08-cooking-session`, `09-ground`, `10-map`
 
 Written — `build-guide/11-bela/`:
 - `00-overview.md` — updated to complete, file list added, map/Ground dependency corrected
@@ -53,7 +53,7 @@ Before writing, read:
 - latest session log
 - `build-guide/12-notifications/00-overview.md`
 - `brioela-specs/23-ambient-notification-strategy.md`
-- dependency docs: Orchestrator, Memory Engine, Scanner, Ground, Map, Cooking, Bela
+- dependency docs: Brain, Memory Engine, Scanner, Ground, Map, Cooking, Bela
 
 ## Blockers / Decisions
 

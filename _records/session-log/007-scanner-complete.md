@@ -50,7 +50,7 @@ Files to write for 08-cooking-session:
 - 01-cooking-agent-do.md — CookingAgent DO class, state management, fetch/alarm handlers
 - 02-gemini-live-connection.md — WebSocket setup, audio stream, video frame pipeline, reconnection
 - 03-proactive-speech-engine.md — silence tracker, visual change detector, adaptive frequency, response filter
-- 04-tool-protocol.md — tools available in cooking session, forwarding to Orchestrator
+- 04-tool-protocol.md — tools available in cooking session, forwarding to Brain
 - 05-realtimekit-multi-person.md — multi-person room lifecycle, realtime room setup, participant management
 - 06-session-end-and-recipe.md — session end, recipe decision tree, transcript summary, memory writes
 

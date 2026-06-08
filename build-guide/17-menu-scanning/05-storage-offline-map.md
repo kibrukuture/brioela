@@ -52,7 +52,7 @@ Implementation notes:
 
 ## Memory Events
 
-Menu scanning can log a lightweight event to the Orchestrator, but it must not write raw menu content into memory by default.
+Menu scanning can log a lightweight event to the Brain, but it must not write raw menu content into memory by default.
 
 Allowed event payload:
 

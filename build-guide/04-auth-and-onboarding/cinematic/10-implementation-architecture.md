@@ -3,7 +3,7 @@
 ## Provisional Component Shape
 
 ```text
-OnboardingOrchestrator
+OnboardingCoordinator
 ├── AssetPreloader
 ├── CameraWarmup
 ├── TimelineController
@@ -30,7 +30,7 @@ OnboardingOrchestrator
 - HapticController owns haptics.
 - SkiaSceneCanvas owns visual drawing.
 - CameraPreviewLayer owns camera.
-- Orchestrator wires pieces together.
+- OnboardingCoordinator wires pieces together.
 
 ## Candidate Folder
 

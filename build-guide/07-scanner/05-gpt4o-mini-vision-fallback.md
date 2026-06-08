@@ -222,14 +222,14 @@ backend/src/api/scan/
 │   └── index.ts
 ├── _helpers/
 │   ├── resolve.product.helper.ts  ← Open Food Facts + Redis cache + Supabase
-│   ├── check.constraints.helper.ts ← calls Orchestrator DO
+│   ├── check.constraints.helper.ts ← calls Brain DO
 │   ├── build.verdict.helper.ts    ← score computation + verdict construction
 │   ├── enhance.image.helper.ts    ← contrast enhancement for vision extraction
 │   └── index.ts
 └── index.ts
 
 tools/product-scan/
-├── check-constraint.ts            ← runs inside Orchestrator DO
-├── log-scan-event.ts              ← writes to memory_event inside Orchestrator DO
+├── check-constraint.ts            ← runs inside Brain DO
+├── log-scan-event.ts              ← writes to memory_event inside Brain DO
 └── index.ts
 ```

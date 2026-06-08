@@ -47,4 +47,4 @@ App boot, auth initialization, protected tab access, and route behavior.
 
 - Deferred account creation uses Supabase anonymous auth, so protected tabs can receive a real Supabase user ID before permanent account linking.
 - Reserve "Guest Mode" for cooking for others. Auth-side first-run identity is "anonymous user" or "anonymous Supabase user," not guest.
-- Orchestrator DO addressing depends on Supabase user ID from anonymous or permanent auth. Do not add another identity strategy.
+- Brain DO addressing depends on Supabase user ID from anonymous or permanent auth. Do not add another identity strategy.

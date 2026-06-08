@@ -2,13 +2,13 @@
 
 ## What This File Covers
 
-How a resolved product is checked against the user's full constraint profile: hard allergy interrupt, intolerance warning, dislike deprioritization, dietary identity filtering, boycott flagging, medication-food interaction check, and cached community health associations. User-private checks are pulled from the Orchestrator DO; community summaries are cached/materialized shared evidence.
+How a resolved product is checked against the user's full constraint profile: hard allergy interrupt, intolerance warning, dislike deprioritization, dietary identity filtering, boycott flagging, medication-food interaction check, and cached community health associations. User-private checks are pulled from the Brain DO; community summaries are cached/materialized shared evidence.
 
 ---
 
 ## Core Rule
 
-The constraint check runs against the user's Orchestrator DO — not against Supabase. The DO holds the user's private `constraints` and `medications` tables. `user_memory.health.medications` is only a prompt/context mirror, not the operational source for scan safety logic. Supabase knows nothing about individual user constraints.
+The constraint check runs against the user's Brain DO — not against Supabase. The DO holds the user's private `constraints` and `medications` tables. `user_memory.health.medications` is only a prompt/context mirror, not the operational source for scan safety logic. Supabase knows nothing about individual user constraints.
 
 The check is a single HTTP call to the DO, not a series of calls. The DO reads its own SQLite, does all matching, and returns one structured result.
 
@@ -154,7 +154,7 @@ export async function checkProductConstraints(
   }
 
   // Medication-food interaction check
-  // Read structured active medications from private Orchestrator SQLite.
+  // Read structured active medications from private Brain SQLite.
   const medications = db.select()
     .from(medicationsTable)
     .where(and(
@@ -242,7 +242,7 @@ The synonym list is a starting point. The full list lives in Supabase as version
 
 ## How the Constraint Check Is Called From the Handler
 
-The `check-constraint` tool runs inside the Orchestrator DO. When `resolveScan()` in the Hono handler needs the constraint result, it makes a call to the DO's internal endpoint:
+The `check-constraint` tool runs inside the Brain DO. When `resolveScan()` in the Hono handler needs the constraint result, it makes a call to the DO's internal endpoint:
 
 ```typescript
 // backend/src/api/scan/_helpers/check.constraints.helper.ts
@@ -252,10 +252,10 @@ export async function checkConstraints(
   userId: string,
   env: Env,
 ): Promise<ConstraintCheckResult> {
-  const orchestratorId = env.ORCHESTRATOR.idFromName(userId)
-  const orchestrator   = env.ORCHESTRATOR.get(orchestratorId)
+  const brainId = env.BRAIN.idFromName(userId)
+  const brain   = env.BRAIN.get(brainId)
 
-  const response = await orchestrator.fetch(new Request('https://internal/check-constraints', {
+  const response = await brain.fetch(new Request('https://internal/check-constraints', {
     method: 'POST',
     headers: {
       'Authorization': `Bearer ${env.INTERNAL_SECRET}`,
@@ -298,9 +298,9 @@ Community health associations can upgrade a green base verdict to yellow when th
 
 ## Proposed Constraint Surfacing During Scan
 
-If the scan result contains a new pattern that might indicate a constraint the user has not declared, the Orchestrator DO can surface a proposal after delivering the verdict — not during it.
+If the scan result contains a new pattern that might indicate a constraint the user has not declared, the Brain DO can surface a proposal after delivering the verdict — not during it.
 
-Example: user has scanned products containing peanuts 5 times and always received a yellow from a prior soft dislike signal. The Orchestrator proposes: "You seem to avoid peanuts — is that an allergy I should always block?"
+Example: user has scanned products containing peanuts 5 times and always received a yellow from a prior soft dislike signal. The Brain proposes: "You seem to avoid peanuts — is that an allergy I should always block?"
 
 This proposal:
 - Never delays the scan verdict

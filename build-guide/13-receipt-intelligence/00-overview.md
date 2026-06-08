@@ -25,7 +25,7 @@ Receipt image extraction with GPT-4o mini, merchant normalization, line-item mat
 - Raw GPT-4o mini extraction results stored separately from normalized results — allows model upgrades without data loss
 - Fuzzy text matching for line-item to product matching when no barcode/SKU
 - Uncertain lines preserved for later reprocessing (never silently dropped)
-- Price history stored in Orchestrator DO SQLite (private) — not Supabase
+- Price history stored in Brain DO SQLite (private) — not Supabase
 - Anonymized aggregate price trend stored in Supabase for cross-user "nearby store is cheaper" queries
 - Price computation: weekly DO alarm cycle, not on every receipt scan
 - >15% increase vs 90-day rolling average = significant increase alert
@@ -33,7 +33,7 @@ Receipt image extraction with GPT-4o mini, merchant normalization, line-item mat
 - Cheaper equivalent must clear user's full constraint profile before being suggested
 
 ## What This Folder Depends On
-- `05-orchestrator` — price history and spend data stored in Orchestrator DO SQLite
+- `05-brain` — price history and spend data stored in Brain DO SQLite
 - `07-scanner` — receipt scanner uses same GPT-4o mini vision extraction pattern as product scanner
 - `03-foundation` — Supabase for shared anonymized price trend data
 

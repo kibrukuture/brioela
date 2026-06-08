@@ -1,4 +1,4 @@
-# Orchestrator — Alarm System
+# Brain — Alarm System
 
 ## What This File Covers
 
@@ -8,13 +8,13 @@ Current rule: `scheduled_alarms` is the product/audit ledger, and Agents SDK `sc
 
 ## How Scheduled Alarm Wakeups Work
 
-The Orchestrator creates a `scheduled_alarms` row, then schedules a small SDK callback payload like `{ scheduledAlarmId }`. The callback loads the row, checks status for idempotency, dispatches the work, and records lifecycle/action outcome fields. Raw DO alarms are at-least-once and single-slot; use them only as fallback plumbing.
+The Brain creates a `scheduled_alarms` row, then schedules a small SDK callback payload like `{ scheduledAlarmId }`. The callback loads the row, checks status for idempotency, dispatches the work, and records lifecycle/action outcome fields. Raw DO alarms are at-least-once and single-slot; use them only as fallback plumbing.
 
 ```typescript
-// backend/src/agents/orchestrator/_handlers/alarm.handler.ts
+// backend/src/agents/brain/_handlers/alarm.handler.ts
 
 export async function runScheduledAlarm(
-  agent: BrioelOrchestrator,
+  agent: BrioelaBrain,
   payload: { scheduledAlarmId: string },
 ): Promise<void> {
   const alarm = agent.db.select()
@@ -65,11 +65,11 @@ export async function runScheduledAlarm(
 ## Dispatching
 
 ```typescript
-// backend/src/agents/orchestrator/_handlers/alarm.handler.ts
+// backend/src/agents/brain/_handlers/alarm.handler.ts
 
 async function dispatchAlarm(
   alarm: ScheduledAlarm,
-  agent: BrioelOrchestrator,
+  agent: BrioelaBrain,
 ): Promise<void> {
   const payload = JSON.parse(alarm.payload)
 
@@ -121,9 +121,9 @@ async function dispatchAlarm(
 The `schedule_user_alarm` tool writes to `scheduled_alarms` and also creates an Agents SDK schedule with a tiny pointer payload.
 
 ```typescript
-// backend/src/agents/orchestrator/_tools/schedule-user-alarm.tool.ts
+// backend/src/agents/brain/_tools/schedule-user-alarm.tool.ts
 
-export const scheduleUserAlarmTool = (agent: BrioelOrchestrator) => tool({
+export const scheduleUserAlarmTool = (agent: BrioelaBrain) => tool({
   description: 'Schedule a time-based alarm. Use for cooking timers, sickness follow-ups, travel pre-loads, and any timed ambient action.',
   parameters: z.object({
     alarmType:   z.string().describe('alarm type — e.g. sickness_followup, travel_preload, scan_followup'),
@@ -165,10 +165,10 @@ export const scheduleUserAlarmTool = (agent: BrioelOrchestrator) => tool({
 
 ## First-Boot Alarm Initialization
 
-When a user's Orchestrator Agent is first created (their first interaction with Brioela), the recurring alarm ledger rows and SDK schedules are bootstrapped once:
+When a user's Brain Agent is first created (their first interaction with Brioela), the recurring alarm ledger rows and SDK schedules are bootstrapped once:
 
 ```typescript
-// In brioela.orchestrator.agent.ts first-boot method, after migration:
+// In brioela.brain.agent.ts first-boot method, after migration:
 
 const isFirstBoot = !(await this.ctx.storage.get<boolean>('alarms:initialized'))
 if (isFirstBoot) {

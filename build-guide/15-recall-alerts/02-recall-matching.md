@@ -34,7 +34,7 @@ From scan history:
 3. Check timestamp against affected date range.
 4. If lot matches, create confirmed match.
 5. If all lots are recalled or lot unknown, create probable match for scans in last 90 days.
-6. Route match to user Orchestrator DO for notification delivery.
+6. Route match to user Brain DO for notification delivery.
 
 ## Match Confidence
 

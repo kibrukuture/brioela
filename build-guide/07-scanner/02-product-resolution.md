@@ -424,7 +424,7 @@ Allowed in the hot path:
 - Redis product cache.
 - Supabase `products` lookup on cache miss.
 - cached/materialized community health summary.
-- Orchestrator constraint check.
+- Brain constraint check.
 
 Not allowed in the hot path:
 

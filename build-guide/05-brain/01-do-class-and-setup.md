@@ -1,8 +1,8 @@
-# Orchestrator — DO Class and Setup
+# Brain — DO Class and Setup
 
 ## What This File Covers
 
-`BrioelOrchestrator` class structure, `wrangler.jsonc` entries, SQLite initialization, WAL mode, Drizzle wiring, keepAlive pattern, and the DO's `fetch()` + `alarm()` entry points.
+`BrioelaBrain` class structure, `wrangler.jsonc` entries, SQLite initialization, WAL mode, Drizzle wiring, keepAlive pattern, and the DO's `fetch()` + `alarm()` entry points.
 
 ---
 
@@ -13,7 +13,7 @@ Two additions needed in `backend/wrangler.jsonc`. Without the `migrations` entry
 ```jsonc
 "durable_objects": {
   "bindings": [
-    { "name": "ORCHESTRATOR",  "class_name": "BrioelOrchestrator" },
+    { "name": "BRAIN",  "class_name": "BrioelaBrain" },
     { "name": "COOKING_AGENT", "class_name": "CookingAgent" }
   ]
 },
@@ -21,7 +21,7 @@ Two additions needed in `backend/wrangler.jsonc`. Without the `migrations` entry
 "migrations": [
   {
     "tag": "v1",
-    "new_sqlite_classes": ["BrioelOrchestrator", "CookingAgent"]
+    "new_sqlite_classes": ["BrioelaBrain", "CookingAgent"]
   }
 ]
 ```
@@ -33,8 +33,8 @@ Two additions needed in `backend/wrangler.jsonc`. Without the `migrations` entry
 ## File Location
 
 ```
-backend/src/agents/orchestrator/
-├── brioela.orchestrator.agent.ts    ← the DO class (this file)
+backend/src/agents/brain/
+├── brioela.brain.agent.ts    ← the DO class (this file)
 ├── _schema/
 │   ├── index.ts                     ← re-exports all tables
 │   ├── memory-event.schema.ts
@@ -64,7 +64,7 @@ backend/src/agents/orchestrator/
 ## The DO Class
 
 ```typescript
-// backend/src/agents/orchestrator/brioela.orchestrator.agent.ts
+// backend/src/agents/brain/brioela.brain.agent.ts
 
 import { Agent } from 'agents'
 import { drizzle } from 'drizzle-orm/durable-sqlite'
@@ -75,7 +75,7 @@ import { handleAlarm } from './_handlers/alarm.handler'
 import { handleInternalToolCall } from './_handlers/internal-tool.handler'
 import type { Env } from '@/types/env'
 
-export class BrioelOrchestrator extends Agent<Env> {
+export class BrioelaBrain extends Agent<Env> {
   private db: ReturnType<typeof drizzle>
 
   constructor(ctx: DurableObjectState, env: Env) {
@@ -141,13 +141,13 @@ Manual `ctx.storage.setAlarm()` keepalive loops are legacy fallback only.
 
 ## DO Addressing — Always `idFromName(userId)`
 
-The Orchestrator is always addressed by stable userId. No random IDs. No pooling.
+The Brain is always addressed by stable userId. No random IDs. No pooling.
 
 ```typescript
 // In any Hono route handler
-const orchestratorId = env.ORCHESTRATOR.idFromName(userId)
-const orchestratorStub = env.ORCHESTRATOR.get(orchestratorId)
-const response = await orchestratorStub.fetch(request)
+const brainId = env.BRAIN.idFromName(userId)
+const brainStub = env.BRAIN.get(brainId)
+const response = await brainStub.fetch(request)
 ```
 
 The first call to `idFromName(userId)` for a new user creates a new DO instance with its own SQLite. Every subsequent call returns the same instance. The DO is geographically pinned to the region where it was first created — the user's requests are always routed to the same physical location.
@@ -159,7 +159,7 @@ The first call to `idFromName(userId)` for a new user creates a new DO instance 
 ```typescript
 // backend/src/types/env.ts
 export interface Env {
-  ORCHESTRATOR:   DurableObjectNamespace
+  BRAIN:   DurableObjectNamespace
   COOKING_AGENT:  DurableObjectNamespace
   SUPABASE_URL:   string
   SUPABASE_KEY:   string
@@ -172,4 +172,4 @@ export interface Env {
 }
 ```
 
-`INTERNAL_SECRET` is a shared secret used to authenticate `/internal/tool-call` requests from sub-agents (CuratorAgent, PatternDetectionAgent) back to the Orchestrator. Never exposed to clients.
+`INTERNAL_SECRET` is a shared secret used to authenticate `/internal/tool-call` requests from sub-agents (CuratorAgent, PatternDetectionAgent) back to the Brain. Never exposed to clients.

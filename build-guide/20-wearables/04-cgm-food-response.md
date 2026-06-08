@@ -88,7 +88,7 @@ Confidence depends on:
 
 ## Private Table
 
-Add a private Orchestrator SQLite table when implementing CGM:
+Add a private Brain SQLite table when implementing CGM:
 
 ```sql
 CREATE TABLE glucose_meal_window (

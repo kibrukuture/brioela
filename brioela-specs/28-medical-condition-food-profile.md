@@ -15,7 +15,7 @@ Today those people manage it with willpower, printed handouts from their doctor,
 - User says (via voice, at any point in the app): "I'm pregnant" / "I have gout" / "I'm pre-diabetic" / "I'm on blood thinners."
 - Brioela confirms with a single follow-up question only if the condition has ambiguous dietary rules (e.g., "some gout guidelines differ — do you want me to apply the strict or moderate version?").
 - From that moment: all scan verdicts include condition-specific flags, all recipe suggestions are filtered, all map recommendations are adjusted.
-- The condition is stored in the user's Orchestrator DO as part of their permanent profile. No re-entry required.
+- The condition is stored in the user's Brain DO as part of their permanent profile. No re-entry required.
 - The user can say "I'm no longer pregnant" and the profile is updated immediately.
 
 ## Conditions Supported (v1)
@@ -37,7 +37,7 @@ Additional conditions can be added as data quality supports them.
 
 ## Voice Detection
 
-If the user says anything that implies a medical condition during any voice interaction (cooking session, ambient conversation, scan comment), Brioela's Orchestrator DO notes the signal and — at the next natural pause — confirms:
+If the user says anything that implies a medical condition during any voice interaction (cooking session, ambient conversation, scan comment), Brioela's Brain DO notes the signal and — at the next natural pause — confirms:
 
 "You mentioned you're pregnant. Do you want me to apply pregnancy-safe food guidelines across your scans and recipes?"
 
@@ -81,13 +81,13 @@ If the user has a verified practitioner relationship (spec 18), the practitioner
 Medical conditions are among the most sensitive personal data. Rules:
 - Never included in community notes or any shared data.
 - Never used for ad targeting or third-party data sharing (Brioela has no ad model).
-- Stored only in the user's Orchestrator DO and encrypted at rest.
+- Stored only in the user's Brain DO and encrypted at rest.
 - User can delete all medical condition data at any time from settings — one tap, immediate effect.
 
 ## Technical Constraints
 
 - Condition rules are maintained as a versioned config table in Supabase, not hardcoded in DO logic. When dietary science updates (e.g., new pregnancy guidelines), the config updates without a code deploy.
-- The condition profile is loaded into every scan verdict call and every recipe suggestion call — it is part of the standard context injected from the Orchestrator DO.
+- The condition profile is loaded into every scan verdict call and every recipe suggestion call — it is part of the standard context injected from the Brain DO.
 - Voice detection of condition triggers goes through the same behavioral signal pipeline as allergy detection (spec 07).
 
 ## Success Metrics

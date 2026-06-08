@@ -28,7 +28,7 @@ How symptom onset determines the food history window.
 
 ## Storage Boundary
 
-Food history query starts in Orchestrator DO SQLite.
+Food history query starts in Brain DO SQLite.
 
 Recall/community data can be joined from shared stores after candidate food window is built.
 

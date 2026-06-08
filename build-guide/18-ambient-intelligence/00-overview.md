@@ -27,15 +27,15 @@ The background intelligence layer that makes Brioela feel alive without the user
 - No explicit data collection — all signals captured from existing interactions (scans, receipts, voice sessions)
 - No mood tracker UI, no logging prompts, no dashboards — insights surface in natural conversation
 - Behavioral patterns: minimum 5 consistent signal instances before pattern is written; surfaced once per week max
-- Wellbeing signals: captured from voice transcript by Orchestrator DO — `energy_low`, `energy_high`, `stomach_discomfort`, etc.
+- Wellbeing signals: captured from voice transcript by Brain DO — `energy_low`, `energy_high`, `stomach_discomfort`, etc.
 - Food Time Machine: computed in weekly alarm cycle → candidate queue of 5-10 moments; drawn from at scan/recipe/summary moments
 - Guest mode: activated by voice ("my sister is coming for dinner, she's vegan") — no settings screen; constraints layered on top, never replacing user's own profile
 - Guest session archive: promoted to user_memory via AI judgment after 4+ sessions with overlapping constraints
-- All four run through the same Orchestrator DO alarm system with feature-specific cadence and idle checks — no separate infrastructure
+- All four run through the same Brain DO alarm system with feature-specific cadence and idle checks — no separate infrastructure
 - Travel preload can use menu intelligence when available, but destination verdicts are still recomputed from the user's private profile
 
 ## What This Folder Depends On
-- `05-orchestrator` — all patterns stored in Orchestrator DO SQLite; alarm system powers all four features
+- `05-brain` — all patterns stored in Brain DO SQLite; alarm system powers all four features
 - `07-scanner` — scan events feed behavioral patterns and Time Machine moments
 - `08-cooking-session` — wellbeing signals captured from cooking session transcripts
 - `13-receipt-intelligence` — receipt history feeds dietary drift, spend, and food-history signals

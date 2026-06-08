@@ -12,7 +12,7 @@ Open Food Facts tells you what a label says. Brioela can also learn from anonymo
 
 When 50,000 people with peanut allergies scan product X and 3,000 of them later report an allergic reaction — even though the label says "peanut free" — Brioela has community event evidence that static label data does not provide. No existing food database has this because no existing database observes real post-exposure events at scale.
 
-This layer is built in Supabase (shared, anonymous). Personal data never leaves the Orchestrator DO SQLite.
+This layer is built in Supabase (shared, anonymous). Personal data never leaves the Brain DO SQLite.
 
 ---
 
@@ -332,7 +332,7 @@ Health Agent anonymizes:
 → product_community_health_summary.reported_event_rate updated for product X
 
 Next user (different country, same hypertension profile) scans product X:
-→ constraint check hits Orchestrator DO
+→ constraint check hits Brain DO
 → product_community_health_summary shows elevated reported_event_rate for hypertension group
 → anonymous_ingredient_event_association_index shows MSG event_association_score: 0.72 for hypertension
 → Verdict: YELLOW (was GREEN from label data alone)
@@ -346,7 +346,7 @@ This verdict came from anonymous post-exposure event associations across thousan
 
 ## How Community Data Feeds Back Into Constraint Check
 
-In `03-constraint-check.md`, the constraint check queries the Orchestrator DO for user constraints. The DO also now checks community health summary signals.
+In `03-constraint-check.md`, the constraint check queries the Brain DO for user constraints. The DO also now checks community health summary signals.
 
 **The ingredient association index is never queried live at scan time.** At 1M scans/day, one Supabase round-trip per scan into `anonymous_ingredient_event_association_index` would put an external network call in the hot path of every scan. Instead the top ingredient event associations per condition tag are materialized into Redis (key `ingredient_event_association_index:{reported_condition_tag}`, 24h TTL) by a scheduled job that reads the `mv_top_ingredient_event_associations` materialized view. `fetchIngredientEventAssociationSignals` is a Redis lookup, not a database query.
 

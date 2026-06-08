@@ -2,7 +2,7 @@
 
 ## What This Folder Covers
 
-The Orchestrator DO's data layer: core SQLite table definitions plus private feature extensions, the Curator maintenance passes, Cloudflare Vectorize semantic search integration, and the universal visual intake pipeline. This is the data side of the Orchestrator. The agent behavior, tool protocol, and session lifecycle live in `05-orchestrator/`.
+The Brain DO's data layer: core SQLite table definitions plus private feature extensions, the Curator maintenance passes, Cloudflare Vectorize semantic search integration, and the universal visual intake pipeline. This is the data side of the Brain. The agent behavior, tool protocol, and session lifecycle live in `05-brain/`.
 
 ## Status
 [x] complete — Health Intelligence extends the private SQLite schema in `01-sqlite-schema.md`
@@ -53,7 +53,7 @@ The Orchestrator DO's data layer: core SQLite table definitions plus private fea
 
 ## What This Folder Depends On
 
-- `05-orchestrator` — this IS the Orchestrator's data layer. The DO class, tool protocol, session lifecycle, and sub-agent pattern all live there.
+- `05-brain` — this IS the Brain's data layer. The DO class, tool protocol, session lifecycle, and sub-agent pattern all live there.
 - `03-foundation` — Drizzle setup, wrangler.jsonc
 
 ## What Depends On This Folder

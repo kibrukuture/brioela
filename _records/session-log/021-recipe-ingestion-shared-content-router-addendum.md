@@ -55,7 +55,7 @@ Before writing, read:
 - latest session log
 - `build-guide/20-wearables/00-overview.md`
 - `brioela-specs/40-wearables-integration.md`
-- dependencies: Ambient Intelligence, Notifications, Orchestrator, Memory Engine
+- dependencies: Ambient Intelligence, Notifications, Brain, Memory Engine
 
 ## Blockers / Decisions
 

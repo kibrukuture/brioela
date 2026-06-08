@@ -10,7 +10,7 @@ Deep read pass before writing:
 - `_records/session-log/011-bela-complete.md`
 - `build-guide/12-notifications/00-overview.md`
 - `brioela-specs/23-ambient-notification-strategy.md`
-- dependency docs: Orchestrator, Ground, Bela
+- dependency docs: Brain, Ground, Bela
 
 Written — `build-guide/12-notifications/`:
 - `00-overview.md` — updated to complete, file list added
@@ -46,11 +46,11 @@ Before writing, read:
 - `build-guide/13-receipt-intelligence/00-overview.md`
 - `brioela-specs/06-receipt-spend-intelligence.md`
 - `brioela-specs/29-food-cost-inflation-tracker.md`
-- dependencies: Scanner, Map, Notifications, Orchestrator, Memory Engine
+- dependencies: Scanner, Map, Notifications, Brain, Memory Engine
 
 ## Blockers / Decisions
 
 - Default is silence.
 - Medium push max one per day.
 - Critical safety alerts bypass quiet hours/suppression.
-- All delivery checks route through Orchestrator DO state.
+- All delivery checks route through Brain DO state.

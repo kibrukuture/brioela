@@ -2,9 +2,9 @@
 
 ## What This File Covers
 
-Every table in the `BrioelOrchestrator` DO SQLite — CREATE TABLE SQL, Drizzle schema, column decisions, indexes, write rules, and read rules for the core memory tables plus feature-owned private extensions. This is the complete data layer of the user's private brain.
+Every table in the `BrioelaBrain` DO SQLite — CREATE TABLE SQL, Drizzle schema, column decisions, indexes, write rules, and read rules for the core memory tables plus feature-owned private extensions. This is the complete data layer of the user's private brain.
 
-All private tables live in one SQLite file per user, managed by Drizzle over `this.ctx.storage`. The schema is version-controlled in `backend/src/agents/orchestrator/migrations/`. No table is shared across users. No Supabase.
+All private tables live in one SQLite file per user, managed by Drizzle over `this.ctx.storage`. The schema is version-controlled in `backend/src/agents/brain/migrations/`. No table is shared across users. No Supabase.
 
 ---
 
@@ -49,7 +49,7 @@ export const memoryEvent = sqliteTable('memory_event', {
 })
 ```
 
-**Write:** Orchestrator DO on any meaningful event. `log_memory_event` tool. Never updated. Never deleted. `ingestedAt` always set by DO at insert time.
+**Write:** Brain DO on any meaningful event. `log_memory_event` tool. Never updated. Never deleted. `ingestedAt` always set by DO at insert time.
 
 **Read:** illness detective (last 72h), recall alerts (by entity_id), behavioral pattern detection (full scan), travel preload alarm (specific travel_intent events).
 
@@ -484,7 +484,7 @@ export const recipes = sqliteTable('recipes', {
 
 ## Health Intelligence Extension Tables
 
-Health Intelligence adds three private tables to the same Orchestrator DO SQLite file. They are not
+Health Intelligence adds three private tables to the same Brain DO SQLite file. They are not
 Supabase tables and are not shared across users. `user_memory.health.*` can mirror summaries for prompt
 context, but these tables are the operational source for scan safety logic, reminders, and Health
 Agent passes.

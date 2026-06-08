@@ -19,7 +19,7 @@ Confirmed:
 Records updated:
 - `_records/session-log/008-cooking-session-record-reconciliation.md`
 - `_records/connections/03-cooking-session-connections.md`
-- `_records/connections/01-orchestrator-connections.md`
+- `_records/connections/01-brain-connections.md`
 - `_records/inventory/inventory.md`
 - `_records/build-order/`
 - `_records/connections/07-auth-connections.md`
@@ -32,7 +32,7 @@ Build-guide cleanup completed:
 ## Inventory Status Changes
 
 Updated completed/partial statuses for:
-- Orchestrator source specs
+- Brain source specs
 - Memory engine source specs
 - Scanner source specs
 - Cooking-session source specs

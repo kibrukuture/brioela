@@ -42,7 +42,7 @@ Mobile App (iOS/Android — RealtimeKit SDK)
     │                                        │
     └── WebSocket ───────────► CookingAgent DO
         (receives AI voice back)             │
-                                             ├── fetch() ──────► Orchestrator DO
+                                             ├── fetch() ──────► Brain DO
                                              │                   (SQLite tool execution)
                                              │
                                              └── DO Alarms ────► Timer fires → Gemini injection
@@ -64,7 +64,7 @@ The mobile sends but does not need to receive via WebRTC. Receiving AI voice is 
 | Cloudflare Realtime WebSocket Adapter | Push PCM + JPEG from SFU to CookingAgent DO | Any media transformation beyond format delivery |
 | CookingAgent DO | Controls everything: Gemini session, tool calls, timers, transcript writes | Serve the mobile WebRTC connection directly |
 | Gemini 3.1 Flash Live | See, hear, think, speak — real-time AI coaching | Tool execution, SQLite, any persistence |
-| Orchestrator DO | Execute SQLite tools on behalf of CookingAgent | Participate in the media or Gemini session |
+| Brain DO | Execute SQLite tools on behalf of CookingAgent | Participate in the media or Gemini session |
 
 ---
 
@@ -90,7 +90,7 @@ Gemini 3.1 Flash Live does not support NON_BLOCKING (async) tool calls — only 
 
 **Decision: CookingAgent DO is session-scoped.**
 
-DO ID: `idFromName(\`cooking:${sessionId}\`)`. One DO per cooking session. The Orchestrator DO spawns and coordinates the CookingAgent DO. When the session ends, the CookingAgent DO is no longer addressed — it idles and eventually Cloudflare evicts it. All session state is written to SQLite so DO eviction during the session is survivable via restart.
+DO ID: `idFromName(\`cooking:${sessionId}\`)`. One DO per cooking session. The Brain DO spawns and coordinates the CookingAgent DO. When the session ends, the CookingAgent DO is no longer addressed — it idles and eventually Cloudflare evicts it. All session state is written to SQLite so DO eviction during the session is survivable via restart.
 
 ---
 

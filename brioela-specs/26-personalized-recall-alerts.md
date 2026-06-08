@@ -38,9 +38,9 @@ For each new recall entry:
 3. For each matching scan_event, retrieve the user_id and the scan timestamp.
 4. If scan timestamp falls within the at-risk date range: flag as confirmed match.
 5. If lot number is unknown (recall covers all lots): flag any scan of that product within the last 90 days.
-6. For each flagged user: write a `recall_alert` record, trigger push notification via the user's Orchestrator DO.
+6. For each flagged user: write a `recall_alert` record, trigger push notification via the user's Brain DO.
 
-The Orchestrator DO receives the recall match, evaluates push conditions (critical priority — always delivered regardless of quiet hours), and fires the notification.
+The Brain DO receives the recall match, evaluates push conditions (critical priority — always delivered regardless of quiet hours), and fires the notification.
 
 ## Notification Content
 
@@ -77,7 +77,7 @@ The notification never says "you might have this" if the lot match is confirmed.
 
 - Recall polling must not be affected by the per-user DO lifecycle. Polling runs as a global Upstash QStash cron, not inside any user's DO.
 - The match query against Supabase must be batch-efficient: one query per recall entry against all scan_events, not one query per user.
-- Push delivery is routed through each user's Orchestrator DO to respect their device token and notification state.
+- Push delivery is routed through each user's Brain DO to respect their device token and notification state.
 
 ## Success Metrics
 

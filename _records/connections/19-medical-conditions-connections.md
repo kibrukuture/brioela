@@ -9,7 +9,7 @@ spec: brioela-specs/28-medical-condition-food-profile.md
   → build-guide/22-medical-conditions/05-recipe-meal-map-cooking.md [x] done
   → build-guide/22-medical-conditions/06-practitioner-privacy-boundary.md [x] done
 
-build-guide: build-guide/05-orchestrator/
+build-guide: build-guide/05-brain/
   → build-guide/22-medical-conditions/01-condition-detection-confirmation.md [x] done
   → build-guide/22-medical-conditions/02-condition-profile-data.md [x] done
   → build-guide/22-medical-conditions/04-scan-verdict-integration.md [x] done

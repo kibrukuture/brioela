@@ -1,4 +1,4 @@
-# Orchestrator — Agent Framework Hardening
+# Brain — Agent Framework Hardening
 
 ## What This File Covers
 
@@ -12,7 +12,7 @@ older manual patterns in this folder where Cloudflare now provides stronger prim
 
 ## Ground Rule — Brioela Is Ambient, Not Chat-First
 
-The Orchestrator is not a chat assistant. It is the per-user ambient food operating system.
+The Brain is not a chat assistant. It is the per-user ambient food operating system.
 
 Evidence from product docs:
 
@@ -82,7 +82,7 @@ Vercel AI SDK docs used for tool/model layer:
 
 These are product architecture decisions, not replaceable plumbing:
 
-- One permanent `BrioelOrchestrator` per user.
+- One permanent `BrioelaBrain` per user.
 - Private per-user SQLite memory.
 - `memory_event` is append-only truth.
 - `user_memory` is derived facts, not history.
@@ -172,7 +172,7 @@ Agents SDK schedule() = wake/call mechanism
 - failure reason
 - debug/audit history
 
-Agents SDK `schedule()` wakes the Orchestrator and calls the method at the right time.
+Agents SDK `schedule()` wakes the Brain and calls the method at the right time.
 
 When the method runs, it reads `scheduled_alarms` to get the alarm details, performs the work, and
 updates the row status.
@@ -223,7 +223,7 @@ Hard rule:
 
 ```text
 `scheduled_alarms` stores alarm data.
-Agents SDK `schedule()` wakes the Orchestrator and calls the method.
+Agents SDK `schedule()` wakes the Brain and calls the method.
 The method reads and updates `scheduled_alarms`.
 ```
 
@@ -277,7 +277,7 @@ Use Workflow when:
 Older docs describe:
 
 ```text
-CuratorAgent -> POST /internal/tool-call -> Orchestrator executes tool
+CuratorAgent -> POST /internal/tool-call -> Brain executes tool
 ```
 
 Use current Agents SDK sub-agents for typed parent-child agent calls where possible:
@@ -300,7 +300,7 @@ Cloudflare sub-agents provide:
 The Brioela rule still stands:
 
 ```text
-Only the Orchestrator writes user-memory truth.
+Only the Brain writes user-memory truth.
 ```
 
 But transport should be typed parent-child RPC, not custom internal HTTP, unless a specific boundary requires HTTP.
@@ -464,7 +464,7 @@ Risk:
 Recommendation:
 
 ```text
-Do not adopt Think as the core Orchestrator harness now.
+Do not adopt Think as the core Brain harness now.
 Borrow specific lifecycle/recovery patterns only.
 ```
 
@@ -523,7 +523,7 @@ async runCurator() {
 }
 ```
 
-Curator can use typed parent RPC for reads/proposed writes. Orchestrator remains authoritative.
+Curator can use typed parent RPC for reads/proposed writes. Brain remains authoritative.
 
 ---
 
@@ -599,7 +599,7 @@ The Gemini Live media bridge remains custom because it is Brioela-specific and m
 
 - Do not build a custom runtime feature when Agents SDK already provides it.
 - Do not use custom internal HTTP between parent/child agents unless crossing a true product/API boundary.
-- Orchestrator remains the only writer of user memory truth.
+- Brain remains the only writer of user memory truth.
 - AI SDK remains the tool/model layer.
 - Cloudflare Agents SDK owns durable runtime execution.
 - Workflows own long, multi-step durable flows.

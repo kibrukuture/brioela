@@ -1,4 +1,4 @@
-# Orchestrator — Agent Identity (SOUL)
+# Brain — Agent Identity (SOUL)
 
 ## What This File Covers
 
@@ -17,7 +17,7 @@ The SOUL is not in SQLite. It is not in the DO. It lives in the Worker codebase 
 ## File Location
 
 ```
-backend/src/agents/orchestrator/soul.ts
+backend/src/agents/brain/soul.ts
 ```
 
 One file. One constant. Exported and imported by `system-prompt.builder.ts`.
@@ -33,7 +33,7 @@ The system prompt has a fixed budget. The SOUL occupies the top. Everything belo
 ## The SOUL
 
 ```typescript
-// backend/src/agents/orchestrator/soul.ts
+// backend/src/agents/brain/soul.ts
 
 export const SOUL = `
 You are Brioela.

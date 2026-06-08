@@ -53,7 +53,7 @@ private async writeTurn(parts: GeminiPart[], role: 'model' | 'user' = 'model'): 
   const turnNumber = await this.nextTurnNumber()
 
   // Fire and forget — do not await. Turn writes should never block Gemini response delivery.
-  this.forwardToolToOrchestrator('write_session_turn', {
+  this.forwardToolToBrain('write_session_turn', {
     session_id:  this.sessionState.sessionId,
     turn_number: turnNumber,
     role,
@@ -110,7 +110,7 @@ Certain events are written to `session_turns` as `role: 'system'` entries. These
 private async writeSystemEvent(event: string, metadata?: Record<string, unknown>): Promise<void> {
   const turnNumber = await this.nextTurnNumber()
 
-  this.forwardToolToOrchestrator('write_session_turn', {
+  this.forwardToolToBrain('write_session_turn', {
     session_id:  this.sessionState.sessionId,
     turn_number: turnNumber,
     role:        'system',

@@ -30,7 +30,7 @@ Two integrations to do deeply before expanding:
 
 ## Data Architecture — The Core Rule
 
-**Never stream raw sensor data to the Orchestrator DO.** A heart beats 70 times a minute. Oura reads temperature every minute. A CGM reads every 5 minutes. None of this raw stream reaches Cloudflare. It would be expensive, noisy, and meaningless at that granularity.
+**Never stream raw sensor data to the Brain DO.** A heart beats 70 times a minute. Oura reads temperature every minute. A CGM reads every 5 minutes. None of this raw stream reaches Cloudflare. It would be expensive, noisy, and meaningless at that granularity.
 
 The flow:
 
@@ -39,7 +39,7 @@ Wearable device
       ↓ native SDK (HealthKit, Oura API, Dexcom API)
 Client-side aggregation (app background task)
       ↓ daily summary JSON — NOT raw readings
-Orchestrator DO (via HTTP when app opens or backgrounded)
+Brain DO (via HTTP when app opens or backgrounded)
       ↓ memory routing
 user_memory (health.biometrics, health.sleep, health.glucose namespaces)
 user_personality (sustained 30-day patterns → trait updates)
@@ -104,7 +104,7 @@ Brioela has the scan event (you know exactly what was eaten, when) and the CGM h
 
 **The correlation logic:**
 
-When a scan event occurs and CGM is connected, the Orchestrator DO opens a 2-hour observation window. The client sends glucose readings at 15-minute intervals during this window (not continuously — just during meal-adjacent windows). After the window closes, the DO computes:
+When a scan event occurs and CGM is connected, the Brain DO opens a 2-hour observation window. The client sends glucose readings at 15-minute intervals during this window (not continuously — just during meal-adjacent windows). After the window closes, the DO computes:
 
 - Peak glucose value
 - Time to peak (minutes from scan)
@@ -123,7 +123,7 @@ These four values are stored against the scanned product in `health.glucose` mem
 **CGM data model:**
 
 ```sql
--- Stored in Orchestrator DO SQLite (private, not Supabase)
+-- Stored in Brain DO SQLite (private, not Supabase)
 glucose_meal_window (
   window_id       text primary key,
   scan_event_id   text,               -- linked to the triggering scan

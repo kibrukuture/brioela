@@ -35,7 +35,7 @@ When a parent scans a product, one tap produces a child-friendly explanation of 
 ## What This Folder Depends On
 - `07-scanner` — triggered from scan result screen after standard verdict
 - `08-cooking-session` — voice mode piggybacks on cooking session AI
-- `05-orchestrator` — constraint profile (allergy flags must still show)
+- `05-brain` — constraint profile (allergy flags must still show)
 - `01-design-system` — share card and scan UI use existing visual tokens/components
 
 ## What Depends On This Folder

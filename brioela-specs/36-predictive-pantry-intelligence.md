@@ -12,7 +12,7 @@ Brioela has the data to know before the user does. The prediction doesn't requir
 
 ## How It Works
 
-The Orchestrator DO runs a pantry prediction pass as part of its weekly alarm cycle. For each user with sufficient receipt history (minimum 3 purchases of the same item):
+The Brain DO runs a pantry prediction pass as part of its weekly alarm cycle. For each user with sufficient receipt history (minimum 3 purchases of the same item):
 
 1. **Purchase interval estimation**: for each regularly bought item, compute the median days between purchases (using receipt scan history and manual receipt photos).
 2. **Last seen date**: the most recent scan or receipt entry for that item.
@@ -44,13 +44,13 @@ Low-confidence predictions are never notified. The user should only receive noti
 
 ## What This Does Not Do
 
-- Does not maintain a real-time inventory. It predicts when to buy, not what is physically in the cupboard right now (that is the Orchestrator DO's scan-based inventory for spec 33 meal planning).
+- Does not maintain a real-time inventory. It predicts when to buy, not what is physically in the cupboard right now (that is the Brain DO's scan-based inventory for spec 33 meal planning).
 - Does not show quantities. It predicts the need to buy, not how much to buy (though receipt history could inform typical quantity purchased — a future extension).
 - Does not require the user to confirm what they have at home. Silence is not confirmation.
 
 ## Data Model
 
-All stored in the Orchestrator DO SQLite — this is per-user private data, not shared.
+All stored in the Brain DO SQLite — this is per-user private data, not shared.
 
 ```sql
 purchase_pattern (

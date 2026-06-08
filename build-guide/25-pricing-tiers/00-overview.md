@@ -39,7 +39,7 @@ Under `tools/pricing/`:
 
 ## What This Folder Depends On
 - `04-auth-and-onboarding` — user's tier is read from their auth session/profile
-- `05-orchestrator` — tier state stored in Orchestrator DO
+- `05-brain` — tier state stored in Brain DO
 - `08-cooking-session` — voice/video session costs drive Culina/Viva boundaries
 - `17-menu-scanning` — Luma upgrade trigger
 - `21-kids-mode` — Luma upgrade trigger

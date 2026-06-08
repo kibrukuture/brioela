@@ -121,7 +121,7 @@ Part G — One concrete walk-through
 Scan result, "this oat milk is great for you," first time you've scanned it:
 
 - Tier 0 renders instantly: the verdict, any allergen flag — static, authoritative, untouched.
-- The orchestrator emits a Stage: mood: soft_celebration, atmosphere: discovery_sheen (a slow Skia bloom, AI nudged the hue toward warm), composition: "single-focal-reveal" (a hand-art-directed scene: massive display headline top-left, cathedral negative space, one metric petal drifting in bottom-right), voice: display, beats: [headline rises on warm spring, atmosphere blooms 200ms later, whisper fades in last].
+- The brain emits a Stage: mood: soft_celebration, atmosphere: discovery_sheen (a slow Skia bloom, AI nudged the hue toward warm), composition: "single-focal-reveal" (a hand-art-directed scene: massive display headline top-left, cathedral negative space, one metric petal drifting in bottom-right), voice: display, beats: [headline rises on warm spring, atmosphere blooms 200ms later, whisper fades in last].
 - Slots filled by AI: headline = "A quiet good one." whisper = "First time you've met this — it sits well with how you eat." metric = the one number that matters.
 - Validates in <400ms → enhances. Misses → the static Tier-0 verdict just stays. No spinner, no failure (your spec's rule).
 
@@ -132,10 +132,10 @@ And the rare Tier-3 moment: end-of-month "you saved $80" → a generated little 
 ---
 That's the whole argument: the AI is a chef plating with pre-mastered techniques, not a line cook handed raw ingredients. The spec already has the tokens and the safety model right — what it's missing is the Scene/composition layer (Tier 1 art-direction) and the Canvas/atmosphere layer (Tier 2 Skia) that together make "beautiful" a property of the system, not a hope about the output.
 
-Where do you want to go deeper — the 20-30 compositions (the actual art-direction vocabulary), the Skia atmosphere system, the Tier-3 WebView mini-app boundary, or how the orchestrator decides which Stage to emit?
+Where do you want to go deeper — the 20-30 compositions (the actual art-direction vocabulary), the Skia atmosphere system, the Tier-3 WebView mini-app boundary, or how the brain decides which Stage to emit?
 
 ✻ Crunched for 7m 24s
 
-※ recap: Goal: design a non-ugly, studio-art generative UI system for Brioela that's safe on React Native. I delivered the research and a four-tier framework. Next: pick which layer to detail — the 20-30 art-directed compositions, the Skia atmosphere system, the Tier-3 WebView boundary, or orchestrator logic. (disable recaps in /config)
+※ recap: Goal: design a non-ugly, studio-art generative UI system for Brioela that's safe on React Native. I delivered the research and a four-tier framework. Next: pick which layer to detail — the 20-30 art-directed compositions, the Skia atmosphere system, the Tier-3 WebView boundary, or brain logic. (disable recaps in /config)
 
 ❯ wiat can you first add thsi into brioela geenraeive grammer/research fodler add all of those study you did okay full texts okay . can you do that dont miss as ingel workd and hten we will disucsss latere how we will design this okay . thanks.

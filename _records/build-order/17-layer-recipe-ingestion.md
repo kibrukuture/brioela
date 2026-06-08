@@ -11,7 +11,7 @@
 ## Depends On
 
 - `01-layer-foundation.md`
-- `03-layer-orchestrator.md`
+- `03-layer-brain.md`
 - `04-layer-memory-engine.md`
 - `05-layer-scanner.md`
 - `06-layer-cooking-session.md`

@@ -38,7 +38,7 @@ Mark as [x] in inventory.md:
 - implementable-specs/18-vectorize.md → [x]
 - brioela-specs/34-universal-visual-intake.md → [x]
 - brioela-specs/08-personal-food-memory-engine.md → [x]
-- implementable-specs/15-curator.md → [x] (was already in orchestrator connections, now fully documented)
+- implementable-specs/15-curator.md → [x] (was already in brain connections, now fully documented)
 
 ## In Progress
 Nothing half-done.
@@ -48,7 +48,7 @@ Nothing half-done.
 `07-scanner/` — the core product loop. Files to write:
 - `01-barcode-decode.md` — on-device barcode detection, UPC extraction, offline-first
 - `02-product-resolution.md` — Open Food Facts + gov DBs, Upstash Redis cache, pending scan queue
-- `03-constraint-check.md` — check product against Orchestrator DO constraints + user_memory.medications
+- `03-constraint-check.md` — check product against Brain DO constraints + user_memory.medications
 - `04-scan-result-ui.md` — green/yellow/red verdict, one-sentence reason, expand-on-demand, boycott display
 - `05-gpt4o-mini-vision-fallback.md` — when no barcode: GPT-4o mini vision extraction + image classification, confidence schema
 

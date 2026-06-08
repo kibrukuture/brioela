@@ -52,7 +52,7 @@ If any of these three are missing, the information stays silent.
 
 - If the user dismisses a type of notification twice without acting on it, that category is automatically suppressed for 14 days.
 - If the user dismisses three of the same category, it is permanently suppressed unless re-enabled.
-- Suppression state is stored in the Orchestrator DO per user.
+- Suppression state is stored in the Brain DO per user.
 
 ## In-App Ambient Surfaces
 

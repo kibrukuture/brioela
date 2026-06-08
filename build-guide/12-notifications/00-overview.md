@@ -12,7 +12,7 @@ The ambient notification strategy — when Brioela speaks and when it stays sile
 |---|---|
 | `01-priority-model.md` | critical/high/medium/low priority rules |
 | `02-delivery-rules.md` | quiet hours, active sessions, daily caps, geo timing |
-| `03-suppression-state.md` | dismissal suppression and Orchestrator state |
+| `03-suppression-state.md` | dismissal suppression and Brain state |
 | `04-surfaces.md` | push vs in-app ambient surfaces |
 | `05-permission-timing.md` | when notification permission is requested |
 | `06-data-model-and-tools.md` | notification tables, queueing, send/queue tools |
@@ -33,11 +33,11 @@ The ambient notification strategy — when Brioela speaks and when it stays sile
 
 ## Tools Built In This Feature
 Under `tools/notifications/`:
-- `send-push.ts` — push notification delivery via Orchestrator DO (respects suppression state)
+- `send-push.ts` — push notification delivery via Brain DO (respects suppression state)
 - `queue-notification.ts` — queue during active sessions
 
 ## What This Folder Depends On
-- `05-orchestrator` — suppression state stored in Orchestrator DO; device token managed here
+- `05-brain` — suppression state stored in Brain DO; device token managed here
 - `03-foundation` — OneSignal setup only; Brioela does not use other push providers directly
 
 ## What Depends On This Folder

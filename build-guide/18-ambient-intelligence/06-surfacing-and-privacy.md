@@ -124,7 +124,7 @@ Non-negotiable rules:
 - No medical claims from correlations.
 - No guest identities or contacts.
 - No public timeline or profile.
-- No raw transcript exposure outside the Orchestrator-controlled processing path.
+- No raw transcript exposure outside the Brain-controlled processing path.
 
 Menu and map shared data can help travel preload, but personalized results must be recomputed from private user constraints.
 

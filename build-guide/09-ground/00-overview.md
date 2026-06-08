@@ -10,7 +10,7 @@ The community food intelligence layer. Finds (single time-stamped, location-tagg
 
 | File | Contents |
 |---|---|
-| `01-find-data-model.md` | Supabase shared find tables, Orchestrator private find history, status/freshness model |
+| `01-find-data-model.md` | Supabase shared find tables, Brain private find history, status/freshness model |
 | `02-authenticity-gate.md` | AI gate checks, rejection handling, media safety, rate limits |
 | `03-find-submission-flow.md` | scan-to-find, map-to-find, ambient prompt, voice-to-find, AI-drafted finds |
 | `04-map-rendering.md` | Mapbox layers, pulse animation, relevance sizing, zoom behavior, clusters |
@@ -39,7 +39,7 @@ Under `tools/ground/`:
 - `log-find-from-scan.ts` — AI-drafted find triggered by scan context
 
 ## What This Folder Depends On
-- `05-orchestrator` — user constraint profile for personalized relevance scoring
+- `05-brain` — user constraint profile for personalized relevance scoring
 - `07-scanner` — find-from-scan entry point
 - `03-foundation` — Supabase for shared find tables, Cloudflare R2 for media
 

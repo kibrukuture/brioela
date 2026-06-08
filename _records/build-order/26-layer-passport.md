@@ -10,7 +10,7 @@
 
 ## Depends On
 
-- `03-layer-orchestrator.md`
+- `03-layer-brain.md`
 - `09-layer-bela.md`
 - `15-layer-menu-scanning.md`
 - `16-layer-ambient-intelligence.md`

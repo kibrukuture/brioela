@@ -8,7 +8,7 @@ This older implementable spec uses raw Durable Object patterns. Before coding, u
 Current direction:
 
 - CookingAgent should be an Agent-backed Durable Object using the current `agents` package, not the deprecated scoped package name.
-- CookingAgent owns live runtime state plus a small local recovery ledger; Orchestrator owns persistent user memory/recipes/health SQLite.
+- CookingAgent owns live runtime state plus a small local recovery ledger; Brain owns persistent user memory/recipes/health SQLite.
 - Inbound WebSockets should validate `Upgrade: websocket` and use hibernation-aware Agent/DO WebSocket handling where possible.
 - Cloudflare Realtime SFU media frames arrive as protobuf `Packet` messages per selected track, not JSON metadata followed by raw binary.
 - Timers should use Agents SDK `schedule()` with local timer rows and idempotent callbacks, not raw DO alarms as the default.
@@ -22,13 +22,13 @@ The CookingAgent is a Cloudflare Durable Object that controls everything for one
 - Receiving audio and video from Cloudflare Realtime
 - Maintaining the Gemini 3.1 Flash Live WebSocket session
 - Executing or forwarding all tool calls
-- Maintaining local recovery metadata while forwarding persistent user writes to Orchestrator
+- Maintaining local recovery metadata while forwarding persistent user writes to Brain
 - Managing cooking timers via Agents SDK schedules
 - Sending Gemini's audio response back to the mobile
 
 **DO ID:** `env.COOKING_AGENT.idFromName(\`cooking:${sessionId}\`)`
 
-Session-scoped. One cooking session = one DO. The Orchestrator DO creates it. When the session ends, it is no longer addressed. Cloudflare eventually evicts it. All critical state is in SQLite before eviction can matter.
+Session-scoped. One cooking session = one DO. The Brain DO creates it. When the session ends, it is no longer addressed. Cloudflare eventually evicts it. All critical state is in SQLite before eviction can matter.
 
 ---
 
@@ -118,7 +118,7 @@ private async handleInit(request: Request): Promise<Response> {
     pendingToolCall: null,
   }
 
-  // Load user context from Orchestrator DO for Gemini system instruction
+  // Load user context from Brain DO for Gemini system instruction
   const context = await this.loadUserContext(userId)
 
   // Open Gemini Live session BEFORE mobile joins the room — pre-warming
@@ -220,7 +220,7 @@ async fetch(request: Request): Promise<Response> {
 }
 
 private async recover(): Promise<void> {
-  // Read session from SQLite via Orchestrator
+  // Read session from SQLite via Brain
   const session = await this.fetchActiveSession()
   if (!session) return  // session ended while DO was evicted — nothing to recover
 
@@ -241,19 +241,19 @@ private async recover(): Promise<void> {
 
 ---
 
-## Orchestrator Communication (Tool Forwarding)
+## Brain Communication (Tool Forwarding)
 
-When Gemini calls a tool that touches SQLite, the CookingAgent DO forwards to the Orchestrator DO:
+When Gemini calls a tool that touches SQLite, the CookingAgent DO forwards to the Brain DO:
 
 ```typescript
-private async forwardToolToOrchestrator(
+private async forwardToolToBrain(
   toolName: string,
   toolArgs: unknown,
 ): Promise<unknown> {
-  const orchestratorId = this.env.ORCHESTRATOR.idFromName(this.sessionState.userId)
-  const orchestrator   = this.env.ORCHESTRATOR.get(orchestratorId)
+  const brainId = this.env.BRAIN.idFromName(this.sessionState.userId)
+  const brain   = this.env.BRAIN.get(brainId)
 
-  const resp = await orchestrator.fetch('/internal/tool-call', {
+  const resp = await brain.fetch('/internal/tool-call', {
     method: 'POST',
     headers: {
       'Authorization': `Bearer ${this.env.DO_INTERNAL_SECRET}`,
@@ -279,7 +279,7 @@ private async forwardToolToOrchestrator(
 | Key | Value | When |
 |---|---|---|
 | `turn_counter.{sessionId}` | integer as string | Incremented before every session_turns insert |
-| `active_session_id` | sessionId | Set when session starts (via Orchestrator) |
+| `active_session_id` | sessionId | Set when session starts (via Brain) |
 | `cooking.gemini_reconnect.{sessionId}` | `{ ts, attempt }` | Each Gemini session reconnect |
 | `stream.disconnect.{sessionId}` | `{ ts }` | If Cloudflare Realtime adapter disconnects unexpectedly |
 | `cooking.tool_failure.{sessionId}` | `{ tool, error, ts }` | If a tool call fails during session |

@@ -30,10 +30,10 @@ The mobile sends via WebRTC — RealtimeKit SDK handles all complexity (NAT trav
 
 ## Room Creation Flow
 
-The Orchestrator DO handles this when the user taps "Start Cooking Session":
+The Brain DO handles this when the user taps "Start Cooking Session":
 
 ```
-Mobile ── POST /api/cooking/start ──► Hono Worker → Orchestrator DO
+Mobile ── POST /api/cooking/start ──► Hono Worker → Brain DO
                                              │
                                          1. Create RealtimeKit Meeting
                                          2. Create Participant + participantToken
@@ -49,7 +49,7 @@ Mobile ── POST /api/cooking/start ──► Hono Worker → Orchestrator DO
 ## RealtimeKit API Calls
 
 ```typescript
-// backend/src/agents/orchestrator/_handlers/start-cooking.handler.ts
+// backend/src/agents/brain/_handlers/start-cooking.handler.ts
 
 const REALTIMEKIT_BASE = (env: Env) =>
   `https://api.cloudflare.com/client/v4/accounts/${env.CLOUDFLARE_ACCOUNT_ID}/realtime/kit/${env.REALTIMEKIT_APP_ID}`
@@ -130,10 +130,10 @@ create one adapter per selected audio/video track. Do not document or implement 
 
 ---
 
-## Full Session Start — Orchestrator Handler
+## Full Session Start — Brain Handler
 
 ```typescript
-// backend/src/agents/orchestrator/_handlers/start-cooking.handler.ts
+// backend/src/agents/brain/_handlers/start-cooking.handler.ts
 
 export async function startCookingSession(userId: string, env: Env, db: DrizzleDB): Promise<{
   sessionId:       string
@@ -154,7 +154,7 @@ export async function startCookingSession(userId: string, env: Env, db: DrizzleD
     body:   JSON.stringify({ sessionId, userId, meetingId }),
   }))
 
-  // Write session row to Orchestrator SQLite
+  // Write session row to Brain SQLite
   db.insert(sessions).values({
     id:          sessionId,
     userId,

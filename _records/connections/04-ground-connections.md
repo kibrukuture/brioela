@@ -27,9 +27,9 @@ spec: brioela-specs/23-ambient-notification-strategy.md
 build-guide: build-guide/07-scanner/
   → build-guide/09-ground/03-find-submission-flow.md  [x] done (find-from-scan, AI-drafted finds)
 
-build-guide: build-guide/05-orchestrator/
+build-guide: build-guide/05-brain/
   → build-guide/09-ground/01-find-data-model.md       [x] done (private user_find_history)
-  → build-guide/09-ground/06-find-to-cooking-trigger.md [x] done (Orchestrator matching)
+  → build-guide/09-ground/06-find-to-cooking-trigger.md [x] done (Brain matching)
 
 build-guide: build-guide/10-map/
   → build-guide/09-ground/04-map-rendering.md         [x] done (shared Mapbox base, separate layer)

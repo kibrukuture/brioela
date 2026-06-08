@@ -289,8 +289,8 @@ async function executePendingToolCall(cookingDo: CookingAgent): Promise<void> {
     } else if (pending.name === 'cancel_timer') {
       result = await cancelTimer((pending.args as { label: string }).label, cookingDo)
     } else {
-      // All other tools forwarded to Orchestrator
-      result = await forwardToolToOrchestrator(pending.name, pending.args, cookingDo.sessionState!, cookingDo.env)
+      // All other tools forwarded to Brain
+      result = await forwardToolToBrain(pending.name, pending.args, cookingDo.sessionState!, cookingDo.env)
     }
   } catch (err) {
     result = { error: String(err) }
@@ -315,4 +315,4 @@ async function executePendingToolCall(cookingDo: CookingAgent): Promise<void> {
 }
 ```
 
-Typical tool execution times: `schedule_timer` ~10ms (DO storage write), `write_memory` ~150ms (HTTP to Orchestrator → SQLite write). Both imperceptible as audio pauses.
+Typical tool execution times: `schedule_timer` ~10ms (DO storage write), `write_memory` ~150ms (HTTP to Brain → SQLite write). Both imperceptible as audio pauses.

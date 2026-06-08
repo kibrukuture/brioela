@@ -1,4 +1,4 @@
-# Orchestrator — Sub-Agents
+# Brain — Sub-Agents
 
 ## What This File Covers
 
@@ -6,12 +6,12 @@ The ephemeral sub-agent DO pattern, CuratorAgent, PatternDetectionAgent, the HTT
 
 ---
 
-## The Pattern — Ephemeral DOs, Permanent Orchestrator
+## The Pattern — Ephemeral DOs, Permanent Brain
 
 All agents in Brioela are Cloudflare Durable Objects. What separates them is the ID they are keyed by:
 
 ```
-BrioelOrchestrator
+BrioelaBrain
   key: idFromName(userId)                                ← PERMANENT — same instance forever
   has: SQLite (the user's brain)
   never dies
@@ -19,19 +19,19 @@ BrioelOrchestrator
   ├── on curator_run alarm:
   │   spawns CuratorAgent
   │   key: idFromName(`curator_${userId}_${runId}`)      ← EPHEMERAL — new ID each run
-  │   no SQLite — all writes forwarded to Orchestrator
+  │   no SQLite — all writes forwarded to Brain
   │   dies when work is done
   │
   └── on pattern_detection alarm:
       spawns PatternDetectionAgent
       key: idFromName(`pattern_${userId}_${runId}`)      ← EPHEMERAL — new ID each run
-      no SQLite — all writes forwarded to Orchestrator
+      no SQLite — all writes forwarded to Brain
       dies when work is done
 ```
 
-Sub-agents do not have SQLite. They cannot persist anything directly. Every read of structured data and every write must go through the Orchestrator's `/internal/tool-call` endpoint. The Orchestrator executes the tool against its SQLite and returns the result.
+Sub-agents do not have SQLite. They cannot persist anything directly. Every read of structured data and every write must go through the Brain's `/internal/tool-call` endpoint. The Brain executes the tool against its SQLite and returns the result.
 
-**Tools are defined once and executed once — always in the Orchestrator.**
+**Tools are defined once and executed once — always in the Brain.**
 
 ---
 
@@ -39,7 +39,7 @@ Sub-agents do not have SQLite. They cannot persist anything directly. Every read
 
 ### Schedule
 
-Fires via an Agents SDK schedule on a 7-day interval. Before running, the Orchestrator checks whether the user has been idle (no sessions in the last 2 hours). If the user is in an active session, the curator run is rescheduled 2 hours later — it never interrupts a live session.
+Fires via an Agents SDK schedule on a 7-day interval. Before running, the Brain checks whether the user has been idle (no sessions in the last 2 hours). If the user is in an active session, the curator run is rescheduled 2 hours later — it never interrupts a live session.
 
 ```typescript
 // In alarm.handler.ts — CURATOR_RUN alarm case
@@ -64,8 +64,8 @@ case 'curator_run': {
   }
 
   const runId = crypto.randomUUID()
-  const curatorId = env.ORCHESTRATOR.idFromName(`curator_${userId}_${runId}`)
-  const curatorStub = env.ORCHESTRATOR.get(curatorId)
+  const curatorId = env.BRAIN.idFromName(`curator_${userId}_${runId}`)
+  const curatorStub = env.BRAIN.get(curatorId)
   await curatorStub.fetch(new Request('https://internal/run', { method: 'POST' }))
 
   // Reschedule next curator run — 7 days
@@ -149,7 +149,7 @@ When CuratorAgent or PatternDetectionAgent calls a tool, the flow is:
 CuratorAgent LLM decides to call archive_user_skill("stale-skill")
     ↓
 CuratorAgent executes tool via HTTP:
-    POST https://{orchestrator-do-url}/internal/tool-call
+    POST https://{brain-do-url}/internal/tool-call
     Authorization: Bearer {INTERNAL_SECRET}
     {
       "tool":    "archive_user_skill",
@@ -158,7 +158,7 @@ CuratorAgent executes tool via HTTP:
       "run_id":  "curator_abc123"
     }
     ↓
-Orchestrator internal-tool.handler.ts:
+Brain internal-tool.handler.ts:
     1. Validates Authorization header
     2. Checks 'curator' has permission to call 'archive_user_skill' (TOOL_PERMISSIONS)
     3. Validates args against archive_user_skill's Zod schema
@@ -190,17 +190,17 @@ export class CuratorAgent extends Agent<Env> {
       return new Response('Not found', { status: 404 })
     }
 
-    // Extract userId from DO name (set by Orchestrator when spawning)
+    // Extract userId from DO name (set by Brain when spawning)
     const userId = await this.ctx.storage.get<string>('userId')
     if (!userId) return new Response('Missing userId', { status: 400 })
 
-    const orchestratorUrl = `https://orchestrator-${userId}.internal`
+    const brainUrl = `https://brain-${userId}.internal`
 
     await generateText({
       model: anthropic('claude-haiku-4-5-20251001'),
       system: CURATOR_SYSTEM_PROMPT,
       messages: [{ role: 'user', content: 'Run the three curator passes.' }],
-      tools: buildForwardingTools(orchestratorUrl, this.env.INTERNAL_SECRET, 'curator'),
+      tools: buildForwardingTools(brainUrl, this.env.INTERNAL_SECRET, 'curator'),
       maxSteps: 50,
     })
 

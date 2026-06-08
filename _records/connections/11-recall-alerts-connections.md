@@ -14,6 +14,6 @@ build-guide: build-guide/07-scanner/
 build-guide: build-guide/12-notifications/
   → build-guide/15-recall-alerts/03-critical-notification.md [x] done (critical delivery rules)
 
-build-guide: build-guide/05-orchestrator/
+build-guide: build-guide/05-brain/
   → build-guide/15-recall-alerts/03-critical-notification.md [x] done (delivery through user DO)
-  → build-guide/15-recall-alerts/05-data-model.md [x] done (Orchestrator boundary)
+  → build-guide/15-recall-alerts/05-data-model.md [x] done (Brain boundary)

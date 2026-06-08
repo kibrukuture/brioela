@@ -10,7 +10,7 @@ Deep read pass before writing:
 - `_records/session-log/014-pantry-meal-plan-complete.md`
 - `build-guide/15-recall-alerts/00-overview.md`
 - `brioela-specs/26-personalized-recall-alerts.md`
-- dependency docs: Scanner, Notifications, Orchestrator, Receipt Intelligence
+- dependency docs: Scanner, Notifications, Brain, Receipt Intelligence
 
 Written — `build-guide/15-recall-alerts/`:
 - `00-overview.md` — updated to complete, file list added
@@ -43,10 +43,10 @@ Before writing, read:
 - latest session log
 - `build-guide/16-illness-detective/00-overview.md`
 - `brioela-specs/30-food-illness-detective.md`
-- dependencies: Scanner, Receipt Intelligence, Recall Alerts, Orchestrator, Notifications
+- dependencies: Scanner, Receipt Intelligence, Recall Alerts, Brain, Notifications
 
 ## Blockers / Decisions
 
 - Recall polling is global QStash/scheduled worker, not per-user DO.
 - Critical recall alerts bypass quiet hours and suppression.
-- Delivery still routes through user Orchestrator DO.
+- Delivery still routes through user Brain DO.

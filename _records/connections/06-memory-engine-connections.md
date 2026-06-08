@@ -40,7 +40,7 @@ spec: implementable-specs/12-schema-version.md
 
 spec: implementable-specs/15-curator.md
   → build-guide/06-memory-engine/02-curator-passes.md   [x] done (three passes, PatternDetectionAgent)
-  → build-guide/05-orchestrator/04-sub-agents.md        [x] done (DO pattern, HTTP forwarding)
+  → build-guide/05-brain/04-sub-agents.md        [x] done (DO pattern, HTTP forwarding)
 
 spec: implementable-specs/18-vectorize.md
   → build-guide/06-memory-engine/03-vectorize.md        [x] done

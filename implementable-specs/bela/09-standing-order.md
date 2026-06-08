@@ -36,7 +36,7 @@ That is the entire setup. No list to manage. No items to configure. The AI build
 
 The day before the scheduled delivery:
 
-1. **Pantry gap analysis**: the AI reads the pantry model (from the Orchestrator DO: cooking session records, scan history, ingredient usage events) and identifies items that fall below their restock threshold
+1. **Pantry gap analysis**: the AI reads the pantry model (from the Brain DO: cooking session records, scan history, ingredient usage events) and identifies items that fall below their restock threshold
 
 2. **Restock threshold per item** is learned over time:
    - Items the user scans and uses frequently get tighter thresholds (restock sooner)

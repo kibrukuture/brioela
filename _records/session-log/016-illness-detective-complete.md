@@ -10,7 +10,7 @@ Deep read pass before writing:
 - `_records/session-log/015-recall-alerts-complete.md`
 - `build-guide/16-illness-detective/00-overview.md`
 - `brioela-specs/30-food-illness-detective.md`
-- dependency docs: Scanner, Receipt Intelligence, Recall Alerts, Notifications, Orchestrator
+- dependency docs: Scanner, Receipt Intelligence, Recall Alerts, Notifications, Brain
 
 Written — `build-guide/16-illness-detective/`:
 - `00-overview.md` — updated to complete, file list added
@@ -43,7 +43,7 @@ Before writing, read:
 - latest session log
 - `build-guide/17-menu-scanning/00-overview.md`
 - `brioela-specs/27-restaurant-menu-scanning.md`
-- dependencies: Scanner, Map, Orchestrator, Memory Engine
+- dependencies: Scanner, Map, Brain, Memory Engine
 
 ## Blockers / Decisions
 

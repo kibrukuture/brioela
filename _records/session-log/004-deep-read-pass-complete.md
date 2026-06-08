@@ -34,7 +34,7 @@
 | 06 receipt intelligence | 13-receipt-intelligence |
 | 07 allergy/dietary guardrails | 07-scanner |
 | 08 memory engine | 06-memory-engine |
-| 09 orchestrator | 05-orchestrator |
+| 09 brain | 05-brain |
 | 10 voice cooking | 08-cooking-session |
 | 11 vision cooking | 08-cooking-session |
 | 12 multi-person rooms | 08-cooking-session |
@@ -67,10 +67,10 @@
 | 38 food time machine | 18-ambient-intelligence |
 | 39 generative UI | 01-design-system |
 | 40 wearables | 20-wearables |
-| implementable-specs/ tables 01-12 | 05-orchestrator + 06-memory-engine |
+| implementable-specs/ tables 01-12 | 05-brain + 06-memory-engine |
 | implementable-specs/15-curator | 06-memory-engine |
-| implementable-specs/16-agent-identity | 05-orchestrator |
-| implementable-specs/17-session-lifecycle | 05-orchestrator |
+| implementable-specs/16-agent-identity | 05-brain |
+| implementable-specs/17-session-lifecycle | 05-brain |
 | implementable-specs/18-vectorize | 06-memory-engine |
 | implementable-specs/brioela-tools/ | 08-cooking-session (tools/) |
 | implementable-specs/cooking-session/ | 08-cooking-session |
@@ -83,7 +83,7 @@
 02-coding-standards
 03-foundation
 04-auth-and-onboarding
-05-orchestrator
+05-brain
 07-scanner
 06-memory-engine
 08-cooking-session
@@ -117,7 +117,7 @@ Build order (dependency layers):
 2. `02-coding-standards`
 3. `03-foundation`
 4. `04-auth-and-onboarding`
-5. `05-orchestrator` (critical path — everything depends on this)
+5. `05-brain` (critical path — everything depends on this)
 6. `06-memory-engine`
 7. Then: `07-scanner`, `19-recipe-ingestion`, `08-cooking-session`, `09-ground`, `10-map`, `13-receipt-intelligence`, `12-notifications`, `14-pantry-meal-plan`, `15-recall-alerts`, `16-illness-detective`, `17-menu-scanning`, `18-ambient-intelligence`, `20-wearables`, `21-kids-mode`, `22-medical-conditions`, `23-verified-profiles`, `24-viral-sharing`, `25-pricing-tiers`
 8. `11-bela` (last — depends on nearly everything)

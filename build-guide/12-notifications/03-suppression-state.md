@@ -7,11 +7,11 @@ Dismissal-based suppression and where state lives.
 ## Source Specs
 
 - `brioela-specs/23-ambient-notification-strategy.md`
-- `build-guide/05-orchestrator/05-alarm-system.md`
+- `build-guide/05-brain/05-alarm-system.md`
 
 ## Storage
 
-Suppression state lives in the Orchestrator DO per user.
+Suppression state lives in the Brain DO per user.
 
 ## Rules
 

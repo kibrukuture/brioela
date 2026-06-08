@@ -36,7 +36,7 @@ This feature uses `gemini-3.1-flash-live-preview` exclusively. Reasons:
 
 ## Session Initialization
 
-At session start, the CookingAgent DO builds a context payload from the Orchestrator DO and injects it as the Gemini Live system instructions:
+At session start, the CookingAgent DO builds a context payload from the Brain DO and injects it as the Gemini Live system instructions:
 
 - User name.
 - Hard allergies (full ingredient list — model must never suggest anything matching these).
@@ -67,7 +67,7 @@ If something changes during the session — product scan result arrives, a step 
 - Current step index.
 - Active timers and their remaining durations.
 - Approved substitutions already discussed this session.
-- User food constraints (copied from Orchestrator DO at session start).
+- User food constraints (copied from Brain DO at session start).
 - Transcript accumulation for post-session memory write.
 
 ## Session Persistence and Resume
@@ -86,7 +86,7 @@ Voice cooking agent is available on paid tiers only. The specific tier cutoff is
 
 ## Post-Session Memory Write
 
-When the session ends, the CookingAgent DO fires a summarization job to Upstash Workflow. The workflow: compiles the full transcript, extracts any new preference signals, identifies steps that caused confusion, logs recipe completion or abandonment, and writes durable facts to the Orchestrator DO's SQLite. These facts improve the next session automatically.
+When the session ends, the CookingAgent DO fires a summarization job to Upstash Workflow. The workflow: compiles the full transcript, extracts any new preference signals, identifies steps that caused confusion, logs recipe completion or abandonment, and writes durable facts to the Brain DO's SQLite. These facts improve the next session automatically.
 
 ## API Surface
 

@@ -16,7 +16,7 @@ Ordering groceries for family, grandparents, or non-users.
 
 ## Non-User Profile
 
-Stored in sender Orchestrator DO as `recipient_profiles`.
+Stored in sender Brain DO as `recipient_profiles`.
 
 Includes:
 

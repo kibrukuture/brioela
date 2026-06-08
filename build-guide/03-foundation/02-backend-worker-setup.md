@@ -37,7 +37,7 @@
   // Durable Object bindings — one per DO class
   "durable_objects": {
     "bindings": [
-      { "name": "ORCHESTRATOR",   "class_name": "BrioelOrchestrator" },
+      { "name": "BRAIN",   "class_name": "BrioelaBrain" },
       { "name": "COOKING_AGENT",  "class_name": "CookingAgent" }
     ]
   },
@@ -46,7 +46,7 @@
   "migrations": [
     {
       "tag": "v1",
-      "new_sqlite_classes": ["BrioelOrchestrator", "CookingAgent"]
+      "new_sqlite_classes": ["BrioelaBrain", "CookingAgent"]
     }
   ]
 }
@@ -137,7 +137,7 @@ import { authMiddleware }  from '@/core/middleware/auth.middleware'
 import { errorMiddleware } from '@/core/middleware/error.middleware'
 
 // CF requires all DO classes exported from the Worker entry point
-export { BrioelOrchestrator } from './agents/orchestrator/orchestrator.agent'
+export { BrioelaBrain } from './agents/brain/brain.agent'
 export { CookingAgent }       from './agents/cooking/cooking.agent'
 
 export const app = new Hono<{

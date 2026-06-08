@@ -17,7 +17,7 @@ spec: brioela-specs/35-ground-community-intelligence.md
 ```
 
 ## Files in this folder
-- `01-orchestrator-connections.md`
+- `01-brain-connections.md`
 - `02-scanner-connections.md`
 - `03-cooking-session-connections.md`
 - `04-ground-connections.md`

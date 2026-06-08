@@ -18,7 +18,7 @@ Default posture: collect less, summarize early, store privately, surface rarely.
 
 ## Non-Negotiables
 
-- Wearable data lives only in the user's Orchestrator DO SQLite.
+- Wearable data lives only in the user's Brain DO SQLite.
 - No wearable data in Supabase.
 - No wearable data in Ground.
 - No wearable data in shared map, menu, price, or community tables.

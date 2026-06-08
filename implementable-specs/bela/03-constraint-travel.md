@@ -10,7 +10,7 @@ This is the feature no competitor has. It is also the feature that makes Brioela
 
 ## What Travels with the Order
 
-At order confirmation, the `OrderAgent` DO reads the user's full constraint table from their `Orchestrator DO SQLite` and writes a snapshot to the `order_constraint_snapshot` table in Supabase. This snapshot is used for all constraint checks during the order — it is frozen at order time so that any changes the user makes to their constraints after placing the order do not affect the in-progress shopping.
+At order confirmation, the `OrderAgent` DO reads the user's full constraint table from their `Brain DO SQLite` and writes a snapshot to the `order_constraint_snapshot` table in Supabase. This snapshot is used for all constraint checks during the order — it is frozen at order time so that any changes the user makes to their constraints after placing the order do not affect the in-progress shopping.
 
 **What is included in the snapshot:**
 
@@ -37,7 +37,7 @@ interface OrderConstraintSnapshot {
 }
 ```
 
-The snapshot is read by the `OrderAgent` DO every time the shopper scans a product. It is not re-fetched from the Orchestrator per scan — it is loaded into the OrderAgent's memory at session start and cached for the duration of the shopping session.
+The snapshot is read by the `OrderAgent` DO every time the shopper scans a product. It is not re-fetched from the Brain per scan — it is loaded into the OrderAgent's memory at session start and cached for the duration of the shopping session.
 
 ---
 

@@ -13,10 +13,10 @@ Brioela may choose one Meeting per cooking session as product policy, but Cloudf
 
 ## Room Creation Flow
 
-The Orchestrator DO creates the room when the user starts a cooking session. It calls the RealtimeKit REST API, then creates the CookingAgent DO, then returns the join token to the mobile.
+The Brain DO creates the room when the user starts a cooking session. It calls the RealtimeKit REST API, then creates the CookingAgent DO, then returns the join token to the mobile.
 
 ```
-Mobile ──── POST /api/cooking/start ────► Worker (routes to Orchestrator DO)
+Mobile ──── POST /api/cooking/start ────► Worker (routes to Brain DO)
                                                │
                                                │ 1. Create RealtimeKit Meeting
                                                │ 2. Create Participant + participantToken
@@ -120,7 +120,7 @@ The Worker at `/internal/cooking-stream/:sessionId/:mediaKind` validates the sig
 
 ---
 
-## Session Start — Orchestrator DO
+## Session Start — Brain DO
 
 ```typescript
 async function startCookingSession(userId: string, env: Env): Promise<CookingSessionStart> {

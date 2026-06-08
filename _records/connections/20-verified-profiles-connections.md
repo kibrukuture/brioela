@@ -16,7 +16,7 @@ spec: brioela-specs/19-pricing-and-tiers.md
 build-guide: build-guide/04-auth-and-onboarding/
   → build-guide/23-verified-profiles/02-verification-flow.md [x] done
 
-build-guide: build-guide/05-orchestrator/
+build-guide: build-guide/05-brain/
   → build-guide/23-verified-profiles/05-client-and-practitioner-boundary.md [x] done
 
 build-guide: build-guide/10-map/

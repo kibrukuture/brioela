@@ -24,7 +24,7 @@ spec: brioela-specs/37-guest-and-cooking-for-others.md
   → build-guide/18-ambient-intelligence/05-guest-mode.md [x] done
   → build-guide/18-ambient-intelligence/06-surfacing-and-privacy.md [x] done
 
-build-guide: build-guide/05-orchestrator/
+build-guide: build-guide/05-brain/
   → build-guide/18-ambient-intelligence/01-ambient-alarm-loop.md [x] done
   → build-guide/18-ambient-intelligence/02-behavioral-patterns.md [x] done
   → build-guide/18-ambient-intelligence/03-pre-trip-food-intelligence.md [x] done

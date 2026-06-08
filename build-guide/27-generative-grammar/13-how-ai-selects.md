@@ -5,7 +5,7 @@
 The mechanism by which the backend AI chooses what UI to produce: tool/function calling vs
 structured output, how a discriminated union turns "designing a layout" into "picking an enum
 and filling content," and the gate that keeps silence the default. This is the bridge between the
-orchestrator (`05-orchestrator`) and the Brioela Generative UI document (`10`).
+brain (`05-brain`) and the Brioela Generative UI document (`10`).
 
 ---
 
@@ -47,7 +47,7 @@ description: "Compose ONE emotional food moment as a Brioela Generative UI docum
 input_schema: <the Brioela Generative UI schema, with layoutTemplate as a discriminated union>
 ```
 
-In the one-shot case the orchestrator forces a `present_moment` call (effectively structured
+In the one-shot case the brain forces a `present_moment` call (effectively structured
 output). In the agentic case `present_moment` sits in the agent's toolbox next to its other
 tools. One tool, two modes.
 
@@ -98,7 +98,7 @@ as well-steered as separate tools would be, without the tool sprawl.
 ## The Gate: Silence Is The Default
 
 Per `brioela-specs/00-product-philosophy-and-ux.md`, Brioela speaks only when it has something
-genuinely worth surfacing. So before composing anything, the orchestrator runs a gate:
+genuinely worth surfacing. So before composing anything, the brain runs a gate:
 
 ```
 decide_if_worth_enhancing(payload, context) → boolean
@@ -114,7 +114,7 @@ gate is a separate, cheap decision *before* `present_moment` is ever offered.
 
 ```
 1. Feature renders Tier-0 static UI.
-2. Orchestrator gathers approved payload + context.
+2. Brain gathers approved payload + context.
 3. decide_if_worth_enhancing → false? stop, static stands.
 4. true → call model with system prompt + per-surface catalog schema + few-shot + payload.
 5. Model emits a Brioela Generative UI document (structured output / present_moment call).
@@ -128,7 +128,7 @@ gate is a separate, cheap decision *before* `present_moment` is ever offered.
 
 - `10-the-stage-document.md` — the Brioela Generative UI document is what the model emits.
 - `12-naming-law.md` — names + descriptions are what the model selects against.
-- `05-orchestrator` (feature) — owns the gate and the model call.
+- `05-brain` (feature) — owns the gate and the model call.
 
 ## What Depends On This File
 

@@ -15,7 +15,7 @@ There are two related records:
 
 For non-recipe shares, this folder does not create a recipe row. It routes to the relevant feature/memory path described in `08-shared-content-router.md`.
 
-The final user recipe belongs in the Orchestrator DO SQLite `recipes` table. Source artifacts can be stored with the import job and scoped to the user.
+The final user recipe belongs in the Brain DO SQLite `recipes` table. Source artifacts can be stored with the import job and scoped to the user.
 
 ---
 
@@ -127,7 +127,7 @@ type CookImportedRecipeRequest = {
 }
 ```
 
-Cooking session reads the recipe through Orchestrator tools. It should see:
+Cooking session reads the recipe through Brain tools. It should see:
 
 - ingredients
 - steps

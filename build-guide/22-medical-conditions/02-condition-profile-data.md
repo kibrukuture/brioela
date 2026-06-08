@@ -8,7 +8,7 @@ The private condition profile data model, active/inactive lifecycle, severity/st
 
 ## Storage Rule
 
-Medical condition profile data lives in the user's Orchestrator DO SQLite.
+Medical condition profile data lives in the user's Brain DO SQLite.
 
 Do not store active conditions in Supabase, Ground, shared map tables, analytics, or public profiles.
 
@@ -32,7 +32,7 @@ type MedicalConditionProfile = {
 }
 ```
 
-This can be an explicit table in the Orchestrator schema or a structured `user_memory` entry under `health.conditions`. If implementation creates a new table, update Memory Engine docs and migrations intentionally.
+This can be an explicit table in the Brain schema or a structured `user_memory` entry under `health.conditions`. If implementation creates a new table, update Memory Engine docs and migrations intentionally.
 
 ---
 

@@ -50,10 +50,10 @@ Before writing, read:
 - latest session log
 - `build-guide/15-recall-alerts/00-overview.md`
 - `brioela-specs/26-personalized-recall-alerts.md`
-- dependencies: Scanner, Notifications, Orchestrator, Receipt Intelligence
+- dependencies: Scanner, Notifications, Brain, Receipt Intelligence
 
 ## Blockers / Decisions
 
 - Pantry is snapshot/prediction based, not exact live inventory.
-- Meal plans and price history are private Orchestrator DO data.
+- Meal plans and price history are private Brain DO data.
 - Weekly summary delivery follows notification rules.

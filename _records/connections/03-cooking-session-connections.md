@@ -15,7 +15,7 @@ spec: implementable-specs/cooking-session/03-gemini-session.md
 
 spec: implementable-specs/cooking-session/04-tool-protocol.md
   → build-guide/08-cooking-session/03-gemini-live-session.md [x] done (BLOCKING tool call handling, executePendingToolCall)
-  → build-guide/08-cooking-session/02-cooking-agent-do.md    [x] done (forwardToolToOrchestrator)
+  → build-guide/08-cooking-session/02-cooking-agent-do.md    [x] done (forwardToolToBrain)
 
 spec: implementable-specs/cooking-session/05-video-processing.md
   → build-guide/08-cooking-session/03-gemini-live-session.md [x] done (sendVideoFrame, client_content approach)

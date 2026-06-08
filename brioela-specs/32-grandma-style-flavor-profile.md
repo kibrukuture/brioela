@@ -75,7 +75,7 @@ This is the feature that gets written about in obituaries and shared at family d
 
 - Style extraction is a post-session async job via Upstash Workflow — it does not block session end.
 - Extraction runs on the full session transcript plus any vision events from the session.
-- Style profiles are stored in the user's Orchestrator DO — they are personal data, not shared.
+- Style profiles are stored in the user's Brain DO — they are personal data, not shared.
 - The "cook in her style" adaptation call is a standard LLM structured call, not a streaming session. Target latency: under 3 seconds.
 - Style profiles survive account deletion requests for a grace period (30 days) with explicit user warning: "This will permanently delete [name]'s cooking style. This cannot be undone."
 

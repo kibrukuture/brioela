@@ -32,7 +32,7 @@ Brioela already knows everything about the user: their allergies (confirmed or i
 
 1. GPT-4o mini vision extraction reads full menu text.
 2. LLM parses menu into structured dishes: name, description, ingredients where listed, cooking method where mentioned.
-3. Each dish is evaluated against the user's full constraint profile pulled from their Orchestrator DO.
+3. Each dish is evaluated against the user's full constraint profile pulled from their Brain DO.
 4. Dishes missing ingredient detail are flagged yellow by default (unknown = ask, not assume safe).
 5. Results returned as a structured list with per-dish verdict, reason, and suggested waiter question.
 6. If needed, Language Bridge turns the waiter question into a two-way food conversation between user and staff.
@@ -41,7 +41,7 @@ The processing model is a standard text call (not Gemini Live) — this is a one
 
 ## Constraint Profile Used
 
-Everything from the user's Orchestrator DO:
+Everything from the user's Brain DO:
 - Hard allergies (confirmed via behavioral engine or explicit confirmation).
 - Soft dislikes (will not flag as red, but will rank green dishes lower).
 - Dietary identity: vegan, vegetarian, halal, kosher, gluten-free, diabetic, pregnant, low-FODMAP, etc.
@@ -77,7 +77,7 @@ Raw extracted text is discarded after processing. Results are stored for the ses
 ## Technical Constraints
 
 - GPT-4o mini vision extraction and menu parsing must complete in under 3 seconds on a typical menu photo.
-- The user's constraint profile is pulled from their Orchestrator DO — not re-derived from scratch per scan.
+- The user's constraint profile is pulled from their Brain DO — not re-derived from scratch per scan.
 - No menu data is stored on Brioela's servers after the session unless the user saves it. Menu content is transient.
 
 ## Success Metrics

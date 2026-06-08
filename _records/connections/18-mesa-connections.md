@@ -19,7 +19,7 @@ spec: brioela-specs/37-guest-and-cooking-for-others.md
 spec: brioela-specs/31-kids-food-literacy-mode.md
   → build-guide/26-mesa/00-overview.md [~] context only
 
-build-guide: build-guide/05-orchestrator/
+build-guide: build-guide/05-brain/
   → build-guide/26-mesa/01-mesa-data-model.md [x] done
   → build-guide/26-mesa/03-mesa-tools.md [x] done
   → build-guide/26-mesa/08-potential-members.md [x] done

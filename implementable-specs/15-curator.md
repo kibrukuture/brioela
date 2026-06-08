@@ -8,13 +8,13 @@ Neither agent is user-facing. Neither talks to the user. Both produce outcomes t
 
 ---
 
-## Architecture — Ephemeral DOs, Persistent Orchestrator
+## Architecture — Ephemeral DOs, Persistent Brain
 
 Every agent in Brioela is a Cloudflare Durable Object. What separates them is the ID they are keyed by:
 
 ```
 CF Worker receives request
-└── routes to BrioelOrchestrator DO
+└── routes to BrioelaBrain DO
     key: idFromName(userId)          ← PERSISTENT — same DO instance forever per user
     has: SQLite (the user's brain)
     never dies
@@ -32,24 +32,24 @@ CF Worker receives request
         dies when work is done
 ```
 
-All agents — Orchestrator, CuratorAgent, PatternDetectionAgent, CookingAgent, ProductScanAgent — are the same kind of entity. They all use LLMs. They all use tools. The only difference is the ID. Ephemeral IDs mean ephemeral DOs. The Orchestrator's `userId` key is what makes it permanent.
+All agents — Brain, CuratorAgent, PatternDetectionAgent, CookingAgent, ProductScanAgent — are the same kind of entity. They all use LLMs. They all use tools. The only difference is the ID. Ephemeral IDs mean ephemeral DOs. The Brain's `userId` key is what makes it permanent.
 
 ---
 
 ## Tool Forwarding Protocol — Tools Defined and Executed Once
 
-Sub-agents (CuratorAgent, PatternDetectionAgent, and all others) have no SQLite. They cannot execute tools against a database. Every tool call a sub-agent makes is forwarded to the Orchestrator, which executes it against its SQLite and returns the result.
+Sub-agents (CuratorAgent, PatternDetectionAgent, and all others) have no SQLite. They cannot execute tools against a database. Every tool call a sub-agent makes is forwarded to the Brain, which executes it against its SQLite and returns the result.
 
-**Tools are defined ONCE. Executed ONCE. In the Orchestrator. Always.**
+**Tools are defined ONCE. Executed ONCE. In the Brain. Always.**
 
-Sub-agents call tools. The Orchestrator runs them.
+Sub-agents call tools. The Brain runs them.
 
 ### HTTP Forwarding
 
 When a sub-agent calls a tool:
 
 ```
-POST https://{orchestrator-do-url}/internal/tool-call
+POST https://{brain-do-url}/internal/tool-call
 Authorization: Bearer {shared-internal-secret}
 Content-Type: application/json
 
@@ -61,7 +61,7 @@ Content-Type: application/json
 }
 ```
 
-Orchestrator on receiving this:
+Brain on receiving this:
 1. Validates `Authorization` header — rejects if not the internal secret
 2. Validates `caller` is in the allowed caller list for this tool
 3. Validates `args` with the tool's Zod schema
@@ -80,7 +80,7 @@ The sub-agent receives this as if the tool ran locally. It does not know or care
 
 ### Authorization: Tool Subsets Per Caller
 
-Not every agent can call every tool. The Orchestrator enforces caller-based authorization on every `/internal/tool-call` request:
+Not every agent can call every tool. The Brain enforces caller-based authorization on every `/internal/tool-call` request:
 
 ```typescript
 const TOOL_PERMISSIONS: Record<string, string[]> = {
@@ -143,7 +143,7 @@ function isToolAllowed(caller: string, tool: string): boolean {
 }
 ```
 
-If a sub-agent calls a tool it is not authorized for, the Orchestrator returns `{ error: 'tool_not_authorized', tool, caller }`. The sub-agent cannot override this. No exceptions.
+If a sub-agent calls a tool it is not authorized for, the Brain returns `{ error: 'tool_not_authorized', tool, caller }`. The sub-agent cannot override this. No exceptions.
 
 ---
 
@@ -323,7 +323,7 @@ Both are system-scheduled — `triggeringSessionId = null`. No agent session cre
 
 ### Self-Rescheduling After Completion
 
-At the end of each run, the sub-agent calls `schedule_user_alarm` (forwarded to Orchestrator) to queue the next run before it dies:
+At the end of each run, the sub-agent calls `schedule_user_alarm` (forwarded to Brain) to queue the next run before it dies:
 
 ```typescript
 // CuratorAgent at end of run:
@@ -362,15 +362,15 @@ if (activeSessionCheck.has_active_session) {
 }
 ```
 
-`check_active_session` is an internal Orchestrator query: `SELECT id FROM sessions WHERE status = 'active' LIMIT 1`. If any row returns, the check fails and both agents defer.
+`check_active_session` is an internal Brain query: `SELECT id FROM sessions WHERE status = 'active' LIMIT 1`. If any row returns, the check fails and both agents defer.
 
-Why this matters: the Orchestrator is the single writer. If a user session and CuratorAgent both issue tool calls simultaneously, the Orchestrator serializes them. But logical conflicts still occur — if the agent just created a new skill mid-cooking-session, the Curator should not immediately evaluate it for archival. The 1-hour defer means the Curator always runs against settled state.
+Why this matters: the Brain is the single writer. If a user session and CuratorAgent both issue tool calls simultaneously, the Brain serializes them. But logical conflicts still occur — if the agent just created a new skill mid-cooking-session, the Curator should not immediately evaluate it for archival. The 1-hour defer means the Curator always runs against settled state.
 
 ---
 
 ## CuratorAgent — Three Sequential Passes
 
-The Orchestrator spins up CuratorAgent, gives it its system prompt (who it is, what its job is this run), and the agent proceeds through three passes in order using tool calls.
+The Brain spins up CuratorAgent, gives it its system prompt (who it is, what its job is this run), and the agent proceeds through three passes in order using tool calls.
 
 ### Pass 1 — Skill Maintenance
 
@@ -602,7 +602,7 @@ PatternDetectionAgent never writes to `user_personality` directly. It cannot —
 
 ```typescript
 // Read last run timestamp from agent_state
-const lastRunTs = await orchestrator.getAgentState('pattern_detection.last_run')
+const lastRunTs = await brain.getAgentState('pattern_detection.last_run')
 const sinceTimestamp = lastRunTs ? parseInt(lastRunTs) : Date.now() - 7 * 24 * 60 * 60 * 1000
 ```
 
@@ -682,7 +682,7 @@ These become valid evidence entries for CuratorAgent's trait inference on the ne
 ### Step 6: Update last run timestamp + reschedule
 
 ```typescript
-await orchestrator.setAgentState('pattern_detection.last_run', String(Date.now()))
+await brain.setAgentState('pattern_detection.last_run', String(Date.now()))
 
 await callTool('schedule_user_alarm', {
   alarm_type:    'pattern_detection',
@@ -695,7 +695,7 @@ await callTool('schedule_user_alarm', {
 
 ## Session Tracking
 
-Both agents run as `background` session rows. The Orchestrator creates the session row before spinning up the sub-agent and updates it when the sub-agent reports back:
+Both agents run as `background` session rows. The Brain creates the session row before spinning up the sub-agent and updates it when the sub-agent reports back:
 
 ```typescript
 // Before spin-up:
@@ -759,8 +759,8 @@ Same retry logic. The `pattern_detection.last_run` timestamp is NOT updated on f
 
 ### Both CANNOT:
 - Create or modify `scheduled_alarms` rows other than their own rescheduling
-- Modify `sessions` rows other than their own session row (managed by Orchestrator)
-- Access another user's DO — the Orchestrator only passes the current user's context
+- Modify `sessions` rows other than their own session row (managed by Brain)
+- Access another user's DO — the Brain only passes the current user's context
 
 ---
 

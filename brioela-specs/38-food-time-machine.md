@@ -68,7 +68,7 @@ The difference between a milestone and gamification: a milestone observes someth
 
 ## Data Sources
 
-All data already exists in the Orchestrator DO and Supabase:
+All data already exists in the Brain DO and Supabase:
 
 | Moment type | Source |
 |---|---|
@@ -77,14 +77,14 @@ All data already exists in the Orchestrator DO and Supabase:
 | Last time a recipe was made | `recipe_history` — last entry |
 | Total products scanned | `scan_events` — count per user_id |
 | Dietary behavior changes | `user_memory` — namespace `diet.*`, compare write_dates |
-| Cooking session history | `session_archive` in Orchestrator DO |
+| Cooking session history | `session_archive` in Brain DO |
 | Generational recipe use | `recipe_history` joined with `recipe.source='generational'` |
 
 No new data collection. This is entirely a read + presentation layer over existing data.
 
 ## Computation
 
-Time Machine moments are computed during the Orchestrator DO's weekly alarm cycle and stored as a small candidate queue — typically 5–10 candidate moments ranked by emotional salience. The inline surfaces draw from this queue as opportunities arise (scan, recipe open, weekly summary).
+Time Machine moments are computed during the Brain DO's weekly alarm cycle and stored as a small candidate queue — typically 5–10 candidate moments ranked by emotional salience. The inline surfaces draw from this queue as opportunities arise (scan, recipe open, weekly summary).
 
 Moments expire from the queue after 14 days if not surfaced. The weekly cycle regenerates new candidates.
 

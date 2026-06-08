@@ -68,7 +68,7 @@ Brioela Generative Grammar is the safe creative UI language for the app. It repl
 
 - `01-design-system` — tokens, motion, haptics, Skia layers, CVA variants, component registry
 - `03-foundation` — Expo/React Native runtime and update constraints
-- `05-orchestrator` — server-side decision generation and context
+- `05-brain` — server-side decision generation and context
 - `24-viral-sharing` — Discovery Card artifact layer
 
 ## What Depends On This Folder

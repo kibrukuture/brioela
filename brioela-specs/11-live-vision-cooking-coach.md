@@ -25,9 +25,9 @@ Use live camera input during cooking so the AI agent can see what the user is do
 - Generic kitchen surveillance.
 - Nutrition analysis from the cooked plate (separate feature area, not here).
 
-## AI Model: Gemini Live (Same Brain as Voice)
+## AI Model: Gemini Live (Same Live Model as Voice)
 
-This feature uses the same `gemini-3.1-flash-live-preview` session as spec 10. There is no separate vision model. Gemini Live processes audio and video frames in the same brain simultaneously — it hears the user speak and sees the camera frames at the same time, in one model.
+This feature uses the same `gemini-3.1-flash-live-preview` session as spec 10. There is no separate vision model. Gemini Live processes audio and video frames in the same model session simultaneously — it hears the user speak and sees the camera frames at the same time, in one model.
 
 This is not "duct-taped" vision. It is native multimodal: the model's response integrates both what it hears and what it sees in the same reasoning pass.
 

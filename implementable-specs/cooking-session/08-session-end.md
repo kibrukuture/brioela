@@ -59,8 +59,8 @@ async endSession(reason: SessionEndReason): Promise<void> {
   // 9. Clear turn counter from agent_state
   await this.deleteAgentState(`turn_counter.${this.sessionState.sessionId}`)
 
-  // 10. Clear active_session_id from agent_state (via Orchestrator)
-  await this.forwardToolToOrchestrator('clear_active_session', {})
+  // 10. Clear active_session_id from agent_state (via Brain)
+  await this.forwardToolToBrain('clear_active_session', {})
 
   this.sessionState.status = 'ended'
 }
@@ -119,11 +119,11 @@ private async runSessionEndProcessing(reason: SessionEndReason): Promise<void> {
 
 ## Recipe Decision Tree
 
-Implemented via an LLM call to the Orchestrator (the Orchestrator runs a lightweight completion with the transcript). The CookingAgent DO calls the Orchestrator with the full transcript and gets back a structured decision.
+Implemented via an LLM call to the Brain (the Brain runs a lightweight completion with the transcript). The CookingAgent DO calls the Brain with the full transcript and gets back a structured decision.
 
 ```typescript
 private async runRecipeDecision(transcript: SessionTurn[]): Promise<RecipeDecision> {
-  const resp = await this.forwardToolToOrchestrator('run_recipe_decision', {
+  const resp = await this.forwardToolToBrain('run_recipe_decision', {
     session_id:  this.sessionState.sessionId,
     transcript:  transcript.map(t => `[${t.role}] ${t.content}`).join('\n'),
   })
@@ -132,7 +132,7 @@ private async runRecipeDecision(transcript: SessionTurn[]): Promise<RecipeDecisi
 }
 ```
 
-The `run_recipe_decision` tool on the Orchestrator runs the decision tree from `09-recipes.md`:
+The `run_recipe_decision` tool on the Brain runs the decision tree from `09-recipes.md`:
 
 ```
 1. Did the session involve cooking something specific?
@@ -149,7 +149,7 @@ The `run_recipe_decision` tool on the Orchestrator runs the decision tree from `
    → Yes → run recipe-reconstruction skill → insert new recipe row
 ```
 
-The decision is never automatic. The Orchestrator LLM reasons from the transcript. The result is:
+The decision is never automatic. The Brain LLM reasons from the transcript. The result is:
 
 ```typescript
 interface RecipeDecision {
@@ -178,7 +178,7 @@ private async writeOutcomeSummary(data: OutcomeSummaryData): Promise<void> {
     tools_called:   this.toolCallHistory, // names of all tool calls during session
   }
 
-  await this.forwardToolToOrchestrator('finalize_session', {
+  await this.forwardToolToBrain('finalize_session', {
     session_id:      this.sessionState.sessionId,
     outcome_summary: JSON.stringify(summary),
     end_reason:      data.type,
@@ -206,7 +206,7 @@ Example `outcome_summary` for a completed doro wat session:
 
 ```typescript
 private async finalizeSessionRow(reason: SessionEndReason): Promise<void> {
-  await this.forwardToolToOrchestrator('update_session_status', {
+  await this.forwardToolToBrain('update_session_status', {
     session_id: this.sessionState.sessionId,
     status:     'completed',
     end_reason: reason,

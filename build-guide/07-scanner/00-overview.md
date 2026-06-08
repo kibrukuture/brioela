@@ -2,7 +2,7 @@
 
 ## What This Folder Covers
 
-The core product loop: point camera at a product, get a verdict in under 3 seconds. Barcode decode (on-device), product resolution (Open Food Facts + gov DBs + Redis cache), constraint check against the user's Orchestrator DO, scan result UI (compact + expanded), GPT-4o mini vision fallback when no barcode, boycott filter enforcement, and origin/supply chain display. Scanning is always free — never paywalled.
+The core product loop: point camera at a product, get a verdict in under 3 seconds. Barcode decode (on-device), product resolution (Open Food Facts + gov DBs + Redis cache), constraint check against the user's Brain DO, scan result UI (compact + expanded), GPT-4o mini vision fallback when no barcode, boycott filter enforcement, and origin/supply chain display. Scanning is always free — never paywalled.
 
 Note: restaurant menu scanning has its own folder (`17-menu-scanning`) and reuses the GPT-4o mini vision extraction pattern from this folder.
 
@@ -13,9 +13,9 @@ Note: restaurant menu scanning has its own folder (`17-menu-scanning`) and reuse
 
 | File | Contents |
 |---|---|
-| `01-barcode-decode.md` | On-device barcode detection (Expo Camera), UPC extraction, offline behavior, backend route entry point, Supabase scan_events write, dual write to Orchestrator DO memory_event |
+| `01-barcode-decode.md` | On-device barcode detection (Expo Camera), UPC extraction, offline behavior, backend route entry point, Supabase scan_events write, dual write to Brain DO memory_event |
 | `02-product-resolution.md` | Evidence-weighted product graph, parallel fan-out to approved sources (GS1 + Open Food Facts + USDA + country public databases + commercial fallback), field-level confidence, allergen fail-safe resolution, GPT-4o mini label evidence, conflict detection, confidence-based UI treatment |
-| `03-constraint-check.md` | check-constraint tool inside Orchestrator DO, ingredient synonym resolution, six constraint states (block/warn/deprioritize/boycott/clear/degraded), medication-food interaction check via the private `medications` table, community health signal overlay, degraded guardrails rule |
+| `03-constraint-check.md` | check-constraint tool inside Brain DO, ingredient synonym resolution, six constraint states (block/warn/deprioritize/boycott/clear/degraded), medication-food interaction check via the private `medications` table, community health signal overlay, degraded guardrails rule |
 | `04-scan-result-ui.md` | Verdict structure schema, base health score computation (rule-based), green/yellow/red verdict logic, compact result layout, hard allergy interrupt pattern, expanded result, boycott display, origin display, follow-up actions, free tier rule |
 | `05-gpt4o-mini-vision-fallback.md` | Vision fallback trigger (3s timeout), server-side GPT-4o mini extraction, contrast enhancement, confidence schema, synthetic product construction, menu scanning pattern reuse |
 | `06-product-data-provenance-correction.md` | Source priority, product fact provenance, label evidence, correction flow, safety boundary |
@@ -31,9 +31,9 @@ Note: restaurant menu scanning has its own folder (`17-menu-scanning`) and reuse
 ## Key Decisions From Specs
 
 - Barcode decode on-device — no network required for UPC extraction
-- scan_events written to Supabase (shared) for recall cross-referencing, AND to Orchestrator DO memory_event (private) for illness detective
+- scan_events written to Supabase (shared) for recall cross-referencing, AND to Brain DO memory_event (private) for illness detective
 - Redis cache key `product:{upc}` with 7-day TTL — cache hit path under 500ms
-- Constraint check calls Orchestrator DO via `/internal/check-constraints` — all user-private data stays in DO
+- Constraint check calls Brain DO via `/internal/check-constraints` — all user-private data stays in DO
 - hard_allergy blocks scan result with explicit interrupt; user must tap through
 - Degraded guardrails: constraint check failure never returns `clear`; product facts can render, but personal checks are marked unavailable
 - Base health score is rule-based (additives, nutrients, ingredient count) — no LLM in scoring path
@@ -61,7 +61,7 @@ scan input
 → attach product fact evidence and confidence
 → load origin / parent-company context
 → load cached product community health summary
-→ call Orchestrator DO for personal constraints and medication-food checks from the private `medications` table
+→ call Brain DO for personal constraints and medication-food checks from the private `medications` table
 → read cached ingredient event association signals relevant to the user profile
 → build one verdict
 → return one scan result payload
@@ -90,12 +90,12 @@ experience is still unified: one scan, one verdict, one explanation hierarchy.
 ## Tools Built In This Feature
 
 Under `tools/product-scan/`:
-- `check-constraint.ts` — checks product against constraints + medications inside Orchestrator DO
-- `log-scan-event.ts` — writes scan event to Orchestrator DO memory_event table
+- `check-constraint.ts` — checks product against constraints + medications inside Brain DO
+- `log-scan-event.ts` — writes scan event to Brain DO memory_event table
 
 ## What This Folder Depends On
 
-- `05-orchestrator` — constraint profile, private `medications` table, user_memory summary mirror, memory_event write
+- `05-brain` — constraint profile, private `medications` table, user_memory summary mirror, memory_event write
 - `06-memory-engine` — memory_event schema, user_memory schema
 - `03-foundation` — Supabase for scan_events and products tables, Upstash Redis for product cache
 

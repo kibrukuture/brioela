@@ -2,7 +2,7 @@
 
 ## What This File Covers
 
-CookingAgent Agent class structure, all endpoints, recoverable live-session state, initialization, Cloudflare Realtime SFU track stream handling, mobile audio-out WebSocket, eviction recovery, and Orchestrator tool forwarding.
+CookingAgent Agent class structure, all endpoints, recoverable live-session state, initialization, Cloudflare Realtime SFU track stream handling, mobile audio-out WebSocket, eviction recovery, and Brain tool forwarding.
 
 ---
 
@@ -12,7 +12,7 @@ CookingAgent Agent class structure, all endpoints, recoverable live-session stat
 DO ID: env.COOKING_AGENT.idFromName(`cooking:${sessionId}`)
 ```
 
-One Agent-backed Durable Object per cooking session. Session-scoped — not user-scoped. The Orchestrator DO creates and addresses the CookingAgent. CookingAgent owns live runtime state and a small local recovery record; Orchestrator owns persistent user SQLite truth.
+One Agent-backed Durable Object per cooking session. Session-scoped — not user-scoped. The Brain DO creates and addresses the CookingAgent. CookingAgent owns live runtime state and a small local recovery record; Brain owns persistent user SQLite truth.
 
 ---
 
@@ -139,7 +139,7 @@ export async function handleInit(request: Request, do: CookingAgent): Promise<Re
     sessionId, userId, meetingId, 'initializing', Date.now(),
   )
 
-  // Load user context from Orchestrator DO
+  // Load user context from Brain DO
   const context = await loadUserContext(userId, do.env)
 
   // Open Gemini session before mobile joins — pre-warming
@@ -251,21 +251,21 @@ private async recover(): Promise<void> {
 
 ---
 
-## Orchestrator Tool Forwarding
+## Brain Tool Forwarding
 
-Every tool that touches persistent user memory/recipes/health SQLite is forwarded to the Orchestrator. The CookingAgent may use local Agent SQLite only for live-session recovery metadata, timers, adapter IDs, and connection bookkeeping.
+Every tool that touches persistent user memory/recipes/health SQLite is forwarded to the Brain. The CookingAgent may use local Agent SQLite only for live-session recovery metadata, timers, adapter IDs, and connection bookkeeping.
 
 ```typescript
-export async function forwardToolToOrchestrator(
+export async function forwardToolToBrain(
   toolName: string,
   toolArgs: unknown,
   state: CookingAgentState,
   env: Env,
 ): Promise<unknown> {
-  const orchestratorId = env.ORCHESTRATOR.idFromName(state.userId)
-  const orchestrator   = env.ORCHESTRATOR.get(orchestratorId)
+  const brainId = env.BRAIN.idFromName(state.userId)
+  const brain   = env.BRAIN.get(brainId)
 
-  const resp = await orchestrator.fetch(new Request('https://internal/tool-call', {
+  const resp = await brain.fetch(new Request('https://internal/tool-call', {
     method: 'POST',
     headers: {
       'Authorization': `Bearer ${env.INTERNAL_SECRET}`,

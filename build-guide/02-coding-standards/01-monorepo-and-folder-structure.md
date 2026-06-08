@@ -166,8 +166,8 @@ backend/
 │   │       └── index.ts
 │   │
 │   ├── agents/                         # Durable Object classes — one folder per DO
-│   │   ├── orchestrator/
-│   │   │   ├── orchestrator.agent.ts   # DO class — fetch(), alarm(), WebSocket lifecycle
+│   │   ├── brain/
+│   │   │   ├── brain.agent.ts   # DO class — fetch(), alarm(), WebSocket lifecycle
 │   │   │   ├── _schema/
 │   │   │   │   ├── memory.schema.ts
 │   │   │   │   ├── constraints.schema.ts
@@ -570,8 +570,8 @@ The `shared/routes/index.ts` is the single source of truth.
 | Controller wrapper for scan handlers | `backend/src/api/scan/scan.controller.ts` |
 | Handler that creates a scan | `backend/src/api/scan/_handlers/create.scan.handler.ts` |
 | Helper used by scan handlers | `backend/src/api/scan/_helpers/build.verdict.helper.ts` |
-| Orchestrator DO class | `backend/src/agents/orchestrator/orchestrator.agent.ts` |
-| Orchestrator SQLite table schemas | `backend/src/agents/orchestrator/_schema/*.schema.ts` |
+| Brain DO class | `backend/src/agents/brain/brain.agent.ts` |
+| Brain SQLite table schemas | `backend/src/agents/brain/_schema/*.schema.ts` |
 | AI tool for writing memory | `backend/src/tools/memory/write.user.memory.tool.ts` |
 | Supabase Postgres table schema | `shared/drizzle/schema/products.schema.ts` |
 | Hono middleware | `backend/src/core/middleware/auth.middleware.ts` |

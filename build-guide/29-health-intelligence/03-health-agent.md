@@ -6,21 +6,21 @@ The Health Agent: a weekly per-user background agent that reads bounded private 
 
 ---
 
-## Architecture — Orchestrator-Owned Health Pass
+## Architecture — Brain-Owned Health Pass
 
-The Health Agent is a per-run sub-agent/facet started by the Orchestrator. It does not own user
-truth. The Orchestrator remains the only writer of user SQLite truth.
+The Health Agent is a per-run sub-agent/facet started by the Brain. It does not own user
+truth. The Brain remains the only writer of user SQLite truth.
 
-The Health Agent can reason over a bounded snapshot and propose writes. The Orchestrator performs
-the actual reads/writes through typed parent calls or Orchestrator-owned tools. Do not use custom
+The Health Agent can reason over a bounded snapshot and propose writes. The Brain performs
+the actual reads/writes through typed parent calls or Brain-owned tools. Do not use custom
 `/internal/tool-call` HTTP forwarding for this path unless a later platform boundary requires it.
 
 ```
 scheduled_alarms row: health_agent_run
   ↓
-Orchestrator wake method runs
+Brain wake method runs
   ↓
-Orchestrator starts HealthAgent sub-agent/run
+Brain starts HealthAgent sub-agent/run
   key: health_{userId}_{runId}
   no user-truth ownership
   ↓
@@ -34,17 +34,17 @@ Detects correlations → builds anonymized signals
   ↓
 k-anonymity check via Supabase:
   Does the cohort have >= 100 members?
-  No → Orchestrator stores pending contribution in agent_state, retry next week
+  No → Brain stores pending contribution in agent_state, retry next week
   Yes + user opted in → write eligible aggregate evidence to community Postgres tables
   ↓
-Orchestrator writes action outcome to scheduled_alarms.action_outcome_status/action_outcome_json and schedules next health_agent_run
+Brain writes action outcome to scheduled_alarms.action_outcome_status/action_outcome_json and schedules next health_agent_run
 ```
 
 ---
 
 ## Capability Subset for Health Agent
 
-The Health Agent is allowed only these Orchestrator-owned capabilities:
+The Health Agent is allowed only these Brain-owned capabilities:
 
 ```typescript
 health_agent: [
@@ -56,12 +56,12 @@ health_agent: [
   // Write tools
   'write_user_memory',                    // write detected patterns to user_memory (patterns.* namespace)
   'schedule_user_alarm',                  // create next scheduled_alarms row
-  // Community write (direct Supabase — not via Orchestrator SQLite)
+  // Community write (direct Supabase — not via Brain SQLite)
   'write_community_health_signal',        // writes to anonymized community Postgres tables after k-anonymity
 ]
 ```
 
-These are capability names, not permission to query arbitrary SQLite. The Orchestrator exposes only
+These are capability names, not permission to query arbitrary SQLite. The Brain exposes only
 bounded methods needed for the pass.
 
 ---

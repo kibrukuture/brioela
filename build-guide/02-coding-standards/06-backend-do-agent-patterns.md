@@ -5,14 +5,14 @@
 Every Agent-backed DO extends `Agent` from `agents`. The class is the single source of behavior for that DO. The class file (`index.ts`) only contains the class definition, request routing, scheduling callbacks, and WebSocket lifecycle methods. Business logic lives in sibling files imported by the class.
 
 ```ts
-// backend/src/agents/orchestrator/orchestrator.agent.ts
+// backend/src/agents/brain/brain.agent.ts
 import { Agent } from 'agents'
 import { drizzle } from 'drizzle-orm/durable-sqlite'
 import * as schema from './_schema'
 import { handleAlarm } from './_handlers'
 import { loadContext, runCompress } from './_helpers'
 
-export class BrioelOrchestrator extends Agent<Env> {
+export class BrioelaBrain extends Agent<Env> {
   db = drizzle(this.ctx.storage, { schema })
 
   async fetch(request: Request): Promise<Response> {
@@ -50,7 +50,7 @@ export class BrioelOrchestrator extends Agent<Env> {
 Each DO has its own `_schema/` folder. Tables are defined with Drizzle's `sqliteTable` (not `pgTable`). Schema files only define tables — no queries, no business logic. Each file covers one table or one tightly related group.
 
 ```ts
-// backend/src/agents/orchestrator/_schema/memory.schema.ts
+// backend/src/agents/brain/_schema/memory.schema.ts
 import { sqliteTable, text, integer, real } from 'drizzle-orm/sqlite-core'
 
 export const memoryEvents = sqliteTable('memory_events', {
@@ -96,7 +96,7 @@ DO alarms are the ambient intelligence mechanism. An alarm is set by the DO sche
 The `alarm.ts` file handles dispatch — it reads the alarm type from DO storage and routes to the correct handler:
 
 ```ts
-// backend/src/agents/orchestrator/_handlers/alarm.handler.ts
+// backend/src/agents/brain/_handlers/alarm.handler.ts
 import type { DrizzleD1Database } from 'drizzle-orm/d1'
 import type * as schema from './schema'
 
@@ -130,7 +130,7 @@ export async function handleAlarm(
   }
 }
 
-async function scheduleNextAlarm(agent: BrioelOrchestrator, type: AlarmType, delayMs: number): Promise<void> {
+async function scheduleNextAlarm(agent: BrioelaBrain, type: AlarmType, delayMs: number): Promise<void> {
   await scheduleUserAlarm({
     alarmType: type,
     payload: { userId: agent.userId },
@@ -178,7 +178,7 @@ export class CookingAgent extends Agent<Env> {
   }
 
   async webSocketClose(ws: WebSocket, code: number): Promise<void> {
-    // clean up, flush session state to Orchestrator DO
+    // clean up, flush session state to Brain DO
   }
 
   async webSocketError(ws: WebSocket, error: unknown): Promise<void> {
@@ -200,7 +200,7 @@ export class CookingAgent extends Agent<Env> {
 # wrangler.toml
 [[migrations]]
 tag = "v1"
-new_sqlite_classes = ["BrioelOrchestrator", "CookingAgent"]
+new_sqlite_classes = ["BrioelaBrain", "CookingAgent"]
 ```
 
 ---
@@ -214,7 +214,7 @@ Every AI-callable tool is a standalone async function in its own file. Tools are
 import { z } from 'zod'
 import type { DrizzleSQLiteDatabase } from 'drizzle-orm/sqlite-core'
 import { eq } from 'drizzle-orm'
-import { userMemory } from '../../agents/orchestrator/schema'
+import { userMemory } from '../../agents/brain/schema'
 
 export const WriteUserMemoryInputSchema = z.object({
   key:   z.string().min(1),

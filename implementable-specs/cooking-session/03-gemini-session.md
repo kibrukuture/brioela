@@ -266,7 +266,7 @@ private async handleToolCall(toolCall: GeminiToolCall): Promise<void> {
   this.sessionState.pendingToolCall = { id, name, args }
 
   try {
-    // Execute via Orchestrator DO (for SQLite tools) or directly (for timer tools)
+    // Execute via Brain DO (for SQLite tools) or directly (for timer tools)
     const result = await this.executeToolCall(name, args)
 
     // Send tool_response back to Gemini — unblocks its output

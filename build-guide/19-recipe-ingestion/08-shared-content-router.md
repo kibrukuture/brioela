@@ -148,7 +148,7 @@ This uses the same voice/video intelligence stack as Cooking Session when realti
 
 ## Privacy Boundary
 
-Shared content routing writes to the user's private Orchestrator context unless the target feature explicitly owns shared/public data.
+Shared content routing writes to the user's private Brain context unless the target feature explicitly owns shared/public data.
 
 Rules:
 

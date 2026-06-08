@@ -11,7 +11,7 @@ Mobile / PWA clients
        ↓ HTTP + WebSocket
 Cloudflare Workers (Hono.js routing — single codebase, one wrangler.toml)
        ↓ DO RPC via idFromName(userId)
-BrioelOrchestrator DO (CF Agent SDK, Drizzle + SQLite, per-user brain)
+BrioelaBrain DO (CF Agent SDK, Drizzle + SQLite, per-user brain)
        ↓ QStash publish / Workflow start
 Upstash QStash (one-shot fire-and-forget jobs)
 Upstash Workflow (multi-step durable flows with waitForEvent)
@@ -23,14 +23,14 @@ Supabase Postgres (global shared data: products, community notes, map, businesse
 Live cooking sessions (multi-person):
 Mobile clients → Cloudflare Realtime / RealtimeKit room
                        ↓ WebSocket adapter delivers PCM audio + JPEG frames
-                CookingAgent DO ← pulls context from Orchestrator DO
+                CookingAgent DO ← pulls context from Brain DO
                        ↓ Gemini Live (gemini-3.1-flash-live-preview)
                        ↓ async
                 Cloudflare/agent workflow path (summarize, save recipe, update memory)
 
 Single-user voice sessions (no room):
 Mobile client → Gemini Live WebSocket directly
-             ← context injected from Orchestrator DO at session start
+             ← context injected from Brain DO at session start
 ```
 
 ## Component Decisions
@@ -42,31 +42,31 @@ All HTTP routing runs on Cloudflare Workers using Hono.js. Single codebase, sing
 ```typescript
 // src/index.ts
 import { Hono } from 'hono'
-import { BrioelOrchestrator } from './agents/orchestrator'
+import { BrioelaBrain } from './agents/brain'
 import { CookingAgent } from './agents/cooking'
 
 const app = new Hono<{ Bindings: Env }>()
 
 app.post('/scan', async (c) => {
   const userId = c.get('userId') // derived from Supabase bearer token middleware
-  const id = c.env.ORCHESTRATOR.idFromName(userId)
-  const orchestrator = c.env.ORCHESTRATOR.get(id)
-  return orchestrator.fetch(c.req.raw)
+  const id = c.env.BRAIN.idFromName(userId)
+  const brain = c.env.BRAIN.get(id)
+  return brain.fetch(c.req.raw)
 })
 
 export default app
-export { BrioelOrchestrator, CookingAgent } // must export all DO classes
+export { BrioelaBrain, CookingAgent } // must export all DO classes
 ```
 
 Workers are stateless — born per request, die per request. They are the front door that routes traffic into the correct user's DO.
 
 ### Cloudflare Agent SDK + Durable Objects (Per-User Brain)
 
-Each user has one `BrioelOrchestrator` DO instance — addressed by `idFromName(userId)`. Uses the Cloudflare Agents SDK (`agents` package), which is an abstraction built on top of the raw Durable Object primitive. The Agent class extends DurableObject — there is no separate "Agent SDK process." It is the DO.
+Each user has one `BrioelaBrain` DO instance — addressed by `idFromName(userId)`. Uses the Cloudflare Agents SDK (`agents` package), which is an abstraction built on top of the raw Durable Object primitive. The Agent class extends DurableObject — there is no separate "Agent SDK process." It is the DO.
 
 SQLite via Drizzle ORM:
 ```typescript
-export class BrioelOrchestrator extends Agent {
+export class BrioelaBrain extends Agent {
   db = drizzle(this.ctx.storage, { schema })
   // this.ctx.storage is CF's built-in DO storage, always present
   // Drizzle wraps it with full type-safe SQL interface
@@ -77,7 +77,7 @@ wrangler.toml must declare `new_sqlite_classes` to provision SQLite (not just KV
 ```toml
 [[migrations]]
 tag = "v1"
-new_sqlite_classes = ["BrioelOrchestrator"]
+new_sqlite_classes = ["BrioelaBrain"]
 ```
 
 DO capabilities used by Brioela:
@@ -132,7 +132,7 @@ RealtimeKit does not own: AI reasoning, user memory, recipe state, constraints, 
 post-session writes.
 
 Single-user voice sessions can use the same Cloudflare Worker + CookingAgent DO lifecycle with the
-minimum transport needed for the session. Context is injected from the Orchestrator DO at session
+minimum transport needed for the session. Context is injected from the Brain DO at session
 start.
 
 ### Upstash QStash (One-Shot Async Delivery)
@@ -169,7 +169,7 @@ Flat monthly pricing. Used for all shared, cross-user data:
 - Business and practitioner profiles.
 - Featured listings.
 
-Not used for any user-private data. User-private data lives exclusively in the per-user Orchestrator DO's SQLite.
+Not used for any user-private data. User-private data lives exclusively in the per-user Brain DO's SQLite.
 
 ### Product Data Sources
 
@@ -180,10 +180,10 @@ Not used for any user-private data. User-private data lives exclusively in the p
 
 ## Data Boundary Rules
 
-- **Private** (personal memory, constraints, scan history, recipes, patterns): Orchestrator DO SQLite only. Never in Supabase. Never accessible without authenticated RPC to that user's DO.
+- **Private** (personal memory, constraints, scan history, recipes, patterns): Brain DO SQLite only. Never in Supabase. Never accessible without authenticated RPC to that user's DO.
 - **Shared** (product corpus, community notes, map, businesses): Supabase Postgres. No user PII.
 - **Cached**: Upstash Redis. TTL-bound, disposable.
-- **Ephemeral session**: CookingAgent DO. Flushed after session closes and key facts written to Orchestrator DO.
+- **Ephemeral session**: CookingAgent DO. Flushed after session closes and key facts written to Brain DO.
 
 ## What Runs Where
 
@@ -368,11 +368,11 @@ Five categories that disappear in naive summarization, all preserved by this des
 4. **Cross-turn dependencies** — step 3 depended on something established in step 1. The sacred block's recipe state tracks this.
 5. **Implicit preferences** — the user never said they hate overcooking, but they reacted negatively twice to suggestions that involved long cook times. These behavioral signals are extracted as `constraint_memory` entries before the turns are compressed.
 
-#### Session compressor vs. Orchestrator compressor
+#### Session compressor vs. Brain compressor
 
 The **CookingAgent DO** runs the compressor described above — it manages live session history for cooking sessions.
 
-The **BrioelOrchestrator DO** runs a simpler version for its own long-running ambient history (multi-day context across many interactions). It uses the same fact-extraction pattern but fires less frequently — triggered by the DO alarm cycle, not by real-time token usage. Its compression target is the `ambient_history` table, not an active session's `sessionMessages` table.
+The **BrioelaBrain DO** runs a simpler version for its own long-running ambient history (multi-day context across many interactions). It uses the same fact-extraction pattern but fires less frequently — triggered by the DO alarm cycle, not by real-time token usage. Its compression target is the `ambient_history` table, not an active session's `sessionMessages` table.
 
 ### 2. Skill Selection: Tools + Index-Then-Load (Not Vector Search)
 
@@ -387,7 +387,7 @@ This is how Hermes actually works. Not vector search. The model reads the index 
 #### The Tools Layer (Vercel AI SDK)
 
 ```typescript
-export class BrioelOrchestrator extends Agent {
+export class BrioelaBrain extends Agent {
   tools = {
     // Executable capabilities — AI calls these to do things
     skill_view: tool({
@@ -534,7 +534,7 @@ This pattern is required for: Gemini Live streaming sessions, long Upstash Workf
 
 ### 4. Sub-Agent Delegation via DO-to-DO RPC
 
-The Orchestrator DO does not do everything itself. For specialized heavy tasks — RAG retrieval over recipe history, database-heavy pattern analysis, bulk scan enrichment — it delegates to sub-agent DOs addressed by a deterministic name pattern:
+The Brain DO does not do everything itself. For specialized heavy tasks — RAG retrieval over recipe history, database-heavy pattern analysis, bulk scan enrichment — it delegates to sub-agent DOs addressed by a deterministic name pattern:
 
 ```
 ${userId}-rag      → RAG retrieval agent (searches recipe + scan history)
@@ -542,11 +542,11 @@ ${userId}-db       → database query agent (complex aggregation queries)
 ${userId}-enrich   → product enrichment agent (fetches from Open Food Facts, normalizes)
 ```
 
-The parent Orchestrator calls them via `stub.fetch()`:
+The parent Brain calls them via `stub.fetch()`:
 
 ```typescript
-const ragId = env.BRIOELA_ORCHESTRATOR.idFromName(`${userId}-rag`)
-const ragAgent = env.BRIOELA_ORCHESTRATOR.get(ragId)
+const ragId = env.BRAIN.idFromName(`${userId}-rag`)
+const ragAgent = env.BRAIN.get(ragId)
 const result = await ragAgent.fetch(new Request('https://internal/query', {
   method: 'POST',
   body: JSON.stringify({ query: 'find recipes with eggplant', topK: 5 }),
@@ -554,7 +554,7 @@ const result = await ragAgent.fetch(new Request('https://internal/query', {
 const recipes = await result.json()
 ```
 
-**Sub-agent DO design rule**: sub-agents are stateless-ish. They read from shared storage (Supabase, Upstash Redis) and from the parent's context passed in the request payload. Their own DO SQLite is ephemeral scratch space — used within the task, not persisted long-term. Durable facts they produce go back to the Orchestrator DO, not into the sub-agent's own SQLite. This keeps the Orchestrator as the single source of truth for the user's memory and prevents state fragmentation across DOs.
+**Sub-agent DO design rule**: sub-agents are stateless-ish. They read from shared storage (Supabase, Upstash Redis) and from the parent's context passed in the request payload. Their own DO SQLite is ephemeral scratch space — used within the task, not persisted long-term. Durable facts they produce go back to the Brain DO, not into the sub-agent's own SQLite. This keeps the Brain as the single source of truth for the user's memory and prevents state fragmentation across DOs.
 
 The parent never awaits a sub-agent for more than the user's request timeout allows. If a sub-agent task is too slow for inline response, the parent fires it via QStash and collects the result in a follow-up alarm.
 
@@ -568,7 +568,7 @@ The implication: every user's skill library gets quietly maintained over time pu
 
 ### 6. Offline Behavior and Sync Queue
 
-Brioela is a heavily online app. Most of its intelligence requires a live connection: the Orchestrator DO runs in Cloudflare's edge, AI calls go to Gemini, community data lives in Supabase. There is no "offline mode" in the sense of a fully functional disconnected app.
+Brioela is a heavily online app. Most of its intelligence requires a live connection: the Brain DO runs in Cloudflare's edge, AI calls go to Gemini, community data lives in Supabase. There is no "offline mode" in the sense of a fully functional disconnected app.
 
 However, the core use case — scanning a product at a grocery store — happens in environments with unreliable or absent cell signal. The app must handle this gracefully.
 
@@ -581,14 +581,14 @@ However, the core use case — scanning a product at a grocery store — happens
 **What requires connectivity:**
 - Resolving a new UPC against the product database.
 - Running the AI verdict (drug interactions, personalization, health scoring).
-- Writing to the Orchestrator DO (scan event, memory update).
+- Writing to the Brain DO (scan event, memory update).
 - Ground find submission.
 - Voice and live vision sessions — these are impossible offline and display a clear connection state indicator.
 
 **The queue contract:**
 When the app detects no connectivity, scans and visual intake submissions are written to a local device queue (IndexedDB on PWA, SQLite on native). When connectivity resumes:
 1. The queue is drained in FIFO order.
-2. Each item is submitted to the Orchestrator DO as a normal event with its original capture timestamp, not the upload timestamp.
+2. Each item is submitted to the Brain DO as a normal event with its original capture timestamp, not the upload timestamp.
 3. If an item fails to upload after 3 retries (network error, DO unavailable), it stays in queue and retries on next connectivity event. It is never silently dropped.
 4. The user does not need to do anything — the upload is silent. A small indicator shows "syncing" while the queue drains.
 
@@ -601,7 +601,7 @@ The one DO per user decision is the right one. This is worth stating explicitly 
 **You get for free**:
 - **Location affinity**: the DO provisions geographically close to where the user first requests it. A user in Lagos gets an agent running near Lagos. A user in Seoul gets one near Seoul. No configuration — Cloudflare handles it.
 - **Zero-cost hibernation**: idle DOs cost nothing. A user who scans once a week and does nothing else incurs effectively zero compute cost between scans.
-- **Per-user memory isolation**: one user's orchestrator is physically incapable of touching another user's SQLite. Not access-controlled — literally different SQLite files.
+- **Per-user memory isolation**: one user's brain is physically incapable of touching another user's SQLite. Not access-controlled — literally different SQLite files.
 - **Consistent addressing**: `idFromName(userId)` always returns the same DO instance. No session management, no routing table, no distributed lock.
 
 The only architectural risk is data gravity — if a user's DO accumulates a very large SQLite (realistically >1GB), and the Cloudflare edge node that owns it goes away, there is a migration delay. This is an edge case the platform handles, but worth monitoring per-user storage size in production and alerting if any single DO exceeds 500MB.
