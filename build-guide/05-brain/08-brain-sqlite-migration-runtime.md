@@ -23,6 +23,13 @@ Brioela migration runtime = safety gate above Drizzle
 Brioela guards = enforcement against bypassing Drizzle or readiness
 ```
 
+SQLite has no native enum, boolean, timestamp, or JSONB type. Brain migration tables still need Postgres-like hardness through Drizzle:
+
+- closed fields use Drizzle `text(..., { enum })` plus Drizzle `check(...)`
+- JSON text columns use `json_valid(...)` checks
+- timestamps, attempts, versions, and durations use numeric range checks
+- generated Drizzle SQL is the only place those checks become raw SQL
+
 ## Why Brain SQLite Is More Dangerous Than Postgres
 
 Supabase Postgres is one shared operational database. A migration happens centrally, under one deployment window, with mature centralized tooling.
@@ -208,6 +215,15 @@ CREATE TABLE brain_migration_runs (
   attempt            INTEGER NOT NULL,
   error_json         TEXT,
   deployment_id      TEXT NOT NULL
+  CHECK (phase IN ('expand', 'dual_write', 'backfill', 'verify', 'contract')),
+  CHECK (risk IN ('low', 'medium', 'high', 'blocked')),
+  CHECK (status IN ('started', 'applied', 'smoke_passed', 'failed', 'blocked')),
+  CHECK (from_version >= 0),
+  CHECK (to_version >= from_version),
+  CHECK (started_at >= 0),
+  CHECK (finished_at IS NULL OR finished_at >= started_at),
+  CHECK (attempt >= 1),
+  CHECK (error_json IS NULL OR json_valid(error_json))
 );
 
 CREATE INDEX idx_brain_migration_runs_migration ON brain_migration_runs (migration_id, started_at DESC);
@@ -225,9 +241,23 @@ CREATE TABLE brain_migration_smoke_results (
   duration_ms     INTEGER NOT NULL,
   details_json    TEXT,
   created_at      INTEGER NOT NULL
+  CHECK (status IN ('passed', 'failed')),
+  CHECK (duration_ms >= 0),
+  CHECK (details_json IS NULL OR json_valid(details_json)),
+  CHECK (created_at >= 0)
 );
 
 CREATE INDEX idx_brain_migration_smoke_run ON brain_migration_smoke_results (migration_run_id);
+```
+
+Allowed migration run statuses:
+
+```text
+started       row created before applying or checking the migration
+applied       Drizzle applied the migration SQL, smoke has not proven readiness yet
+smoke_passed  required Brioela smoke checks passed for this migration
+failed        migration or smoke failed and readiness must block writes
+blocked       rollout/control-plane policy prevented this migration from running
 ```
 
 These tables are created in the initial schema and then used by all future migrations.

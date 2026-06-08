@@ -1,0 +1,27 @@
+{
+  "name": "@brioela/lexicon-guard",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "brioela-lexicon-guard": "./run.brioela.lexicon.guard.handler.ts"
+  },
+  "scripts": {
+    "check": "bun run.brioela.lexicon.guard.handler.ts",
+    "watch": "bun run.brioela.lexicon.guard.handler.ts --watch",
+    "baseline:update": "bun run.brioela.lexicon.guard.handler.ts --update-baseline",
+    "daemon:start": "bun start.lexicon.guard.daemon.handler.ts",
+    "daemon:stop": "bun stop.lexicon.guard.daemon.handler.ts",
+    "daemon:restart": "bun restart.lexicon.guard.daemon.handler.ts",
+    "daemon:status": "bun status.lexicon.guard.daemon.handler.ts",
+    "daemon:print": "bun print.lexicon.guard.daemon.handler.ts",
+    "logs": "bun tail.lexicon.guard.logs.handler.ts",
+    "logs:err": "bun tail.lexicon.guard.logs.handler.ts err",
+    "logs:out": "bun tail.lexicon.guard.logs.handler.ts out",
+    "typecheck": "bunx tsc --noEmit --pretty false"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.3.14",
+    "typescript": "^5.9.3"
+  }
+}

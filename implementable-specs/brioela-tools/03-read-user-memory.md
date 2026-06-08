@@ -57,7 +57,7 @@ db.select()
   .where(
     and(
       eq(userMemory.id, `${namespace}:${key}`),
-      eq(userMemory.active, 1)
+      eq(userMemory.isActive, true)
     )
   )
   .get()
@@ -72,13 +72,13 @@ db.select()
     and(
       eq(userMemory.userId, ctx.userId),
       eq(userMemory.namespace, namespace),
-      eq(userMemory.active, 1)
+      eq(userMemory.isActive, true)
     )
   )
   .all()
 ```
 
-Only `active = 1` entries are returned. Deactivated facts are invisible to the agent.
+Only `isActive = true` entries are returned. Deactivated facts are invisible to the agent.
 
 ## Side Effects
 

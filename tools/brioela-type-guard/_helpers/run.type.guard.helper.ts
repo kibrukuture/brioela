@@ -9,13 +9,18 @@ import {
 import {
   banAnyPolicy,
   banDuplicateImportPolicy,
+  banExplicitUndefinedPolicy,
   banInOperatorPolicy,
   banJsonParseCastPolicy,
+  banNativeDatePolicy,
   banNonNullAssertionPolicy,
+  banPaddedIdentifierPolicy,
   banRawDatabaseAccessPolicy,
   banTypeAssertionPolicy,
   banUnsafeCommentPolicy,
+  enforceAbsoluteImportPolicy,
   enforceAsyncBoundaryPolicy,
+  enforceDatabaseDrizzleSurfacePolicy,
   enforceConfigBoundaryPolicy,
   enforceContractBoundaryPolicy,
   enforceContractImportPolicy,
@@ -36,12 +41,17 @@ export type TypeGuardMode = 'check' | 'update-baseline'
 const policies: TypePolicy[] = [
   banAnyPolicy,
   banTypeAssertionPolicy,
+  banExplicitUndefinedPolicy,
+  banPaddedIdentifierPolicy,
   banJsonParseCastPolicy,
+  banNativeDatePolicy,
   banRawDatabaseAccessPolicy,
   banNonNullAssertionPolicy,
   banInOperatorPolicy,
   banDuplicateImportPolicy,
   enforceTypeImportPolicy,
+  enforceAbsoluteImportPolicy,
+  enforceDatabaseDrizzleSurfacePolicy,
   enforceContractImportPolicy,
   enforceContractBoundaryPolicy,
   enforceContractSpinePolicy,
@@ -62,7 +72,7 @@ export async function runTypeGuard(workspaceRoot: string, mode: TypeGuardMode): 
 
   for (const file of files) {
     const text = await readFile(file.absolutePath, 'utf8')
-    const sourceFile = ts.createSourceFile(file.absolutePath, text, ts.ScriptTarget.Latest, true, scriptKindForPath(file.repoPath))
+    const sourceFile = ts.createSourceFile(file.absolutePath, text, ts.ScriptTarget.Latest, true, resolveScriptKindForPath(file.repoPath))
 
     for (const policy of policies) {
       allViolations.push(...policy({ repoPath: file.repoPath, sourceFile }))
@@ -78,6 +88,6 @@ export async function runTypeGuard(workspaceRoot: string, mode: TypeGuardMode): 
   return filterBaselineViolations(allViolations, baseline)
 }
 
-function scriptKindForPath(path: string): ts.ScriptKind {
+function resolveScriptKindForPath(path: string): ts.ScriptKind {
   return path.endsWith('.tsx') ? ts.ScriptKind.TSX : ts.ScriptKind.TS
 }

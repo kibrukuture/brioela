@@ -88,20 +88,27 @@ function isInsideTypePosition(node: ts.Node): boolean {
 }
 
 function isTypeNode(node: ts.Node): boolean {
-  return ts.isTypeNode(node)
-    || ts.isInterfaceDeclaration(node)
-    || ts.isTypeAliasDeclaration(node)
-    || ts.isImportTypeNode(node)
-    || ts.isHeritageClause(node)
+	return ts.isTypeNode(node)
+		|| ts.isInterfaceDeclaration(node)
+		|| ts.isTypeAliasDeclaration(node)
+		|| ts.isImportTypeNode(node)
 }
 
 function isValueBoundary(node: ts.Node): boolean {
-  return ts.isExpressionStatement(node)
-    || ts.isCallExpression(node)
-    || ts.isNewExpression(node)
-    || ts.isPropertyAccessExpression(node)
+	return ts.isExpressionStatement(node)
+		|| ts.isCallExpression(node)
+		|| ts.isNewExpression(node)
+		|| isClassExtendsExpression(node)
+		|| ts.isPropertyAccessExpression(node)
     || ts.isElementAccessExpression(node)
     || ts.isJsxOpeningElement(node)
     || ts.isJsxSelfClosingElement(node)
-    || ts.isJsxClosingElement(node)
+		|| ts.isJsxClosingElement(node)
+}
+
+function isClassExtendsExpression(node: ts.Node): boolean {
+	if (!ts.isExpressionWithTypeArguments(node)) return false
+	if (!ts.isHeritageClause(node.parent)) return false
+	if (node.parent.token !== ts.SyntaxKind.ExtendsKeyword) return false
+	return ts.isClassDeclaration(node.parent.parent)
 }

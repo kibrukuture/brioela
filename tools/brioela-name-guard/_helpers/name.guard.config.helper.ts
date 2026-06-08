@@ -27,8 +27,9 @@ export const allowedTypeScriptSuffixes = [
   '.route.ts',
   '.controller.ts',
   '.handler.ts',
-  '.helper.ts',
-  '.rpc.ts',
+	'.helper.ts',
+	'.repository.ts',
+	'.rpc.ts',
   '.policy.ts',
   '.mapper.ts',
   '.prompt.ts',
@@ -36,8 +37,11 @@ export const allowedTypeScriptSuffixes = [
   '.middleware.ts',
   '.agent.ts',
   '.tool.ts',
-  '.schema.ts',
-  '.type.ts',
+	'.schema.ts',
+  '.database.ts',
+	'.config.ts',
+	'.migration.ts',
+	'.type.ts',
   '.event.ts',
   '.job.ts',
   '.routes.ts',
@@ -55,7 +59,7 @@ export const allowedTypeScriptSuffixes = [
 
 export const allowedUnderscoreFolders = new Set([
   '_handlers',
-  '_helpers',
+	'_helpers',
 	'_schema',
 	'_database',
 	'_repositories',
@@ -71,6 +75,7 @@ export const allowedUnderscoreFolders = new Set([
   '_hooks',
   '_components',
   '_watch',
+  '_lexicon',
 ])
 
 export const rootUnderscoreFolders = new Set(['_records'])

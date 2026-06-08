@@ -119,7 +119,7 @@ All distinct `namespace` values currently in `user_memory` for this user. This i
 ```typescript
 const namespaces = db.selectDistinct({ namespace: userMemory.namespace })
   .from(userMemory)
-  .where(eq(userMemory.active, 1))
+  .where(eq(userMemory.isActive, true))
   .orderBy(asc(userMemory.namespace))
   .all()
   .map(r => r.namespace)
@@ -127,9 +127,9 @@ const namespaces = db.selectDistinct({ namespace: userMemory.namespace })
 // Result: ["diet", "diet.preferences", "family", "health", "health.medications", "life.places"]
 ```
 
-Only active namespaces (`active = 1`) are returned. Deactivated entries belong to stale namespaces that may no longer be relevant. The agent should not write new facts into a namespace where all entries are deactivated.
+Only active namespaces (`isActive = true`) are returned. Deactivated entries belong to stale namespaces that may no longer be relevant. The agent should not write new facts into a namespace where all entries are deactivated.
 
-This query is cheap — it is a single `SELECT DISTINCT` with an index on `(active, namespace)` and the result is at most 40 strings.
+This query is cheap — it is a single `SELECT DISTINCT` with an index on `(is_active, namespace)` and the result is at most 40 strings.
 
 ### 5. Last Abandoned Session Warning
 

@@ -17,6 +17,22 @@
 	// Disable Preview URLs
 	"preview_urls": false,
 
+	"durable_objects": {
+		"bindings": [
+			{
+				"name": "BRIOELA_BRAIN",
+				"class_name": "BrioelaBrain"
+			}
+		]
+	},
+
+	"migrations": [
+		{
+			"tag": "brioela_brain_v1",
+			"new_sqlite_classes": ["BrioelaBrain"]
+		}
+	],
+
 	// Only serve on api.schnl.com
 	"routes": [
 		{

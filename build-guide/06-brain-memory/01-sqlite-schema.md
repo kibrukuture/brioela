@@ -10,6 +10,14 @@ Migration safety is part of the schema contract. Drizzle tracks which generated 
 
 Hard database rule: Brain code uses Drizzle as the database language. Raw Durable Object SQLite is metal and is not used by feature code. Reads and writes go through typed Drizzle repositories/stores, with schema decoding at repository boundaries.
 
+SQLite stores only `NULL`, `INTEGER`, `REAL`, `TEXT`, and `BLOB`, so Brain schema hardness must be explicit in Drizzle:
+
+- Closed lifecycle/category values use both Drizzle `text(..., { enum })` typing and Drizzle `check(...)` constraints. TypeScript union inference alone is not a database guarantee.
+- Binary flags use Drizzle boolean mode over SQLite integer storage, plus a `CHECK` limiting storage to `0` or `1`.
+- JSON stored in `TEXT` must be valid JSON at the database boundary. Object fields use `json_valid(column) AND json_type(column) = 'object'`; array fields use `json_valid(column) AND json_type(column) = 'array'`; nullable JSON fields guard with `column IS NULL OR ...`.
+- Scores, confidence, importance, counters, versions, and timestamps use numeric `CHECK` constraints. The database should reject impossible values before repository code sees them.
+- Open extension points stay open text. Do not turn future-growth surfaces such as `memory_event.kind`, `scheduled_alarms.alarm_type`, or `recipes.source` into enums just because launch values are known.
+
 ---
 
 ## Table 1 — `memory_event`
@@ -72,17 +80,25 @@ CREATE TABLE user_memory (
   value       TEXT NOT NULL,        -- JSON object — never a bare string
   confidence  REAL NOT NULL DEFAULT 1.0,
   source      TEXT NOT NULL,        -- 'image' | 'conversation' | 'inferred' | 'cron'
-  active      INTEGER NOT NULL DEFAULT 1,
+  is_active   INTEGER NOT NULL DEFAULT 1 CHECK (is_active IN (0, 1)),
   importance  INTEGER NOT NULL DEFAULT 5,  -- 1–10, LLM-assessed at write time
   read_count  INTEGER NOT NULL DEFAULT 0,
   write_count INTEGER NOT NULL DEFAULT 0,
   last_read   INTEGER,
   last_write  INTEGER,
   updated_at  INTEGER NOT NULL
+  CHECK (json_valid(value) AND json_type(value) = 'object'),
+  CHECK (confidence >= 0 AND confidence <= 1),
+  CHECK (importance >= 1 AND importance <= 10),
+  CHECK (read_count >= 0),
+  CHECK (write_count >= 0),
+  CHECK (last_read IS NULL OR last_read >= 0),
+  CHECK (last_write IS NULL OR last_write >= 0),
+  CHECK (updated_at >= 0)
 );
 
-CREATE INDEX idx_user_memory_namespace ON user_memory (namespace, active);
-CREATE INDEX idx_user_memory_active    ON user_memory (active, last_write DESC);
+CREATE INDEX idx_user_memory_namespace ON user_memory (namespace, is_active);
+CREATE INDEX idx_user_memory_is_active ON user_memory (is_active, last_write DESC);
 CREATE INDEX idx_user_memory_source    ON user_memory (source);
 ```
 
@@ -95,7 +111,7 @@ export const userMemory = sqliteTable('user_memory', {
   value:      text('value').notNull(),
   confidence: real('confidence').notNull().default(1.0),
   source:     text('source').notNull(),
-  active:     integer('active').notNull().default(1),
+  isActive:   integer('is_active', { mode: 'boolean' }).notNull().default(true),
   importance: integer('importance').notNull().default(5),
   readCount:  integer('read_count').notNull().default(0),
   writeCount: integer('write_count').notNull().default(0),
@@ -110,7 +126,7 @@ export const userMemory = sqliteTable('user_memory', {
 - Namespace: regex `/^[a-z][a-z0-9]*(\.[a-z][a-z0-9]*){0,2}$/`, max 40 distinct namespaces
 - Key: regex `/^[a-z][a-z0-9_-]*$/`, max 64 chars
 - Value: JSON object spread-merged on update — old keys preserved, new keys added, updated keys replaced
-- Active entries only (`active = 1`) loaded into prompts. Facts are never deleted, only deactivated.
+- Active entries only (`isActive = true`) loaded into prompts. Facts are never deleted, only deactivated.
 
 **Write:** `write_user_memory` tool only. No direct writes from any other code path.
 
@@ -130,15 +146,21 @@ CREATE TABLE user_personality (
   summary       TEXT NOT NULL,      -- Brain maintenance-written paragraph specific to this user — not a label
   evidence      TEXT NOT NULL,      -- JSON array of user_memory IDs (namespace:key strings)
   strength      REAL NOT NULL,      -- 0.0 to 1.0 — decays if not reinforced
-  active        INTEGER NOT NULL DEFAULT 1,
+  is_active     INTEGER NOT NULL DEFAULT 1 CHECK (is_active IN (0, 1)),
   revised_count INTEGER NOT NULL DEFAULT 0,
   inferred_at   INTEGER NOT NULL,
   last_seen_at  INTEGER NOT NULL,
   updated_at    INTEGER NOT NULL
+  CHECK (json_valid(evidence) AND json_type(evidence) = 'array'),
+  CHECK (strength >= 0 AND strength <= 1),
+  CHECK (revised_count >= 0),
+  CHECK (inferred_at >= 0),
+  CHECK (last_seen_at >= inferred_at),
+  CHECK (updated_at >= inferred_at)
 );
 
-CREATE INDEX idx_user_personality_active ON user_personality (active, strength DESC);
-CREATE INDEX idx_user_personality_seen   ON user_personality (last_seen_at DESC) WHERE active = 1;
+CREATE INDEX idx_user_personality_is_active ON user_personality (is_active, strength DESC);
+CREATE INDEX idx_user_personality_seen   ON user_personality (last_seen_at DESC) WHERE is_active = 1;
 ```
 
 ```typescript
@@ -149,7 +171,7 @@ export const userPersonality = sqliteTable('user_personality', {
   summary:      text('summary').notNull(),
   evidence:     text('evidence').notNull(),
   strength:     real('strength').notNull(),
-  active:       integer('active').notNull().default(1),
+  isActive:     integer('is_active', { mode: 'boolean' }).notNull().default(true),
   revisedCount: integer('revised_count').notNull().default(0),
   inferredAt:   integer('inferred_at').notNull(),
   lastSeenAt:   integer('last_seen_at').notNull(),
@@ -161,7 +183,7 @@ export const userPersonality = sqliteTable('user_personality', {
 - No new evidence in 30 days → strength −0.03
 - Supporting evidence found → strength +0.05, cap 1.0
 - Contradicting evidence found → strength −0.1, floor 0.0
-- Strength below 0.15 after decay → `active = 0`
+- Strength below 0.15 after decay → `isActive = false`
 
 **Write:** Brain maintenance only. Agent has no tool to write to this table.
 
@@ -188,6 +210,14 @@ CREATE TABLE skills (
   archived_reason TEXT,
   created_at      INTEGER NOT NULL,
   updated_at      INTEGER NOT NULL
+  CHECK (json_valid(tags) AND json_type(tags) = 'array'),
+  CHECK (source IN ('system', 'user')),
+  CHECK (status IN ('active', 'stale', 'archived')),
+  CHECK (version >= 1),
+  CHECK (use_count >= 0),
+  CHECK (last_used_at IS NULL OR last_used_at >= 0),
+  CHECK (created_at >= 0),
+  CHECK (updated_at >= created_at)
 );
 
 CREATE INDEX idx_skills_active  ON skills (status, use_count DESC);
@@ -201,8 +231,8 @@ export const skills = sqliteTable('skills', {
   description:    text('description').notNull(),
   content:        text('content').notNull(),
   tags:           text('tags').notNull().default('[]'),
-  source:         text('source').notNull(),
-  status:         text('status').notNull().default('active'),
+  source:         text('source', { enum: skillSource }).notNull(),
+  status:         text('status', { enum: skillStatus }).notNull().default('active'),
   version:        integer('version').notNull().default(1),
   useCount:       integer('use_count').notNull().default(0),
   lastUsedAt:     integer('last_used_at'),
@@ -236,6 +266,8 @@ CREATE TABLE skill_versions (
   content     TEXT NOT NULL,      -- full markdown content of this version
   reason      TEXT NOT NULL,      -- why this update was made
   archived_at INTEGER NOT NULL    -- unix ms — when this version was replaced
+  CHECK (version >= 1),
+  CHECK (archived_at >= 0)
 );
 
 CREATE INDEX idx_skill_versions_name ON skill_versions (skill_name, version DESC);
@@ -280,6 +312,17 @@ CREATE TABLE constraints (
   proposed_at          INTEGER NOT NULL,
   confirmed_at         INTEGER,
   updated_at           INTEGER NOT NULL
+  CHECK (constraint_type IN ('hard_allergy', 'intolerance', 'dislike', 'dietary_identity', 'boycott')),
+  CHECK (entity_kind IN ('ingredient', 'category', 'brand', 'place')),
+  CHECK (status IN ('proposed', 'confirmed', 'auto_confirmed', 'rejected')),
+  CHECK (confirmation_source IS NULL OR confirmation_source IN ('user_explicit', 'behavioral_threshold')),
+  CHECK (json_valid(evidence) AND json_type(evidence) = 'array'),
+  CHECK (confidence >= 0 AND confidence <= 1),
+  CHECK (surfaced_count >= 0),
+  CHECK (last_surfaced_at IS NULL OR last_surfaced_at >= 0),
+  CHECK (proposed_at >= 0),
+  CHECK (confirmed_at IS NULL OR confirmed_at >= proposed_at),
+  CHECK (updated_at >= proposed_at)
 );
 
 CREATE INDEX idx_constraints_active   ON constraints (status, constraint_type);
@@ -290,15 +333,15 @@ CREATE INDEX idx_constraints_entity   ON constraints (entity_kind, entity_value,
 export const constraints = sqliteTable('constraints', {
   id:                 text('id').primaryKey(),
   userId:             text('user_id').notNull(),
-  constraintType:     text('constraint_type').notNull(),
-  entityKind:         text('entity_kind').notNull(),
+  constraintType:     text('constraint_type', { enum: constraintKind }).notNull(),
+  entityKind:         text('entity_kind', { enum: entityKind }).notNull(),
   entityValue:        text('entity_value').notNull(),
-  status:             text('status').notNull().default('proposed'),
+  status:             text('status', { enum: constraintStatus }).notNull().default('proposed'),
   confidence:         real('confidence').notNull().default(0.5),
   evidence:           text('evidence').notNull().default('[]'),
   surfacedCount:      integer('surfaced_count').notNull().default(0),
   lastSurfacedAt:     integer('last_surfaced_at'),
-  confirmationSource: text('confirmation_source'),
+  confirmationSource: text('confirmation_source', { enum: confirmationSource }),
   notes:              text('notes'),
   proposedAt:         integer('proposed_at').notNull(),
   confirmedAt:        integer('confirmed_at'),
@@ -345,6 +388,19 @@ CREATE TABLE sessions (
   started_at           INTEGER NOT NULL,
   ended_at             INTEGER,
   end_reason           TEXT
+  CHECK (session_type IN ('chat', 'cooking', 'alarm', 'background')),
+  CHECK (status IN ('active', 'completed', 'compressed', 'abandoned')),
+  CHECK (input_tokens >= 0),
+  CHECK (output_tokens >= 0),
+  CHECK (cache_read_tokens >= 0),
+  CHECK (cache_write_tokens >= 0),
+  CHECK (estimated_cost_usd IS NULL OR estimated_cost_usd >= 0),
+  CHECK (turn_count >= 0),
+  CHECK (skills_created >= 0),
+  CHECK (constraints_proposed >= 0),
+  CHECK (memory_writes >= 0),
+  CHECK (started_at >= 0),
+  CHECK (ended_at IS NULL OR ended_at >= started_at)
 );
 
 CREATE INDEX idx_sessions_user_status ON sessions (user_id, status, started_at DESC);
@@ -356,11 +412,11 @@ CREATE INDEX idx_sessions_recipe      ON sessions (recipe_id) WHERE recipe_id IS
 export const sessions = sqliteTable('sessions', {
   id:                  text('id').primaryKey(),
   userId:              text('user_id').notNull(),
-  sessionType:         text('session_type').notNull(),
+  sessionType:         text('session_type', { enum: sessionKind }).notNull(),
   parentSessionId:     text('parent_session_id'),
   recipeId:            text('recipe_id'),
   alarmType:           text('alarm_type'),
-  status:              text('status').notNull().default('active'),
+  status:              text('status', { enum: sessionStatus }).notNull().default('active'),
   outcomeSummary:      text('outcome_summary'),
   model:               text('model').notNull(),
   inputTokens:         integer('input_tokens').notNull().default(0),
@@ -398,6 +454,11 @@ CREATE TABLE session_turns (
   input_tokens  INTEGER NOT NULL DEFAULT 0,
   output_tokens INTEGER NOT NULL DEFAULT 0,
   created_at    INTEGER NOT NULL
+  CHECK (turn_number >= 1),
+  CHECK (role IN ('user', 'assistant', 'tool_call', 'tool_result')),
+  CHECK (input_tokens >= 0),
+  CHECK (output_tokens >= 0),
+  CHECK (created_at >= 0)
 );
 
 CREATE INDEX idx_session_turns_session ON session_turns (session_id, turn_number ASC);
@@ -426,7 +487,7 @@ export const sessionTurns = sqliteTable('session_turns', {
   sessionId:   text('session_id').notNull(),
   userId:      text('user_id').notNull(),
   turnNumber:  integer('turn_number').notNull(),
-  role:        text('role').notNull(),
+  role:        text('role', { enum: turnRole }).notNull(),
   content:     text('content').notNull(),
   toolName:    text('tool_name'),
   toolInput:   text('tool_input'),
@@ -460,6 +521,13 @@ CREATE TABLE recipes (
   confidence      REAL NOT NULL DEFAULT 1.0,       -- 0.0–1.0 for URL-extracted recipes
   created_at      INTEGER NOT NULL,
   updated_at      INTEGER NOT NULL
+  CHECK (json_valid(content) AND json_type(content) = 'object'),
+  CHECK (cook_count >= 0),
+  CHECK (last_cooked_at IS NULL OR last_cooked_at >= 0),
+  CHECK (status IN ('active', 'archived')),
+  CHECK (confidence >= 0 AND confidence <= 1),
+  CHECK (created_at >= 0),
+  CHECK (updated_at >= created_at)
 );
 
 CREATE INDEX idx_recipes_active    ON recipes (user_id, status, last_cooked_at DESC);
@@ -477,7 +545,7 @@ export const recipes = sqliteTable('recipes', {
   content:       text('content').notNull(),
   cookCount:     integer('cook_count').notNull().default(0),
   lastCookedAt:  integer('last_cooked_at'),
-  status:        text('status').notNull().default('active'),
+  status:        text('status', { enum: recipeStatus }).notNull().default('active'),
   confidence:    real('confidence').notNull().default(1.0),
   createdAt:     integer('created_at').notNull(),
   updatedAt:     integer('updated_at').notNull(),
@@ -597,6 +665,16 @@ CREATE TABLE scheduled_alarms (
   action_outcome_json    TEXT,    -- JSON — alarm-type-specific action outcome. medication call: {"took":1,"call_sid":"...","answered_at":123}. travel preload: {"products_cached":142}
   created_at     INTEGER NOT NULL,
   updated_at     INTEGER NOT NULL
+  CHECK (json_valid(payload) AND json_type(payload) = 'object'),
+  CHECK (status IN ('pending', 'processing', 'completed', 'failed', 'cancelled')),
+  CHECK (attempts >= 0),
+  CHECK (cancelled_at IS NULL OR cancelled_at >= 0),
+  CHECK (scheduled_at >= 0),
+  CHECK (started_at IS NULL OR started_at >= scheduled_at),
+  CHECK (completed_at IS NULL OR completed_at >= scheduled_at),
+  CHECK (action_outcome_json IS NULL OR (json_valid(action_outcome_json) AND json_type(action_outcome_json) = 'object')),
+  CHECK (created_at >= 0),
+  CHECK (updated_at >= created_at)
 );
 
 CREATE INDEX idx_alarms_pending ON scheduled_alarms (status, scheduled_at ASC);
@@ -610,7 +688,7 @@ export const scheduledAlarms = sqliteTable('scheduled_alarms', {
   alarmType:     text('alarm_type').notNull(),
   payload:       text('payload').notNull(),
   sdkScheduleId: text('sdk_schedule_id'),
-  status:        text('status').notNull().default('pending'),
+  status:        text('status', { enum: scheduledAlarmStatus }).notNull().default('pending'),
   attempts:      integer('attempts').notNull().default(0),
   failureReason: text('failure_reason'),
   cancelledAt:   integer('cancelled_at'),
@@ -657,6 +735,8 @@ CREATE TABLE agent_state (
   user_id    TEXT NOT NULL,
   value      TEXT NOT NULL,      -- always TEXT — reader parses to appropriate type
   updated_at INTEGER NOT NULL
+  CHECK (json_valid(value)),
+  CHECK (updated_at >= 0)
 );
 ```
 

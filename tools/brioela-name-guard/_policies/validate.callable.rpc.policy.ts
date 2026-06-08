@@ -22,12 +22,12 @@ export function validateCallableRpc(entry: WorkspaceEntry): NamingViolation[] {
     })
   }
 
-  if (!content.includes('from \'./_rpc\'') && !content.includes('from "./_rpc"') && !content.includes('from \'../_rpc\'') && !content.includes('from "../_rpc"')) {
+  if (!hasRpcImport(content)) {
     violations.push({
       rule: 'callable-delegates-to-rpc',
       path: entry.repoPath,
       message: '@callable() methods must delegate to a typed _rpc module.',
-      suggestion: 'Import the implementation from ./_rpc and keep the Agent method thin.',
+      suggestion: 'Import the implementation from the absolute _rpc alias and keep the Agent method thin.',
     })
   }
 
@@ -41,6 +41,15 @@ export function validateCallableRpc(entry: WorkspaceEntry): NamingViolation[] {
   }
 
   return violations
+}
+
+function hasRpcImport(content: string): boolean {
+  return content.includes('from \'@/agents/brain/_rpc\'')
+    || content.includes('from "@/agents/brain/_rpc"')
+    || content.includes('from \'./_rpc\'')
+    || content.includes('from "./_rpc"')
+    || content.includes('from \'../_rpc\'')
+    || content.includes('from "../_rpc"')
 }
 
 function hasCallableDecorator(content: string): boolean {

@@ -108,7 +108,7 @@ If the cap is reached, the tool returns an error. The agent must use an existing
 |---|---|
 | `id` | `${namespace}:${key}` — composite natural key, stable |
 | `user_id` | From DO context |
-| `active` | `1` — always active on write |
+| `isActive` | `true` — always active on write |
 | `write_count` | Incremented by 1 on every write |
 | `last_write` | `Date.now()` |
 | `updated_at` | `Date.now()` |
@@ -128,7 +128,7 @@ db.insert(userMemory)
     value:      JSON.stringify(merged),
     confidence: input.confidence ?? 1.0,
     source:     input.source,
-    active:     1,
+    isActive:   true,
     writeCount: (existing?.writeCount ?? 0) + 1,
     lastWrite:  Date.now(),
     updatedAt:  Date.now(),
@@ -188,4 +188,4 @@ No alarm or background job is triggered by a memory write. Behavior behavior pat
 - Logging raw events → use `log_memory_event`
 - Safety constraints → use `propose_user_constraint`
 - Reading a specific fact mid-session → use `read_user_memory`
-- Deactivating a fact → set `active = 0` directly (no tool yet — developer action)
+- Deactivating a fact → set `isActive = false` directly (no tool yet — developer action)

@@ -12,8 +12,9 @@ const approvedRoleParts = new Set([
   'route',
   'controller',
   'handler',
-  'helper',
-  'rpc',
+	'helper',
+	'repository',
+	'rpc',
   'policy',
   'mapper',
   'prompt',
@@ -100,16 +101,43 @@ export function validateFileName(entry: WorkspaceEntry): NamingViolation[] {
     })
   }
 
-  if (directory.endsWith('/_helpers') && !fileName.endsWith('.helper.ts') && !allowedStandaloneFiles.has(fileName)) {
+	if (directory.endsWith('/_helpers') && !fileName.endsWith('.helper.ts') && !allowedStandaloneFiles.has(fileName)) {
     violations.push({
       rule: 'helper-folder-role-match',
       path: entry.repoPath,
       message: 'Files in _helpers must use the .helper.ts suffix.',
       suggestion: 'Rename this file to {verb}.{subject}.helper.ts.',
     })
-  }
+	}
 
-  if (directory.endsWith('/_policies') && !fileName.endsWith('.policy.ts') && !allowedStandaloneFiles.has(fileName)) {
+	if (directory.endsWith('/_repositories') && !fileName.endsWith('.repository.ts') && !allowedStandaloneFiles.has(fileName)) {
+		violations.push({
+			rule: 'repository-folder-role-match',
+			path: entry.repoPath,
+			message: 'Files in _repositories must use the .repository.ts suffix.',
+			suggestion: 'Rename this file to {action}.{subject}.repository.ts.',
+		})
+	}
+
+	if (directory.endsWith('/_database') && !fileName.endsWith('.database.ts') && !fileName.endsWith('.database.helper.ts') && !allowedStandaloneFiles.has(fileName)) {
+		violations.push({
+			rule: 'database-folder-role-match',
+			path: entry.repoPath,
+			message: 'Files in _database must use a database role suffix.',
+			suggestion: 'Rename this file to {subject}.database.ts or {action}.{subject}.database.helper.ts.',
+		})
+	}
+
+	if (directory.endsWith('/_migrations') && !fileName.endsWith('.migration.ts') && !fileName.endsWith('.handler.ts') && !fileName.endsWith('.helper.ts') && !fileName.endsWith('.schema.ts') && !allowedStandaloneFiles.has(fileName)) {
+		violations.push({
+			rule: 'migration-folder-role-match',
+			path: entry.repoPath,
+			message: 'Files in _migrations must use migration, handler, helper, or schema role suffixes.',
+			suggestion: 'Rename this file to {action}.{subject}.migration.ts, .handler.ts, .helper.ts, or .schema.ts.',
+		})
+	}
+
+	if (directory.endsWith('/_policies') && !fileName.endsWith('.policy.ts') && !allowedStandaloneFiles.has(fileName)) {
     violations.push({
       rule: 'policy-folder-role-match',
       path: entry.repoPath,

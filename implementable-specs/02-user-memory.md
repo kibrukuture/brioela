@@ -39,7 +39,7 @@ CREATE TABLE user_memory (
   value       TEXT NOT NULL,        -- JSON object — never a bare string
   confidence  REAL NOT NULL DEFAULT 1.0,  -- 0.0 to 1.0 — how certain this fact is
   source      TEXT NOT NULL,        -- 'image' | 'conversation' | 'inferred' | 'cron'
-  active      INTEGER NOT NULL DEFAULT 1, -- 1 = active, 0 = deactivated (soft delete only)
+  is_active   INTEGER NOT NULL DEFAULT 1, -- true = active, false = deactivated (soft delete only)
   importance  INTEGER NOT NULL DEFAULT 5,  -- 1–10, LLM-assessed at write time — how much this fact matters
   read_count  INTEGER NOT NULL DEFAULT 0, -- times this entry was injected into a prompt
   write_count INTEGER NOT NULL DEFAULT 0, -- times this entry was written or updated
@@ -62,7 +62,7 @@ export const userMemory = sqliteTable('user_memory', {
   value:      text('value').notNull(),           // JSON object stringified
   confidence: real('confidence').notNull().default(1.0),
   source:     text('source').notNull(),          // free text — Zod enforces known values at tool boundary
-  active:     integer('active').notNull().default(1),
+  isActive:   integer('is_active', { mode: 'boolean' }).notNull().default(true),
   importance: integer('importance').notNull().default(5),
   readCount:  integer('read_count').notNull().default(0),
   writeCount: integer('write_count').notNull().default(0),
@@ -95,8 +95,8 @@ Inferred facts carry lower confidence than explicitly declared ones. A user sayi
 **`source` — free text, Zod-enforced known values**
 Known values: `'image' | 'conversation' | 'inferred' | 'cron'`. New sources can be added without migration. Zod enforces at tool boundary — the AI cannot write an unknown source.
 
-**`active` — integer 0/1, not a delete**
-Facts are never deleted. A user says "I'm not lactose intolerant anymore" — the fact is deactivated (`active = 0`), not removed. Deactivated facts are excluded from prompts but preserved in the table. Reason: if the user comes back and says "actually I was wrong, it does affect me" — the history is still there, confidence can be updated, no data is lost.
+**`is_active` — boolean soft-delete flag, not a lifecycle enum**
+Facts are never deleted. A user says "I'm not lactose intolerant anymore" — the fact is deactivated (`isActive = false`), not removed. Deactivated facts are excluded from prompts but preserved in the table. Reason: if the user comes back and says "actually I was wrong, it does affect me" — the history is still there, confidence can be updated, no data is lost.
 
 **`importance` — 1–10, LLM-assessed at write time**
 Not the same as `confidence`. `confidence` answers "how certain is this fact true?" `importance` answers "how much does this fact matter for this user's context?" They are orthogonal:
@@ -172,10 +172,10 @@ The in-context `memory_namespaces` list is updated immediately in the agent's co
 **Index that makes this cheap:**
 
 ```sql
-CREATE INDEX idx_user_memory_namespace ON user_memory (namespace, active);
+CREATE INDEX idx_user_memory_namespace ON user_memory (namespace, is_active);
 ```
 
-`SELECT DISTINCT namespace WHERE active = 1` runs against this index. At 40-namespace cap it is trivial — never more than 40 distinct values to return.
+`SELECT DISTINCT namespace WHERE is_active = 1` runs against this index. At 40-namespace cap it is trivial — never more than 40 distinct values to return.
 
 ## Namespace Cap Enforcement (40 distinct namespaces)
 
@@ -244,7 +244,7 @@ async loadMemoryForPrompt(namespaces: string[]): Promise<MemoryEntry[]> {
     .from(userMemory)
     .where(and(
       inArray(userMemory.namespace, namespaces),
-      eq(userMemory.active, 1),
+      eq(userMemory.isActive, true),
     ))
     .all()
 
@@ -261,14 +261,14 @@ async loadMemoryForPrompt(namespaces: string[]): Promise<MemoryEntry[]> {
 ## Indexes
 
 ```sql
-CREATE INDEX idx_user_memory_namespace   ON user_memory (namespace, active);
-CREATE INDEX idx_user_memory_active      ON user_memory (active, last_write DESC);
+CREATE INDEX idx_user_memory_namespace   ON user_memory (namespace, is_active);
+CREATE INDEX idx_user_memory_is_active   ON user_memory (is_active, last_write DESC);
 CREATE INDEX idx_user_memory_source      ON user_memory (source);
 ```
 
 **Why these indexes:**
-- `(namespace, active)` — the most common read: load all active entries under a namespace for prompt injection
-- `(active, last_write)` — Brain maintenance pass: find all active entries ordered by recency to identify stale candidates
+- `(namespace, is_active)` — the most common read: load all active entries under a namespace for prompt injection
+- `(is_active, last_write)` — Brain maintenance pass: find all active entries ordered by recency to identify stale candidates
 - `(source)` — audit queries: "show me everything inferred vs everything declared explicitly"
 
 ## Write Rules
@@ -285,7 +285,7 @@ CREATE INDEX idx_user_memory_source      ON user_memory (source);
 - Passively loaded into every session prompt via `loadMemoryForPrompt()` — `read_count` increments as a side effect.
 - Explicitly read by `read_user_memory(namespace, key?)` tool when the AI needs to check a specific fact mid-conversation.
 - Read by the Brain maintenance on its maintenance pass to identify stale, low-value, or duplicate entries.
-- Active entries only (`active = 1`) are loaded into prompts. Deactivated entries are invisible to the AI during sessions.
+- Active entries only (`isActive = true`) are loaded into prompts. Deactivated entries are invisible to the AI during sessions.
 
 ## What Is NOT Stored Here
 

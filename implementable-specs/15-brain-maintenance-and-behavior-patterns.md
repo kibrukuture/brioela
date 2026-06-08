@@ -172,7 +172,7 @@ Returns all `source = 'user'` skills with full metadata. No side effects.
 
 ### get_personality_traits_for_brain_maintenance
 
-Returns all `user_personality` rows regardless of `active` status. Brain maintenance needs to see deactivated traits to decide whether to reactivate or leave them.
+Returns all `user_personality` rows regardless of `isActive` status. Brain maintenance needs to see deactivated traits to decide whether to reactivate or leave them.
 
 ```typescript
 {
@@ -182,7 +182,7 @@ Returns all `user_personality` rows regardless of `active` status. Brain mainten
     summary:        string
     evidence:       string[]   // user_memory IDs
     strength:       number
-    active:         number     // 1 or 0
+    isActive:       boolean
     revised_count:  number
     inferred_at:    number
     last_seen_at:   number
@@ -230,13 +230,13 @@ Updates strength, summary, evidence, last_seen_at, revised_count on an existing 
 
 ### archive_personality_trait
 
-Sets `active = 0`. Never deletes. Requires reason.
+Sets `isActive = false`. Never deletes. Requires reason.
 
 ```typescript
 // input:
 { id: string, reason: string }
 // output:
-{ id, trait, active: 0 }
+{ id, trait, isActive: false }
 ```
 
 ### create_personality_trait
@@ -251,7 +251,7 @@ Inserts a new row into `user_personality`. Called by both BrainMaintenanceAgent 
   evidence: string[]  // user_memory IDs that support this inference — min 1
   strength: number    // initial strength 0.3–0.7 — never starts at 1.0
 }
-// system fills: id (UUID), user_id, active=1, revised_count=0, inferred_at=now, last_seen_at=now, updated_at=now
+// system fills: id (UUID), user_id, isActive=true, revised_count=0, inferred_at=now, last_seen_at=now, updated_at=now
 ```
 
 ---
@@ -461,7 +461,7 @@ const now = Date.now()
 **Step 2: Apply decay rules from `03-user-personality.md`**
 
 ```typescript
-for (const trait of traits.filter(t => t.active === 1)) {
+for (const trait of traits.filter(t => t.isActive)) {
   const daysSinceSeen = (now - trait.last_seen_at) / 86400000
 
   // Passive decay: -0.03 per 30 days with no new supporting evidence
@@ -473,7 +473,7 @@ for (const trait of traits.filter(t => t.active === 1)) {
     ids: trait.evidence
   })
 
-  const activeEvidence      = evidenceEntries.filter(e => e.active !== 0)
+  const activeEvidence      = evidenceEntries.filter(e => e.isActive)
   const contradictingCount  = 0  // BrainMaintenanceAgent LLM pass handles contradiction detection
 
   let newStrength = trait.strength - decayAmount
@@ -512,7 +512,7 @@ const { entries: memoryEntries } = await callTool('get_user_memory_for_brain_mai
 
 // Current active traits — so BrainMaintenanceAgent knows what is already captured
 const { traits: existingTraits } = await callTool('get_personality_traits_for_brain_maintenance', {})
-const activeTraitNames = existingTraits.filter(t => t.active === 1).map(t => t.trait)
+const activeTraitNames = existingTraits.filter(t => t.isActive).map(t => t.trait)
 ```
 
 **Step 2: LLM inference sub-call**
@@ -557,7 +557,7 @@ for (const proposal of traitProposals) {
   // Guard: don't create if name already exists (including deactivated traits)
   const existing = existingTraits.find(t => t.trait === proposal.trait)
   if (existing) {
-    if (existing.active === 0) {
+    if (!existing.isActive) {
       // Reactivate with updated evidence rather than creating duplicate
       await callTool('update_personality_trait', {
         id:          existing.id,

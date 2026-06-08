@@ -51,7 +51,7 @@ The spec defines the range (0.0–1.0) but not how strength moves. Rules defined
 - **Brain maintenance pass — supporting evidence found**: strength increases by 0.05 per new supporting `user_memory` entry, capped at 1.0.
 - **Brain maintenance pass — contradicting evidence found**: strength decreases by 0.1 per contradicting entry, floor 0.0.
 - **Brain maintenance pass — no new evidence in 30 days**: strength decays by 0.03. Passive decay for traits the user's behavior no longer supports.
-- **Strength below 0.15 after decay**: Brain maintenance sets `active = 0`. Trait is deactivated, not deleted.
+- **Strength below 0.15 after decay**: Brain maintenance sets `isActive = false`. Trait is deactivated, not deleted.
 
 ## CREATE TABLE
 
@@ -63,11 +63,11 @@ CREATE TABLE user_personality (
   summary       TEXT NOT NULL,      -- Brain maintenance-written paragraph describing the specific observed pattern for this user — the real content the LLM uses
   evidence      TEXT NOT NULL,      -- JSON array of user_memory IDs (namespace:key strings) that support this trait
   strength      REAL NOT NULL,      -- 0.0 to 1.0 — how strongly this trait is supported by evidence
-  active        INTEGER NOT NULL DEFAULT 1,  -- 1 = active, 0 = deactivated by Brain maintenance (never hard deleted)
+  is_active     INTEGER NOT NULL DEFAULT 1,  -- true = active, false = deactivated by Brain maintenance (never hard deleted)
   revised_count INTEGER NOT NULL DEFAULT 0,  -- how many times the Brain maintenance has updated this trait
   inferred_at   INTEGER NOT NULL,   -- unix timestamp ms — when this trait was first created
   last_seen_at  INTEGER NOT NULL,   -- unix timestamp ms — when the most recent supporting evidence was observed
-  updated_at    INTEGER NOT NULL    -- unix timestamp ms — when this row last changed (strength, evidence, active)
+  updated_at    INTEGER NOT NULL    -- unix timestamp ms — when this row last changed (strength, evidence, is_active)
 );
 ```
 
@@ -83,7 +83,7 @@ export const userPersonality = sqliteTable('user_personality', {
   summary:      text('summary').notNull(),         // Brain maintenance-written paragraph — the actual content the LLM reads
   evidence:     text('evidence').notNull(),        // JSON array of user_memory IDs
   strength:     real('strength').notNull(),
-  active:       integer('active').notNull().default(1),
+  isActive:     integer('is_active', { mode: 'boolean' }).notNull().default(true),
   revisedCount: integer('revised_count').notNull().default(0),
   inferredAt:   integer('inferred_at').notNull(),
   lastSeenAt:   integer('last_seen_at').notNull(),
@@ -119,7 +119,7 @@ Every trait must be traceable. The evidence array is the audit trail — the exa
 **`strength` — 0.0 to 1.0, moves on every Brain maintenance pass**
 Not static. Strength reflects current evidence weight, not historical peak. A trait that was strong 6 months ago but has had no supporting evidence since will decay toward deactivation. A trait with fresh, repeated evidence stays high.
 
-**`active` — soft delete only**
+**`is_active` — boolean soft delete only**
 A deactivated trait is invisible to the agent during sessions. But it stays in the table. Reason: if the behavior returns, the Brain maintenance can reactivate the existing trait and its full history rather than creating a new one from scratch. History is never destroyed.
 
 **`revised_count` — Brain maintenance stability signal**
@@ -150,12 +150,12 @@ const PersonalityTraitSchema = z.object({
 ## Indexes
 
 ```sql
-CREATE INDEX idx_user_personality_active   ON user_personality (active, strength DESC);
-CREATE INDEX idx_user_personality_seen     ON user_personality (last_seen_at DESC) WHERE active = 1;
+CREATE INDEX idx_user_personality_is_active ON user_personality (is_active, strength DESC);
+CREATE INDEX idx_user_personality_seen     ON user_personality (last_seen_at DESC) WHERE is_active = 1;
 ```
 
 **Why these indexes:**
-- `(active, strength DESC)` — session context assembly: load all active traits ordered by strength — strongest traits injected first, weakest last (or truncated if too many)
+- `(is_active, strength DESC)` — session context assembly: load all active traits ordered by strength — strongest traits injected first, weakest last (or truncated if too many)
 - `(last_seen_at DESC)` partial on active — Brain maintenance decay pass: find active traits with no recent evidence, candidates for strength reduction or deactivation
 
 ## Write Rules
@@ -164,7 +164,7 @@ CREATE INDEX idx_user_personality_seen     ON user_personality (last_seen_at DES
 - The agent does NOT write to this table directly mid-conversation. Traits emerge from the Brain maintenance's analysis, not from a single conversation.
 - On first inference: full row insert with initial strength set by the Brain maintenance's model pass.
 - On Brain maintenance revision: `strength`, `evidence`, `last_seen_at`, `revised_count`, `updated_at` updated. `trait` and `inferred_at` never change after insert.
-- On deactivation: `active = 0`, `updated_at` updated. Row stays.
+- On deactivation: `isActive = false`, `updated_at` updated. Row stays.
 - `updated_at` always set to `Date.now()` at write time by the Brain maintenance, never passed in externally.
 
 ## Read Rules

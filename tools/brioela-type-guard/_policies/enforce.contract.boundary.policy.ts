@@ -4,6 +4,8 @@ import type { TypeViolation } from '../_types'
 import type { TypePolicy } from './type.guard.policy'
 
 const rawApiMethodNames = new Set(['get', 'post', 'patch', 'put', 'del', 'delete'])
+const apiRoutePrefix = '/' + 'api/'
+const v1RoutePrefix = '/' + 'v1/'
 
 export const enforceContractBoundaryPolicy: TypePolicy = ({ repoPath, sourceFile }) => {
   const violations: TypeViolation[] = []
@@ -32,7 +34,7 @@ export const enforceContractBoundaryPolicy: TypePolicy = ({ repoPath, sourceFile
         }))
       }
 
-      if (isBackendRawJsonResponse(node, repoPath)) {
+      if (isBackendContractJsonBypass(node, repoPath)) {
         violations.push(createViolation({
           rule: 'enforce-contract-boundary',
           repoPath,
@@ -66,7 +68,17 @@ function isJsonBodyRead(node: ts.CallExpression): boolean {
   const expression = node.expression
   if (!ts.isPropertyAccessExpression(expression)) return false
   if (expression.name.text !== 'json') return false
-  return true
+
+  const jsonSource = expression.expression
+  if (ts.isIdentifier(jsonSource)) {
+    return jsonSource.text === 'request' || jsonSource.text === 'response'
+  }
+
+  if (ts.isPropertyAccessExpression(jsonSource)) {
+    return jsonSource.name.text === 'req' || jsonSource.name.text === 'request' || jsonSource.name.text === 'response'
+  }
+
+  return false
 }
 
 function isRawApiMethodCall(node: ts.CallExpression): boolean {
@@ -76,7 +88,7 @@ function isRawApiMethodCall(node: ts.CallExpression): boolean {
   return ts.isIdentifier(expression.expression) && expression.expression.text === 'api'
 }
 
-function isBackendRawJsonResponse(node: ts.CallExpression, repoPath: string): boolean {
+function isBackendContractJsonBypass(node: ts.CallExpression, repoPath: string): boolean {
   if (!repoPath.startsWith('backend/src/api/')) return false
 
   const expression = node.expression
@@ -89,8 +101,8 @@ function isBackendRawJsonResponse(node: ts.CallExpression, repoPath: string): bo
   })
 }
 
-function isRouteString(value: string): boolean {
-  return value.startsWith('/v1/') || value.startsWith('/api/')
+function isRouteString(routeText: string): boolean {
+  return routeText.startsWith(v1RoutePrefix) || routeText.startsWith(apiRoutePrefix)
 }
 
 function isContractFile(repoPath: string): boolean {

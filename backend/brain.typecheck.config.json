@@ -1,0 +1,12 @@
+{
+	"extends": "./tsconfig.json",
+	"compilerOptions": {
+		"noEmit": true,
+		"allowJs": false
+	},
+	"include": [
+		"src/agents/brain/**/*.ts",
+		"src/database/**/*.ts",
+		"brain.drizzle.config.ts"
+	]
+}
