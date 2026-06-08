@@ -8,7 +8,7 @@ The adaptive frequency controller decides how often to run an observation check 
 
 ## Cooking Phase → Base Interval
 
-The cooking phase is the primary input. The CookingAgent DO sets the phase as the session progresses.
+The cooking phase is the primary input. The Mira session runtime sets the phase as the session progresses.
 
 | Phase | Base Interval | Reasoning |
 |---|---|---|
@@ -17,7 +17,7 @@ The cooking phase is the primary input. The CookingAgent DO sets the phase as th
 | `simmering` | 60s | Timer running, food on low heat — minimal risk, stay quiet |
 | `finishing` | 30s | Plating, tasting — watch but don't interrupt the moment |
 
-Phase transitions are set by the CookingAgent DO based on context signals:
+Phase transitions are set by the Mira session runtime based on context signals:
 - `prep` → `active`: when a timer is set OR Gemini hears "I'm starting to fry / heat the oil"
 - `active` → `simmering`: when a long timer is set (>5 min) AND visual change drops to stable
 - `simmering` → `active`: when timer fires

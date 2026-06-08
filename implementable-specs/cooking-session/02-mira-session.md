@@ -1,14 +1,14 @@
-# Cooking Session — CookingAgent Durable Object
+# Cooking Session — Mira session Durable Object
 
 ## Current Cloudflare Runtime Correction
 
 This older implementable spec uses raw Durable Object patterns. Before coding, use
-`build-guide/08-cooking-session/02-cooking-agent-do.md` as the current source of truth.
+`build-guide/08-cooking-session/02-mira-session-do.md` as the current source of truth.
 
 Current direction:
 
-- CookingAgent should be an Agent-backed Durable Object using the current `agents` package, not the deprecated scoped package name.
-- CookingAgent owns live runtime state plus a small local recovery ledger; Brain owns persistent user memory/recipes/health SQLite.
+- Mira session runtime should be an Agent-backed Durable Object using the current `agents` package, not the deprecated scoped package name.
+- Mira owns live runtime state plus a small local recovery ledger; Brain owns persistent user memory/recipes/health SQLite.
 - Inbound WebSockets should validate `Upgrade: websocket` and use hibernation-aware Agent/DO WebSocket handling where possible.
 - Cloudflare Realtime SFU media frames arrive as protobuf `Packet` messages per selected track, not JSON metadata followed by raw binary.
 - Timers should use Agents SDK `schedule()` with local timer rows and idempotent callbacks, not raw DO alarms as the default.
@@ -16,9 +16,9 @@ Current direction:
 
 The product intent below remains useful, but stale implementation snippets must be reconciled before coding.
 
-## What the CookingAgent DO Is
+## What the Mira session DO Is
 
-The CookingAgent is a Cloudflare Durable Object that controls everything for one cooking session. It is the single point of authority for:
+The Mira session runtime is a Cloudflare Durable Object that controls everything for one cooking session. It is the single point of authority for:
 - Receiving audio and video from Cloudflare Realtime
 - Maintaining the Gemini 3.1 Flash Live WebSocket session
 - Executing or forwarding all tool calls
@@ -26,7 +26,7 @@ The CookingAgent is a Cloudflare Durable Object that controls everything for one
 - Managing cooking timers via Agents SDK schedules
 - Sending Gemini's audio response back to the mobile
 
-**DO ID:** `env.COOKING_AGENT.idFromName(\`cooking:${sessionId}\`)`
+**DO ID:** `env.MIRA_SESSION.idFromName(\`cooking:${sessionId}\`)`
 
 Session-scoped. One cooking session = one DO. The Brain DO creates it. When the session ends, it is no longer addressed. Cloudflare eventually evicts it. All critical state is in SQLite before eviction can matter.
 
@@ -35,7 +35,7 @@ Session-scoped. One cooking session = one DO. The Brain DO creates it. When the 
 ## DO Endpoints
 
 ```typescript
-export class CookingAgentDO implements DurableObject {
+export class MiraSessionDO implements DurableObject {
   constructor(private state: DurableObjectState, private env: Env) {}
 
   async fetch(request: Request): Promise<Response> {
@@ -76,7 +76,7 @@ export class CookingAgentDO implements DurableObject {
 The DO holds runtime state in memory. If Cloudflare evicts the DO mid-session, `restart()` recovers from SQLite and reconnects to Gemini.
 
 ```typescript
-interface CookingAgentState {
+interface MiraSessionState {
   // Session identity
   sessionId:  string
   userId:     string
@@ -243,7 +243,7 @@ private async recover(): Promise<void> {
 
 ## Brain Communication (Tool Forwarding)
 
-When Gemini calls a tool that touches SQLite, the CookingAgent DO forwards to the Brain DO:
+When Gemini calls a tool that touches SQLite, the Mira session DO forwards to the Brain DO:
 
 ```typescript
 private async forwardToolToBrain(
@@ -274,7 +274,7 @@ private async forwardToolToBrain(
 
 ---
 
-## agent_state Keys Written by CookingAgent
+## agent_state Keys Written by Mira Session Runtime
 
 | Key | Value | When |
 |---|---|---|

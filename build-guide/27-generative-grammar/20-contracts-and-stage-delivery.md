@@ -363,7 +363,7 @@ If the model chooses badly, validation fails and `brioelaGenerativeUi` becomes `
 
 For agentic flows, `present_moment` is one tool in the feature agent's toolbox.
 
-Example cooking agent tools:
+Example Mira cooking tools:
 
 ```typescript
 const tools = {

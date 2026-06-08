@@ -2,7 +2,7 @@
 
 ## What This File Covers
 
-How Kids Mode works inside live voice/cooking sessions when the parent says "explain this to my kid" or asks Brioela to switch tone for a child.
+How Kids Mode works inside Mira sessions when the parent says "explain this to my kid" or asks Brioela to switch tone for a child.
 
 ---
 
@@ -10,7 +10,7 @@ How Kids Mode works inside live voice/cooking sessions when the parent says "exp
 
 Kids Voice Mode is contextual. It is not a persistent session mode.
 
-The agent switches tone for one explanation, then returns to the adult/cooking mode.
+Mira switches tone for one explanation, then returns to the adult session mode.
 
 ---
 
@@ -32,7 +32,7 @@ The agent should infer child explanation intent from context, but only when the 
 In cooking/voice sessions:
 
 1. Parent asks for child explanation.
-2. Agent checks current context: product, ingredient, recipe step, or scan result.
+2. Mira checks current context: product, ingredient, recipe step, or scan result.
 3. Agent uses Kids Mode age range or asks one short age-range question if missing.
 4. Agent gives short child-friendly explanation.
 5. Agent returns to normal adult mode.
@@ -55,7 +55,7 @@ This is not a new model. It is a temporary instruction on the existing live sess
 
 ## Audio/TTS
 
-Use the existing cooking voice pipeline. No new TTS infrastructure.
+Use the existing Mira voice pipeline. No new TTS infrastructure.
 
 Rules:
 

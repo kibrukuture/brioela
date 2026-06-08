@@ -31,7 +31,7 @@ private async nextTurnNumber(): Promise<number> {
 }
 ```
 
-The CookingAgent DO is the only process writing turns for this session. There is no concurrent writer — the turn counter is safe from racing as long as turns are written sequentially within the DO. Because the DO is single-threaded (Cloudflare DOs process one request at a time), sequential writes are guaranteed.
+The Mira session runtime is the only process writing turns for this session. There is no concurrent writer — the turn counter is safe from racing as long as turns are written sequentially within the DO. Because the DO is single-threaded (Cloudflare DOs process one request at a time), sequential writes are guaranteed.
 
 ---
 

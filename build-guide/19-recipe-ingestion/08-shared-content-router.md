@@ -132,7 +132,7 @@ Do not store raw shared content in memory by default. Store route, entity refere
 
 ## Live Agent Escalation
 
-If the route needs conversation, Brioela can escalate into the common realtime assistant surface.
+If the route needs conversation, Brioela can escalate into Mira.
 
 Use cases:
 
@@ -142,7 +142,7 @@ Use cases:
 - shopper needs substitution guidance
 - user asks what to do with a shared place/product
 
-This uses the same voice/video intelligence stack as Cooking Session when realtime conversation is needed. It should be treated as a reusable Brioela assistant capability, not a cooking-only idea.
+This uses the Mira live presence runtime when realtime conversation is needed. Mira is a reusable Brioela capability, not a cooking-only idea.
 
 ---
 

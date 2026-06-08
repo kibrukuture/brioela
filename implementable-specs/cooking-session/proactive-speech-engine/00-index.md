@@ -2,11 +2,11 @@
 
 ## What This Is
 
-The ProactiveSpeechEngine is a self-contained module used by the CookingAgent DO. It answers one question continuously: **should Gemini speak right now, and if so, with what prompt?**
+The ProactiveSpeechEngine is a self-contained module used by the Mira session runtime. It answers one question continuously: **should Gemini speak right now, and if so, with what prompt?**
 
 Without this engine, Gemini only speaks when the user speaks — it is reactive. With this engine, Gemini watches the kitchen, notices things, and speaks when it judges it necessary. That is what makes the cooking session feel like a human coach is present rather than a voice assistant waiting for commands.
 
-The engine does not talk to Gemini directly. It does not write to SQLite. It produces decisions — `ObservationRequest | null` — and the CookingAgent DO acts on them.
+The engine does not talk to Gemini directly. It does not write to SQLite. It produces decisions — `ObservationRequest | null` — and the Mira session runtime acts on them.
 
 ---
 
@@ -23,7 +23,7 @@ The engine does not talk to Gemini directly. It does not write to SQLite. It pro
 
 ---
 
-## TypeScript Interface (What CookingAgent Imports)
+## TypeScript Interface (What Mira Session Runtime Imports)
 
 ```typescript
 export interface ProactiveSpeechConfig {
@@ -50,39 +50,39 @@ export interface ObservationResponse {
 export class ProactiveSpeechEngine {
   constructor(config: ProactiveSpeechConfig) {}
 
-  // Called by CookingAgent on every audio metadata frame from Cloudflare Realtime adapter
+  // Called by Mira session runtime on every audio metadata frame from Cloudflare Realtime adapter
   onVoiceActivity(active: boolean): void
 
-  // Called by CookingAgent on every JPEG frame received from Cloudflare Realtime adapter
+  // Called by Mira session runtime on every JPEG frame received from Cloudflare Realtime adapter
   onVideoFrame(jpegData: ArrayBuffer): void
 
-  // Called by CookingAgent when Gemini starts producing audio output
+  // Called by Mira session runtime when Gemini starts producing audio output
   onGeminiSpeechStart(): void
 
-  // Called by CookingAgent when Gemini finishes a complete turn (turn_complete)
+  // Called by Mira session runtime when Gemini finishes a complete turn (turn_complete)
   onGeminiSpeechEnd(): void
 
-  // Called by CookingAgent when a cooking timer fires
+  // Called by Mira session runtime when a cooking timer fires
   onTimerFired(label: string): void
 
-  // Called by CookingAgent on its main loop tick (every 1 second)
+  // Called by Mira session runtime on its main loop tick (every 1 second)
   // Returns an observation request if the engine decides to speak, null otherwise
   tick(): ObservationRequest | null
 
-  // Called by CookingAgent after Gemini responds to an observation request
+  // Called by Mira session runtime after Gemini responds to an observation request
   onObservationResponse(rawResponse: string): ObservationResponse
 
-  // Called by CookingAgent when the cooking phase changes
+  // Called by Mira session runtime when the cooking phase changes
   setPhase(phase: CookingPhase): void
 }
 ```
 
 ---
 
-## How CookingAgent Uses This Engine
+## How Mira Session Runtime Uses This Engine
 
 ```typescript
-// In CookingAgent DO — initialization
+// In Mira session runtime — initialization
 this.speechEngine = new ProactiveSpeechEngine({
   sessionId:         this.sessionState.sessionId,
   userId:            this.sessionState.userId,
@@ -130,8 +130,8 @@ The engine is pure in-memory. It does not read or write SQLite. If the DO is evi
 
 ## What This Engine Is NOT Responsible For
 
-- Sending audio to Gemini → CookingAgent DO
-- Forwarding audio to mobile → CookingAgent DO
+- Sending audio to Gemini → Mira session runtime
+- Forwarding audio to mobile → Mira session runtime
 - Timer scheduling → `06-timers.md`
 - Transcript writes → `07-transcript-storage.md`
 - Gemini session reconnection → `09-reconnection.md`

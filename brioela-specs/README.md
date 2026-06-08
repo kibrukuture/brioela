@@ -30,7 +30,7 @@ Rules:
 
 ## Cooking Intelligence
 
-- `10-voice-cooking-agent.md` — Gemini Live full-duplex voice session, single-user.
+- `10-mira-cooking-voice.md` — Mira cooking voice session with Gemini Live full-duplex audio.
 - `11-live-vision-cooking-coach.md` — Gemini Live audio + video simultaneously, premium tier.
 - `12-multi-person-cooking-rooms.md` — Cloudflare Realtime / RealtimeKit rooms, remote family and friends.
 - `13-generational-recipe-capture.md`

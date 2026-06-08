@@ -32,7 +32,7 @@ CF Worker receives request
         dies when work is done
 ```
 
-All agents — Brain, CuratorAgent, PatternDetectionAgent, CookingAgent, ProductScanAgent — are the same kind of entity. They all use LLMs. They all use tools. The only difference is the ID. Ephemeral IDs mean ephemeral DOs. The Brain's `userId` key is what makes it permanent.
+All agents — Brain, CuratorAgent, PatternDetectionAgent, MiraSession, ProductScanAgent — are the same kind of entity. They all use LLMs. They all use tools. The only difference is the ID. Ephemeral IDs mean ephemeral DOs. The Brain's `userId` key is what makes it permanent.
 
 ---
 

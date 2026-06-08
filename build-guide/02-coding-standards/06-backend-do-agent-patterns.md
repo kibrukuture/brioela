@@ -143,13 +143,13 @@ async function scheduleNextAlarm(agent: BrioelaBrain, type: AlarmType, delayMs: 
 
 ## WebSocket Pattern (Cooking Session DO)
 
-The CookingAgent DO holds WebSocket connections open using CF hibernation. WebSocket lifecycle methods are defined directly on the class:
+The MiraSession DO holds WebSocket connections open using CF hibernation. WebSocket lifecycle methods are defined directly on the class:
 
 ```ts
 // backend/src/agents/cooking/cooking.agent.ts
 import { Agent } from 'agents'
 
-export class CookingAgent extends Agent<Env> {
+export class MiraSession extends Agent<Env> {
   db = drizzle(this.ctx.storage, { schema })
 
   async fetch(request: Request): Promise<Response> {
@@ -200,7 +200,7 @@ export class CookingAgent extends Agent<Env> {
 # wrangler.toml
 [[migrations]]
 tag = "v1"
-new_sqlite_classes = ["BrioelaBrain", "CookingAgent"]
+new_sqlite_classes = ["BrioelaBrain", "MiraSession"]
 ```
 
 ---

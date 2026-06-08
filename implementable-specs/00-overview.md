@@ -31,7 +31,7 @@ Each file covers one SQLite table (or virtual table group) in the BrioelaBrain D
 
 ## Stack
 
-- Runtime: Cloudflare Durable Objects (BrioelaBrain + CookingAgent)
+- Runtime: Cloudflare Durable Objects (BrioelaBrain + MiraSession)
 - ORM: Drizzle ORM with `drizzle-orm/durable-sqlite` adapter
 - SQLite: per-user, physically isolated, accessed via `this.ctx.storage`
 - FTS: SQLite FTS5 module — keyword search inside DO, zero external latency
@@ -112,7 +112,7 @@ Every table exists because data must persist and be queried. If something can be
 | skills | Agent (create/update/archive) + Curator (update/archive) |
 | skill_versions | update_user_skill execution path only |
 | constraints | Agent only (propose/confirm/reject) |
-| sessions | BrioelaBrain + CookingAgent (each owns its own row) |
+| sessions | BrioelaBrain + MiraSession (each owns its own row) |
 | session_turns | Agent (during active session) |
 | recipes | Agent |
 | scheduled_alarms | Agent + DO alarm handler |

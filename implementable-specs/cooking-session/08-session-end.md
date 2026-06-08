@@ -119,7 +119,7 @@ private async runSessionEndProcessing(reason: SessionEndReason): Promise<void> {
 
 ## Recipe Decision Tree
 
-Implemented via an LLM call to the Brain (the Brain runs a lightweight completion with the transcript). The CookingAgent DO calls the Brain with the full transcript and gets back a structured decision.
+Implemented via an LLM call to the Brain (the Brain runs a lightweight completion with the transcript). The Mira session runtime calls the Brain with the full transcript and gets back a structured decision.
 
 ```typescript
 private async runRecipeDecision(transcript: SessionTurn[]): Promise<RecipeDecision> {

@@ -16,7 +16,7 @@ Provider direction: Brioela owns wearable connectors directly. Do not add a thir
 | `02-client-aggregation.md` | client-side daily summaries, no raw streaming, sync timing, source attribution |
 | `03-memory-routing.md` | `health.*` namespaces, daily summary ingestion, personality promotion rules |
 | `04-cgm-food-response.md` | scan-triggered glucose windows, derived metrics, spike-trigger confidence |
-| `05-feature-integration.md` | scanner, meal plan, ambient patterns, illness detective, cooking agent behavior |
+| `05-feature-integration.md` | scanner, meal plan, ambient patterns, illness detective, Mira cooking behavior |
 | `06-privacy-disconnect.md` | health data privacy, deletion, export, audit, non-medical boundary |
 
 ## Specs This Folder Draws From

@@ -17,7 +17,7 @@ interface AudioActivitySample {
 }
 ```
 
-The CookingAgent calls `speechEngine.onVoiceActivity(hasVoiceActivity)` after local VAD evaluates each audio payload.
+The Mira session runtime calls `speechEngine.onVoiceActivity(hasVoiceActivity)` after local VAD evaluates each audio payload.
 
 ---
 

@@ -1,8 +1,8 @@
-# Bela — Shopper AI Assistant
+# Bela — Mira Shopper Role
 
 ## What This File Covers
 
-Voice/vision assistant for shoppers during active orders.
+Mira in shopper role during active Bela orders.
 
 ## Sources
 
@@ -11,10 +11,10 @@ Voice/vision assistant for shoppers during active orders.
 
 ## Stack
 
-Reuse the cooking-session stack:
+Reuse the Mira live presence runtime:
 
 - Cloudflare Realtime / RealtimeKit
-- OrderAgent DO
+- OrderAgent DO for Bela order state and Mira session ownership
 - Gemini Live
 - JPEG frames via `client_content`
 - audio in/out
@@ -22,10 +22,10 @@ Reuse the cooking-session stack:
 
 ## Boundaries
 
-- Shopper AI helps shopper.
-- User does not hear shopper AI.
-- Shopper AI reads only order constraint snapshot and order context.
-- Shopper AI never reveals private full user profile.
+- Mira helps the shopper.
+- User does not hear the shopper-side Mira session.
+- Mira reads only the order constraint snapshot and order context.
+- Mira never reveals the user's full private profile.
 
 ## Use Cases
 

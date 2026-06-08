@@ -2,7 +2,7 @@
 
 ## What This Folder Covers
 
-The live AI cooking coach: voice + camera, Gemini 3.1 Flash Live, CookingAgent Agent-backed Durable Object, Cloudflare RealtimeKit for room/participant lifecycle, Cloudflare Realtime SFU track adapters for selected media streams, proactive speech engine, timers via Agents SDK schedules, transcript storage, reconnection, session end with recipe reconstruction, and multi-person cooking rooms. Also covers generational recipe capture and grandma-style flavor profile extraction.
+Mira in cooking role: live voice + camera guidance, Gemini 3.1 Flash Live, session-scoped Agent-backed Durable Object, Cloudflare RealtimeKit for room/participant lifecycle, Cloudflare Realtime SFU track adapters for selected media streams, proactive speech engine, timers via Agents SDK schedules, transcript storage, reconnection, session end with recipe reconstruction, and multi-person cooking rooms. Also covers generational recipe capture and grandma-style flavor profile extraction.
 
 ## Status
 [x] complete — six files written
@@ -12,7 +12,7 @@ The live AI cooking coach: voice + camera, Gemini 3.1 Flash Live, CookingAgent A
 | File | Contents |
 |---|---|
 | `01-room-lifecycle.md` | RealtimeKit Meeting creation, participant token, SFU track adapter configuration, mobile join flow, active-session teardown, environment variables |
-| `02-cooking-agent-do.md` | CookingAgent DO class, endpoints (/init /stream /audio /alarm-fired), in-memory state, initialization, DO eviction recovery, Brain tool forwarding, agent_state keys |
+| `02-mira-session-do.md` | Mira cooking session runtime DO class, endpoints (/init /stream /audio /alarm-fired), in-memory state, initialization, DO eviction recovery, Brain tool forwarding, agent_state keys |
 | `03-gemini-live-session.md` | Model selection, latency reality, opening the session, setup message, system instruction construction (SOUL + constraints + memory + skills), audio forwarding (PCM), video forwarding (JPEG as client_content not realtime_input.video), proactive reconnect at 90s, tool call handling (BLOCKING), session chaining |
 | `04-proactive-speech-engine.md` | ProactiveSpeechEngine interface, silence tracker, visual change detector, adaptive frequency, prompt builder, response filter, suppression rules, human behaviors (non-response, adaptive verbosity, phase awareness) |
 | `05-timers.md` | Timer tool implementation, Agents SDK schedule callbacks, timer fire dispatch, timer cancellation, session end timer cleanup |
@@ -22,7 +22,7 @@ The live AI cooking coach: voice + camera, Gemini 3.1 Flash Live, CookingAgent A
 
 - `implementable-specs/cooking-session/00-overview.md` — architecture, Cloudflare Realtime decision, Gemini model decision
 - `implementable-specs/cooking-session/01-room-lifecycle.md` — RealtimeKit API calls, room creation, WebSocket adapter
-- `implementable-specs/cooking-session/02-cooking-agent.md` — CookingAgent DO class, state, endpoints
+- `implementable-specs/cooking-session/02-mira-session.md` — MiraSession DO class, state, endpoints
 - `implementable-specs/cooking-session/03-gemini-session.md` — Gemini setup, audio/video forwarding, reconnect
 - `implementable-specs/cooking-session/04-tool-protocol.md` — tool declarations, BLOCKING behavior
 - `implementable-specs/cooking-session/05-video-processing.md` — JPEG pipeline, 1 FPS forwarding, client_content approach
@@ -48,17 +48,17 @@ The live AI cooking coach: voice + camera, Gemini 3.1 Flash Live, CookingAgent A
 
 ## Tools Built In This Feature
 
-Under `tools/cooking-agent/`:
-- `schedule_timer`, `cancel_timer` — handled directly by CookingAgent using Agents SDK schedules
+Under `tools/mira-session/`:
+- `schedule_timer`, `cancel_timer` — handled directly by MiraSession using Agents SDK schedules
 - `write_session_note`, `write_memory`, `propose_constraint`, `view_recipe` — forwarded to Brain DO
 
 ## What This Folder Depends On
 
-- `05-brain` — user context loaded at session start; facts, constraints, skills written back at session end
+- `05-brain` — durable user context loaded into Mira at session start; facts, constraints, skills written back at session end
 - `06-memory-engine` — session_turns schema, sessions schema, recipes schema
 - `03-foundation` — Cloudflare RealtimeKit/SFU env (`CLOUDFLARE_ACCOUNT_ID`, `REALTIMEKIT_APP_ID`, optional `REALTIME_SFU_APP_ID`), Gemini API key
 
 ## What Depends On This Folder
 
-- `11-bela` — shopper AI assistant (OrderAgent DO) reuses the same Cloudflare Realtime + Gemini Live pipeline
+- `11-bela` — Mira in shopper role reuses the same live presence runtime with Bela order context
 - `09-ground` — find-to-cooking-session trigger

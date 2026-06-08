@@ -6,7 +6,7 @@ The cooking session is one product feature but it has many independent moving pa
 
 **What this folder covers:**
 - Room lifecycle (Cloudflare Realtime)
-- CookingAgent Durable Object design
+- Mira cooking session runtime design
 - Gemini 3.1 Flash Live session management
 - Tool call protocol during a live session
 - Video frame processing
@@ -33,14 +33,14 @@ Mobile App (iOS/Android — RealtimeKit SDK)
     │                                        │ Native WebSocket Adapter
     │                                        │ PCM audio (s16le, 48kHz) + JPEG frames
     │                                        ▼
-    │                               CookingAgent DO
+    │                               Mira session DO
     │                               (idFromName(`cooking:${sessionId}`))
     │                                        │
     │                                        ├── WebSocket ──► Gemini 3.1 Flash Live
     │                                        │                 BidiGenerateContent
     │                                        │                 ◄── audio response
     │                                        │
-    └── WebSocket ───────────► CookingAgent DO
+    └── WebSocket ───────────► Mira session DO
         (receives AI voice back)             │
                                              ├── fetch() ──────► Brain DO
                                              │                   (SQLite tool execution)
@@ -50,7 +50,7 @@ Mobile App (iOS/Android — RealtimeKit SDK)
 
 **Two connections from mobile:**
 1. WebRTC to Cloudflare Realtime — sends microphone audio and camera video. RealtimeKit SDK handles all WebRTC complexity (NAT traversal, codec negotiation, echo cancellation).
-2. WebSocket to CookingAgent DO — receives Gemini's audio response. Simple binary WebSocket, no WebRTC.
+2. WebSocket to Mira session DO — receives Gemini's audio response. Simple binary WebSocket, no WebRTC.
 
 The mobile sends but does not need to receive via WebRTC. Receiving AI voice is just a WebSocket — no WebRTC complexity on the receive side.
 
@@ -61,10 +61,10 @@ The mobile sends but does not need to receive via WebRTC. Receiving AI voice is 
 | Component | Responsibility | What It Does NOT Do |
 |---|---|---|
 | Cloudflare Realtime SFU | WebRTC room management, audio/video transport from mobile | AI processing, tool calls, any intelligence |
-| Cloudflare Realtime WebSocket Adapter | Push PCM + JPEG from SFU to CookingAgent DO | Any media transformation beyond format delivery |
-| CookingAgent DO | Controls everything: Gemini session, tool calls, timers, transcript writes | Serve the mobile WebRTC connection directly |
+| Cloudflare Realtime WebSocket Adapter | Push PCM + JPEG from SFU to Mira session DO | Any media transformation beyond format delivery |
+| Mira session DO | Controls everything: Gemini session, tool calls, timers, transcript writes | Serve the mobile WebRTC connection directly |
 | Gemini 3.1 Flash Live | See, hear, think, speak — real-time AI coaching | Tool execution, SQLite, any persistence |
-| Brain DO | Execute SQLite tools on behalf of CookingAgent | Participate in the media or Gemini session |
+| Brain DO | Execute SQLite tools on behalf of Mira | Participate in the media or Gemini session |
 
 ---
 
@@ -88,9 +88,9 @@ Gemini Live `realtime_input.video` triggers a 2-minute session limit. `client_co
 
 Gemini 3.1 Flash Live does not support NON_BLOCKING (async) tool calls — only BLOCKING. During a tool call, Gemini's audio output pauses until the DO returns a tool response. For cooking session tools (set timer, write memory, save recipe note), the pause is under 200ms. Acceptable. The AI says "I'll set that timer" → pauses briefly → tool completes → continues speaking.
 
-**Decision: CookingAgent DO is session-scoped.**
+**Decision: Mira session DO is session-scoped.**
 
-DO ID: `idFromName(\`cooking:${sessionId}\`)`. One DO per cooking session. The Brain DO spawns and coordinates the CookingAgent DO. When the session ends, the CookingAgent DO is no longer addressed — it idles and eventually Cloudflare evicts it. All session state is written to SQLite so DO eviction during the session is survivable via restart.
+DO ID: `idFromName(\`cooking:${sessionId}\`)`. One DO per cooking session. The Brain DO spawns and coordinates the Mira session DO. When the session ends, the Mira session DO is no longer addressed — it idles and eventually Cloudflare evicts it. All session state is written to SQLite so DO eviction during the session is survivable via restart.
 
 ---
 

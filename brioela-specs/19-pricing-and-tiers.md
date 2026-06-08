@@ -53,7 +53,7 @@ Upgrade trigger: tries to start a voice cooking session.
 ### Chef — $24/month
 
 Everything in Core, plus:
-- AI voice cooking agent: 30 sessions/month (up to 15 min each).
+- AI Mira cooking voice: 30 sessions/month (up to 15 min each).
 - Spend tracker with healthy vs unhealthy breakdown.
 - Generational recipe capture (live family cooking session → permanent recipe).
 - Fridge/pantry ingredient rescue.

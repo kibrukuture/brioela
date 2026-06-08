@@ -2,13 +2,13 @@
 
 ## What This File Covers
 
-RealtimeKit Meeting creation, participant token generation, SFU track adapter configuration, mobile join flow, and active-session teardown. This is the WebRTC transport layer — it carries audio and video from mobile to Cloudflare Realtime, then selected SFU tracks can be bridged to the CookingAgent DO.
+RealtimeKit Meeting creation, participant token generation, SFU track adapter configuration, mobile join flow, and active-session teardown. This is the WebRTC transport layer — it carries audio and video from mobile to Cloudflare Realtime, then selected SFU tracks can be bridged to the MiraSession DO.
 
 ---
 
 ## Why Cloudflare Realtime / RealtimeKit
 
-RealtimeKit gives Brioela a managed realtime room layer while keeping the CookingAgent DO as the agent brain. Cloudflare's documented WebSocket media adapter currently lives under Realtime SFU and attaches to specific SFU tracks, not to an entire RealtimeKit meeting.
+RealtimeKit gives Brioela a managed realtime room layer while keeping the MiraSession DO as the agent brain. Cloudflare's documented WebSocket media adapter currently lives under Realtime SFU and attaches to specific SFU tracks, not to an entire RealtimeKit meeting.
 
 Cloudflare Realtime SFU's WebSocket adapter can stream selected remote tracks to a `wss://` endpoint as protobuf media packets: PCM audio (s16le, 48kHz stereo) or JPEG video frames. The adapter is beta and per-track. Do not assume one meeting-level adapter or one mixed room stream unless Cloudflare documents that bridge for RealtimeKit.
 
@@ -21,7 +21,7 @@ Cloudflare Realtime SFU's WebSocket adapter can stream selected remote tracks to
 ```
 Mobile
   ├── WebRTC → Cloudflare Realtime SFU      (sends mic audio + camera video)
-  └── WebSocket → CookingAgent DO           (receives Gemini audio back)
+  └── WebSocket → MiraSession DO           (receives Gemini audio back)
 ```
 
 The mobile sends via WebRTC — RealtimeKit SDK handles all complexity (NAT traversal, codec negotiation, echo cancellation, packet loss). The mobile receives Gemini's voice via a plain binary WebSocket — no WebRTC complexity on the receive side.
@@ -37,7 +37,7 @@ Mobile ── POST /api/cooking/start ──► Hono Worker → Brain DO
                                              │
                                          1. Create RealtimeKit Meeting
                                          2. Create Participant + participantToken
-                                         3. Spawn + initialize CookingAgent DO
+                                         3. Spawn + initialize MiraSession DO
                                          4. Write sessions row to SQLite
                                          5. After tracks exist, attach SFU adapters
                                              │
@@ -146,9 +146,9 @@ export async function startCookingSession(userId: string, env: Env, db: DrizzleD
   const meetingId = await createMeeting(sessionId, env)
   const participantToken = await createParticipant(meetingId, userId, env)
 
-  // Spawn CookingAgent DO
-  const doId   = c.env.COOKING_AGENT.idFromName(`cooking:${sessionId}`)
-  const doStub = c.env.COOKING_AGENT.get(doId)
+  // Spawn MiraSession DO
+  const doId   = c.env.MIRA_SESSION.idFromName(`cooking:${sessionId}`)
+  const doStub = c.env.MIRA_SESSION.get(doId)
   await doStub.fetch(new Request('https://internal/init', {
     method: 'POST',
     body:   JSON.stringify({ sessionId, userId, meetingId }),
@@ -188,7 +188,7 @@ export async function startCookingSession(userId: string, env: Env, db: DrizzleD
 
 ## Internal Stream Routing — Worker Endpoint
 
-The Cloudflare SFU adapter connects to `wss://.../internal/cooking-stream/:sessionId/:mediaKind`. The Worker validates the signed adapter token and upgrades to WebSocket, routing to the correct CookingAgent DO. Media frames are protobuf `Packet` binary messages; the DO knows media kind from the endpoint path, not from JSON metadata.
+The Cloudflare SFU adapter connects to `wss://.../internal/cooking-stream/:sessionId/:mediaKind`. The Worker validates the signed adapter token and upgrades to WebSocket, routing to the correct MiraSession DO. Media frames are protobuf `Packet` binary messages; the DO knows media kind from the endpoint path, not from JSON metadata.
 
 ```typescript
 // backend/src/api/cooking/cooking.route.ts
@@ -201,9 +201,9 @@ cookingRouter.get('/internal/cooking-stream/:sessionId/:mediaKind', async (c) =>
   if (c.req.header('Upgrade')?.toLowerCase() !== 'websocket') return c.text('Expected WebSocket', 426)
   if (!token || !(await verifyAdapterToken(token, sessionId, mediaKind, c.env))) return c.text('Unauthorized', 401)
 
-  // Route WebSocket to CookingAgent DO
-  const doId   = env.COOKING_AGENT.idFromName(`cooking:${sessionId}`)
-  const doStub = env.COOKING_AGENT.get(doId)
+  // Route WebSocket to MiraSession DO
+  const doId   = env.MIRA_SESSION.idFromName(`cooking:${sessionId}`)
+  const doStub = env.MIRA_SESSION.get(doId)
   return doStub.fetch(new Request(`https://do.internal/stream/${mediaKind}`, c.req.raw))
 })
 ```

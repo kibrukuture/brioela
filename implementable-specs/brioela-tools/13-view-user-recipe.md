@@ -117,7 +117,7 @@ There is no `view_count` on recipes. The recipe index injection + `view_user_rec
 
 ## What Is NOT This Tool's Job
 
-- Creating a new recipe → the CookingAgent inserts directly via the recipe-reconstruction skill, no separate tool exposed
+- Creating a new recipe → the MiraSession inserts directly via the recipe-reconstruction skill, no separate tool exposed
 - Updating a recipe's content → `update_user_recipe`
 - Archiving a recipe → `archive_user_recipe`
 - Listing all recipes → recipe index is injected into every session prompt automatically

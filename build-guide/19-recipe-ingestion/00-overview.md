@@ -34,7 +34,7 @@ The share-sheet pipeline: a user shares food-related content from TikTok, YouTub
 - Source attribution preserved on every import (for trust and later reprocessing if model improves)
 - Quantity estimation supports nullable/confidence-based schema — uncertain values marked `estimated`, never fabricated
 - Imported recipes are re-rankable by user allergies, dislikes, budget, and nearby product availability
-- Hard allergy/diet conflicts surface in UI before cooking and can escalate into a voice/video agent review
+- Hard allergy/diet conflicts surface in UI before cooking and can escalate into Mira recipe review
 - If media parsing fails: store source with `partial` status — never silently drop the import
 
 ## Data Model
@@ -56,7 +56,8 @@ user_recipe:         user_id, recipe_id, title, ingredients_json, steps_json, cu
 - `03-foundation` — Upstash Workflow runs the multi-step import job (fetch → extract → normalize → store); share-sheet extension is a native iOS/Android target registered in the Cloudflare Worker
 - `06-memory-engine` — `recipes`, `memory_event`, and session context schema
 - `07-scanner` — screenshot image extraction reuses server-side GPT-4o mini vision patterns and confidence caveats
-- `08-cooking-session` — imported recipes must be immediately cookable by the cooking agent
+- `30-mira` — uncertain or conflicting imports can escalate into Mira recipe review
+- `08-cooking-session` — imported recipes must be immediately cookable by Mira in cooking role
 - `10-map` — place shares can route to place/map memory rather than recipe import
 - `13-receipt-intelligence` — receipt-like shares can route to receipt processing rather than recipe import
 - `17-menu-scanning` — menu-like shares can route to menu parsing rather than recipe import

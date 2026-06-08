@@ -1,18 +1,18 @@
-# Cooking Session — CookingAgent Durable Object
+# Cooking Session — MiraSession Durable Object
 
 ## What This File Covers
 
-CookingAgent Agent class structure, all endpoints, recoverable live-session state, initialization, Cloudflare Realtime SFU track stream handling, mobile audio-out WebSocket, eviction recovery, and Brain tool forwarding.
+MiraSession Agent class structure, all endpoints, recoverable live-session state, initialization, Cloudflare Realtime SFU track stream handling, mobile audio-out WebSocket, eviction recovery, and Brain tool forwarding.
 
 ---
 
 ## DO Identity and Scope
 
 ```
-DO ID: env.COOKING_AGENT.idFromName(`cooking:${sessionId}`)
+DO ID: env.MIRA_SESSION.idFromName(`cooking:${sessionId}`)
 ```
 
-One Agent-backed Durable Object per cooking session. Session-scoped — not user-scoped. The Brain DO creates and addresses the CookingAgent. CookingAgent owns live runtime state and a small local recovery record; Brain owns persistent user SQLite truth.
+One Agent-backed Durable Object per cooking session. Session-scoped — not user-scoped. The Brain DO creates and addresses the MiraSession. MiraSession owns live runtime state and a small local recovery record; Brain owns persistent user SQLite truth.
 
 ---
 
@@ -52,9 +52,9 @@ import { handleRealtimeStream } from './_handlers/realtime-stream.handler'
 import { handleMobileAudio }    from './_handlers/mobile-audio.handler'
 import { handleAlarm }          from './_handlers/alarm.handler'
 
-export class CookingAgent extends Agent<Env> {
+export class MiraSession extends Agent<Env> {
   // In-memory state — rebuilt from local Agent storage on eviction recovery
-  sessionState: CookingAgentState | null = null
+  sessionState: MiraSessionState | null = null
 
   override async fetch(request: Request): Promise<Response> {
     const url = new URL(request.url)
@@ -84,7 +84,7 @@ export class CookingAgent extends Agent<Env> {
 ## In-Memory State
 
 ```typescript
-interface CookingAgentState {
+interface MiraSessionState {
   sessionId:  string
   userId:     string
   meetingId:  string
@@ -118,7 +118,7 @@ Pre-warms the Gemini session before mobile arrives — eliminates first-turn ~3s
 ```typescript
 // backend/src/agents/cooking/_handlers/init.handler.ts
 
-export async function handleInit(request: Request, do: CookingAgent): Promise<Response> {
+export async function handleInit(request: Request, do: MiraSession): Promise<Response> {
   const { sessionId, userId, meetingId } = await request.json() as {
     sessionId: string; userId: string; meetingId: string
   }
@@ -167,7 +167,7 @@ JSON metadata inside the stream.
 
 export async function handleRealtimeStream(
   request: Request,
-  agent: CookingAgent,
+  agent: MiraSession,
   mediaKind: 'audio' | 'video',
 ): Promise<Response> {
   if (request.headers.get('Upgrade')?.toLowerCase() !== 'websocket') {
@@ -184,7 +184,7 @@ export async function handleRealtimeStream(
   return new Response(null, { status: 101, webSocket: client })
 }
 
-// In CookingAgent.webSocketMessage(ws, message):
+// In MiraSession.webSocketMessage(ws, message):
 // 1. Read ws.deserializeAttachment() to get mediaKind.
 // 2. Decode protobuf Packet.
 // 3. For audio, forward packet.payload PCM to Gemini Live.
@@ -200,7 +200,7 @@ Mobile opens this to receive Gemini's voice. Binary audio chunks from Gemini are
 ```typescript
 // backend/src/agents/cooking/_handlers/mobile-audio.handler.ts
 
-export async function handleMobileAudio(request: Request, do: CookingAgent): Promise<Response> {
+export async function handleMobileAudio(request: Request, do: MiraSession): Promise<Response> {
   if (request.headers.get('Upgrade')?.toLowerCase() !== 'websocket') {
     return new Response('Expected WebSocket', { status: 426 })
   }
@@ -253,13 +253,13 @@ private async recover(): Promise<void> {
 
 ## Brain Tool Forwarding
 
-Every tool that touches persistent user memory/recipes/health SQLite is forwarded to the Brain. The CookingAgent may use local Agent SQLite only for live-session recovery metadata, timers, adapter IDs, and connection bookkeeping.
+Every tool that touches persistent user memory/recipes/health SQLite is forwarded to the Brain. The MiraSession may use local Agent SQLite only for live-session recovery metadata, timers, adapter IDs, and connection bookkeeping.
 
 ```typescript
 export async function forwardToolToBrain(
   toolName: string,
   toolArgs: unknown,
-  state: CookingAgentState,
+  state: MiraSessionState,
   env: Env,
 ): Promise<unknown> {
   const brainId = env.BRAIN.idFromName(state.userId)
@@ -287,7 +287,7 @@ export async function forwardToolToBrain(
 
 ---
 
-## `agent_state` Keys Written by CookingAgent
+## `agent_state` Keys Written by MiraSession
 
 | Key | Value | Purpose |
 |---|---|---|

@@ -7,7 +7,7 @@ How a fresh Find can trigger a cooking journey when it matches a user's ingredie
 ## Source Specs
 
 - `brioela-specs/35b-ground-finds-deep-design.md`
-- `brioela-specs/10-voice-cooking-agent.md`
+- `brioela-specs/10-mira-cooking-voice.md`
 - `brioela-specs/13-generational-recipe-capture.md`
 - `build-guide/08-cooking-session/`
 - `build-guide/05-brain/`

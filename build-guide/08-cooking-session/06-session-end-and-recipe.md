@@ -24,9 +24,9 @@ Four ways a session ends, the end sequence step by step, the recipe decision tre
 
 export async function endSession(
   reason:    SessionEndReason,
-  cookingDo: CookingAgent,
+  miraSession: MiraSession,
 ): Promise<void> {
-  const state = cookingDo.sessionState!
+  const state = miraSession.sessionState!
   if (state.status === 'ending' || state.status === 'ended') return
 
   state.status = 'ending'
@@ -38,7 +38,7 @@ export async function endSession(
     role:       'tool_result',
     content:    `[SESSION ENDED: ${reason}]`,
     toolName:   'session_end',
-    cookingDo,
+    miraSession,
   })
 
   // 2. Close Gemini WebSocket
@@ -54,11 +54,11 @@ export async function endSession(
   }
 
   // 4. Cancel all cooking timers
-  await cancelAllTimers(cookingDo)
+  await cancelAllTimers(miraSession)
 
   // 5. Close SFU adapters and end active RealtimeKit session
-  await closeRealtimeAdapters(state.adapterIds, cookingDo.env)
-  await endActiveRealtimeKitSession(state.meetingId, cookingDo.env)
+  await closeRealtimeAdapters(state.adapterIds, miraSession.env)
+  await endActiveRealtimeKitSession(state.meetingId, miraSession.env)
 
   // 6. Close mobile WebSocket
   if (state.mobileWs) {
@@ -67,8 +67,8 @@ export async function endSession(
   }
 
   // 7. Run end-of-session processing (recipe + outcome_summary + memory) as recoverable Agent work
-  await cookingDo.runFiber(`cooking-session-end:${state.sessionId}`, async () => {
-    await runSessionEndProcessing(reason, cookingDo)
+  await miraSession.runFiber(`cooking-session-end:${state.sessionId}`, async () => {
+    await runSessionEndProcessing(reason, miraSession)
   })
 
   // 8. Finalize session row via Brain
@@ -76,12 +76,12 @@ export async function endSession(
     sessionId:  state.sessionId,
     endReason:  reason,
     endedAt:    Date.now(),
-  }, state, cookingDo.env)
+  }, state, miraSession.env)
 
   // 9. Clear turn counter and active_session_id from agent_state
   await forwardToolToBrain('clear_session_state', {
     sessionId: state.sessionId,
-  }, state, cookingDo.env)
+  }, state, miraSession.env)
 
   state.status = 'ended'
 }
@@ -96,9 +96,9 @@ The agent does NOT blindly create a recipe row at session end. It runs a decisio
 ```typescript
 async function runSessionEndProcessing(
   reason:    SessionEndReason,
-  cookingDo: CookingAgent,
+  miraSession: MiraSession,
 ): Promise<void> {
-  const state = cookingDo.sessionState!
+  const state = miraSession.sessionState!
 
   // Aborted immediately — nothing to reconstruct
   if (reason === 'error' && state.turnCounter < 3) {
@@ -106,27 +106,27 @@ async function runSessionEndProcessing(
       sessionId: state.sessionId,
       type:      'aborted',
       reason,
-      cookingDo,
+      miraSession,
     })
     return
   }
 
   // Load full transcript
-  const turns = await loadSessionTranscript(state.sessionId, cookingDo.env)
+  const turns = await loadSessionTranscript(state.sessionId, miraSession.env)
   const sessionNotes = extractSessionNotes(turns)  // notes written via write_session_note tool
 
   // Decision tree — run as a quick Gemini inference (not Live — standard generateContent)
-  const decision = await runRecipeDecision(turns, sessionNotes, cookingDo.env)
+  const decision = await runRecipeDecision(turns, sessionNotes, miraSession.env)
 
   switch (decision.action) {
     case 'create_new_recipe': {
-      const recipe = await reconstructRecipe(turns, sessionNotes, cookingDo.env)
+      const recipe = await reconstructRecipe(turns, sessionNotes, miraSession.env)
       await forwardToolToBrain('create_recipe', {
         title:         recipe.title,
         source:        'cooking_session',
         sourceSession: state.sessionId,
         content:       JSON.stringify(recipe),
-      }, state, cookingDo.env)
+      }, state, miraSession.env)
       break
     }
 
@@ -135,14 +135,14 @@ async function runSessionEndProcessing(
         recipeId: decision.existingRecipeId,
         updates:  decision.updates,
         note:     `Updated from cooking session ${state.sessionId}`,
-      }, state, cookingDo.env)
+      }, state, miraSession.env)
       break
     }
 
     case 'increment_cook_count': {
       await forwardToolToBrain('increment_cook_count', {
         recipeId: decision.existingRecipeId,
-      }, state, cookingDo.env)
+      }, state, miraSession.env)
       break
     }
 
@@ -153,11 +153,11 @@ async function runSessionEndProcessing(
   }
 
   // Always write outcome_summary
-  const summary = await buildOutcomeSummary(turns, sessionNotes, decision, cookingDo.env)
+  const summary = await buildOutcomeSummary(turns, sessionNotes, decision, miraSession.env)
   await forwardToolToBrain('write_outcome_summary', {
     sessionId: state.sessionId,
     summary,
-  }, state, cookingDo.env)
+  }, state, miraSession.env)
 }
 ```
 
@@ -259,21 +259,21 @@ Keep it under 400 words. Be specific to this user and this session.
 When the mobile WebSocket closes unexpectedly, the session does not end immediately. It waits for reconnect:
 
 ```typescript
-function onMobileDisconnect(cookingDo: CookingAgent): void {
-  const state = cookingDo.sessionState!
+function onMobileDisconnect(miraSession: MiraSession): void {
+  const state = miraSession.sessionState!
   if (state.status !== 'active') return
 
   state.status = 'mobile_reconnecting'
 
   // Persist a durable reconnect deadline instead of using setTimeout, which is lost on eviction.
   const deadline = Date.now() + 5 * 60 * 1000
-  cookingDo.sql.exec(
+  miraSession.sql.exec(
     `UPDATE cooking_session_runtime SET mobile_disconnect_deadline = ?, status = ? WHERE session_id = ?`,
     deadline,
     'mobile_reconnecting',
     state.sessionId,
   )
-  cookingDo.schedule(new Date(deadline), 'handleMobileDisconnectDeadline', { sessionId: state.sessionId }, { idempotent: true })
+  miraSession.schedule(new Date(deadline), 'handleMobileDisconnectDeadline', { sessionId: state.sessionId }, { idempotent: true })
 }
 ```
 

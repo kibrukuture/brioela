@@ -34,7 +34,7 @@ Define what Brioela is at the platform level, how it is distributed, and what pl
 - The camera experience must open in under 500ms on any recent device. Delay here is the entire first impression.
 
 ### Microphone
-- Voice cooking agent: real-time audio input sent to Gemini Live WebSocket.
+- Mira cooking voice: real-time audio input sent to Gemini Live WebSocket.
 - Multi-person rooms: audio/video transport through Cloudflare Realtime / RealtimeKit.
 - Passive detection of travel intent and contextual signals: only from explicit voice interactions, never background microphone access.
 - Microphone is never open passively. It activates only on explicit user gesture.
@@ -52,7 +52,7 @@ Define what Brioela is at the platform level, how it is distributed, and what pl
 - Categories: allergy warnings (critical), price alerts (low, batched), weekly summary, cooking session invites, recipe capture complete.
 
 ### Background Audio
-- Required for the voice cooking agent during active sessions.
+- Required for the Mira cooking voice during active sessions.
 - The app must maintain the Gemini Live WebSocket and audio output when the screen is locked or another app is foregrounded.
 - Classified as a cooking assistant session for platform background audio permissions.
 

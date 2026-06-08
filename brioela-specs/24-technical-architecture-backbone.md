@@ -20,10 +20,10 @@ Upstash Redis (product cache, rate limits, session deduplication)
        ↓ shared reads/writes
 Supabase Postgres (global shared data: products, community notes, map, businesses)
 
-Live cooking sessions (multi-person):
+Mira live sessions (cooking role, multi-person):
 Mobile clients → Cloudflare Realtime / RealtimeKit room
                        ↓ WebSocket adapter delivers PCM audio + JPEG frames
-                CookingAgent DO ← pulls context from Brain DO
+                Mira session DO ← pulls context from Brain DO
                        ↓ Gemini Live (gemini-3.1-flash-live-preview)
                        ↓ async
                 Cloudflare/agent workflow path (summarize, save recipe, update memory)
@@ -43,7 +43,7 @@ All HTTP routing runs on Cloudflare Workers using Hono.js. Single codebase, sing
 // src/index.ts
 import { Hono } from 'hono'
 import { BrioelaBrain } from './agents/brain'
-import { CookingAgent } from './agents/cooking'
+import { MiraSession } from './agents/mira'
 
 const app = new Hono<{ Bindings: Env }>()
 
@@ -55,7 +55,7 @@ app.post('/scan', async (c) => {
 })
 
 export default app
-export { BrioelaBrain, CookingAgent } // must export all DO classes
+export { BrioelaBrain, MiraSession } // must export all DO classes
 ```
 
 Workers are stateless — born per request, die per request. They are the front door that routes traffic into the correct user's DO.
@@ -90,11 +90,11 @@ DO capabilities used by Brioela:
 - **Data Studio**: SQLite-backed DOs are viewable and editable in the Cloudflare dashboard. Critical for debugging individual user memory state.
 - **Storage limit**: 10GB per DO, unlimited rows. A heavy user's complete lifetime data realistically stays under 50MB.
 
-### AI Model: Gemini Live (Voice + Vision Brain)
+### AI Model: Gemini Live (Mira Voice + Vision Runtime)
 
 Model: `gemini-3.1-flash-live-preview`
 
-This is a single full-duplex model that simultaneously hears audio, sees video frames, reads injected text context, and speaks back. No separate STT → LLM → TTS pipeline. One WebSocket, one brain.
+This is a single full-duplex model that simultaneously hears audio, sees video frames, reads injected text context, and speaks back. No separate STT → LLM → TTS pipeline. One live model session, one Mira runtime.
 
 Key capabilities:
 - **Full-duplex**: receives audio and produces audio simultaneously.
@@ -118,20 +118,20 @@ Cost model:
 - Audio + video: 283 tokens/sec → $0.051/min.
 - Audio-only is 10× cheaper than Grok Voice. Vision-on is comparable to Grok Voice but Gemini actually sees the video.
 
-Why Gemini over Grok Voice for Brioela: Grok Voice wins on task-completion benchmarks (67.3% vs 43.8% τ-voice) and raw latency (0.78s vs 0.96s), but Grok Voice is audio-only. Brioela's cooking coach requires the AI to watch the camera. Gemini is the only full-duplex model with native video support. Grok is not used.
+Why Gemini over Grok Voice for Brioela: Grok Voice wins on task-completion benchmarks (67.3% vs 43.8% τ-voice) and raw latency (0.78s vs 0.96s), but Grok Voice is audio-only. Mira in cooking role requires the AI to watch the camera. Gemini is the only full-duplex model with native video support. Grok is not used.
 
 ### Cloudflare Realtime / RealtimeKit (Real-Time Media Transport)
 
 Used for live cooking sessions and multi-person rooms. RealtimeKit handles room lifecycle,
 participants, media transport, reconnection, and client SDK behavior. Its WebSocket adapter sends
-PCM audio and periodic JPEG frames directly to the CookingAgent DO, where Gemini Live receives the
+PCM audio and periodic JPEG frames directly to the Mira session DO, where Gemini Live receives the
 model input.
 
 RealtimeKit owns: participant room state, media routing, reconnect behavior, and client transport.
 RealtimeKit does not own: AI reasoning, user memory, recipe state, constraints, safety policy, or
 post-session writes.
 
-Single-user voice sessions can use the same Cloudflare Worker + CookingAgent DO lifecycle with the
+Single-user voice sessions can use the same Cloudflare Worker + Mira session lifecycle with the
 minimum transport needed for the session. Context is injected from the Brain DO at session
 start.
 
@@ -183,7 +183,7 @@ Not used for any user-private data. User-private data lives exclusively in the p
 - **Private** (personal memory, constraints, scan history, recipes, patterns): Brain DO SQLite only. Never in Supabase. Never accessible without authenticated RPC to that user's DO.
 - **Shared** (product corpus, community notes, map, businesses): Supabase Postgres. No user PII.
 - **Cached**: Upstash Redis. TTL-bound, disposable.
-- **Ephemeral session**: CookingAgent DO. Flushed after session closes and key facts written to Brain DO.
+- **Ephemeral live session**: Mira session DO. Flushed after session closes and key facts written to Brain DO.
 
 ## What Runs Where
 
@@ -370,7 +370,7 @@ Five categories that disappear in naive summarization, all preserved by this des
 
 #### Session compressor vs. Brain compressor
 
-The **CookingAgent DO** runs the compressor described above — it manages live session history for cooking sessions.
+The **Mira session DO** runs the live-session compressor described above — it manages live session history for cooking sessions.
 
 The **BrioelaBrain DO** runs a simpler version for its own long-running ambient history (multi-day context across many interactions). It uses the same fact-extraction pattern but fires less frequently — triggered by the DO alarm cycle, not by real-time token usage. Its compression target is the `ambient_history` table, not an active session's `sessionMessages` table.
 

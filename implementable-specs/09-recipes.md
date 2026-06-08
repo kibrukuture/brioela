@@ -142,13 +142,13 @@ Grandma's voice, cultural context, technique notes, exact phrasing — all prese
 Exists only for constraint checking. When the agent checks "is this recipe safe for this user," it reads `ingredients` and matches against `constraints`. It does not parse `content` for safety checks — that would be unreliable. Every `update_user_recipe` that changes content must re-extract and update `ingredients` in the same transaction.
 
 **`source` — free text, known values are suggestions**
-`session`: captured from a CookingAgent session. `reconstructed`: agent rebuilt from memory_event fragments after the fact. `user_created`: user dictated it directly. New sources added without schema change.
+`session`: captured from a Mira session. `reconstructed`: agent rebuilt from memory_event fragments after the fact. `user_created`: user dictated it directly. New sources added without schema change.
 
 **`source_session_id` — nullable**
 Points to the first session that produced this recipe. NULL for user_created. Lets you trace back to the original conversation and re-read the grandma session transcript if needed.
 
 **`cook_time_minutes` — nullable integer**
-NULL when grandma does not state a time — never fabricated. When present, the CookingAgent uses it at session start to set expectations ("this will take about 2 hours") and to pace the session. The alarm system uses it to warn the user if starting this recipe conflicts with a scheduled event or upcoming alarm.
+NULL when grandma does not state a time — never fabricated. When present, the MiraSession uses it at session start to set expectations ("this will take about 2 hours") and to pace the session. The alarm system uses it to warn the user if starting this recipe conflicts with a scheduled event or upcoming alarm.
 
 **`cook_count` — incremented by cooking sessions**
 Every time a cooking session with this `recipe_id` completes successfully, `cook_count` increments. This is the primary signal for recipe relevance — recipes the user actually makes vs recipes they saved and never touched. Fire-and-forget increment, never awaited.
@@ -174,7 +174,7 @@ CREATE INDEX idx_recipes_source      ON recipes (source_session_id) WHERE source
 
 ## Write Rules
 
-- New row inserted by CookingAgent at session end, only after passing the session-end decision tree. Never inserted automatically without the check.
+- New row inserted by MiraSession at session end, only after passing the session-end decision tree. Never inserted automatically without the check.
 - `cook_count` and `last_cooked_at` updated at the end of every cooking session that uses this recipe — fire and forget, never awaited.
 - `update_user_recipe` — agent rewrites `content`. Must re-extract and update `ingredients` in the same write. `updated_at` always updated.
 - `archive_user_recipe` — sets `active = 0`. Never deletes.

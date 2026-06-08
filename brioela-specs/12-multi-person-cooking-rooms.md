@@ -42,11 +42,11 @@ All multi-person rooms use Cloudflare Realtime / RealtimeKit. Brioela does not r
 
 RealtimeKit handles: audio track routing between participants, video track routing where enabled, room lifecycle, participant presence, reconnection on network drop, and client SDK room behavior.
 
-The Cloudflare Realtime adapter delivers PCM audio and periodic JPEG frames to the CookingAgent DO.
+The Cloudflare Realtime adapter delivers PCM audio and periodic JPEG frames to the Mira session DO.
 
 ## AI Agent in the Room
 
-The CookingAgent DO receives room media through the Cloudflare Realtime adapter. Before the session begins, it pulls full context from each participant's Brain DO (their individual allergies, dislikes, dietary identity, prior recipe history).
+The Mira session DO receives room media through the Cloudflare Realtime adapter. Before the session begins, it pulls full context from each participant's Brain DO (their individual allergies, dislikes, dietary identity, prior recipe history).
 
 The AI agent's voice goes back through the RealtimeKit room so all participants hear it simultaneously.
 
@@ -54,13 +54,13 @@ The AI agent uses `gemini-3.1-flash-live-preview` as its brain — the same mode
 
 ## Per-Participant Constraint Handling
 
-Each participant in the room has their own Brain DO with their own constraints. The CookingAgent DO fetches all constraints at session start and merges them:
+Each participant in the room has their own Brain DO with their own constraints. The Mira session DO fetches all constraints at session start and merges them:
 
 - Hard allergies from any participant: the AI never suggests that ingredient to anyone without flagging it loudly.
 - Dietary identity conflicts: surfaced proactively before cooking begins, not mid-session.
 - Soft dislikes: handled per-participant in substitution suggestions without disrupting the group.
 
-## Session State (Held in CookingAgent DO)
+## Session State (Held in Mira Session DO)
 
 - Room ID (RealtimeKit room name).
 - Participant list: user_id, participant_name, realtime_participant_id, constraints_summary.
@@ -80,13 +80,13 @@ Each participant in the room has their own Brain DO with their own constraints. 
 ## Technical Constraints
 
 - Session must survive temporary disconnect by any participant including the AI agent.
-- On reconnect, participant state is restored from CookingAgent DO.
+- On reconnect, participant state is restored from the Mira session DO.
 - Audio track failures for one participant must not interrupt other participants.
-- The CookingAgent reconnects automatically if the realtime media adapter disconnects.
+- Mira reconnects automatically if the realtime media adapter disconnects.
 
 ## Post-Session Flow
 
-On session end, the CookingAgent DO fires a job to Upstash Workflow:
+On session end, the Mira session DO fires a job to Upstash Workflow:
 1. Compile full multi-speaker transcript.
 2. Reconstruct any taught recipe variations (especially grandma-style variations from spec 13).
 3. Write finalized recipe and session summary to each participant's Brain DO individually.

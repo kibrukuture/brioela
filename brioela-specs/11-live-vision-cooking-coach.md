@@ -65,7 +65,7 @@ The system prompt injected at session start instructs the model:
 
 ## Integration with Voice Session
 
-Vision mode is an extension of the voice session, not a separate session. The same Gemini Live WebSocket carries both audio and video input. The same CookingAgent DO manages session state. There is no second connection to open. The user can have a conversation via voice while the camera watches at the same time — one brain handling both inputs simultaneously.
+Vision mode is an extension of the voice session, not a separate session. The same Gemini Live WebSocket carries both audio and video input. The same Mira session runtime manages session state. There is no second connection to open. The user can have a conversation via voice while the camera watches at the same time — one Mira runtime handling both inputs simultaneously.
 
 ## Data Model
 

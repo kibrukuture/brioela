@@ -13,16 +13,16 @@ Brioela may choose one Meeting per cooking session as product policy, but Cloudf
 
 ## Room Creation Flow
 
-The Brain DO creates the room when the user starts a cooking session. It calls the RealtimeKit REST API, then creates the CookingAgent DO, then returns the join token to the mobile.
+The Brain DO creates the room when the user starts a cooking session. It calls the RealtimeKit REST API, then creates the MiraSession DO, then returns the join token to the mobile.
 
 ```
 Mobile ──── POST /api/cooking/start ────► Worker (routes to Brain DO)
                                                │
                                                │ 1. Create RealtimeKit Meeting
                                                │ 2. Create Participant + participantToken
-                                               │ 3. Initialize CookingAgent DO
+                                               │ 3. Initialize MiraSession DO
                                                │ 4. Create session row in SQLite
-                                               │ 5. Spawn CookingAgent DO
+                                               │ 5. Spawn MiraSession DO
                                                │
                                                ▼
                                           Return to Mobile:
@@ -116,7 +116,7 @@ async function configureTrackWebSocketAdapter(
 }
 ```
 
-The Worker at `/internal/cooking-stream/:sessionId/:mediaKind` validates the signed adapter token, looks up the CookingAgent DO stub by sessionId, and upgrades the connection to WebSocket — forwarding it to the DO. Media arrives as protobuf `Packet` messages.
+The Worker at `/internal/cooking-stream/:sessionId/:mediaKind` validates the signed adapter token, looks up the MiraSession DO stub by sessionId, and upgrades the connection to WebSocket — forwarding it to the DO. Media arrives as protobuf `Packet` messages.
 
 ---
 
@@ -128,13 +128,13 @@ async function startCookingSession(userId: string, env: Env): Promise<CookingSes
   const meetingId  = await createMeeting(sessionId, env)
   const participantToken = await createParticipant(meetingId, userId, env)
 
-  // Create CookingAgent DO
-  const doId = env.COOKING_AGENT.idFromName(`cooking:${sessionId}`)
-  const doStub = env.COOKING_AGENT.get(doId)
+  // Create MiraSession DO
+  const doId = env.MIRA_SESSION.idFromName(`cooking:${sessionId}`)
+  const doStub = env.MIRA_SESSION.get(doId)
 
   // SFU adapters are configured after the mobile publishes tracks and track names are known.
 
-  // Initialize the CookingAgent DO with session context
+  // Initialize the MiraSession DO with session context
   await doStub.fetch('/init', {
     method: 'POST',
     body: JSON.stringify({ sessionId, userId, meetingId }),
@@ -185,7 +185,7 @@ meeting.addMeetingRoomEventsListener(meetingRoomEventsListener: self)
 try await meeting.join()
 ```
 
-2. Opens WebSocket to CookingAgent DO to receive Gemini audio:
+2. Opens WebSocket to MiraSession DO to receive Gemini audio:
 ```swift
 let audioSocket = URLSession.shared.webSocketTask(with: URL(string: doAudioEndpoint)!)
 audioSocket.resume()
@@ -235,6 +235,6 @@ WORKER_WS_BASE_URL          wss://api.brioela.com
 
 ## What This File Does NOT Cover
 
-- CookingAgent DO internals → `02-cooking-agent.md`
+- MiraSession DO internals → `02-mira-session.md`
 - What the WebSocket adapter delivers to the DO → `05-video-processing.md`
 - Session end cleanup → `08-session-end.md`

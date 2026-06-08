@@ -24,7 +24,7 @@ Gemini: speaks "Your eggs are done! Take them off the heat."
 
 ## Timer Tool Implementation
 
-`schedule_timer` is handled directly by the CookingAgent DO — not forwarded to the Brain. The DO has direct access to its own alarm mechanism.
+`schedule_timer` is handled directly by the Mira session runtime — not forwarded to the Brain. The DO has direct access to its own alarm mechanism.
 
 ```typescript
 private activeTimers = new Map<string, { alarmTime: number; alarmId: string }>()

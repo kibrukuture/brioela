@@ -108,7 +108,7 @@ async executeToolCall(name: string, args: unknown): Promise<unknown> {
 }
 ```
 
-**Direct tools** (handled by CookingAgent DO itself):
+**Direct tools** (handled by Mira session runtime itself):
 - `schedule_timer` — writes to DO alarm, updates `scheduled_alarms` table
 - `cancel_timer` — clears DO alarm, updates `scheduled_alarms` table
 
@@ -152,7 +152,7 @@ private async forwardToolToBrain(name: string, args: unknown): Promise<unknown> 
   const brainId = this.env.BRAIN.idFromName(this.sessionState.userId)
   const brain   = this.env.BRAIN.get(brainId)
 
-  // Map cooking agent tool names to Brain tool names
+  // Map Mira in cooking role tool names to Brain tool names
   const toolMap: Record<string, string> = {
     write_memory:      'write_user_memory',
     propose_constraint: 'propose_user_constraint',
@@ -233,11 +233,11 @@ Error result (tool failed — Gemini can acknowledge and move on):
 
 | Tool | Caller | Executed By |
 |---|---|---|
-| `schedule_timer` | CookingAgent | CookingAgent DO (direct) |
-| `cancel_timer` | CookingAgent | CookingAgent DO (direct) |
-| `write_session_note` | CookingAgent | Brain DO → `log_memory_event` |
-| `write_memory` | CookingAgent | Brain DO → `write_user_memory` |
-| `propose_constraint` | CookingAgent | Brain DO → `propose_user_constraint` |
-| `view_recipe` | CookingAgent | Brain DO → `view_user_recipe` |
+| `schedule_timer` | Mira session runtime | Mira session runtime (direct) |
+| `cancel_timer` | Mira session runtime | Mira session runtime (direct) |
+| `write_session_note` | Mira session runtime | Brain DO → `log_memory_event` |
+| `write_memory` | Mira session runtime | Brain DO → `write_user_memory` |
+| `propose_constraint` | Mira session runtime | Brain DO → `propose_user_constraint` |
+| `view_recipe` | Mira session runtime | Brain DO → `view_user_recipe` |
 
 No tool in the cooking session can delete rows, confirm constraints, archive skills, or touch any other user's data. The `TOOL_PERMISSIONS` map in the Brain enforces this at execution time regardless of what the agent requests.

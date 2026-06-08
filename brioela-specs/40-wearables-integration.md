@@ -83,7 +83,7 @@ Wearable data maps to `user_memory` under the `health.*` namespace hierarchy. Ex
 | `health.glucose` | `spike_triggers` | Foods correlated with personal glucose spikes above threshold |
 | `health.glucose` | `baseline_fasting` | User's personal fasting glucose range (from CGM morning readings) |
 
-These facts are injected into session context via `buildMemoryContext()` (spec 09) — the cooking agent, voice agent, and scan pipeline all see this data without any additional fetch.
+These facts are injected into session context via `buildMemoryContext()` (spec 09) — the Mira cooking role, Mira voice role, and scan pipeline all see this data without any additional fetch.
 
 **Personality layer** — sustained patterns over 30+ days promote to `user_personality` traits. Not from a single night's data. Examples:
 - Consistent high activity (7000+ steps, 5 days/week for 30 days) → trait `"physically-active"` strength rises

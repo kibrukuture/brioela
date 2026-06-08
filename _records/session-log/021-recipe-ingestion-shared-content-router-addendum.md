@@ -39,7 +39,7 @@ Updated records:
 - Recipe-like content can use deeper public web search when initial evidence is incomplete.
 - If confidence remains low, source is saved as partial instead of fabricating a recipe.
 - Hard allergy/diet conflicts appear in UI before cooking and can escalate to a live assistant conversation.
-- The realtime voice/video assistant stack is a common Brioela capability for places where intelligence and conversation are needed, not only cooking.
+- Mira is the common Brioela live presence runtime for places where intelligence and conversation are needed, not only cooking.
 - Non-recipe shares can still write useful private memory or route to menu scanning, map/place, product scan, or receipt intelligence.
 
 ## In Progress

@@ -97,7 +97,7 @@ With this context, Gemini knows what dish was being made, what timers were set, 
 
 ## Mobile WebSocket Reconnection
 
-The mobile's WebSocket to the CookingAgent DO (the `doAudioEndpoint`) can drop. Causes: bad network, brief backgrounding, screen lock, tunnel reconnect.
+The mobile's WebSocket to the Mira session runtime (the `doAudioEndpoint`) can drop. Causes: bad network, brief backgrounding, screen lock, tunnel reconnect.
 
 **What the mobile does:** maintain a reconnect loop with exponential backoff. On disconnect, wait 1s, 2s, 4s, 8s, then give up after 5 minutes.
 

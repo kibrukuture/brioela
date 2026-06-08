@@ -2,7 +2,7 @@
 
 ## How Video Arrives at the DO
 
-The current documented Cloudflare Realtime SFU WebSocket adapter pushes selected tracks from the SFU to CookingAgent WebSocket endpoints. It is track-level, not room-level. The adapter delivers protobuf `Packet` binary messages:
+The current documented Cloudflare Realtime SFU WebSocket adapter pushes selected tracks from the SFU to Mira session runtime WebSocket endpoints. It is track-level, not room-level. The adapter delivers protobuf `Packet` binary messages:
 
 1. **PCM audio** — s16le, 48kHz stereo payloads on the audio endpoint
 2. **JPEG frames** — approximately 1 FPS payloads on the video endpoint
@@ -138,7 +138,7 @@ Once reconnection completes and `status` returns to `'active'`, the adapter resu
 
 If the DO is evicted mid-session and restarts:
 1. The Cloudflare Realtime adapter reconnects to the DO (the adapter will retry the WebSocket connection per its configured retry policy)
-2. The DO recovers from SQLite (see `02-cooking-agent.md`)
+2. The DO recovers from SQLite (see `02-mira-session.md`)
 3. The DO reopens the Gemini session
 4. Frame forwarding resumes immediately when `status` reaches `'active'`
 

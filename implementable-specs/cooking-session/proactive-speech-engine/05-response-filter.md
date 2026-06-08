@@ -56,7 +56,7 @@ function classifyUrgency(response: string): 'urgent' | 'advisory' {
 ```
 
 **Urgent** responses:
-- CookingAgent delivers the audio immediately, interrupting any current audio playback on mobile
+- Mira session runtime delivers the audio immediately, interrupting any current audio playback on mobile
 - Post-observation cooldown: 20 seconds
 
 **Advisory** responses:
@@ -146,10 +146,10 @@ function onObservationResponse(rawResponse: string): ObservationResponse {
 
 ## Audio Discard Mechanism
 
-When the filter returns `forward: false`, the CookingAgent DO must prevent Gemini's audio from reaching the mobile. This is done by tracking whether the current Gemini output stream was triggered by an observation request:
+When the filter returns `forward: false`, the Mira session runtime must prevent Gemini's audio from reaching the mobile. This is done by tracking whether the current Gemini output stream was triggered by an observation request:
 
 ```typescript
-// In CookingAgent DO
+// In Mira session runtime
 private pendingObservationRequest: ObservationRequest | null = null
 private discardCurrentOutput: boolean = false
 

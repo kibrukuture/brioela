@@ -22,11 +22,11 @@ If the user needs staff help, they can say:
 Brioela, talk to the waiter for me.
 ```
 
-Brioela then becomes the middle layer:
+Mira then becomes the live middle layer:
 
 ```text
-user language → Brioela → waiter language
-waiter language → Brioela → user language
+user language → Mira → waiter language
+waiter language → Mira → user language
 ```
 
 The conversation is constrained by the menu scan and the user's food profile. Brioela does not become
@@ -74,7 +74,7 @@ Rules:
 
 ## Waiter Conversation Mode
 
-Language Bridge uses voice/video agent behavior when the user explicitly asks Brioela to talk to staff.
+Language Bridge uses Mira in menu_language_bridge role when the user explicitly asks Brioela to talk to staff.
 
 Entry points:
 
@@ -85,7 +85,7 @@ Entry points:
 The screen should show a simple bilingual live state:
 
 ```text
-Brioela is asking about peanuts.
+Mira is asking about peanuts.
 
 English for Marta
 Chinese for staff
@@ -109,29 +109,29 @@ Ask before ordering
 宫保鸡丁 · Kung Pao Chicken
 
 This dish often includes peanuts.
-Brioela can ask whether they can make it without peanuts and avoid shared prep.
+Mira can ask whether they can make it without peanuts and avoid shared prep.
 
 Ask for me
 ```
 
 Marta taps **Ask for me**.
 
-Brioela speaks to Marta first:
+Mira speaks to Marta first:
 
 ```text
-Brioela: I can ask about peanuts and shared prep. Do you also want me to ask whether there is shellfish
+Mira: I can ask about peanuts and shared prep. Do you also want me to ask whether there is shellfish
 in the sauce or broth?
 
 Marta: Yes, ask that too.
 
-Brioela: Got it. I’ll ask about peanuts, peanut oil, shared wok or prep, and shellfish in sauce or broth.
+Mira: Got it. I’ll ask about peanuts, peanut oil, shared wok or prep, and shellfish in sauce or broth.
 Hold the phone near the waiter.
 ```
 
-Brioela turns to the waiter in Chinese:
+Mira turns to the waiter in Chinese:
 
 ```text
-Brioela: 你好，她对花生过敏，也不吃贝类。她想点宫保鸡丁。请问这道菜里面有花生、花生油，或者会和花生一起用同一个锅或工具处理吗？酱汁或高汤里有贝类吗？
+Mira: 你好，她对花生过敏，也不吃贝类。她想点宫保鸡丁。请问这道菜里面有花生、花生油，或者会和花生一起用同一个锅或工具处理吗？酱汁或高汤里有贝类吗？
 ```
 
 Waiter replies in Chinese:
@@ -140,10 +140,10 @@ Waiter replies in Chinese:
 Waiter: 这道菜通常有花生。我们可以不放花生，但是酱料是提前做好的，里面没有贝类。锅可以单独洗一下，但是厨房里有花生。
 ```
 
-Brioela summarizes to Marta:
+Mira summarizes to Marta:
 
 ```text
-Brioela: He said the dish normally has peanuts. They can leave peanuts out, and the sauce does not use
+Mira: He said the dish normally has peanuts. They can leave peanuts out, and the sauce does not use
 shellfish. They can wash the wok separately, but peanuts are used in the kitchen.
 
 For your allergy, I would still treat this as caution. Do you want me to ask for a different dish with
@@ -159,7 +159,7 @@ Marta: Yes, ask what chicken dish is safest.
 Brioela asks the waiter:
 
 ```text
-Brioela: 她需要避免花生和贝类。有没有一道鸡肉菜，不含花生、花生油或贝类，而且更容易单独准备？
+Mira: 她需要避免花生和贝类。有没有一道鸡肉菜，不含花生、花生油或贝类，而且更容易单独准备？
 ```
 
 Waiter:
@@ -171,7 +171,7 @@ Waiter: 番茄鸡蛋汤可以，或者清炒鸡肉不放花生。清炒鸡肉可
 Brioela to Marta:
 
 ```text
-Brioela: He suggested tomato egg soup or a simple stir-fried chicken made separately without peanuts.
+Mira: He suggested tomato egg soup or a simple stir-fried chicken made separately without peanuts.
 The stir-fried chicken is the better match if you want chicken.
 ```
 
@@ -184,7 +184,7 @@ Marta: Order the stir-fried chicken.
 Brioela to waiter:
 
 ```text
-Brioela: 她想点清炒鸡肉。请不要放花生、花生油或贝类。如果可以的话，请单独处理。谢谢。
+Mira: 她想点清炒鸡肉。请不要放花生、花生油或贝类。如果可以的话，请单独处理。谢谢。
 ```
 
 ---

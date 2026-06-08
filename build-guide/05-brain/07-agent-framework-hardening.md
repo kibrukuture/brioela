@@ -90,7 +90,7 @@ These are product architecture decisions, not replaceable plumbing:
 - Tools are the only LLM-to-SQLite write interface.
 - Device events can enter through system endpoints and become memory events.
 - Brioela surfaces only justified ambient moments.
-- CookingAgent remains session-scoped, not user-scoped.
+- MiraSession remains session-scoped, not user-scoped.
 - Gemini Live / Cloudflare Realtime media bridge remains custom.
 
 Do not change these because a framework offers a generic pattern.
@@ -564,7 +564,7 @@ The surfacing logic still obeys Brioela's silence rules.
 Current intent:
 
 ```text
-CookingAgent survives disconnects and DO eviction.
+MiraSession survives disconnects and DO eviction.
 ```
 
 Hardened architecture:

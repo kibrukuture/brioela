@@ -14,14 +14,14 @@ Two additions needed in `backend/wrangler.jsonc`. Without the `migrations` entry
 "durable_objects": {
   "bindings": [
     { "name": "BRAIN",  "class_name": "BrioelaBrain" },
-    { "name": "COOKING_AGENT", "class_name": "CookingAgent" }
+    { "name": "MIRA_SESSION", "class_name": "MiraSession" }
   ]
 },
 
 "migrations": [
   {
     "tag": "v1",
-    "new_sqlite_classes": ["BrioelaBrain", "CookingAgent"]
+    "new_sqlite_classes": ["BrioelaBrain", "MiraSession"]
   }
 ]
 ```
@@ -160,7 +160,7 @@ The first call to `idFromName(userId)` for a new user creates a new DO instance 
 // backend/src/types/env.ts
 export interface Env {
   BRAIN:   DurableObjectNamespace
-  COOKING_AGENT:  DurableObjectNamespace
+  MIRA_SESSION:  DurableObjectNamespace
   SUPABASE_URL:   string
   SUPABASE_KEY:   string
   UPSTASH_REDIS_URL:      string

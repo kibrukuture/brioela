@@ -16,7 +16,7 @@ Nothing is extracted into a separate "tools folder" or "shared folder" in the bu
 build-guide/
   08-cooking-session/
     00-overview.md
-    01-cooking-agent-do.md
+    02-mira-session-do.md
     02-gemini-live-connection.md
     03-proactive-speech-engine.md
     04-tools-this-feature-needs.md   ← tools described HERE, inside the feature
@@ -35,7 +35,7 @@ When the actual code is written, all tools for a feature live under:
 
 ```
 tools/
-  cooking-agent/
+  mira-session/
     set-timer.ts
     write-memory.ts
     propose-constraint.ts
@@ -52,7 +52,7 @@ tools/
 ```
 
 `tools/index.ts` is the only import path used anywhere in the codebase.
-No file imports directly from `tools/cooking-agent/set-timer.ts`.
+No file imports directly from `tools/mira-session/set-timer.ts`.
 Always: `import { setTimer } from '@/tools'`
 
 ---

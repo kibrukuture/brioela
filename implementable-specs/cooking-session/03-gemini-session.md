@@ -16,9 +16,9 @@ This is the same model powering the Gemini consumer app's voice feature ("Gemini
 | Subsequent turns — warm session | ~500ms | Same source, Google Dev Forum |
 | First WebSocket connect | 5–15 seconds | Google Dev Forum |
 
-The cold-start 3-second first-turn is the known production problem. It is mitigated by pre-warming — see `02-cooking-agent.md` CAUTION note. After the first turn, ~500ms feels natural in conversation.
+The cold-start 3-second first-turn is the known production problem. It is mitigated by pre-warming — see `02-mira-session.md` CAUTION note. After the first turn, ~500ms feels natural in conversation.
 
-**CAUTION — test first-turn latency in production before assuming pre-warming solves it.** The cold-start cost may be internal to the model, not just the WebSocket setup time. See `02-cooking-agent.md` for fallback options if pre-warming is insufficient.
+**CAUTION — test first-turn latency in production before assuming pre-warming solves it.** The cold-start cost may be internal to the model, not just the WebSocket setup time. See `02-mira-session.md` for fallback options if pre-warming is insufficient.
 
 API endpoint: `wss://generativelanguage.googleapis.com/ws/google.ai.generativelanguage.v1beta.GenerativeService.BidiGenerateContent`
 
@@ -29,7 +29,7 @@ API endpoint: `wss://generativelanguage.googleapis.com/ws/google.ai.generativela
 Gemini does not have a native proactive decision loop. By default it is reactive — it speaks when the user speaks. The ProactiveSpeechEngine (see `proactive-speech-engine/`) implements this behavior by sending Gemini periodic `client_content` observation prompts when the conditions are right.
 
 **The mechanism:**
-1. The CookingAgent DO calls `speechEngine.tick()` every second
+1. The Mira session runtime calls `speechEngine.tick()` every second
 2. If the engine returns an `ObservationRequest`, the DO sends it to Gemini as `turn_complete: true`
 3. Gemini responds — either with a real observation or with "ok"
 4. The response filter discards "ok" (audio never reaches mobile)

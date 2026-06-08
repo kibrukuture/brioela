@@ -36,7 +36,7 @@ This feature uses `gemini-3.1-flash-live-preview` exclusively. Reasons:
 
 ## Session Initialization
 
-At session start, the CookingAgent DO builds a context payload from the Brain DO and injects it as the Gemini Live system instructions:
+At session start, Mira builds a context payload from the Brain DO and injects it as the Gemini Live system instructions:
 
 - User name.
 - Hard allergies (full ingredient list — model must never suggest anything matching these).
@@ -48,11 +48,11 @@ This means the model already knows the user and the recipe before the first word
 
 ## Mid-Session Context Push
 
-If something changes during the session — product scan result arrives, a step is manually advanced, the timer fires, an allergy match is detected in a suggested substitution — the CookingAgent DO pushes a text update into the live Gemini WebSocket via `send_realtime_input`. The model integrates this without interrupting the conversation unless an action is required.
+If something changes during the session — product scan result arrives, a step is manually advanced, the timer fires, an allergy match is detected in a suggested substitution — Mira pushes a text update into the live Gemini WebSocket via `send_realtime_input`. The model integrates this without interrupting the conversation unless an action is required.
 
 ## Session Transport
 
-- For single-user sessions: the client connects directly to Gemini Live via WebSocket. Audio input and output are handled client-side. Session lifecycle (start, end, resume) is managed via the Cloudflare Worker + CookingAgent DO.
+- For single-user sessions: the client connects directly to Gemini Live via WebSocket. Audio input and output are handled client-side. Session lifecycle (start, end, resume) is managed via the Cloudflare Worker + Mira session runtime.
 - Multi-user sessions go through Cloudflare Realtime / RealtimeKit (see spec 12).
 
 ## Audio Specs (Gemini Live)
@@ -61,7 +61,7 @@ If something changes during the session — product scan result arrives, a step 
 - Output: 16-bit PCM, 24kHz, little-endian.
 - The mobile SDK handles format conversion automatically.
 
-## Session State (Held in CookingAgent DO)
+## Session State (Held in Mira Session Runtime)
 
 - Current recipe reference and resolved step list.
 - Current step index.
@@ -72,7 +72,7 @@ If something changes during the session — product scan result arrives, a step 
 
 ## Session Persistence and Resume
 
-If a session is interrupted (phone lock, app background, connection drop), the CookingAgent DO holds state. On reconnect, the session resumes at the last confirmed step. The model is re-initialized with the current state injected as system context so the conversation can continue naturally.
+If a session is interrupted (phone lock, app background, connection drop), the Mira session DO holds state. On reconnect, the session resumes at the last confirmed step. The model is re-initialized with the current state injected as system context so the conversation can continue naturally.
 
 ## Cost Model
 
@@ -82,16 +82,16 @@ If a session is interrupted (phone lock, app background, connection drop), the C
 
 ## Tier Restriction
 
-Voice cooking agent is available on paid tiers only. The specific tier cutoff is defined in spec 19. Free tier may access recipe content but not the live voice session.
+Mira cooking voice is available on paid tiers only. The specific tier cutoff is defined in spec 19. Free tier may access recipe content but not the live voice session.
 
 ## Post-Session Memory Write
 
-When the session ends, the CookingAgent DO fires a summarization job to Upstash Workflow. The workflow: compiles the full transcript, extracts any new preference signals, identifies steps that caused confusion, logs recipe completion or abandonment, and writes durable facts to the Brain DO's SQLite. These facts improve the next session automatically.
+When the session ends, the Mira session runtime fires a summarization job to Upstash Workflow. The workflow: compiles the full transcript, extracts any new preference signals, identifies steps that caused confusion, logs recipe completion or abandonment, and writes durable facts to the Brain DO's SQLite. These facts improve the next session automatically.
 
 ## API Surface
 
 - `POST /api/cooking/voice/session` — start a new voice session, returns session_id and Gemini WebSocket connection parameters.
-- `POST /api/cooking/voice/events` — push a mid-session update from the CookingAgent DO into the live session.
+- `POST /api/cooking/voice/events` — push a mid-session update from the Mira session runtime into the live session.
 - `POST /api/cooking/voice/end` — close the session and trigger the post-session summarization workflow.
 
 ## UX Constraints

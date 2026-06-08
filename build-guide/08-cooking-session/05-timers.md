@@ -11,14 +11,14 @@ Timer tool implementation, Agents SDK schedule mechanics for concurrent timers, 
 ```
 User: "set a timer for the eggs, 8 minutes"
 Gemini: calls schedule_timer({ label: "eggs", seconds: 480 })
-CookingAgent: writes timer row to local Agent SQLite
-CookingAgent: calls schedule(new Date(firesAt), "fireCookingTimer", { timerId })
-CookingAgent: returns { success: true, fires_in_seconds: 480 }
+MiraSession: writes timer row to local Agent SQLite
+MiraSession: calls schedule(new Date(firesAt), "fireCookingTimer", { timerId })
+MiraSession: returns { success: true, fires_in_seconds: 480 }
 Gemini: "Done, I'll let you know in 8 minutes."
 
 ... 8 minutes pass ...
 
-Agents SDK scheduled callback fires → CookingAgent injects "eggs timer fired" message into Gemini
+Agents SDK scheduled callback fires → MiraSession injects "eggs timer fired" message into Gemini
 Gemini: "Your eggs are done! Take them off the heat."
 ```
 
@@ -28,7 +28,7 @@ Agents SDK schedules are durable Agent runtime callbacks. Delivery is at-least-o
 
 ## Timer Tool — `schedule_timer`
 
-Handled directly by CookingAgent — not forwarded to Brain for firing. Timer management requires immediate access to the live Gemini session and local Agent storage. Brain can receive an audit mirror, but it is not the source of timer firing.
+Handled directly by MiraSession — not forwarded to Brain for firing. Timer management requires immediate access to the live Gemini session and local Agent storage. Brain can receive an audit mirror, but it is not the source of timer firing.
 
 ```typescript
 // backend/src/agents/cooking/_handlers/alarm.handler.ts
@@ -38,12 +38,12 @@ Handled directly by CookingAgent — not forwarded to Brain for firing. Timer ma
 
 export async function scheduleTimer(
   args:      { label: string; seconds: number },
-  cookingDo: CookingAgent,
+  miraSession: MiraSession,
 ): Promise<{ success: boolean; alarmId: string; fires_in_seconds: number }> {
   const { label, seconds } = args
 
   // Prevent duplicate labels
-  if (cookingDo.activeTimers.has(label)) {
+  if (miraSession.activeTimers.has(label)) {
     throw new Error(`Timer "${label}" already exists. Cancel it first or use a different label.`)
   }
 
@@ -55,41 +55,41 @@ export async function scheduleTimer(
   const timerId  = crypto.randomUUID()
 
   // Write local timer row first — survives eviction and guards at-least-once callbacks.
-  await cookingDo.sql.exec(
+  await miraSession.sql.exec(
     `INSERT INTO cooking_timers (id, session_id, label, fires_at, status, created_at)
      VALUES (?, ?, ?, ?, 'pending', ?)`,
     timerId,
-    cookingDo.sessionState!.sessionId,
+    miraSession.sessionState!.sessionId,
     label,
     firesAt,
     Date.now(),
   )
 
-  const schedule = await cookingDo.schedule(
+  const schedule = await miraSession.schedule(
     new Date(firesAt),
     'fireCookingTimer',
     { timerId },
     { idempotent: true },
   )
 
-  await cookingDo.sql.exec(
+  await miraSession.sql.exec(
     `UPDATE cooking_timers SET sdk_schedule_id = ? WHERE id = ?`,
     schedule.id,
     timerId,
   )
 
-  cookingDo.activeTimers.set(label, { firesAt, timerId, sdkScheduleId: schedule.id })
+  miraSession.activeTimers.set(label, { firesAt, timerId, sdkScheduleId: schedule.id })
 
   // Also persist to scheduled_alarms table via Brain (audit trail)
   // Fire-and-forget — timer functionality does not depend on this write completing
-  cookingDo.ctx.waitUntil(
+  miraSession.ctx.waitUntil(
     forwardToolToBrain('schedule_user_alarm', {
       alarm_id:   timerId,
       label,
       fires_at:   firesAt,
-      session_id: cookingDo.sessionState!.sessionId,
+      session_id: miraSession.sessionState!.sessionId,
       alarm_type: 'cooking_timer',
-    }, cookingDo.sessionState!, cookingDo.env).catch(() => {
+    }, miraSession.sessionState!, miraSession.env).catch(() => {
       // Log failure but do not fail the timer
     })
   )
@@ -102,7 +102,7 @@ export async function scheduleTimer(
 
 ## One Schedule Per Timer
 
-Agents SDK multiplexes durable schedules over the underlying DO alarm slot. CookingAgent creates one SDK schedule per timer and stores `sdk_schedule_id` for cancellation/debugging.
+Agents SDK multiplexes durable schedules over the underlying DO alarm slot. MiraSession creates one SDK schedule per timer and stores `sdk_schedule_id` for cancellation/debugging.
 
 ```typescript
 type CookingTimerRow = {
@@ -125,31 +125,31 @@ When the SDK schedule fires, it loads the timer row and no-ops unless it is stil
 // backend/src/agents/cooking/_handlers/alarm.handler.ts
 
 export async function fireCookingTimer(
-  cookingDo: CookingAgent,
+  miraSession: MiraSession,
   payload: { timerId: string },
 ): Promise<void> {
-  const timer = await cookingDo.sql.exec(
+  const timer = await miraSession.sql.exec(
     `SELECT id, label, status FROM cooking_timers WHERE id = ?`,
     payload.timerId,
   ).one<{ id: string; label: string; status: string }>()
 
   if (!timer || timer.status !== 'pending') return
 
-  await cookingDo.sql.exec(
+  await miraSession.sql.exec(
     `UPDATE cooking_timers SET status = 'fired', fired_at = ? WHERE id = ? AND status = 'pending'`,
     Date.now(),
     timer.id,
   )
 
-  cookingDo.activeTimers.delete(timer.label)
-  await injectTimerFireIntoGemini(timer.label, cookingDo)
+  miraSession.activeTimers.delete(timer.label)
+  await injectTimerFireIntoGemini(timer.label, miraSession)
 }
 
 async function injectTimerFireIntoGemini(
   label:     string,
-  cookingDo: CookingAgent,
+  miraSession: MiraSession,
 ): Promise<void> {
-  const ws = cookingDo.sessionState?.geminiWs
+  const ws = miraSession.sessionState?.geminiWs
   if (!ws) return
 
   // Inject as client_content turn — Gemini treats this as a user message
@@ -174,20 +174,20 @@ Gemini receives `[TIMER FIRED: "eggs" is done]` as a user turn and responds with
 ```typescript
 export async function cancelTimer(
   label:     string,
-  cookingDo: CookingAgent,
+  miraSession: MiraSession,
 ): Promise<{ success: boolean; cancelled: boolean }> {
-  const timer = cookingDo.activeTimers.get(label)
+  const timer = miraSession.activeTimers.get(label)
   if (!timer) {
     return { success: true, cancelled: false }  // already gone — not an error
   }
 
-  cookingDo.activeTimers.delete(label)
-  await cookingDo.sql.exec(
+  miraSession.activeTimers.delete(label)
+  await miraSession.sql.exec(
     `UPDATE cooking_timers SET status = 'cancelled', cancelled_at = ? WHERE id = ? AND status = 'pending'`,
     Date.now(),
     timer.timerId,
   )
-  await cookingDo.cancelSchedule(timer.sdkScheduleId)
+  await miraSession.cancelSchedule(timer.sdkScheduleId)
 
   return { success: true, cancelled: true }
 }
@@ -198,11 +198,11 @@ export async function cancelTimer(
 ## Session End — Cancel All Timers
 
 ```typescript
-export async function cancelAllTimers(cookingDo: CookingAgent): Promise<void> {
-  for (const [label] of cookingDo.activeTimers) {
-    try { await cancelTimer(label, cookingDo) } catch {}
+export async function cancelAllTimers(miraSession: MiraSession): Promise<void> {
+  for (const [label] of miraSession.activeTimers) {
+    try { await cancelTimer(label, miraSession) } catch {}
   }
-  cookingDo.activeTimers.clear()
+  miraSession.activeTimers.clear()
   // SDK schedules are cancelled per timer. No raw DO alarm cleanup is needed here.
 }
 ```
@@ -216,13 +216,13 @@ Called as step 4 of the session end sequence — before closing the Realtime roo
 If the Agent is evicted mid-session, the in-memory `activeTimers` map is gone. Recovery reads it from local Agent SQLite:
 
 ```typescript
-async function rebuildTimerState(cookingDo: CookingAgent): Promise<void> {
-  const rows = await cookingDo.sql.exec(
+async function rebuildTimerState(miraSession: MiraSession): Promise<void> {
+  const rows = await miraSession.sql.exec(
     `SELECT id, label, fires_at, sdk_schedule_id FROM cooking_timers WHERE status = 'pending'`,
   ).toArray<{ id: string; label: string; fires_at: number; sdk_schedule_id: string }>()
 
   for (const row of rows) {
-    cookingDo.activeTimers.set(row.label, {
+    miraSession.activeTimers.set(row.label, {
       firesAt: row.fires_at,
       timerId: row.id,
       sdkScheduleId: row.sdk_schedule_id,
@@ -231,4 +231,4 @@ async function rebuildTimerState(cookingDo: CookingAgent): Promise<void> {
 }
 ```
 
-This is called as part of `recover()` in the CookingAgent DO after eviction.
+This is called as part of `recover()` in the MiraSession DO after eviction.

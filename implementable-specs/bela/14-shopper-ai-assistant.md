@@ -1,4 +1,4 @@
-# Bela — Shopper AI Assistant
+# Bela — Mira Shopper Role
 
 ## What This Is
 
@@ -25,7 +25,7 @@ The OrderAgent DO gains a second Gemini Live session alongside the existing orde
 
 ---
 
-## What the Shopper AI Knows
+## What Mira Knows In Shopper Role
 
 At the start of the shopping session, the OrderAgent DO builds a system instruction for the shopper's Gemini session from:
 
@@ -153,7 +153,7 @@ OrderAgent DO
 Shopper hears AI response through phone speaker or earbuds
 ```
 
-This is the identical pipeline to the cooking session, implemented inside the OrderAgent DO rather than the CookingAgent DO.
+This is the Mira live presence runtime in shopper role, owned by the OrderAgent DO rather than the cooking session runtime.
 
 ---
 
@@ -173,7 +173,7 @@ The voice and scanner are not competing — they are layered. The scanner create
 
 ## Proactive Camera Awareness
 
-Just like the cooking agent watches the kitchen for problems, the shopping AI watches the store environment for things worth flagging — without waiting to be asked.
+Just like Mira watches the kitchen in cooking role, Mira watches the store environment for things worth flagging — without waiting to be asked.
 
 **Proactive triggers:**
 
@@ -203,7 +203,7 @@ The screen shows the order list and scan results for reference, but the shopper 
 
 ## Session Lifecycle
 
-The shopper AI session opens when the shopper taps "Start shopping" (status changes to `shopping`). It runs until the shopper taps "Shopping done."
+The Mira shopper session opens when the shopper taps "Start shopping" (status changes to `shopping`). It runs until the shopper taps "Shopping done."
 
 The session uses the same 90-second proactive Gemini reconnect from the cooking session spec (`cooking-session/09-reconnection.md`) — a long shopping trip at a large market can easily exceed 25–30 minutes. The reconnect is invisible to the shopper.
 
@@ -214,7 +214,7 @@ If the shopper loses network connectivity in a poor-signal area of the store:
 
 ---
 
-## What the Shopper AI Does NOT Do
+## What Mira Does NOT Do In Shopper Role
 
 - It does not share anything about the user's identity, name, or personal history beyond what is needed for this order
 - It does not speak unless the shopper speaks first OR a proactive trigger fires (not a constant stream of commentary)
@@ -224,7 +224,7 @@ If the shopper loses network connectivity in a poor-signal area of the store:
 
 ---
 
-## OrderAgent DO — Additions for Shopper AI
+## OrderAgent DO — Additions for Mira Shopper Role
 
 The `OrderAgent` state gains a `shopperGeminiWs` alongside the existing WebSocket connections:
 
@@ -236,4 +236,4 @@ interface OrderAgentState {
 }
 ```
 
-The shopper AI session is opened by a new DO endpoint: `/shopper-session` — called by the shopper app when they tap "Start shopping." It follows the same `openGeminiSession()` pattern as the CookingAgent, but builds the shopper-specific system instruction from the order and constraint data.
+The Mira shopper session is opened by a new DO endpoint: `/shopper-session` — called by the shopper app when they tap "Start shopping." It follows the same `openGeminiSession()` pattern as the Mira cooking session, but builds the Mira shopper role system instruction from the order and constraint data.

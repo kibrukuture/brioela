@@ -59,7 +59,7 @@ This is a temporary supervised mode. It does not create a child identity or hous
 
 ## Child Experience
 
-After a scan, Brioela speaks directly to the child:
+After a scan, Mira speaks directly to the child:
 
 ```text
 Nice scan. This cereal has lots of sugar, so it is more of a sometimes breakfast.
@@ -78,7 +78,7 @@ Prompt examples:
 - "Can you spot the word fiber?"
 - "Would this be an everyday snack or a sometimes snack?"
 
-The prompt is optional and should be short. Brioela is teaching label literacy, not quizzing aggressively.
+The prompt is optional and should be short. Mira is teaching label literacy, not quizzing aggressively.
 
 ---
 
@@ -107,7 +107,7 @@ The child can scan and learn. The child cannot modify the parent's food memory o
 
 ## Safety Override
 
-If a hard allergy or serious safety issue appears, Brioela switches to parent-first safety framing.
+If a hard allergy or serious safety issue appears, Mira switches to parent-first safety framing.
 
 Example:
 
@@ -160,7 +160,7 @@ Rules:
 - do not store child responses as profile facts
 - parent can mute instantly
 
-The same voice stack as Cooking Session can be reused when live speech is needed, but co-scan does not require a full cooking session room.
+The Mira voice runtime can be reused when live speech is needed, but co-scan does not require a full cooking session room.
 
 ---
 

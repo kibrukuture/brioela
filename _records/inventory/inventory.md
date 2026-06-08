@@ -25,7 +25,7 @@ Core product philosophy and feature specs. These are the "what and why" layer.
 | [x] | `07-allergy-dislike-and-dietary-guardrails.md` | Allergy system, dietary restrictions, hard blocks vs soft guidance |
 | [x] | `08-personal-food-memory-engine.md` | User food memory — what they cook, buy, prefer, avoid |
 | [x] | `09-per-user-brain.md` | Brain DO — the central agent, CRITICAL PATH for everything |
-| [x] | `10-voice-cooking-agent.md` | Voice cooking assistant — precursor to cooking session spec |
+| [x] | `10-mira-cooking-voice.md` | Voice cooking assistant — precursor to cooking session spec |
 | [x] | `11-live-vision-cooking-coach.md` | Camera-based cooking coach — precursor to cooking session spec |
 | [x] | `12-multi-person-cooking-rooms.md` | Multiple people in one cooking session |
 | [x] | `13-generational-recipe-capture.md` | Capturing family recipes from elders, voice, video |
@@ -121,13 +121,13 @@ Every tool the AI agent can call — the full tool protocol.
 
 ## Area 4 — implementable-specs/cooking-session/ (17 files)
 
-Full cooking session implementation — CookingAgent DO, Gemini Live, audio/video pipeline.
+Full cooking session implementation — MiraSession DO, Gemini Live, audio/video pipeline.
 
 | Status | File | One-line description |
 |---|---|---|
 | [x] | `00-overview.md` | Cooking session system overview |
 | [x] | `01-room-lifecycle.md` | Room creation, joining, leaving — Cloudflare Realtime SFU |
-| [x] | `02-cooking-agent.md` | CookingAgent DO — main controller, in-memory state, endpoints |
+| [x] | `02-mira-session.md` | MiraSession DO — main controller, in-memory state, endpoints |
 | [x] | `03-gemini-session.md` | Gemini 3.1 Flash Live WebSocket — setup, audio, video, tool calls |
 | [x] | `04-tool-protocol.md` | How Gemini tool calls are handled and forwarded |
 | [x] | `05-video-processing.md` | JPEG frame pipeline — mobile → SFU → DO → Gemini |

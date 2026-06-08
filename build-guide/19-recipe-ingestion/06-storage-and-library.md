@@ -136,7 +136,7 @@ Cooking session reads the recipe through Brain tools. It should see:
 - source attribution
 - user-specific constraint findings
 
-The cooking agent can ask clarifying questions when quantities or steps are uncertain.
+Mira can ask clarifying questions when quantities or steps are uncertain.
 
 ---
 

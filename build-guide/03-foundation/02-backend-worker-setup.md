@@ -38,7 +38,7 @@
   "durable_objects": {
     "bindings": [
       { "name": "BRAIN",   "class_name": "BrioelaBrain" },
-      { "name": "COOKING_AGENT",  "class_name": "CookingAgent" }
+      { "name": "MIRA_SESSION",  "class_name": "MiraSession" }
     ]
   },
 
@@ -46,7 +46,7 @@
   "migrations": [
     {
       "tag": "v1",
-      "new_sqlite_classes": ["BrioelaBrain", "CookingAgent"]
+      "new_sqlite_classes": ["BrioelaBrain", "MiraSession"]
     }
   ]
 }
@@ -138,7 +138,7 @@ import { errorMiddleware } from '@/core/middleware/error.middleware'
 
 // CF requires all DO classes exported from the Worker entry point
 export { BrioelaBrain } from './agents/brain/brain.agent'
-export { CookingAgent }       from './agents/cooking/cooking.agent'
+export { MiraSession }       from './agents/cooking/cooking.agent'
 
 export const app = new Hono<{
   Variables: {

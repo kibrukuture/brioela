@@ -8,7 +8,7 @@ Allow the user to temporarily add another person's dietary constraints to their 
 
 One of the most stressful cooking situations is cooking for someone with dietary restrictions you are not familiar with. The app currently assumes the user is always cooking for themselves. But cooking for guests is a regular, high-stakes event — one mistake (peanuts for an allergic guest) matters.
 
-Brioela already has the full constraint engine, recipe system, shopping list, and voice cooking agent. Guest Mode is applying all of that intelligence temporarily to someone else's profile layered on top of the user's own.
+Brioela already has the full constraint engine, recipe system, shopping list, and Mira cooking voice. Guest Mode is applying all of that intelligence temporarily to someone else's profile layered on top of the user's own.
 
 ## How It Activates
 
@@ -31,7 +31,7 @@ If multiple guests have different constraints, all are tracked. The system finds
 
 - **Scan verdict**: a product that is fine for the user but violates a guest constraint shows a yellow flag with the reason: "Fine for you. Contains gluten — not safe for your guest."
 - **Recipe suggestions**: filtered to clear all active guest constraints, not just the user's own.
-- **Voice cooking agent**: when guiding through a recipe, proactively flags any step involving a constrained ingredient: "This calls for soy sauce — does your vegan guest eat soy, or should we use coconut aminos?"
+- **Mira cooking voice**: when guiding through a recipe, proactively flags any step involving a constrained ingredient: "This calls for soy sauce — does your vegan guest eat soy, or should we use coconut aminos?"
 - **Shopping list**: items on the list that violate guest constraints are flagged. Alternatives are suggested.
 
 ## Session End and Archiving

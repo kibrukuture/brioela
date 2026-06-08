@@ -86,7 +86,7 @@ Avoid medical certainty:
 
 When an imported recipe has allergy/diet conflicts or major uncertainty, Brioela can offer a live review conversation.
 
-This uses the same voice/video assistant stack documented in `08-cooking-session`: Cloudflare Realtime plus Gemini Live, with Brain context and tool forwarding. The surface is not limited to cooking. It can be used anywhere Brioela needs real-time intelligence and conversation: recipe review, shopper help, restaurant/menu questions, or scan follow-up.
+This escalates to Mira, the shared live presence runtime documented in `30-mira`: Gemini Live plus Cloudflare Realtime when needed, with Brain context and tool forwarding. The surface is not limited to cooking. Mira can appear for recipe review, shopper help, restaurant/menu questions, or scan follow-up.
 
 Recipe review examples:
 
@@ -97,7 +97,7 @@ Recipe review examples:
 Rules:
 
 - Hard allergy conflict appears in UI before any conversational option.
-- The agent can explain and adapt; it must not hide or downgrade the conflict.
+- Mira can explain and adapt; it must not hide or downgrade the conflict.
 - Accepted substitutions become a user-specific variant or note, not an overwrite of the source recipe.
 - If video/camera context is not needed, use voice/text only; do not force live video.
 

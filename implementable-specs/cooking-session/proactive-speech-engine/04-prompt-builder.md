@@ -115,11 +115,11 @@ This prevents Gemini from saying "your onions are browning" three times in a row
 
 ## Milestone Prompts
 
-A special prompt type triggered by specific events — not by the frequency controller, but by CookingAgent event hooks.
+A special prompt type triggered by specific events — not by the frequency controller, but by Mira session runtime event hooks.
 
 ### Timer Fire Milestone
 
-When a cooking timer fires, the CookingAgent injects the timer alert into Gemini directly (see `06-timers.md`). The proactive engine does not handle timer fires — the CookingAgent handles those directly to ensure immediate response.
+When a cooking timer fires, the Mira session runtime injects the timer alert into Gemini directly (see `06-timers.md`). The proactive engine does not handle timer fires — the Mira session runtime handles those directly to ensure immediate response.
 
 ### Long Cook Complete
 

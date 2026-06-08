@@ -35,19 +35,19 @@ Nothing half-done.
 
 ## What Is Next
 
-`08-cooking-session/` — the live AI cooking coach. This is one of the most complex features: CookingAgent DO, Gemini Live WebSocket, Cloudflare Realtime / RealtimeKit for multi-person, proactive speech engine, timers via alarms, transcript storage, session-end recipe capture, reconnection logic.
+`08-cooking-session/` — the live AI cooking coach. This is one of the most complex features: MiraSession DO, Gemini Live WebSocket, Cloudflare Realtime / RealtimeKit for multi-person, proactive speech engine, timers via alarms, transcript storage, session-end recipe capture, reconnection logic.
 
 Source specs to read before writing 08-cooking-session:
 - implementable-specs/cooking-session/00-overview.md through 10-human-behaviors.md (all 11 files)
 - implementable-specs/cooking-session/proactive-speech-engine/ (all 7 files)
-- brioela-specs/10-voice-cooking-agent.md
+- brioela-specs/10-mira-cooking-voice.md
 - brioela-specs/11-live-vision-cooking-coach.md
 - brioela-specs/12-multi-person-cooking-rooms.md
 - brioela-specs/13-generational-recipe-capture.md
 - brioela-specs/32-grandma-style-flavor-profile.md
 
 Files to write for 08-cooking-session:
-- 01-cooking-agent-do.md — CookingAgent DO class, state management, fetch/alarm handlers
+- 02-mira-session-do.md — MiraSession DO class, state management, fetch/alarm handlers
 - 02-gemini-live-connection.md — WebSocket setup, audio stream, video frame pipeline, reconnection
 - 03-proactive-speech-engine.md — silence tracker, visual change detector, adaptive frequency, response filter
 - 04-tool-protocol.md — tools available in cooking session, forwarding to Brain

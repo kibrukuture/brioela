@@ -28,7 +28,7 @@ This is the safety claim that no competitor can make.
 User App                    Shopper App Mode               Backend
 ────────────────────        ────────────────────           ────────────────────────────
 Order creation flow    →    Order queue + map              Brain DO (per user)
-AI list generation          Constraint-enforced scanner    CookingAgent DO (session link)
+AI list generation          Constraint-enforced scanner    Mira cooking session runtime (session link)
 Live scan-together view     Live scan sync                 OrderAgent DO (per order)
 Authorization + confirm UI  Delivery confirmation          Stripe Connect (hold + payout)
 Standing order setup        Ground auto-draft              Supabase Postgres (shared tables)
@@ -76,7 +76,7 @@ User sees the blocked scan in the live order view.
 5. A shopper accepts → OrderAgent DO is created → status = 'accepted'
 6. Authorization hold placed on user's card (Stripe PaymentIntent, capture_method: 'manual') — money locked, not yet charged
 7. Shopper navigates to the store using the smart route (Ground + product_sighting data)
-8. Shopper AI assistant (voice + camera) activates — shopper talks to the AI throughout the shop
+8. Mira shopper role (voice + camera) activates — shopper talks to the AI throughout the shop
 9. Shopper scans each product → constraint check → user sees result (live scan-together) → AI confirms aloud
 10. Shopper pays at checkout till with their dedicated Bela card (their own debit card, registered during onboarding)
 11. Shopper scans receipt in app → actual total confirmed → authorization incremented if needed

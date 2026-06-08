@@ -29,7 +29,7 @@ The larger product angle: every menu scan also improves Brioela's restaurant int
 - Standard text LLM call (NOT Gemini Live) — one-shot structured extraction, <3s latency
 - Dishes with no ingredient detail flagged yellow by default (unknown = ask, never assume safe)
 - Waiter script: pre-formulated, specific, non-awkward — removes anxiety of not knowing what to ask
-- Language Bridge: virtualized menu overlay in the user's language, plus optional voice/video waiter conversation when the user asks Brioela to speak for them
+- Language Bridge: virtualized menu overlay in the user's language, plus optional Mira waiter conversation when the user asks Brioela to speak for them
 - Raw extracted text discarded after processing; results stored for session only unless user saves
 - Normalized public menu facts can feed shared restaurant intelligence after privacy filtering
 - Offline: cached constraint profile enables local constraint matching; live Ground signals unavailable offline

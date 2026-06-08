@@ -26,7 +26,7 @@ This is NOT a pooled or shared agent. One user's brain never touches another use
 ### BrioelaBrain (Permanent Brain)
 Always exists per user. Holds all private SQLite memory. Handles real-time inline events (scan personalization, allergen checks, recipe reranking). Fires async jobs to Upstash for multi-step work. Sets alarms on itself for ambient intelligence.
 
-### CookingAgent DO (Live Session Brain)
+### Mira Session DO (Live Presence Runtime)
 Spun up per cooking session. Named by `cook-{userId}-{recipeId}` so it's always the same instance for a given session. Holds live session state: current step, transcript accumulation, participant list, real-time context window. After session ends, fires summarization to Upstash Workflow and writes durable facts back to the Brain DO's SQLite.
 
 ## When to Use a Sub-Agent DO vs a Plain Function
@@ -561,7 +561,7 @@ Zod enforces the envelope at the write boundary. You enforce the content schema 
 ## Data Boundaries
 
 - Per-user Brain DO SQLite: all memory domains listed above. Private. Never in shared databases.
-- CookingAgent DO: ephemeral session state. Flushed after session closes and key facts written to Brain.
+- Mira session DO: ephemeral live session state. Flushed after session closes and key facts written to Brain.
 - Shared data (product corpus, community notes, map): Supabase Postgres. Readable by Workers. Never stored in DO.
 - Cache: Upstash Redis. TTL-bound, disposable.
 
@@ -569,7 +569,7 @@ Zod enforces the envelope at the write boundary. You enforce the content schema 
 
 - `POST /api/agent/events` — receive any product event, route to correct Brain DO via RPC.
 - `GET /api/agent/context` — return user's memory context for session initialization.
-- Internal DO-to-DO RPC: CookingAgent DO calls Brain DO for context and emits events back.
+- Internal DO-to-DO RPC: Mira session DO calls Brain DO for context and emits events back.
 
 ## Success Metrics
 

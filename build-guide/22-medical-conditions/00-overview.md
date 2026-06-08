@@ -39,5 +39,5 @@ Declare a medical condition once by voice and the entire app adapts permanently:
 ## What Depends On This Folder
 - `14-pantry-meal-plan` — meal plan filters against active conditions
 - `20-wearables` — CGM + T2 diabetes is the most powerful combination in the app
-- `08-cooking-session` — cooking agent aware of active conditions in session context
+- `08-cooking-session` — Mira cooking role aware of active conditions in session context
 - `23-verified-profiles` — practitioner annotations can attach to active condition profiles after verified profiles ship

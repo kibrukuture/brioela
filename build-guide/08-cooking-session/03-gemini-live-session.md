@@ -17,7 +17,7 @@ The only globally available API model that natively handles audio in + video fra
 | First turn — cold WebSocket | ~3 seconds |
 | Subsequent turns — warm session | ~500ms |
 
-The cold-start first-turn problem is mitigated by pre-warming (opening the Gemini session before mobile arrives). **This must be tested in production.** If the 3s delay persists after pre-warming, see `02-cooking-agent-do.md` CAUTION for fallback options (silent ping, pre-recorded greeting, UI loading state).
+The cold-start first-turn problem is mitigated by pre-warming (opening the Gemini session before mobile arrives). **This must be tested in production.** If the 3s delay persists after pre-warming, see `02-mira-session-do.md` CAUTION for fallback options (silent ping, pre-recorded greeting, UI loading state).
 
 **Swap path:** the architecture is model-agnostic at the WebSocket boundary. If Qwen3.5-Omni Flash or another model becomes available and better, the swap is one URL + auth header change.
 
@@ -33,31 +33,31 @@ const GEMINI_WS_ENDPOINT = (apiKey: string) =>
 
 export async function openGeminiSession(
   context:    UserContext,
-  cookingDo:  CookingAgent,
+  miraSession:  MiraSession,
 ): Promise<void> {
-  const ws = new WebSocket(GEMINI_WS_ENDPOINT(cookingDo.env.GEMINI_API_KEY))
+  const ws = new WebSocket(GEMINI_WS_ENDPOINT(miraSession.env.GEMINI_API_KEY))
 
   ws.addEventListener('open', () => {
     ws.send(JSON.stringify(buildSetupMessage(context)))
   })
 
   ws.addEventListener('message', (event) => {
-    handleGeminiMessage(JSON.parse(event.data as string), cookingDo)
+    handleGeminiMessage(JSON.parse(event.data as string), miraSession)
   })
 
   ws.addEventListener('close', (event) => {
-    onGeminiClose(event.code, event.reason, cookingDo)
+    onGeminiClose(event.code, event.reason, miraSession)
   })
 
   ws.addEventListener('error', () => {
-    onGeminiError(cookingDo)
+    onGeminiError(miraSession)
   })
 
-  cookingDo.sessionState!.geminiWs = ws
+  miraSession.sessionState!.geminiWs = ws
 
   // Schedule proactive reconnect at 90 seconds
-  cookingDo.sessionState!.geminiReconnectTimer = setTimeout(
-    () => proactiveGeminiReconnect(cookingDo),
+  miraSession.sessionState!.geminiReconnectTimer = setTimeout(
+    () => proactiveGeminiReconnect(miraSession),
     90_000,
   )
 }
@@ -156,10 +156,10 @@ PCM audio arrives as `ArrayBuffer`. Forward as `realtime_input.audio`:
 ```typescript
 export async function sendAudioChunk(
   pcmData:   ArrayBuffer,
-  cookingDo: CookingAgent,
+  miraSession: MiraSession,
 ): Promise<void> {
-  const ws = cookingDo.sessionState?.geminiWs
-  if (!ws || cookingDo.sessionState?.status !== 'active') return
+  const ws = miraSession.sessionState?.geminiWs
+  if (!ws || miraSession.sessionState?.status !== 'active') return
 
   const base64 = btoa(String.fromCharCode(...new Uint8Array(pcmData)))
   ws.send(JSON.stringify({
@@ -184,10 +184,10 @@ export async function sendAudioChunk(
 ```typescript
 export async function sendVideoFrame(
   jpegData:  ArrayBuffer,
-  cookingDo: CookingAgent,
+  miraSession: MiraSession,
 ): Promise<void> {
-  const ws = cookingDo.sessionState?.geminiWs
-  if (!ws || cookingDo.sessionState?.status !== 'active') return
+  const ws = miraSession.sessionState?.geminiWs
+  if (!ws || miraSession.sessionState?.status !== 'active') return
 
   const base64 = btoa(String.fromCharCode(...new Uint8Array(jpegData)))
   ws.send(JSON.stringify({
@@ -216,12 +216,12 @@ The Cloudflare Realtime adapter delivers 1 JPEG per second. Gemini's `client_con
 Gemini Live has session limits (confirmed 15 minutes for certain modes). The DO reconnects proactively every 90 seconds — well within any limit.
 
 ```typescript
-async function proactiveGeminiReconnect(cookingDo: CookingAgent): Promise<void> {
-  const state = cookingDo.sessionState!
+async function proactiveGeminiReconnect(miraSession: MiraSession): Promise<void> {
+  const state = miraSession.sessionState!
   state.status = 'reconnecting'
 
   // Log reconnect to agent_state
-  await upsertAgentState(cookingDo.env, state.userId,
+  await upsertAgentState(miraSession.env, state.userId,
     `cooking.gemini_reconnect.${state.sessionId}`,
     JSON.stringify({ ts: Date.now() }),
   )
@@ -237,11 +237,11 @@ async function proactiveGeminiReconnect(cookingDo: CookingAgent): Promise<void> 
   }
 
   // Load updated context — include last 20 turns for continuity
-  const context = await loadUserContext(state.userId, cookingDo.env)
-  context.recentTranscript = await loadRecentTranscript(state.sessionId, 20, cookingDo.env)
+  const context = await loadUserContext(state.userId, miraSession.env)
+  context.recentTranscript = await loadRecentTranscript(state.sessionId, 20, miraSession.env)
 
   // Open fresh session
-  await openGeminiSession(context, cookingDo)
+  await openGeminiSession(context, miraSession)
   state.status = 'active'
 }
 ```
@@ -253,16 +253,16 @@ async function proactiveGeminiReconnect(cookingDo: CookingAgent): Promise<void> 
 Gemini 3.1 Flash Live only supports BLOCKING tool calls. When Gemini calls a tool, its audio output pauses until the DO returns a `tool_response`.
 
 ```typescript
-function handleGeminiMessage(msg: GeminiMessage, cookingDo: CookingAgent): void {
+function handleGeminiMessage(msg: GeminiMessage, miraSession: MiraSession): void {
   if (msg.toolCall) {
     // Gemini has paused — execute tool and respond
     const call = msg.toolCall.functionCalls[0]!
-    cookingDo.sessionState!.pendingToolCall = {
+    miraSession.sessionState!.pendingToolCall = {
       id:   call.id,
       name: call.name,
       args: call.args,
     }
-    executePendingToolCall(cookingDo)
+    executePendingToolCall(miraSession)
     return
   }
 
@@ -271,37 +271,37 @@ function handleGeminiMessage(msg: GeminiMessage, cookingDo: CookingAgent): void 
       if (part.inlineData?.mimeType?.startsWith('audio/')) {
         // Gemini audio response — forward to mobile
         const audioBuffer = base64ToArrayBuffer(part.inlineData.data)
-        cookingDo.sessionState?.mobileWs?.send(audioBuffer)
-        cookingDo.speechEngine?.onGeminiSpeechStart()
+        miraSession.sessionState?.mobileWs?.send(audioBuffer)
+        miraSession.speechEngine?.onGeminiSpeechStart()
       }
     }
   }
 }
 
-async function executePendingToolCall(cookingDo: CookingAgent): Promise<void> {
-  const pending = cookingDo.sessionState!.pendingToolCall!
+async function executePendingToolCall(miraSession: MiraSession): Promise<void> {
+  const pending = miraSession.sessionState!.pendingToolCall!
 
   let result: unknown
   try {
     // schedule_timer and cancel_timer handled locally (Agents SDK schedules)
     if (pending.name === 'schedule_timer') {
-      result = await scheduleTimer(pending.args as { label: string; seconds: number }, cookingDo)
+      result = await scheduleTimer(pending.args as { label: string; seconds: number }, miraSession)
     } else if (pending.name === 'cancel_timer') {
-      result = await cancelTimer((pending.args as { label: string }).label, cookingDo)
+      result = await cancelTimer((pending.args as { label: string }).label, miraSession)
     } else {
       // All other tools forwarded to Brain
-      result = await forwardToolToBrain(pending.name, pending.args, cookingDo.sessionState!, cookingDo.env)
+      result = await forwardToolToBrain(pending.name, pending.args, miraSession.sessionState!, miraSession.env)
     }
   } catch (err) {
     result = { error: String(err) }
-    await upsertAgentState(cookingDo.env, cookingDo.sessionState!.userId,
-      `cooking.tool_failure.${cookingDo.sessionState!.sessionId}`,
+    await upsertAgentState(miraSession.env, miraSession.sessionState!.userId,
+      `cooking.tool_failure.${miraSession.sessionState!.sessionId}`,
       JSON.stringify({ tool: pending.name, error: String(err), ts: Date.now() }),
     )
   }
 
   // Return tool_response to Gemini — resumes audio output
-  cookingDo.sessionState!.geminiWs?.send(JSON.stringify({
+  miraSession.sessionState!.geminiWs?.send(JSON.stringify({
     tool_response: {
       function_responses: [{
         id:       pending.id,
@@ -311,7 +311,7 @@ async function executePendingToolCall(cookingDo: CookingAgent): Promise<void> {
     },
   }))
 
-  cookingDo.sessionState!.pendingToolCall = null
+  miraSession.sessionState!.pendingToolCall = null
 }
 ```
 

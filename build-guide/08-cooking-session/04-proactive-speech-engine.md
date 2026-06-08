@@ -10,7 +10,7 @@ How Gemini decides to speak without being asked — the ProactiveSpeechEngine mo
 
 Without this engine, Gemini is reactive — it only speaks when the user speaks. A real cooking coach watches, notices things, and speaks when something matters. The ProactiveSpeechEngine implements that behavior by deciding when to send Gemini an observation prompt and what that prompt should be.
 
-The engine does not talk to Gemini directly. It does not write to SQLite. It produces `ObservationRequest | null` — the CookingAgent DO acts on the request.
+The engine does not talk to Gemini directly. It does not write to SQLite. It produces `ObservationRequest | null` — the MiraSession DO acts on the request.
 
 ---
 
@@ -40,15 +40,15 @@ export class ProactiveSpeechEngine {
   onVideoFrame(jpegData: ArrayBuffer): void // called on every JPEG frame
   onGeminiSpeechStart(): void              // called when Gemini begins speaking
 
-  // Called by CookingAgent every second
+  // Called by MiraSession every second
   tick(phase: CookingPhase, activeTimerLabels: string[]): ObservationRequest | null
 
-  // Called by CookingAgent after Gemini responds to an observation prompt
+  // Called by MiraSession after Gemini responds to an observation prompt
   classifyResponse(responseText: string): ObservationResponse
 }
 ```
 
-The CookingAgent calls `tick()` every second. If it returns an `ObservationRequest`, the agent sends the prompt to Gemini. If Gemini's response passes the `classifyResponse()` filter, the audio is forwarded to mobile.
+The MiraSession calls `tick()` every second. If it returns an `ObservationRequest`, the agent sends the prompt to Gemini. If Gemini's response passes the `classifyResponse()` filter, the audio is forwarded to mobile.
 
 ---
 
