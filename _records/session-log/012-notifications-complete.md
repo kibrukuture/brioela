@@ -46,7 +46,7 @@ Before writing, read:
 - `build-guide/13-receipt-intelligence/00-overview.md`
 - `brioela-specs/06-receipt-spend-intelligence.md`
 - `brioela-specs/29-food-cost-inflation-tracker.md`
-- dependencies: Scanner, Map, Notifications, Brain, Memory Engine
+- dependencies: Scanner, Map, Notifications, Brain, Brain Memory
 
 ## Blockers / Decisions
 

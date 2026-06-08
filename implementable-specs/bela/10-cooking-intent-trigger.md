@@ -158,5 +158,5 @@ cooking_intent  — user expressed intent to cook a specific dish in the near fu
 
 This event is read by:
 - The cooking intent trigger (immediately, to generate a gap check)
-- The Curator's pattern detection pass (to build cooking preference patterns over time)
+- The Brain maintenance's behavior pattern detection pass (to build cooking preference patterns over time)
 - The pre-trip food intelligence feature (spec 22) for travel cooking intent

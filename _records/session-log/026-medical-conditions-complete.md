@@ -11,7 +11,7 @@ Deep read pass before writing:
 - `_records/session-log/025-mesa-overview-added.md`
 - `build-guide/22-medical-conditions/00-overview.md`
 - `brioela-specs/28-medical-condition-food-profile.md`
-- dependency docs: Memory Engine constraints/user memory, Scanner constraint check and result UI, Pantry Meal Plan generation, Wearables CGM response, Verified Profiles overview
+- dependency docs: Brain Memory constraints/user memory, Scanner constraint check and result UI, Pantry Meal Plan generation, Wearables CGM response, Verified Profiles overview
 
 Written — `build-guide/22-medical-conditions/`:
 - `00-overview.md` — updated to complete, file list/dependencies added, medical boundary noted

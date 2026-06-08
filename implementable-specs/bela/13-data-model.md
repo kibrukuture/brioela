@@ -6,7 +6,7 @@
 |---|---|
 | **Supabase Postgres** | orders, order_items, order_events, shoppers, shopper_scan_log, standing_orders, standing_order_cycles, order_payment_events, family_links, disputes |
 | **Brain DO SQLite** (per user) | recipient_profiles, pantry_model (agent_state keys), user_find_history (see spec 35) |
-| **OrderAgent DO** (per order) | Active order state machine, live scan session WebSocket relay, constraint snapshot cache |
+| **BelaOrderAgent DO** (per order) | Active order state machine, live scan session WebSocket relay, constraint snapshot cache |
 | **Cloudflare R2** | Delivery photos, dispute photos |
 
 Orders and shoppers are shared, community-level data — they belong in Supabase. User dietary profiles are per-user, private data — they belong in the Brain DO. Bela does not use a user wallet balance.
@@ -280,12 +280,12 @@ CREATE TABLE recipient_profiles (
 
 ---
 
-## OrderAgent DO — In-Memory State Only
+## BelaOrderAgent DO — In-Memory State Only
 
-The OrderAgent DO holds state in memory for the duration of the active order. Nothing in the OrderAgent persists beyond what is written to Supabase `order_events` and `order_items` at each state transition. If the OrderAgent DO is evicted mid-order, it recovers by reading the last `order_events` row to determine current state and rebuilds the constraint snapshot cache from `order_constraint_snapshot`.
+The BelaOrderAgent DO holds state in memory for the duration of the active order. Nothing in the BelaOrderAgent persists beyond what is written to Supabase `order_events` and `order_items` at each state transition. If the BelaOrderAgent DO is evicted mid-order, it recovers by reading the last `order_events` row to determine current state and rebuilds the constraint snapshot cache from `order_constraint_snapshot`.
 
 ```typescript
-interface OrderAgentState {
+interface BelaOrderAgentState {
   orderId:            string
   userId:             string
   shopperId:          string

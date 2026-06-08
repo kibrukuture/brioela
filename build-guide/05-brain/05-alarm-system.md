@@ -52,8 +52,8 @@ export async function runScheduledAlarm(
 | Type | Trigger | What runs |
 |---|---|---|
 | `session_watchdog` | 2h (chat) or 4h (cooking) after session open | Detect abandoned sessions, mark as abandoned |
-| `curator_run` | Every 7 days | Spawn CuratorAgent sub-agent |
-| `pattern_detection` | Every 14 days | Spawn PatternDetectionAgent sub-agent |
+| `brain_maintenance_run` | Every 7 days | Spawn BrainMaintenanceAgent sub-agent |
+| `behavior_pattern_detection` | Every 14 days | Spawn BehaviorPatternAgent sub-agent |
 | `weekly_food_summary` | Every Sunday morning (user's local time) | Generate and push weekly summary notification |
 | `sickness_followup` | 24h after `sickness_logged` event | Check if user still feels sick, surface probable culprits |
 | `travel_preload` | 48h before travel departure date | Pre-load destination food intel into user_memory |
@@ -78,12 +78,12 @@ async function dispatchAlarm(
       await handleSessionWatchdog(agent.db, payload.sessionId)
       break
 
-    case 'curator_run':
-      await spawnCurator(agent, payload.userId)
+    case 'brain_maintenance_run':
+      await spawnBrainMaintenanceAgent(agent, payload.userId)
       break
 
-    case 'pattern_detection':
-      await spawnPatternDetection(agent, payload.userId)
+    case 'behavior_pattern_detection':
+      await spawnBehaviorPattern(agent, payload.userId)
       break
 
     case 'weekly_food_summary':
@@ -174,18 +174,18 @@ const isFirstBoot = !(await this.ctx.storage.get<boolean>('alarms:initialized'))
 if (isFirstBoot) {
   await this.ctx.storage.put('alarms:initialized', true)
 
-  // Curator — first run 7 days from now
+  // Brain maintenance — first run 7 days from now
   await scheduleUserAlarm({
     id: crypto.randomUUID(),
-    alarmType: 'curator_run',
+    alarmType: 'brain_maintenance_run',
     payload: JSON.stringify({ userId: this.userId }),
     scheduledAt: Date.now() + 7 * 24 * 60 * 60 * 1000,
   })
 
-  // Pattern detection — first run 14 days from now
+  // Behavior behavior pattern detection — first run 14 days from now
   await scheduleUserAlarm({
     id: crypto.randomUUID(),
-    alarmType: 'pattern_detection',
+    alarmType: 'behavior_pattern_detection',
     payload: JSON.stringify({ userId: this.userId }),
     scheduledAt: Date.now() + 14 * 24 * 60 * 60 * 1000,
   })

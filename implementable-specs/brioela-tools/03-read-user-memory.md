@@ -160,7 +160,7 @@ Not an error. Empty namespace is a valid state.
 ## Who Can Call It
 
 - **Agent** — during any active session, any session type
-- **NOT the Curator** — the Curator does direct DB reads in its maintenance pass, not through tools
+- **NOT the Brain maintenance** — the Brain maintenance does direct DB reads in its maintenance pass, not through tools
 - **NOT device SDK** — device has no access to tools
 
 ## What Is NOT This Tool's Job

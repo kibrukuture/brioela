@@ -112,7 +112,7 @@ There is no `view_count` on recipes. The recipe index injection + `view_user_rec
 ## Who Can Call It
 
 - **Agent** — during any active session
-- **NOT the Curator** — the Curator reads recipe content directly in its maintenance pass (if it ever needs to), not through tools. Currently the Curator spec does not require recipe reads.
+- **NOT the Brain maintenance** — the Brain maintenance reads recipe content directly in its maintenance pass (if it ever needs to), not through tools. Currently the Brain maintenance spec does not require recipe reads.
 - **NOT device SDK** — tool-layer only
 
 ## What Is NOT This Tool's Job

@@ -157,7 +157,7 @@ The agent reads the result, confirms the right row by `scheduled_for` and `paylo
 ## Who Can Call It
 
 - **Agent** — during any active session, when user cancels or condition resolves
-- **NOT the Curator** — Curator does not cancel alarms
+- **NOT the Brain maintenance** — Brain maintenance does not cancel alarms
 - **NOT device SDK** — tool-layer only
 
 ## What Is NOT This Tool's Job

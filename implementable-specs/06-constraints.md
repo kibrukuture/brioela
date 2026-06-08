@@ -37,11 +37,11 @@ Confirmation is earned through real interactions, not through a form the user fi
 
 ## Decision: evidence points to memory_event IDs here, not user_memory IDs
 
-Unlike `user_personality` where evidence points to `user_memory` entries, constraint evidence points to `memory_event` IDs. Reason: constraints are proposed from raw behavioral events — a scan event, a receipt event, a place_visited event. The Curator never proposes constraints (the agent does, via `propose_user_constraint` tool). The agent infers directly from events, not from derived facts. The evidence trail must point back to the raw events that triggered the inference.
+Unlike `user_personality` where evidence points to `user_memory` entries, constraint evidence points to `memory_event` IDs. Reason: constraints are proposed from raw behavioral events — a scan event, a receipt event, a place_visited event. The Brain maintenance never proposes constraints (the agent does, via `propose_user_constraint` tool). The agent infers directly from events, not from derived facts. The evidence trail must point back to the raw events that triggered the inference.
 
-## Decision: Curator never touches this table
+## Decision: Brain maintenance never touches this table
 
-Constraints are too safety-critical for autonomous background modification. The Curator runs periodically and makes judgment calls about stale skills and fading personality traits. That is acceptable for those tables. It is not acceptable for a hard allergy. No automated process changes constraint status without a user-triggered confirmation event. The Curator reads this table (to understand the user's restrictions for the Curator's own context) but never writes to it.
+Constraints are too safety-critical for autonomous background modification. The Brain maintenance runs periodically and makes judgment calls about stale skills and fading personality traits. That is acceptable for those tables. It is not acceptable for a hard allergy. No automated process changes constraint status without a user-triggered confirmation event. The Brain maintenance reads this table (to understand the user's restrictions for the Brain maintenance's own context) but never writes to it.
 
 ## CREATE TABLE
 
@@ -177,7 +177,7 @@ CREATE INDEX idx_constraints_surfaced     ON constraints (last_surfaced_at) WHER
 - Auto-confirmation — agent logic sets `status = 'auto_confirmed'`, `confirmation_source = 'behavioral_threshold'`, `confirmed_at = now`. Only for eligible constraint types.
 - Rejection — agent sets `status = 'rejected'` when user says no. Row preserved.
 - `surfaced_count` increments and `last_surfaced_at` updates every time the agent surfaces this constraint for confirmation.
-- Curator NEVER writes to this table.
+- Brain maintenance NEVER writes to this table.
 
 ## Read Rules
 

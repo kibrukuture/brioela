@@ -1,8 +1,8 @@
-# Proactive Speech Engine — Index
+# Mira Speech Decision Engine — Index
 
 ## What This Is
 
-The ProactiveSpeechEngine is a self-contained module used by the Mira session runtime. It answers one question continuously: **should Gemini speak right now, and if so, with what prompt?**
+The MiraSpeechDecisionEngine is a self-contained module used by the Mira session runtime. It answers one question continuously: **should Gemini speak right now, and if so, with what prompt?**
 
 Without this engine, Gemini only speaks when the user speaks — it is reactive. With this engine, Gemini watches the kitchen, notices things, and speaks when it judges it necessary. That is what makes the cooking session feel like a human coach is present rather than a voice assistant waiting for commands.
 
@@ -47,7 +47,7 @@ export interface ObservationResponse {
   topic?:    string            // extracted topic to track for no-repeat memory
 }
 
-export class ProactiveSpeechEngine {
+export class MiraSpeechDecisionEngine {
   constructor(config: ProactiveSpeechConfig) {}
 
   // Called by Mira session runtime on every audio metadata frame from Cloudflare Realtime adapter
@@ -83,7 +83,7 @@ export class ProactiveSpeechEngine {
 
 ```typescript
 // In Mira session runtime — initialization
-this.speechEngine = new ProactiveSpeechEngine({
+this.speechEngine = new MiraSpeechDecisionEngine({
   sessionId:         this.sessionState.sessionId,
   userId:            this.sessionState.userId,
   cookingPhase:      'prep',

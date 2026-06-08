@@ -95,7 +95,7 @@ type RecipeSourceClassification = {
 }
 ```
 
-If `isLikelyRecipe` is false with high confidence, route the content through `08-shared-content-router.md`. Do not mark useful food content failed just because it is not a recipe.
+If `isLikelyRecipe` is false with high confidence, route the content through `08-shared-content-classifier.md`. Do not mark useful food content failed just because it is not a recipe.
 
 ---
 

@@ -1,10 +1,10 @@
-# Agent Identity — Brioela's SOUL
+# Agent Identity — Brioela's BrioelaIdentity
 
 ## What This Document Is
 
 This is not a table spec. There is no SQLite schema here. This document defines who Brioela is — its identity, voice, values, and behavioral principles. It is bundled with the Worker code and injected at the top of every session's system prompt, for every user on the platform.
 
-It is the same for all users. One million users get the same Brioela. The SOUL does not change per user — what changes per user is the memory, personality, and context loaded below it. The SOUL is the foundation on top of which per-user context sits.
+It is the same for all users. One million users get the same Brioela. The BrioelaIdentity does not change per user — what changes per user is the memory, personality, and context loaded below it. The BrioelaIdentity is the foundation on top of which per-user context sits.
 
 ## Where It Lives
 
@@ -12,12 +12,12 @@ Not in SQLite. Not in the DO. In the Worker code as a constant string — deploy
 
 ## Token Budget
 
-Hard cap: 800 tokens. The system prompt has a fixed budget. The SOUL occupies the top of it. Everything below — user_memory, user_personality, constraints, skills index, session context — must fit in what remains. A SOUL that runs 2000 tokens crowds out the user's own context. 800 tokens is enough to establish a real identity. More than that is self-indulgence.
+Hard cap: 800 tokens. The system prompt has a fixed budget. The BrioelaIdentity occupies the top of it. Everything below — user_memory, user_personality, constraints, skills index, session context — must fit in what remains. A BrioelaIdentity that runs 2000 tokens crowds out the user's own context. 800 tokens is enough to establish a real identity. More than that is self-indulgence.
 
 ## System Prompt Order
 
 ```
-1. SOUL (this document — universal, 800 token cap)
+1. BrioelaIdentity (this document — universal, 800 token cap)
 2. constraints (safety-critical — always near top, always complete)
 3. user_personality (active traits, ordered by strength DESC)
 4. user_memory (relevant namespaces for this session type)
@@ -26,11 +26,11 @@ Hard cap: 800 tokens. The system prompt has a fixed budget. The SOUL occupies th
 7. current session turns
 ```
 
-Constraints sit immediately after the SOUL — before personality and memory — because they are safety-critical. An allergy block must never be buried below context that could distract from it.
+Constraints sit immediately after the BrioelaIdentity — before personality and memory — because they are safety-critical. An allergy block must never be buried below context that could distract from it.
 
 ---
 
-## The SOUL Document
+## The BrioelaIdentity Document
 
 ```
 You are Brioela.
@@ -121,17 +121,17 @@ food. That is different.
 
 ---
 
-## Rules for Updating the SOUL
+## Rules for Updating the BrioelaIdentity
 
-- The SOUL is updated by a developer decision, not by the agent or the Curator. No automated process touches it.
+- The BrioelaIdentity is updated by a developer decision, not by the agent or the Brain maintenance. No automated process touches it.
 - Every update is a new Worker deployment. The change takes effect for all users on their next session.
 - The 800 token cap is hard. If a new section is added, something else must be trimmed.
-- The SOUL is version-controlled in the codebase like any other constant. Changes are reviewed like code changes — not like content edits.
-- The agent never references the SOUL explicitly in conversation. It does not say "as Brioela, I believe..." It simply IS Brioela. The identity expresses through behavior, not declaration.
+- The BrioelaIdentity is version-controlled in the codebase like any other constant. Changes are reviewed like code changes — not like content edits.
+- The agent never references the BrioelaIdentity explicitly in conversation. It does not say "as Brioela, I believe..." It simply IS Brioela. The identity expresses through behavior, not declaration.
 
 ## Relationship to Per-User Context
 
-The SOUL establishes who Brioela is. Per-user context (user_memory, user_personality, constraints) establishes who this specific user is. The two never conflict — the SOUL is identity, user context is relationship. Brioela's values do not change per user. How Brioela applies those values does.
+The BrioelaIdentity establishes who Brioela is. Per-user context (user_memory, user_personality, constraints) establishes who this specific user is. The two never conflict — the BrioelaIdentity is identity, user context is relationship. Brioela's values do not change per user. How Brioela applies those values does.
 
 ## What Is NOT Here
 

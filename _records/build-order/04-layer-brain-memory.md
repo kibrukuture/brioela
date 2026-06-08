@@ -1,4 +1,4 @@
-# Layer 04 — Memory Engine
+# Layer 04 — Brain Memory
 
 ## Status
 
@@ -6,7 +6,7 @@
 
 ## Build-Guide Folder
 
-- `build-guide/06-memory-engine/`
+- `build-guide/06-brain-memory/`
 
 ## Depends On
 
@@ -15,6 +15,6 @@
 ## Required Before Next Layer
 
 - DO SQLite schema.
-- Curator passes.
+- Brain maintenance passes.
 - Vectorize usage.
 - Visual intake memory rules.

@@ -8,10 +8,10 @@
 
 Deep read pass before writing:
 - `build-guide/00-rules.md`
-- `_records/session-log/021-recipe-ingestion-shared-content-router-addendum.md`
+- `_records/session-log/021-recipe-ingestion-shared-content-classifier-addendum.md`
 - `build-guide/20-wearables/00-overview.md`
 - `brioela-specs/40-wearables-integration.md`
-- dependency docs: Ambient Intelligence behavioral patterns, Pantry Meal Plan generation, Illness Detective overview, Scanner barcode/scan result docs, Memory Engine `user_memory`/`user_personality`
+- dependency docs: Ambient Intelligence behavioral patterns, Pantry Meal Plan generation, Illness Detective overview, Scanner barcode/scan result docs, Brain Memory `user_memory`/`user_personality`
 
 Current docs checked before writing platform-sensitive guidance:
 - Apple HealthKit docs fetch was JS-gated in this environment, so the guide stays at permission/data-type boundary level

@@ -30,7 +30,7 @@ export const LogMemoryEventSchema = z.object({
   kind: z.string().min(1),
   // What kind of event this is. Free text — no fixed enum.
   // Known values at launch: 'food_intake', 'symptom_reported', 'place_visited',
-  // 'recipe_cooked', 'session_ended', 'pattern_observed', 'product_recalled',
+  // 'recipe_cooked', 'session_ended', 'behavior_pattern_observed', 'product_recalled',
   // 'illness_logged', 'travel_intent', 'visual_intake'
   // New kinds are added freely as the product grows.
 
@@ -40,7 +40,7 @@ export const LogMemoryEventSchema = z.object({
   //   kind='food_intake':      { food: "injera", context: "lunch" }
   //   kind='symptom_reported': { symptom: "nausea", onset: "30 minutes after eating", severity: "moderate" }
   //   kind='recipe_cooked':    { recipe_id: "uuid", dish: "doro wat", session_id: "uuid" }
-  //   kind='pattern_observed': { pattern: "avoids peanuts", observation_count: 4 }
+  //   kind='behavior_pattern_observed': { pattern: "avoids peanuts", observation_count: 4 }
 
   captured_at: z.number().int().positive().optional(),
   // When the event actually occurred — unix timestamp ms.
@@ -117,7 +117,7 @@ The agent receives the `id` immediately. This matters because the agent may need
 
 None immediate.
 
-Pattern detection and Curator runs are scheduled — they are not triggered per-event. Writing an event does not wake up the DO alarm or trigger any background job. The alarm system runs on its own schedule and reads `memory_event` in batch when it fires.
+Behavior behavior pattern detection and Brain maintenance runs are scheduled — they are not triggered per-event. Writing an event does not wake up the DO alarm or trigger any background job. The alarm system runs on its own schedule and reads `memory_event` in batch when it fires.
 
 ## Error Cases
 
@@ -129,13 +129,13 @@ Pattern detection and Curator runs are scheduled — they are not triggered per-
 ## Who Can Call It
 
 - **Agent** — during any active session (chat, cooking, alarm, background)
-- **NOT the Curator** — the Curator reads `memory_event`, it never writes to it
+- **NOT the Brain maintenance** — the Brain maintenance reads `memory_event`, it never writes to it
 - **NOT device SDK** — device events come through a separate DO HTTP endpoint
 
 ## What Is NOT This Tool's Job
 
 - Writing structured facts → use `memory_update`
-- Writing personality traits → Curator only, no tool
+- Writing personality traits → Brain maintenance only, no tool
 - Proposing constraints → use `propose_constraint`
 - Scheduling future work → use `schedule_alarm`
 - Logging conversation turns → automatic, not a tool call

@@ -1,8 +1,8 @@
-# Spec: CuratorAgent + PatternDetectionAgent
+# Spec: BrainMaintenanceAgent + BehaviorPatternAgent
 
 ## Why This Spec Exists
 
-Two background agents run on schedule inside the Brioela system: **CuratorAgent** (maintenance) and **PatternDetectionAgent** (discovery). They are distinct sub-agents with different jobs, different tool subsets, different inputs, different outputs, and different schedules. This spec defines both — their architecture, their exact passes, their tool protocols, their failure handling, and the boundaries they must never cross.
+Two background agents run on schedule inside the Brioela system: **BrainMaintenanceAgent** (maintenance) and **BehaviorPatternAgent** (discovery). They are distinct sub-agents with different jobs, different tool subsets, different inputs, different outputs, and different schedules. This spec defines both — their architecture, their exact passes, their tool protocols, their failure handling, and the boundaries they must never cross.
 
 Neither agent is user-facing. Neither talks to the user. Both produce outcomes that make the next user-facing session better.
 
@@ -19,26 +19,26 @@ CF Worker receives request
     has: SQLite (the user's brain)
     never dies
     │
-    ├── on curator_run alarm:
-    │   spawns CuratorAgent DO
-    │   key: idFromName(`curator_${userId}_${runId}`)   ← EPHEMERAL — new ID each run
+    ├── on brain_maintenance_run alarm:
+    │   spawns BrainMaintenanceAgent DO
+    │   key: idFromName(`brain_maintenance_${userId}_${runId}`)   ← EPHEMERAL — new ID each run
     │   no SQLite
     │   dies when work is done (CF evicts on idle)
     │
-    └── on pattern_detection alarm:
-        spawns PatternDetectionAgent DO
-        key: idFromName(`pattern_${userId}_${runId}`)  ← EPHEMERAL — new ID each run
+    └── on behavior_pattern_detection alarm:
+        spawns BehaviorPatternAgent DO
+        key: idFromName(`behavior_pattern_${userId}_${runId}`)  ← EPHEMERAL — new ID each run
         no SQLite
         dies when work is done
 ```
 
-All agents — Brain, CuratorAgent, PatternDetectionAgent, MiraSession, ProductScanAgent — are the same kind of entity. They all use LLMs. They all use tools. The only difference is the ID. Ephemeral IDs mean ephemeral DOs. The Brain's `userId` key is what makes it permanent.
+All agents — Brain, BrainMaintenanceAgent, BehaviorPatternAgent, MiraSession, ProductScanAgent — are the same kind of entity. They all use LLMs. They all use tools. The only difference is the ID. Ephemeral IDs mean ephemeral DOs. The Brain's `userId` key is what makes it permanent.
 
 ---
 
 ## Tool Forwarding Protocol — Tools Defined and Executed Once
 
-Sub-agents (CuratorAgent, PatternDetectionAgent, and all others) have no SQLite. They cannot execute tools against a database. Every tool call a sub-agent makes is forwarded to the Brain, which executes it against its SQLite and returns the result.
+Sub-agents (BrainMaintenanceAgent, BehaviorPatternAgent, and all others) have no SQLite. They cannot execute tools against a database. Every tool call a sub-agent makes is forwarded to the Brain, which executes it against its SQLite and returns the result.
 
 **Tools are defined ONCE. Executed ONCE. In the Brain. Always.**
 
@@ -55,9 +55,9 @@ Content-Type: application/json
 
 {
   "tool":      "archive_user_skill",
-  "caller":    "curator",
+  "caller":    "brain_maintenance",
   "args":      { "name": "stale-skill-name", "reason": "stale: use_count=1, last_used 67 days ago" },
-  "run_id":    "curator_abc123"
+  "run_id":    "brain_maintenance_abc123"
 }
 ```
 
@@ -84,25 +84,25 @@ Not every agent can call every tool. The Brain enforces caller-based authorizati
 
 ```typescript
 const TOOL_PERMISSIONS: Record<string, string[]> = {
-  curator: [
-    // read tools (curator-specific, no side effects on usage counters)
-    'get_skills_for_curator',
-    'get_personality_traits_for_curator',
-    'get_user_memory_for_curator',
+  brain_maintenance: [
+    // read tools (brain-maintenance-specific, no side effects on usage counters)
+    'get_skills_for_brain_maintenance',
+    'get_personality_traits_for_brain_maintenance',
+    'get_user_memory_for_brain_maintenance',
     // write tools from the 17 (forwarded)
     'update_user_skill',
     'archive_user_skill',
     'schedule_user_alarm',
-    // curator-only write tools (not in the 17)
+    // brain-maintenance-only write tools (not in the 17)
     'update_personality_trait',
     'archive_personality_trait',
     'create_personality_trait',
   ],
-  pattern_detection: [
+  behavior_pattern_detection: [
     // read tools
     'get_memory_events_since',
-    'get_personality_traits_for_curator',   // to know what is already captured
-    'get_user_memory_for_curator',           // to find existing facts for evidence
+    'get_personality_traits_for_brain_maintenance',   // to know what is already captured
+    'get_user_memory_for_brain_maintenance',           // to find existing facts for evidence
     // write tools
     'write_user_memory',                     // writes to pattern.* namespace only
     'schedule_user_alarm',
@@ -147,11 +147,11 @@ If a sub-agent calls a tool it is not authorized for, the Brain returns `{ error
 
 ---
 
-## Curator-Specific Tools (Not in the 17)
+## Brain maintenance-Specific Tools (Not in the 17)
 
-The 17 tools specced in `brioela-tools/` are for the live agent during user sessions. The Curator needs additional read tools that do NOT trigger side effects (no `use_count` increments, no `last_used_at` updates — those are live-agent signals, not maintenance reads):
+The 17 tools specced in `brioela-tools/` are for the live agent during user sessions. The Brain maintenance needs additional read tools that do NOT trigger side effects (no `use_count` increments, no `last_used_at` updates — those are live-agent signals, not maintenance reads):
 
-### get_skills_for_curator
+### get_skills_for_brain_maintenance
 
 Returns all `source = 'user'` skills with full metadata. No side effects.
 
@@ -173,9 +173,9 @@ Returns all `source = 'user'` skills with full metadata. No side effects.
 }
 ```
 
-### get_personality_traits_for_curator
+### get_personality_traits_for_brain_maintenance
 
-Returns all `user_personality` rows regardless of `active` status. Curator needs to see deactivated traits to decide whether to reactivate or leave them.
+Returns all `user_personality` rows regardless of `active` status. Brain maintenance needs to see deactivated traits to decide whether to reactivate or leave them.
 
 ```typescript
 {
@@ -194,9 +194,9 @@ Returns all `user_personality` rows regardless of `active` status. Curator needs
 }
 ```
 
-### get_user_memory_for_curator
+### get_user_memory_for_brain_maintenance
 
-Reads `user_memory` entries by IDs or by namespace. No `read_count` increment (Curator reads are not usage signals).
+Reads `user_memory` entries by IDs or by namespace. No `read_count` increment (Brain maintenance reads are not usage signals).
 
 ```typescript
 // input:
@@ -205,7 +205,7 @@ Reads `user_memory` entries by IDs or by namespace. No `read_count` increment (C
 { entries: Array<{ id, namespace, key, value, updated_at }> }
 ```
 
-### get_memory_events_since (PatternDetectionAgent only)
+### get_memory_events_since (BehaviorPatternAgent only)
 
 Returns `memory_event` rows created after a given timestamp, up to a limit. Ordered by `created_at ASC`.
 
@@ -225,7 +225,7 @@ Updates strength, summary, evidence, last_seen_at, revised_count on an existing 
 {
   id:           string   // UUID of the trait row
   strength:     number   // new strength value 0.0–1.0
-  summary?:     string   // new summary if Curator is refining it
+  summary?:     string   // new summary if Brain maintenance is refining it
   evidence?:    string[] // updated evidence array (can only grow, never shrink)
   last_seen_at: number   // timestamp of most recent supporting evidence
 }
@@ -244,13 +244,13 @@ Sets `active = 0`. Never deletes. Requires reason.
 
 ### create_personality_trait
 
-Inserts a new row into `user_personality`. Called by both CuratorAgent (Pass 3) and PatternDetectionAgent (indirectly, after writing to user_memory first and letting the next Curator run pick it up — see below).
+Inserts a new row into `user_personality`. Called by both BrainMaintenanceAgent (Pass 3) and BehaviorPatternAgent (indirectly, after writing to user_memory first and letting the next Brain maintenance run pick it up — see below).
 
 ```typescript
 // input:
 {
   trait:    string    // Zod: /^[a-z][a-z0-9-]*$/, max 64
-  summary:  string    // Curator-written paragraph — user-specific description
+  summary:  string    // Brain maintenance-written paragraph — user-specific description
   evidence: string[]  // user_memory IDs that support this inference — min 1
   strength: number    // initial strength 0.3–0.7 — never starts at 1.0
 }
@@ -261,10 +261,10 @@ Inserts a new row into `user_personality`. Called by both CuratorAgent (Pass 3) 
 
 ## Scheduling — Two Separate Alarm Types
 
-`curator_run` and `pattern_detection` are two distinct alarm types that trigger two distinct sub-agents. They run at different frequencies because they do different things:
+`brain_maintenance_run` and `behavior_pattern_detection` are two distinct alarm types that trigger two distinct sub-agents. They run at different frequencies because they do different things:
 
-- `pattern_detection` — runs every **3 days**. Lightweight. Scans new raw events. Fast.
-- `curator_run` — runs every **7 days**. Heavy. Full maintenance pass. Multiple LLM sub-calls.
+- `behavior_pattern_detection` — runs every **3 days**. Lightweight. Scans new raw events. Fast.
+- `brain_maintenance_run` — runs every **7 days**. Heavy. Full maintenance pass. Multiple LLM sub-calls.
 
 ### First Run Scheduling (Gap Item 8)
 
@@ -273,17 +273,17 @@ The DO initialization sequence (`12-schema-version.md`, step 3) seeds both alarm
 ```typescript
 // After do.initialized check in startup sequence:
 
-const existingCurator = db.select().from(scheduledAlarms)
+const existingBrainMaintenance = db.select().from(scheduledAlarms)
   .where(and(
-    eq(scheduledAlarms.alarmType, 'curator_run'),
+    eq(scheduledAlarms.alarmType, 'brain_maintenance_run'),
     eq(scheduledAlarms.status, 'pending')
   )).get()
 
-if (!existingCurator) {
+if (!existingBrainMaintenance) {
   db.insert(scheduledAlarms).values({
     id:          crypto.randomUUID(),
     userId:      ctx.userId,
-    alarmType:   'curator_run',
+    alarmType:   'brain_maintenance_run',
     status:      'pending',
     scheduledFor: Date.now() + 7 * 24 * 60 * 60 * 1000,  // 7 days from init
     payloadJson: '{}',
@@ -296,7 +296,7 @@ if (!existingCurator) {
 
 const existingPattern = db.select().from(scheduledAlarms)
   .where(and(
-    eq(scheduledAlarms.alarmType, 'pattern_detection'),
+    eq(scheduledAlarms.alarmType, 'behavior_pattern_detection'),
     eq(scheduledAlarms.status, 'pending')
   )).get()
 
@@ -304,7 +304,7 @@ if (!existingPattern) {
   db.insert(scheduledAlarms).values({
     id:          crypto.randomUUID(),
     userId:      ctx.userId,
-    alarmType:   'pattern_detection',
+    alarmType:   'behavior_pattern_detection',
     status:      'pending',
     scheduledFor: Date.now() + 3 * 24 * 60 * 60 * 1000,  // 3 days from init
     payloadJson: '{}',
@@ -326,16 +326,16 @@ Both are system-scheduled — `triggeringSessionId = null`. No agent session cre
 At the end of each run, the sub-agent calls `schedule_user_alarm` (forwarded to Brain) to queue the next run before it dies:
 
 ```typescript
-// CuratorAgent at end of run:
+// BrainMaintenanceAgent at end of run:
 await callTool('schedule_user_alarm', {
-  alarm_type:    'curator_run',
+  alarm_type:    'brain_maintenance_run',
   scheduled_for: Date.now() + 7 * 24 * 60 * 60 * 1000,
   payload:       {},
 })
 
-// PatternDetectionAgent at end of run:
+// BehaviorPatternAgent at end of run:
 await callTool('schedule_user_alarm', {
-  alarm_type:    'pattern_detection',
+  alarm_type:    'behavior_pattern_detection',
   scheduled_for: Date.now() + 3 * 24 * 60 * 60 * 1000,
   payload:       {},
 })
@@ -345,7 +345,7 @@ await callTool('schedule_user_alarm', {
 
 ## Race Condition Handling — Active Session Check
 
-Both CuratorAgent and PatternDetectionAgent start with a mandatory active session check. If the user is in an active session, neither agent does any work.
+Both BrainMaintenanceAgent and BehaviorPatternAgent start with a mandatory active session check. If the user is in an active session, neither agent does any work.
 
 ```typescript
 // First thing every sub-agent does after spin-up:
@@ -354,7 +354,7 @@ const activeSessionCheck = await callTool('check_active_session', {})
 if (activeSessionCheck.has_active_session) {
   // Reschedule self for 1 hour later — do not proceed
   await callTool('schedule_user_alarm', {
-    alarm_type:    this.alarmType,          // 'curator_run' or 'pattern_detection'
+    alarm_type:    this.alarmType,          // 'brain_maintenance_run' or 'behavior_pattern_detection'
     scheduled_for: Date.now() + 60 * 60 * 1000,
     payload:       {},
   })
@@ -364,13 +364,13 @@ if (activeSessionCheck.has_active_session) {
 
 `check_active_session` is an internal Brain query: `SELECT id FROM sessions WHERE status = 'active' LIMIT 1`. If any row returns, the check fails and both agents defer.
 
-Why this matters: the Brain is the single writer. If a user session and CuratorAgent both issue tool calls simultaneously, the Brain serializes them. But logical conflicts still occur — if the agent just created a new skill mid-cooking-session, the Curator should not immediately evaluate it for archival. The 1-hour defer means the Curator always runs against settled state.
+Why this matters: the Brain is the single writer. If a user session and BrainMaintenanceAgent both issue tool calls simultaneously, the Brain serializes them. But logical conflicts still occur — if the agent just created a new skill mid-cooking-session, the Brain maintenance should not immediately evaluate it for archival. The 1-hour defer means the Brain maintenance always runs against settled state.
 
 ---
 
-## CuratorAgent — Three Sequential Passes
+## BrainMaintenanceAgent — Three Sequential Passes
 
-The Brain spins up CuratorAgent, gives it its system prompt (who it is, what its job is this run), and the agent proceeds through three passes in order using tool calls.
+The Brain spins up BrainMaintenanceAgent, gives it its system prompt (who it is, what its job is this run), and the agent proceeds through three passes in order using tool calls.
 
 ### Pass 1 — Skill Maintenance
 
@@ -379,7 +379,7 @@ The Brain spins up CuratorAgent, gives it its system prompt (who it is, what its
 **Step 1: Fetch all user skills**
 
 ```typescript
-const { skills } = await callTool('get_skills_for_curator', {})
+const { skills } = await callTool('get_skills_for_brain_maintenance', {})
 const now = Date.now()
 ```
 
@@ -392,7 +392,7 @@ Stale thresholds (Gap Item 11 — defined here as starting values, tunable):
 | `use_count < 3` AND `last_used_at < now - 30 days` AND `status = 'active'` | Set status to `'stale'` via `update_user_skill` |
 | `status = 'stale'` AND `last_used_at < now - 60 days` | Archive via `archive_user_skill` |
 | `use_count = 0` AND `last_used_at IS NULL` AND `created_at < now - 14 days` | Archive — never used in 2 weeks |
-| `version > 5` AND `use_count < 2` | Flag in CuratorAgent context for review in next LLM sub-call |
+| `version > 5` AND `use_count < 2` | Flag in BrainMaintenanceAgent context for review in next LLM sub-call |
 
 ```typescript
 for (const skill of skills) {
@@ -404,18 +404,18 @@ for (const skill of skills) {
     await callTool('update_user_skill', {
       name:       skill.name,
       content:    skill.content,       // unchanged
-      reason:     `Curator: stale — use_count=${skill.use_count}, last_used=${Math.round(daysSinceUsed)}d ago`,
-      updated_by: 'curator',
+      reason:     `Brain maintenance: stale — use_count=${skill.use_count}, last_used=${Math.round(daysSinceUsed)}d ago`,
+      updated_by: 'brain_maintenance',
     })
-    // Note: update_user_skill sets status based on curator judgment — needs a status field added
+    // Note: update_user_skill sets status based on brain maintenance judgment — needs a status field added
     // OR: use a separate internal set_skill_status tool
   }
 
   if (skill.status === 'stale' && daysSinceUsed > 60) {
     await callTool('archive_user_skill', {
       name:        skill.name,
-      reason:      `Curator: archived — stale for ${Math.round(daysSinceUsed)}d, use_count=${skill.use_count}`,
-      archived_by: 'curator',
+      reason:      `Brain maintenance: archived — stale for ${Math.round(daysSinceUsed)}d, use_count=${skill.use_count}`,
+      archived_by: 'brain_maintenance',
     })
   }
 }
@@ -437,13 +437,13 @@ User message:
  Return a list of archive decisions: [{ name_to_archive, keep_name, reason }]"
 ```
 
-CuratorAgent applies decisions:
+BrainMaintenanceAgent applies decisions:
 ```typescript
 for (const decision of overlapDecisions) {
   await callTool('archive_user_skill', {
     name:        decision.name_to_archive,
-    reason:      `Curator: overlap — superseded by ${decision.keep_name}. ${decision.reason}`,
-    archived_by: 'curator',
+    reason:      `Brain maintenance: overlap — superseded by ${decision.keep_name}. ${decision.reason}`,
+    archived_by: 'brain_maintenance',
   })
 }
 ```
@@ -457,7 +457,7 @@ for (const decision of overlapDecisions) {
 **Step 1: Fetch all active traits**
 
 ```typescript
-const { traits } = await callTool('get_personality_traits_for_curator', {})
+const { traits } = await callTool('get_personality_traits_for_brain_maintenance', {})
 const now = Date.now()
 ```
 
@@ -472,12 +472,12 @@ for (const trait of traits.filter(t => t.active === 1)) {
   const decayAmount  = decayPeriods * 0.03
 
   // Also check evidence: re-read user_memory entries in the evidence array
-  const { entries: evidenceEntries } = await callTool('get_user_memory_for_curator', {
+  const { entries: evidenceEntries } = await callTool('get_user_memory_for_brain_maintenance', {
     ids: trait.evidence
   })
 
   const activeEvidence      = evidenceEntries.filter(e => e.active !== 0)
-  const contradictingCount  = 0  // CuratorAgent LLM pass handles contradiction detection
+  const contradictingCount  = 0  // BrainMaintenanceAgent LLM pass handles contradiction detection
 
   let newStrength = trait.strength - decayAmount
   newStrength = Math.max(0, Math.min(1, newStrength))
@@ -485,7 +485,7 @@ for (const trait of traits.filter(t => t.active === 1)) {
   if (newStrength < 0.15) {
     await callTool('archive_personality_trait', {
       id:     trait.id,
-      reason: `Curator: strength decayed to ${newStrength.toFixed(2)} — below 0.15 threshold`,
+      reason: `Brain maintenance: strength decayed to ${newStrength.toFixed(2)} — below 0.15 threshold`,
     })
   } else if (newStrength !== trait.strength) {
     await callTool('update_personality_trait', {
@@ -503,18 +503,18 @@ Decay is pure math — no LLM needed. The rule comes from `03-user-personality.m
 
 ### Pass 3 — Personality Trait Inference (LLM Sub-Call)
 
-**Purpose**: discover new personality traits from accumulated `user_memory` facts that the Curator has not yet synthesized.
+**Purpose**: discover new personality traits from accumulated `user_memory` facts that the Brain maintenance has not yet synthesized.
 
 **Step 1: Load current knowledge**
 
 ```typescript
 // All active user_memory entries
-const { entries: memoryEntries } = await callTool('get_user_memory_for_curator', {
+const { entries: memoryEntries } = await callTool('get_user_memory_for_brain_maintenance', {
   namespace: undefined   // load everything — all namespaces
 })
 
-// Current active traits — so CuratorAgent knows what is already captured
-const { traits: existingTraits } = await callTool('get_personality_traits_for_curator', {})
+// Current active traits — so BrainMaintenanceAgent knows what is already captured
+const { traits: existingTraits } = await callTool('get_personality_traits_for_brain_maintenance', {})
 const activeTraitNames = existingTraits.filter(t => t.active === 1).map(t => t.trait)
 ```
 
@@ -522,7 +522,7 @@ const activeTraitNames = existingTraits.filter(t => t.active === 1).map(t => t.t
 
 ```
 System prompt:
-"You are the Brioela Curator. Your job is to synthesize personality traits from
+"You are the Brioela Brain maintenance. Your job is to synthesize personality traits from
  accumulated user facts. A trait is a behavioral pattern that emerged across many
  facts — not a single observation, not a declared preference.
 
@@ -584,29 +584,29 @@ for (const proposal of traitProposals) {
 
 ---
 
-## PatternDetectionAgent — Full Flow
+## BehaviorPatternAgent — Full Flow
 
-PatternDetectionAgent is fundamentally different from CuratorAgent. It works on raw `memory_event` data — not derived tables. Its job: find patterns in raw events that have not yet been abstracted into facts or traits.
+BehaviorPatternAgent is fundamentally different from BrainMaintenanceAgent. It works on raw `memory_event` data — not derived tables. Its job: find patterns in raw events that have not yet been abstracted into facts or traits.
 
-Its output is NOT written directly to `user_personality`. Its output goes to `user_memory` in the `pattern.*` namespace. Those entries then become available to the CuratorAgent on its next weekly run as evidence for trait inference. This preserves the chain:
+Its output is NOT written directly to `user_personality`. Its output goes to `user_memory` in the `pattern.*` namespace. Those entries then become available to the BrainMaintenanceAgent on its next weekly run as evidence for trait inference. This preserves the chain:
 
 ```
-memory_event → PatternDetectionAgent → user_memory (pattern.* namespace)
+memory_event → BehaviorPatternAgent → user_memory (pattern.* namespace)
                                               ↓
-                                        CuratorAgent → user_personality
+                                        BrainMaintenanceAgent → user_personality
 ```
 
-PatternDetectionAgent never writes to `user_personality` directly. It cannot — it is not in its tool subset.
+BehaviorPatternAgent never writes to `user_personality` directly. It cannot — it is not in its tool subset.
 
 ### Step 1: Find the scan window
 
 ```typescript
 // Read last run timestamp from agent_state
-const lastRunTs = await brain.getAgentState('pattern_detection.last_run')
+const lastRunTs = await brain.getAgentState('behavior_pattern_detection.last_run')
 const sinceTimestamp = lastRunTs ? parseInt(lastRunTs) : Date.now() - 7 * 24 * 60 * 60 * 1000
 ```
 
-If `pattern_detection.last_run` is not set (first ever run), scan the last 7 days.
+If `behavior_pattern_detection.last_run` is not set (first ever run), scan the last 7 days.
 
 ### Step 2: Fetch new events
 
@@ -622,16 +622,16 @@ const { events, has_more } = await callTool('get_memory_events_since', {
 ### Step 3: Fetch context (existing traits + existing user_memory)
 
 ```typescript
-const { traits }  = await callTool('get_personality_traits_for_curator', {})
-const { entries } = await callTool('get_user_memory_for_curator', { namespace: 'pattern' })
+const { traits }  = await callTool('get_personality_traits_for_brain_maintenance', {})
+const { entries } = await callTool('get_user_memory_for_brain_maintenance', { namespace: 'pattern' })
 // Know what is already captured so we don't re-discover known patterns
 ```
 
-### Step 4: LLM pattern detection sub-call
+### Step 4: LLM behavior pattern detection sub-call
 
 ```
 System prompt:
-"You are Brioela's pattern detection system. You analyze raw behavioral events
+"You are Brioela's behavior pattern detection system. You analyze raw behavioral events
  to find recurring patterns not yet captured as user facts.
 
  Rules:
@@ -677,15 +677,15 @@ for (const pattern of detectedPatterns.filter(p => p.confidence >= 0.6)) {
 }
 ```
 
-These become valid evidence entries for CuratorAgent's trait inference on the next `curator_run` — the CuratorAgent reads all user_memory including `pattern.*` entries.
+These become valid evidence entries for BrainMaintenanceAgent's trait inference on the next `brain_maintenance_run` — the BrainMaintenanceAgent reads all user_memory including `pattern.*` entries.
 
 ### Step 6: Update last run timestamp + reschedule
 
 ```typescript
-await brain.setAgentState('pattern_detection.last_run', String(Date.now()))
+await brain.setAgentState('behavior_pattern_detection.last_run', String(Date.now()))
 
 await callTool('schedule_user_alarm', {
-  alarm_type:    'pattern_detection',
+  alarm_type:    'behavior_pattern_detection',
   scheduled_for: Date.now() + 3 * 24 * 60 * 60 * 1000,
   payload:       {},
 })
@@ -703,7 +703,7 @@ db.insert(sessions).values({
   id:           runId,
   userId:       ctx.userId,
   sessionType:  'background',
-  alarmType:    alarmType,   // 'curator_run' or 'pattern_detection'
+  alarmType:    alarmType,   // 'brain_maintenance_run' or 'behavior_pattern_detection'
   status:       'active',
   model:        'claude-sonnet-4-6',
   startedAt:    Date.now(),
@@ -725,33 +725,33 @@ db.update(sessions).set({
 
 ## Failure Handling
 
-### CuratorAgent fails mid-pass
+### BrainMaintenanceAgent fails mid-pass
 
-The scheduled_alarms row stays at `status = 'processing'`. On the next DO wake-up (when the next alarm fires), the handler sees the processing row, increments `attempts`, and can retry the full run. CuratorAgent is stateless — a full retry is safe because:
-- Pass 1 (skill maintenance): re-reading stale skills is idempotent. A skill already archived returns an error from `archive_user_skill` which the Curator handles gracefully.
+The scheduled_alarms row stays at `status = 'processing'`. On the next DO wake-up (when the next alarm fires), the handler sees the processing row, increments `attempts`, and can retry the full run. BrainMaintenanceAgent is stateless — a full retry is safe because:
+- Pass 1 (skill maintenance): re-reading stale skills is idempotent. A skill already archived returns an error from `archive_user_skill` which the Brain maintenance handles gracefully.
 - Pass 2 (decay): re-applying decay math is idempotent. A trait already at 0.10 stays at 0.10 — additional decay does not go below 0.
-- Pass 3 (inference): `create_personality_trait` with a duplicate name returns an error — Curator skips it.
+- Pass 3 (inference): `create_personality_trait` with a duplicate name returns an error — Brain maintenance skips it.
 
-Max retry attempts: 3. After 3 failures, `status = 'failed'`, `fail_reason` written. Next curator_run scheduled from now normally — one failed run does not block the next cycle.
+Max retry attempts: 3. After 3 failures, `status = 'failed'`, `fail_reason` written. Next brain_maintenance_run scheduled from now normally — one failed run does not block the next cycle.
 
-### PatternDetectionAgent fails
+### BehaviorPatternAgent fails
 
-Same retry logic. The `pattern_detection.last_run` timestamp is NOT updated on failure — next run re-scans from the same `since_timestamp`. Events are not lost. The scan window grows until the next successful run processes them.
+Same retry logic. The `behavior_pattern_detection.last_run` timestamp is NOT updated on failure — next run re-scans from the same `since_timestamp`. Events are not lost. The scan window grows until the next successful run processes them.
 
 ---
 
 ## Hard Boundaries — What Each Agent Cannot Touch
 
-### CuratorAgent CANNOT:
+### BrainMaintenanceAgent CANNOT:
 - Write to `constraints` — safety-critical, only live agent + user confirmation
 - Write to `recipes` — user-confirmed lifecycle only
 - Write to `user_memory` — only live agent writes facts from real sessions
-- Write to `memory_event` — append-only, Curator reads only
+- Write to `memory_event` — append-only, Brain maintenance reads only
 - Touch `source = 'system'` skills — system skills are code-only
-- Call `create_user_skill` — Curator does not create new skills, only maintains existing ones
+- Call `create_user_skill` — Brain maintenance does not create new skills, only maintains existing ones
 
-### PatternDetectionAgent CANNOT:
-- Write to `user_personality` directly — only CuratorAgent synthesizes traits
+### BehaviorPatternAgent CANNOT:
+- Write to `user_personality` directly — only BrainMaintenanceAgent synthesizes traits
 - Write to `constraints` — never
 - Write to `recipes` — never
 - Touch `skills` at all — not in its job
@@ -776,4 +776,4 @@ The constraint auto-confirmation thresholds in `06-constraints.md` now have time
 
 Events older than the time window do not count toward the threshold. Old behavior that has not been reinforced recently should not auto-confirm a constraint.
 
-These thresholds are enforced in agent logic during live sessions — not by the Curator, not by PatternDetectionAgent.
+These thresholds are enforced in agent logic during live sessions — not by the Brain maintenance, not by BehaviorPatternAgent.

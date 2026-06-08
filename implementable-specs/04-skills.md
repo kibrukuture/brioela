@@ -15,23 +15,23 @@ The agent does not pre-load all skills into every prompt. It reads a compact ind
 
 ## Decision: name is the primary key, not UUID
 
-Unlike `user_personality` where the Curator can refine trait names, skill names are never renamed. `update_user_skill(name, content, reason)` changes content only — the name is the stable address. `view_user_skill(name)` does exact string match on the primary key. A UUID primary key would add a layer of indirection that `view_user_skill` has to work around for no benefit. Name as primary key is correct here, backed directly by how the tool works — spec 09, line 148.
+Unlike `user_personality` where the Brain maintenance can refine trait names, skill names are never renamed. `update_user_skill(name, content, reason)` changes content only — the name is the stable address. `view_user_skill(name)` does exact string match on the primary key. A UUID primary key would add a layer of indirection that `view_user_skill` has to work around for no benefit. Name as primary key is correct here, backed directly by how the tool works — spec 09, line 148.
 
 ## Decision: description has a hard 120-char cap
 
 Every session prompt includes one line per active skill: `name: description`. This is the only thing the LLM reads to decide which skill to load. If description is vague, skill selection breaks. If it is too long, the index becomes expensive and noisy. 120 characters is enough to be specific, short enough to keep the index cheap at scale. Enforced by Zod at the tool boundary.
 
-## Decision: tags are Curator-only metadata, not used in index injection
+## Decision: tags are Brain maintenance-only metadata, not used in index injection
 
-Tags could theoretically serve skill discovery. But skill selection in this system is done by the model reading the description — not by tag filtering. The model understands intent; tag matching understands exact strings. Tags are kept as Curator metadata only — for grouping, consolidation detection, and overlap analysis during the Curator's maintenance pass. They are never used in the active index injection path.
+Tags could theoretically serve skill discovery. But skill selection in this system is done by the model reading the description — not by tag filtering. The model understands intent; tag matching understands exact strings. Tags are kept as Brain maintenance metadata only — for grouping, consolidation detection, and overlap analysis during the Brain maintenance's maintenance pass. They are never used in the active index injection path.
 
 ## Decision: version integer + separate skill_versions table
 
-`update_user_skill` rewrites content. Without history, a bad Curator pass or a bad agent update permanently destroys a skill that took months of real sessions to build. `version` increments on every update. The full previous content is archived to `skill_versions` before every overwrite. Rollback is a developer action — the agent has no rollback tool. See `05-skill-versions.md`.
+`update_user_skill` rewrites content. Without history, a bad Brain maintenance pass or a bad agent update permanently destroys a skill that took months of real sessions to build. `version` increments on every update. The full previous content is archived to `skill_versions` before every overwrite. Rollback is a developer action — the agent has no rollback tool. See `05-skill-versions.md`.
 
-## Decision: system skills are never touched by the Curator
+## Decision: system skills are never touched by the Brain maintenance
 
-`source = 'system'` rows are seeded at DO initialization and are permanent. The Curator only manages `source = 'user'` skills. System skills can only be changed in code and reseeded. This is enforced in the Curator logic, not in SQL — SQL cannot enforce "only update rows where source = 'user'" automatically, so the Curator code must check before every write.
+`source = 'system'` rows are seeded at DO initialization and are permanent. The Brain maintenance only manages `source = 'user'` skills. System skills can only be changed in code and reseeded. This is enforced in the Brain maintenance logic, not in SQL — SQL cannot enforce "only update rows where source = 'user'" automatically, so the Brain maintenance code must check before every write.
 
 ## CREATE TABLE
 
@@ -41,7 +41,7 @@ CREATE TABLE skills (
   user_id         TEXT NOT NULL,      -- owner — self-describing for export and Data Studio
   description     TEXT NOT NULL,      -- one line, max 120 chars — the ONLY part shown in the index
   content         TEXT NOT NULL,      -- full markdown procedure — only loaded on view_user_skill()
-  tags            TEXT NOT NULL DEFAULT '[]', -- JSON array of strings — Curator metadata only, not used in index
+  tags            TEXT NOT NULL DEFAULT '[]', -- JSON array of strings — Brain maintenance metadata only, not used in index
   source          TEXT NOT NULL,      -- 'system' | 'user'
   status          TEXT NOT NULL DEFAULT 'active', -- 'active' | 'stale' | 'archived'
   version         INTEGER NOT NULL DEFAULT 1,     -- increments on every update_user_skill
@@ -87,30 +87,30 @@ Same reason as all other tables. Rows must be self-describing outside the DO.
 This is the entire basis on which the model decides to load a skill. It must be specific enough to distinguish this skill from all others, and short enough that 20+ skills in the index don't overwhelm the prompt. Zod enforces `.max(120)`.
 
 **`content` — full markdown, never preloaded**
-The actual procedure. Can be long. Only pulled into context when the agent explicitly calls `view_user_skill(name)`. Token cost is zero until that call happens. No size cap enforced in SQL — but practically, content that exceeds ~4000 tokens becomes a context burden and the Curator should flag it.
+The actual procedure. Can be long. Only pulled into context when the agent explicitly calls `view_user_skill(name)`. Token cost is zero until that call happens. No size cap enforced in SQL — but practically, content that exceeds ~4000 tokens becomes a context burden and the Brain maintenance should flag it.
 
-**`tags` — JSON array, Curator-only**
-Example: `["food", "health", "detection"]`. Used by the Curator to detect overlapping skills (two skills tagged `["allergy", "detection"]` might be consolidation candidates). Never injected into the system prompt index. Never used for skill selection.
+**`tags` — JSON array, Brain maintenance-only**
+Example: `["food", "health", "detection"]`. Used by the Brain maintenance to detect overlapping skills (two skills tagged `["allergy", "detection"]` might be consolidation candidates). Never injected into the system prompt index. Never used for skill selection.
 
 **`source` — 'system' or 'user'**
-System skills are seeded at DO initialization. User skills are created by the agent at runtime via `create_user_skill`. The Curator only ever touches user skills. This column is the gate.
+System skills are seeded at DO initialization. User skills are created by the agent at runtime via `create_user_skill`. The Brain maintenance only ever touches user skills. This column is the gate.
 
 **`status` — three states**
 - `active`: in the index, visible to the agent
-- `stale`: Curator flagged as long-unused, still in index but deprioritized (shown last)
+- `stale`: Brain maintenance flagged as long-unused, still in index but deprioritized (shown last)
 - `archived`: excluded from the index entirely, content preserved in table
 
 **`version` — integer, increments on every update_user_skill**
-Starting at 1. Every call to `update_user_skill` increments this before archiving the old content to `skill_versions`. Tells the Curator how many times this skill has been rewritten — a high version count with low `use_count` means the skill keeps getting rewritten but never actually used.
+Starting at 1. Every call to `update_user_skill` increments this before archiving the old content to `skill_versions`. Tells the Brain maintenance how many times this skill has been rewritten — a high version count with low `use_count` means the skill keeps getting rewritten but never actually used.
 
 **`use_count` — increments on every view_user_skill call**
-The foundation of skill evolution. The index is ordered by `use_count DESC` — most-used skills appear first, reducing how far the model has to scan. Curator uses this for stale detection: low `use_count` + old `last_used_at` = candidate for `stale` status.
+The foundation of skill evolution. The index is ordered by `use_count DESC` — most-used skills appear first, reducing how far the model has to scan. Brain maintenance uses this for stale detection: low `use_count` + old `last_used_at` = candidate for `stale` status.
 
 **`last_used_at` — nullable**
 NULL until the skill is used for the first time. A system skill that has never been used has `last_used_at = NULL` — this is valid and expected for newly seeded skills.
 
 **`archived_reason` — nullable**
-NULL for active and stale skills. Set when `archive_user_skill(name, reason)` is called. The reason is stored here permanently so the Curator and developers know why a skill was archived.
+NULL for active and stale skills. Set when `archive_user_skill(name, reason)` is called. The reason is stored here permanently so the Brain maintenance and developers know why a skill was archived.
 
 ## Zod Schema (Tool Boundary Enforcement)
 
@@ -147,7 +147,7 @@ recipe-reconstruction  — Multi-speaker session technique for capturing grandma
 medication-awareness   — Medication-food interaction checking workflow
 ```
 
-Seeded with `source = 'system'`, `status = 'active'`, `version = 1`. The Curator never touches these. They are updated only in code and reseeded.
+Seeded with `source = 'system'`, `status = 'active'`, `version = 1`. The Brain maintenance never touches these. They are updated only in code and reseeded.
 
 ## Indexes
 
@@ -159,23 +159,23 @@ CREATE INDEX idx_skills_last_used     ON skills (last_used_at DESC) WHERE status
 
 **Why these indexes:**
 - `(status, use_count DESC)` — index injection: load all active skills ordered by most-used first
-- `(source)` — Curator gate: `WHERE source = 'user'` to find all skills the Curator is allowed to touch
+- `(source)` — Brain maintenance gate: `WHERE source = 'user'` to find all skills the Brain maintenance is allowed to touch
 - `(last_used_at DESC)` partial — stale detection: find non-archived skills with oldest last use
 
 ## Write Rules
 
 - `create_user_skill` — agent only. Inserts a new row. Zod validates name and description before insert. System skills inserted by DO initialization code, not by the agent.
-- `update_user_skill` — agent or Curator. Before overwriting `content`, archives current version to `skill_versions`. Increments `version`. Updates `content`, `description` (if changed), `updated_at`.
-- `archive_user_skill` — agent or Curator. Sets `status = 'archived'`, sets `archived_reason`. Never deletes.
+- `update_user_skill` — agent or Brain maintenance. Before overwriting `content`, archives current version to `skill_versions`. Increments `version`. Updates `content`, `description` (if changed), `updated_at`.
+- `archive_user_skill` — agent or Brain maintenance. Sets `status = 'archived'`, sets `archived_reason`. Never deletes.
 - `delete_user_skill` — agent only, irreversible. Removes row from `skills`. `skill_versions` rows for this skill are NOT deleted — history survives.
 - `view_user_skill` — increments `use_count` and sets `last_used_at` as a side effect of every read.
-- Curator NEVER writes to rows where `source = 'system'`.
+- Brain maintenance NEVER writes to rows where `source = 'system'`.
 
 ## Read Rules
 
 - Index injection: every session prompt includes all `status = 'active'` or `status = 'stale'` skills, ordered by `use_count DESC`, format: `name: description`.
 - `view_user_skill(name)` loads full `content` into context on demand.
-- Curator reads all `source = 'user'` skills on its maintenance pass to evaluate stale/archive candidates and detect overlaps via tags.
+- Brain maintenance reads all `source = 'user'` skills on its maintenance pass to evaluate stale/archive candidates and detect overlaps via tags.
 
 ## What Is NOT Stored Here
 

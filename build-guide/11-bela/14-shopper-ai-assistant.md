@@ -14,7 +14,7 @@ Mira in the Bela shopper scene during active Bela orders.
 Start a MiraSession with a Bela shopper scene:
 
 - Cloudflare Realtime / RealtimeKit
-- OrderAgent DO for Bela order state and Mira session ownership
+- BelaOrderAgent DO for Bela order state and Mira session ownership
 - Gemini Live
 - JPEG frames via `client_content`
 - audio in/out

@@ -12,7 +12,7 @@ Archiving is not deletion. Deletion is `delete_user_skill`. Archiving is the rig
 - The user explicitly says "we don't need that skill anymore"
 - The agent determines a skill has become obsolete — superseded by a better one it just created
 
-**Curator calls it when:**
+**Brain maintenance calls it when:**
 - `use_count` is low and `last_used_at` is beyond the stale threshold
 - Two skills overlap significantly — one is archived in favor of the other
 - A skill's content is no longer coherent or relevant based on accumulated user_memory
@@ -40,7 +40,7 @@ export const ArchiveUserSkillSchema = z.object({
   //   "User confirmed they no longer cook this style of dish"
   //   "Stale: last used 90 days ago, use_count = 1, never refined past version 1"
 
-  archived_by: z.enum(['agent', 'curator']),
+  archived_by: z.enum(['agent', 'brain_maintenance']),
   // Who is archiving. Stored implicitly in the reason — makes accountability clear.
 })
 ```
@@ -114,7 +114,7 @@ None. No alarm triggered. No version snapshot created.
 ## Who Can Call It
 
 - **Agent** — for `source = 'user'` skills, when user confirms or agent determines obsolescence
-- **Curator** — for `source = 'user'` skills, during its maintenance pass
+- **Brain maintenance** — for `source = 'user'` skills, during its maintenance pass
 - **Neither** — for `source = 'system'` skills
 
 ## What Is NOT This Tool's Job

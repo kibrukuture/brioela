@@ -36,7 +36,7 @@ CREATE TABLE brioela.anonymous_health_groups (
   -- Enrichment — sharpens anonymous health groups so aggregated signals are homogeneous, not noise.
   -- Without these, "50s + west_africa + hypertension" can hold 10k members with
   -- completely different diets and metabolic states, making every signal noisy.
-  dietary_pattern_signature TEXT NOT NULL DEFAULT '',  -- 'high_sodium_ultra_processed' | 'whole_food_low_carb' | ... — inferred from scan history
+  dietary_behavior_pattern_signature TEXT NOT NULL DEFAULT '',  -- 'high_sodium_ultra_processed' | 'whole_food_low_carb' | ... — inferred from scan history
   cuisine_profile           JSONB NOT NULL DEFAULT '{}'::jsonb,  -- {"west_african":0.6,"western_packaged":0.3} — cuisine mix from scans
   metabolic_marker_bucket   TEXT NOT NULL DEFAULT 'unknown',     -- 'low' | 'moderate' | 'elevated' | 'high' | 'unknown' — from glucose/HbA1c/BP captures
 
@@ -322,9 +322,9 @@ User (hypertension, on statin) scans product X → eats it
 
 6 hours later: user reports headache via voice/wearable
 → health_events row in DO SQLite
-→ Health Agent correlates: product X scan → headache 6h later
+→ Health Insight Agent correlates: product X scan → headache 6h later
 
-Health Agent anonymizes:
+Health Insight Agent anonymizes:
 → User maps to anonymous_health_groups: [hypertension, 50s, west_africa, statin] — k=847 members
 → anonymous_exposure_event_associations: product X + headache + anonymous health group → count++
 → observed_rate_ratio recomputed: now 2.1 with statistical threshold passed

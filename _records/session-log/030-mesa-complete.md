@@ -21,7 +21,7 @@ Written — `build-guide/26-mesa/`:
 - `02-conversational-setup.md`
 - `03-mesa-tools.md`
 - `04-food-audience.md`
-- `05-compatibility-engine.md`
+- `05-food-audience-compatibility-engine.md`
 - `06-feature-integration.md`
 - `07-shared-enrichment-and-invites.md`
 - `08-potential-members.md`

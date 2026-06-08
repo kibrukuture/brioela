@@ -1,4 +1,4 @@
-# Session 021 — Recipe Ingestion Shared Content Router Addendum
+# Session 021 — Recipe Ingestion Shared Content Classifier Addendum
 
 ## Date
 
@@ -25,12 +25,12 @@ Written/updated — `build-guide/19-recipe-ingestion/`:
 - `04-recipe-normalization.md` — added multi-source reconstruction rules without fabrication
 - `05-confidence-and-constraints.md` — added hard-conflict UI behavior and live agent review surface
 - `06-storage-and-library.md` — clarified non-recipe shares route to destination surfaces instead of recipe library
-- `08-shared-content-router.md` — new routing spec for recipe/menu/place/product/receipt/food-note shares
+- `08-shared-content-classifier.md` — new routing spec for recipe/menu/place/product/receipt/food-note shares
 
 Updated records:
 - `_records/connections/15-recipe-ingestion-connections.md`
 - `_records/build-order/17-layer-recipe-ingestion.md`
-- `_records/session-log/021-recipe-ingestion-shared-content-router-addendum.md`
+- `_records/session-log/021-recipe-ingestion-shared-content-classifier-addendum.md`
 
 ## Product Direction Captured
 
@@ -55,7 +55,7 @@ Before writing, read:
 - latest session log
 - `build-guide/20-wearables/00-overview.md`
 - `brioela-specs/40-wearables-integration.md`
-- dependencies: Ambient Intelligence, Notifications, Brain, Memory Engine
+- dependencies: Ambient Intelligence, Notifications, Brain, Brain Memory
 
 ## Blockers / Decisions
 

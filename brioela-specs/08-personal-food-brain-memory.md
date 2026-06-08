@@ -1,4 +1,4 @@
-# 08. Personal Food Memory Engine
+# 08. Personal Food Brain Memory
 
 ## Goal
 Provide a long-lived, user-specific memory layer that accumulates food preferences, history, recipes, constraints, and learned patterns to increase relevance over time.
@@ -42,7 +42,7 @@ User opens the app and says "I've been feeling terrible since last night." The i
 **2. Personalized recall alert (spec 26)**
 A government agency issues a recall for a batch of frozen spinach contaminated with listeria. Brioela reads every scan event ever logged for this user. It finds a scan from 6 weeks ago — same product, same batch code. It fires immediately. Without the log, the match is impossible.
 
-**3. Behavioral pattern detection (spec 09, spec 17)**
+**3. Behavioral behavior pattern detection (spec 09, spec 17)**
 The DO alarm fires after accumulating enough events to analyze. The agent reads the full event log and finds patterns invisible in any single event — stress eating signals, sickness correlations, time-of-day habits. These become `user_personality` traits and inform future recommendations.
 
 **4. Travel pre-load (spec 22)**
@@ -66,7 +66,7 @@ Example: Two days before Tokyo — "You're heading to Tokyo in 2 days. Here are 
 ## Update Rules
 - Raw events are append-only. Never updated, never deleted.
 - Facts in `user_memory` and `user_personality` are derived from events and are replaceable.
-- The Memory Curator (spec 34) maintains `user_memory` and `user_personality` — it never touches `memory_event`.
+- The Memory Brain maintenance (spec 34) maintains `user_memory` and `user_personality` — it never touches `memory_event`.
 
 ## Read Paths
 - Scan personalization.

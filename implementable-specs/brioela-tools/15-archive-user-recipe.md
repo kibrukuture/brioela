@@ -114,7 +114,7 @@ None. No alarm triggered. No version snapshot. The `ingredients` list is preserv
 ## Who Can Call It
 
 - **Agent** — during any active session, on explicit user request or clear obsolescence signal
-- **NOT the Curator** — Curator does not write to recipes
+- **NOT the Brain maintenance** — Brain maintenance does not write to recipes
 - **NOT device SDK** — tool-layer only
 
 ## What Is NOT This Tool's Job

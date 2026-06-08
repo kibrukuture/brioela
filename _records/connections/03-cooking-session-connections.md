@@ -35,10 +35,10 @@ spec: implementable-specs/cooking-session/09-reconnection.md
   → build-guide/08-cooking-session/06-session-end-and-recipe.md [x] done (mobile disconnect wait)
 
 spec: implementable-specs/cooking-session/10-human-behaviors.md
-  → build-guide/08-cooking-session/04-proactive-speech-engine.md [x] done (non-response, adaptive verbosity, phase awareness)
+  → build-guide/08-cooking-session/04-mira-speech-decision-engine.md [x] done (non-response, adaptive verbosity, phase awareness)
 
-spec: implementable-specs/cooking-session/proactive-speech-engine/ (all 6 files)
-  → build-guide/08-cooking-session/04-proactive-speech-engine.md [x] done (all 6 sub-components)
+spec: implementable-specs/cooking-session/mira-speech-decision-engine/ (all 6 files)
+  → build-guide/08-cooking-session/04-mira-speech-decision-engine.md [x] done (all 6 sub-components)
 
 spec: brioela-specs/13-generational-recipe-capture.md
   → build-guide/08-cooking-session/06-session-end-and-recipe.md [x] done (recipe reconstruction, grandma technique capture)
@@ -52,7 +52,7 @@ spec: brioela-specs/10-mira-cooking-voice.md
 
 spec: brioela-specs/11-live-vision-cooking-coach.md
   → build-guide/08-cooking-session/03-gemini-live-session.md [x] done (JPEG frame forwarding to Gemini)
-  → build-guide/08-cooking-session/04-proactive-speech-engine.md [x] done (visual observation behavior)
+  → build-guide/08-cooking-session/04-mira-speech-decision-engine.md [x] done (visual observation behavior)
 
 spec: brioela-specs/12-multi-person-cooking-rooms.md
   → build-guide/08-cooking-session/00-overview.md           [x] done (multi-person room scope; Cloudflare Realtime/RealtimeKit)

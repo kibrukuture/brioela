@@ -134,7 +134,7 @@ None beyond the two column updates. No alarm triggered. No version snapshot crea
 ## Who Can Call It
 
 - **Agent** — during any active session, after passing the session-end decision tree
-- **NOT the Curator** — Curator does not write to recipes
+- **NOT the Brain maintenance** — Brain maintenance does not write to recipes
 - **NOT device SDK** — tool-layer only
 
 ## What Is NOT This Tool's Job

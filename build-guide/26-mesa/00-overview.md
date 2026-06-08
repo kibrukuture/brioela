@@ -16,7 +16,7 @@ Mesa is Brioela's multi-person food intelligence layer. It lets the app evaluate
 | `02-conversational-setup.md` | no-form Mesa creation, voice/chat member addition, confirmation language |
 | `03-mesa-tools.md` | AI-callable Mesa tools under `tools/mesa/` and permissions |
 | `04-food-audience.md` | just me / Mesa / selected members / guest session audience model |
-| `05-compatibility-engine.md` | per-member compatibility, works-for-everyone verdicts, severity aggregation |
+| `05-food-audience-compatibility-engine.md` | per-member compatibility, works-for-everyone verdicts, severity aggregation |
 | `06-feature-integration.md` | scanner, recipes, menu scanning, meal plan, Bela, cooking, Kids Mode integrations |
 | `07-shared-enrichment-and-invites.md` | invited account contribution, scoped sharing, no private brain copy |
 | `08-potential-members.md` | inferred potential Mesa members from repeated cooking/shopping patterns |
@@ -46,7 +46,7 @@ Mesa is Brioela's multi-person food intelligence layer. It lets the app evaluate
 ## What This Folder Depends On
 
 - `05-brain` — private per-user brain; Mesa owner state and permissioned writes need Brain boundaries
-- `06-memory-engine` — member/constraint/audience data eventually needs private schema design
+- `06-brain-memory` — member/constraint/audience data eventually needs private schema design
 - `07-scanner` — product compatibility is the first obvious Mesa surface
 - `14-pantry-meal-plan` — meal/grocery planning for more than one person
 - `17-menu-scanning` — restaurant menu compatibility for everyone at the table

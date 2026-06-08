@@ -47,11 +47,11 @@ export const CreateUserSkillSchema = z.object({
   // Full markdown content of the skill — the actual procedure.
   // Only loaded into context when view_user_skill(name) is called.
   // No size cap enforced here — but content exceeding ~4000 tokens becomes a
-  // context burden and the Curator will flag it.
+  // context burden and the Brain maintenance will flag it.
 
   tags: z.array(z.string()).default([]),
-  // Curator metadata only — never shown in the index, never used for skill selection.
-  // Used by the Curator for grouping and overlap detection.
+  // Brain maintenance metadata only — never shown in the index, never used for skill selection.
+  // Used by the Brain maintenance for grouping and overlap detection.
   // Examples: ["cooking", "voice", "ethiopian"]
 
   reason: z.string().min(1),
@@ -146,7 +146,7 @@ No alarm, no background job triggered.
 ## Who Can Call It
 
 - **Agent** — during any active session, for `source = 'user'` skills only
-- **NOT the Curator** — the Curator updates and archives existing skills, it never creates new ones
+- **NOT the Brain maintenance** — the Brain maintenance updates and archives existing skills, it never creates new ones
 - **NOT for system skills** — system skills are seeded at DO initialization via code, not through this tool
 
 ## What Is NOT This Tool's Job

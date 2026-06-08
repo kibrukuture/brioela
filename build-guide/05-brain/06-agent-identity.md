@@ -1,23 +1,23 @@
-# Brain — Agent Identity (SOUL)
+# Brain — Agent Identity (BrioelaIdentity)
 
 ## What This File Covers
 
-The SOUL document, where it lives in code, its 800-token hard cap, the system prompt block order, and the rules for updating it.
+The BrioelaIdentity document, where it lives in code, its 800-token hard cap, the system prompt block order, and the rules for updating it.
 
 ---
 
-## What the SOUL Is
+## What the BrioelaIdentity Is
 
-The SOUL is a constant string injected at the top of every session's system prompt, for every user on the platform. It is not per-user. One million users get the same Brioela. What changes per user is the memory, personality, and context loaded below it.
+The BrioelaIdentity is a constant string injected at the top of every session's system prompt, for every user on the platform. It is not per-user. One million users get the same Brioela. What changes per user is the memory, personality, and context loaded below it.
 
-The SOUL is not in SQLite. It is not in the DO. It lives in the Worker codebase as a constant — deployed alongside the Durable Object. When the SOUL is updated, a new Worker deployment makes it live for all users on their next session.
+The BrioelaIdentity is not in SQLite. It is not in the DO. It lives in the Worker codebase as a constant — deployed alongside the Durable Object. When the BrioelaIdentity is updated, a new Worker deployment makes it live for all users on their next session.
 
 ---
 
 ## File Location
 
 ```
-backend/src/agents/brain/soul.ts
+backend/src/agents/brain/identity-prompt.ts
 ```
 
 One file. One constant. Exported and imported by `system-prompt.builder.ts`.
@@ -26,16 +26,16 @@ One file. One constant. Exported and imported by `system-prompt.builder.ts`.
 
 ## 800 Token Hard Cap
 
-The system prompt has a fixed budget. The SOUL occupies the top. Everything below — constraints, user_personality, user_memory, skills index, session context — must fit in what remains. 800 tokens is enough to establish a real identity. More is self-indulgence that crowds out the user's own context.
+The system prompt has a fixed budget. The BrioelaIdentity occupies the top. Everything below — constraints, user_personality, user_memory, skills index, session context — must fit in what remains. 800 tokens is enough to establish a real identity. More is self-indulgence that crowds out the user's own context.
 
 ---
 
-## The SOUL
+## The BrioelaIdentity
 
 ```typescript
-// backend/src/agents/brain/soul.ts
+// backend/src/agents/brain/identity-prompt.ts
 
-export const SOUL = `
+export const BrioelaIdentity = `
 You are Brioela.
 
 You live at the intersection of food, memory, and care. You exist to help people
@@ -130,7 +130,7 @@ food. That is different.
 The full order in every session's system prompt. Static blocks must come before dynamic content — this is what makes Anthropic prefix caching work. See `03-session-lifecycle.md` for the implementation.
 
 ```
-1. SOUL                    — universal constant, 800 token cap, never changes mid-session
+1. BrioelaIdentity                    — universal constant, 800 token cap, never changes mid-session
 2. constraints             — safety-critical, always complete, always near top
 3. user_personality        — active traits ordered by strength DESC
 4. user_memory             — relevant namespaces for this session type
@@ -141,18 +141,18 @@ The full order in every session's system prompt. Static blocks must come before 
 ```
 
 **Why constraints sit at position 2, before personality and memory:**
-A hard allergy block must never be buried below context that could distract from it. If the user is anaphylactic to peanuts, that fact must be impossible to miss regardless of what else is in context. Position 2, directly after the SOUL, is not negotiable.
+A hard allergy block must never be buried below context that could distract from it. If the user is anaphylactic to peanuts, that fact must be impossible to miss regardless of what else is in context. Position 2, directly after the BrioelaIdentity, is not negotiable.
 
 **Why the skills index is compact:**
 The full content of each skill can be thousands of tokens. Loading every skill's content into every prompt would consume the entire context budget. The index injects one line per skill (`name: description`). When the agent decides it needs a skill, it calls `view_user_skill(name)` to load the full content on demand. This keeps the static prefix small enough to cache effectively.
 
 ---
 
-## Rules for Updating the SOUL
+## Rules for Updating the BrioelaIdentity
 
 - Updated by developer decision only. No automated process touches it.
 - Every update is a new Worker deployment — takes effect for all users on their next session.
 - 800 token cap is hard. Adding a new section means trimming something else.
 - Version-controlled in the codebase like any code change — reviewed, not casually edited.
-- The agent never references the SOUL explicitly. It does not say "as Brioela, I believe..." It simply IS Brioela. Identity expresses through behavior, not declaration.
-- The SOUL does not change per user. How Brioela applies its values does — that is what user_memory and user_personality are for.
+- The agent never references the BrioelaIdentity explicitly. It does not say "as Brioela, I believe..." It simply IS Brioela. Identity expresses through behavior, not declaration.
+- The BrioelaIdentity does not change per user. How Brioela applies its values does — that is what user_memory and user_personality are for.

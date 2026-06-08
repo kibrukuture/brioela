@@ -232,15 +232,15 @@ The AI decides what traits exist. There is no list of allowed traits. After seei
 
 Raw images are **never stored**. Classification and derived facts only.
 
-### Memory Curator
+### Memory Brain maintenance
 
-The `user_memory` and `user_personality` tables need their own maintenance pass — separate from the Skills Curator — for the same reason: without it, low-confidence noise accumulates, duplicate facts pile up, and outdated entries linger forever.
+The `user_memory` and `user_personality` tables need their own maintenance pass — separate from the Skills Brain maintenance — for the same reason: without it, low-confidence noise accumulates, duplicate facts pile up, and outdated entries linger forever.
 
-The Memory Curator runs on the same DO alarm trigger as the Skills Curator (idle + interval elapsed, default 7 days). It loads all memory entries with their `read_count`, `write_count`, `last_read`, and `last_write` and makes decisions based on the full picture.
+The Memory Brain maintenance runs on the same DO alarm trigger as the Skills Brain maintenance (idle + interval elapsed, default 7 days). It loads all memory entries with their `read_count`, `write_count`, `last_read`, and `last_write` and makes decisions based on the full picture.
 
 #### The Grace Period — Never Touch New Entries
 
-Before any curator logic runs, new entries are skipped unconditionally:
+Before any brain maintenance logic runs, new entries are skipped unconditionally:
 
 ```typescript
 const GRACE_PERIOD_MS = 14 * 24 * 60 * 60 * 1000 // 14 days
@@ -253,11 +253,11 @@ for (const entry of allEntries) {
 }
 ```
 
-Without this, a newly written entry that hasn't been read yet looks like garbage to the curator. The 14-day window gives every new entry a fair chance before it is ever evaluated.
+Without this, a newly written entry that hasn't been read yet looks like garbage to the brain maintenance. The 14-day window gives every new entry a fair chance before it is ever evaluated.
 
 #### The Decision Matrix
 
-The curator agent sees all entries with their counts and applies this logic:
+The brain maintenance agent sees all entries with their counts and applies this logic:
 
 ```
 read_count > 50  AND  write_count > 1                → core memory — never touch
@@ -268,7 +268,7 @@ two namespaces are semantically similar               → propose merge
 read_count > 10  AND  last_read < 90 days ago         → was important, now dormant — flag as stale
 ```
 
-A real example of what the curator sees:
+A real example of what the brain maintenance sees:
 
 ```
 namespace: health.medications
@@ -281,9 +281,9 @@ namespace: life.misc
   random_obs: read=0,   write=1, confidence=0.2, last_write=60d ago  → garbage, propose delete
 ```
 
-The metformin entry is untouchable — high read, updated multiple times, core to every health session. The other two are clearly noise. The curator proposes archiving or deleting them.
+The metformin entry is untouchable — high read, updated multiple times, core to every health session. The other two are clearly noise. The brain maintenance proposes archiving or deleting them.
 
-#### What the Curator Never Does
+#### What the Brain maintenance Never Does
 
 - Never deletes automatically. It proposes; the agent confirms with `memory_update(active: 0)` or the user confirms via the "what Brioela knows about me" screen.
 - Never touches `user_personality` traits that have `strength > 0.7` — high-confidence inferred traits are protected.
@@ -291,7 +291,7 @@ The metformin entry is untouchable — high read, updated multiple times, core t
 
 #### The Self-Fulfilling Prophecy Guard
 
-`read_count` alone cannot be the only signal. Some namespaces are always loaded (health, diet) because they are always relevant — their counts explode while less-used namespaces look like garbage even if they hold important context. The curator weighs `last_write` recency alongside `read_count` to distinguish between "genuinely unused" and "not yet relevant." Something written recently is never garbage — give it time.
+`read_count` alone cannot be the only signal. Some namespaces are always loaded (health, diet) because they are always relevant — their counts explode while less-used namespaces look like garbage even if they hold important context. The brain maintenance weighs `last_write` recency alongside `read_count` to distinguish between "genuinely unused" and "not yet relevant." Something written recently is never garbage — give it time.
 
 ## Technical Constraints
 

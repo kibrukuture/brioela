@@ -43,7 +43,7 @@ Before writing, read:
 - latest session log
 - `build-guide/17-menu-scanning/00-overview.md`
 - `brioela-specs/27-restaurant-menu-scanning.md`
-- dependencies: Scanner, Map, Brain, Memory Engine
+- dependencies: Scanner, Map, Brain, Brain Memory
 
 ## Blockers / Decisions
 

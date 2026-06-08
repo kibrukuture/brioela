@@ -1,4 +1,4 @@
-# Session 006 — Memory Engine Build Guide Complete
+# Session 006 — Brain Memory Build Guide Complete
 
 ## Date
 2026-06-06
@@ -7,19 +7,19 @@
 
 Full spec read pass before writing (no rushing):
 - implementable-specs/01-memory-event.md through 12-schema-version.md (all 12 table specs)
-- implementable-specs/15-curator.md (CuratorAgent + PatternDetectionAgent)
+- implementable-specs/15-brain-maintenance-and-behavior-patterns.md (BrainMaintenanceAgent + BehaviorPatternAgent)
 - implementable-specs/18-vectorize.md (Vectorize integration)
 - brioela-specs/34-universal-visual-intake.md
-- brioela-specs/08-personal-food-memory-engine.md
+- brioela-specs/08-personal-food-brain-memory.md
 
-Written — `build-guide/06-memory-engine/`:
+Written — `build-guide/06-brain-memory/`:
 - `00-overview.md` — updated to [x] complete, all files listed; later Health Intelligence extends the schema
 - `01-sqlite-schema.md` — all 12 tables: CREATE TABLE SQL, Drizzle schema, column decisions, indexes, write/read rules, DO startup sequence
-- `02-curator-passes.md` — CuratorAgent three passes (skill maintenance with mass-archive guard, trait decay with strength delta rules, trait inference), PatternDetectionAgent behavioral pass
+- `02-brain-maintenance-passes.md` — BrainMaintenanceAgent three passes (skill maintenance with mass-archive guard, trait decay with strength delta rules, trait inference), BehaviorPatternAgent behavioral pass
 - `03-vectorize.md` — Cohere multilingual, 20-shard structure, wrangler.jsonc bindings, fire-and-forget embedding, semantic query, failure handling, account setup checklist
 - `04-visual-intake.md` — Gemini vision call, VisualIntakeOutputSchema, memory routing table, medication chain, stool Bristol Scale, discard rules
 
-Written — `_records/connections/06-memory-engine-connections.md`
+Written — `_records/connections/06-brain-memory-connections.md`
 
 ## Inventory Status Changes
 
@@ -37,8 +37,8 @@ Mark as [x] in inventory.md:
 - implementable-specs/12-schema-version.md → [x]
 - implementable-specs/18-vectorize.md → [x]
 - brioela-specs/34-universal-visual-intake.md → [x]
-- brioela-specs/08-personal-food-memory-engine.md → [x]
-- implementable-specs/15-curator.md → [x] (was already in brain connections, now fully documented)
+- brioela-specs/08-personal-food-brain-memory.md → [x]
+- implementable-specs/15-brain-maintenance-and-behavior-patterns.md → [x] (was already in brain connections, now fully documented)
 
 ## In Progress
 Nothing half-done.

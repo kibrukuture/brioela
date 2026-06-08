@@ -52,7 +52,7 @@ Before writing, read:
 - latest session log
 - `build-guide/18-ambient-intelligence/00-overview.md`
 - `brioela-specs/22-pre-trip-food-intelligence.md`
-- dependencies: Map, Notifications, Brain, Memory Engine
+- dependencies: Map, Notifications, Brain, Brain Memory
 
 ## Blockers / Decisions
 

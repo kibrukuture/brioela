@@ -15,7 +15,7 @@ build-guide: build-guide/05-brain/
   → build-guide/20-wearables/04-cgm-food-response.md [x] done
   → build-guide/20-wearables/06-privacy-disconnect.md [x] done
 
-build-guide: build-guide/06-memory-engine/
+build-guide: build-guide/06-brain-memory/
   → build-guide/20-wearables/03-memory-routing.md [x] done
   → build-guide/20-wearables/04-cgm-food-response.md [x] done
   → build-guide/20-wearables/06-privacy-disconnect.md [x] done

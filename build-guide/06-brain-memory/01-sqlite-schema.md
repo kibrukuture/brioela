@@ -1,4 +1,4 @@
-# Memory Engine — SQLite Schema
+# Brain Memory — SQLite Schema
 
 ## What This File Covers
 
@@ -51,7 +51,7 @@ export const memoryEvent = sqliteTable('memory_event', {
 
 **Write:** Brain DO on any meaningful event. `log_memory_event` tool. Never updated. Never deleted. `ingestedAt` always set by DO at insert time.
 
-**Read:** illness detective (last 72h), recall alerts (by entity_id), behavioral pattern detection (full scan), travel preload alarm (specific travel_intent events).
+**Read:** illness detective (last 72h), recall alerts (by entity_id), behavioral behavior pattern detection (full scan), travel preload alarm (specific travel_intent events).
 
 ---
 
@@ -110,20 +110,20 @@ export const userMemory = sqliteTable('user_memory', {
 
 **Write:** `write_user_memory` tool only. No direct writes from any other code path.
 
-**Read:** `loadMemoryForPrompt()` at session open (increments `read_count`). `read_user_memory` tool mid-session. Curator on maintenance pass.
+**Read:** `loadMemoryForPrompt()` at session open (increments `read_count`). `read_user_memory` tool mid-session. Brain maintenance on maintenance pass.
 
 ---
 
 ## Table 3 — `user_personality`
 
-Synthesized personality traits inferred across patterns. Written by Curator only. Never written by the agent mid-session.
+Synthesized personality traits inferred across patterns. Written by Brain maintenance only. Never written by the agent mid-session.
 
 ```sql
 CREATE TABLE user_personality (
   id            TEXT PRIMARY KEY,   -- UUID v4 — stable even if trait name is refined
   user_id       TEXT NOT NULL,
   trait         TEXT NOT NULL UNIQUE, -- lowercase hyphens only: 'stress-eater', 'texture-sensitive'
-  summary       TEXT NOT NULL,      -- Curator-written paragraph specific to this user — not a label
+  summary       TEXT NOT NULL,      -- Brain maintenance-written paragraph specific to this user — not a label
   evidence      TEXT NOT NULL,      -- JSON array of user_memory IDs (namespace:key strings)
   strength      REAL NOT NULL,      -- 0.0 to 1.0 — decays if not reinforced
   active        INTEGER NOT NULL DEFAULT 1,
@@ -153,13 +153,13 @@ export const userPersonality = sqliteTable('user_personality', {
 })
 ```
 
-**Strength decay rules (Curator applies):**
+**Strength decay rules (Brain maintenance applies):**
 - No new evidence in 30 days → strength −0.03
 - Supporting evidence found → strength +0.05, cap 1.0
 - Contradicting evidence found → strength −0.1, floor 0.0
 - Strength below 0.15 after decay → `active = 0`
 
-**Write:** Curator only. Agent has no tool to write to this table.
+**Write:** Brain maintenance only. Agent has no tool to write to this table.
 
 **Read:** `load_session_context` at session open — active traits, ordered by `strength DESC`, top N only.
 
@@ -175,7 +175,7 @@ CREATE TABLE skills (
   user_id         TEXT NOT NULL,
   description     TEXT NOT NULL,     -- max 120 chars — the ONLY part shown in the index
   content         TEXT NOT NULL,     -- full markdown procedure — only loaded on view_user_skill()
-  tags            TEXT NOT NULL DEFAULT '[]',  -- JSON array — Curator metadata only
+  tags            TEXT NOT NULL DEFAULT '[]',  -- JSON array — Brain maintenance metadata only
   source          TEXT NOT NULL,     -- 'system' | 'user'
   status          TEXT NOT NULL DEFAULT 'active',  -- 'active' | 'stale' | 'archived'
   version         INTEGER NOT NULL DEFAULT 1,
@@ -208,12 +208,12 @@ export const skills = sqliteTable('skills', {
 })
 ```
 
-**Curator rules (user skills only — source = 'user'):**
+**Brain maintenance rules (user skills only — source = 'user'):**
 - `use_count === 0` and age > 30 days → archive
 - `use_count < 3` and `last_used_at` > 60 days ago → archive with reason `stale`
-- System skills (`source = 'system'`) are never touched by the Curator
+- System skills (`source = 'system'`) are never touched by the Brain maintenance
 
-**Write:** `create_user_skill`, `update_user_skill`, `archive_user_skill`, `delete_user_skill` tools. Curator via forwarding protocol (update/archive only, user skills only).
+**Write:** `create_user_skill`, `update_user_skill`, `archive_user_skill`, `delete_user_skill` tools. Brain maintenance via forwarding protocol (update/archive only, user skills only).
 
 **Read:** skill index (name + description only) injected into every session prompt. Full content loaded by `view_user_skill(name)`.
 
@@ -257,7 +257,7 @@ export const skillVersions = sqliteTable('skill_versions', {
 
 ## Table 6 — `constraints`
 
-Safety-critical. Hard allergies, intolerances, dislikes, dietary identity, boycotts. Confirmation workflow. Never written by Curator.
+Safety-critical. Hard allergies, intolerances, dislikes, dietary identity, boycotts. Confirmation workflow. Never written by Brain maintenance.
 
 ```sql
 CREATE TABLE constraints (
@@ -305,12 +305,12 @@ export const constraints = sqliteTable('constraints', {
 **Critical rules:**
 - `hard_allergy` requires `confirmation_source = 'user_explicit'` — behavioral threshold alone is never enough
 - `auto_confirmed` is valid only for dislike and boycott
-- Curator never writes to this table — too safety-critical for automated modification
+- Brain maintenance never writes to this table — too safety-critical for automated modification
 - Never surface the same constraint more than once per 7 days, stop after 5 rejections
 
 **Write:** `propose_user_constraint` and `confirm_user_constraint` tools only.
 
-**Read:** injected into every session system prompt (block 2, directly after SOUL). Scanner checks this before every verdict. Cooking session checks before every recipe suggestion.
+**Read:** injected into every session system prompt (block 2, directly after BrioelaIdentity). Scanner checks this before every verdict. Cooking session checks before every recipe suggestion.
 
 ---
 
@@ -649,7 +649,7 @@ DO operational memory. Key-value. Survives eviction.
 
 ```sql
 CREATE TABLE agent_state (
-  key        TEXT PRIMARY KEY,   -- dot-namespaced: 'do.initialized', 'curator.last_run'
+  key        TEXT PRIMARY KEY,   -- dot-namespaced: 'do.initialized', 'brain_maintenance.last_run'
   user_id    TEXT NOT NULL,
   value      TEXT NOT NULL,      -- always TEXT — reader parses to appropriate type
   updated_at INTEGER NOT NULL
@@ -665,7 +665,7 @@ export const agentState = sqliteTable('agent_state', {
 })
 ```
 
-**Known keys at launch:** `do.initialized`, `turn_counter.{sessionId}`, `curator.last_run`, `pattern_detection.last_run`, `active_session_id`, `memory.write_failure.{sessionId}`, `curator.anomaly.{runId}`
+**Known keys at launch:** `do.initialized`, `turn_counter.{sessionId}`, `brain_maintenance.last_run`, `behavior_pattern_detection.last_run`, `active_session_id`, `memory.write_failure.{sessionId}`, `brain_maintenance.anomaly.{runId}`
 
 ---
 
@@ -701,7 +701,7 @@ CREATE TABLE __drizzle_migrations (
    → missing or '0' → run initialization:
        seed system skills into skills table
        set default agent_state keys
-       schedule first curator_run, pattern_detection, recall_check alarms
+       schedule first brain_maintenance_run, behavior_pattern_detection, recall_check alarms
        write 'do.initialized' = '1'
    → '1' → ready, handle incoming request
 ```

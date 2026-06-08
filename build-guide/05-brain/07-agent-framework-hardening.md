@@ -144,8 +144,8 @@ A Durable Object has one physical alarm slot. Brioela still needs many logical f
 
 ```text
 session watchdog
-curator run
-pattern detection
+brain maintenance run
+behavior pattern detection
 weekly summary
 sickness follow-up
 travel preload
@@ -277,14 +277,14 @@ Use Workflow when:
 Older docs describe:
 
 ```text
-CuratorAgent -> POST /internal/tool-call -> Brain executes tool
+BrainMaintenanceAgent -> POST /internal/tool-call -> Brain executes tool
 ```
 
 Use current Agents SDK sub-agents for typed parent-child agent calls where possible:
 
 ```typescript
-const curator = await this.subAgent(CuratorAgent, `curator-${runId}`)
-await curator.runCuratorPass({ userId: this.userId })
+const brainMaintenance = await this.subAgent(BrainMaintenanceAgent, `brain-maintenance-${runId}`)
+await brainMaintenance.runMaintenancePass({ userId: this.userId })
 ```
 
 Cloudflare sub-agents provide:
@@ -321,7 +321,7 @@ research: agentTool(ResearchAgent, {
 or imperative:
 
 ```typescript
-await this.runAgentTool(PatternDetectionAgent, {
+await this.runAgentTool(BehaviorPatternAgent, {
   input: { windowDays: 14 },
   runId: `pattern-${userId}-${week}`,
 })
@@ -472,7 +472,7 @@ Borrow specific lifecycle/recovery patterns only.
 
 ## Concrete Brioela Examples
 
-### Pattern Detection
+### Behavior Pattern
 
 Current intent:
 
@@ -483,11 +483,11 @@ Every 14 days, inspect memory_event and derive patterns.
 Hardened architecture:
 
 ```typescript
-await this.schedule("0 3 */14 * *", "runPatternDetection", {
+await this.schedule("0 3 */14 * *", "runBehaviorPattern", {
   windowDays: 14,
 })
 
-async runPatternDetection(payload: { windowDays: number }) {
+async runBehaviorPattern(payload: { windowDays: number }) {
   await this.runFiber("pattern-detection", async (ctx) => {
     const events = await loadMemoryEvents(payload.windowDays)
     ctx.stash({ eventCount: events.length })
@@ -504,7 +504,7 @@ No custom `scheduled_alarms` dispatch needed for this path.
 
 ---
 
-### Curator
+### Brain maintenance
 
 Current intent:
 
@@ -515,15 +515,15 @@ Weekly maintenance of skills, personality, memory contradictions.
 Hardened architecture:
 
 ```typescript
-await this.schedule("0 4 * * 0", "runCurator", {})
+await this.schedule("0 4 * * 0", "runBrainMaintenance", {})
 
-async runCurator() {
-  const curator = await this.subAgent(CuratorAgent, `curator-${Date.now()}`)
-  await curator.run({ parentUserId: this.userId })
+async runBrainMaintenance() {
+  const brainMaintenance = await this.subAgent(BrainMaintenanceAgent, `brain-maintenance-${Date.now()}`)
+  await brainMaintenance.run({ parentUserId: this.userId })
 }
 ```
 
-Curator can use typed parent RPC for reads/proposed writes. Brain remains authoritative.
+Brain maintenance can use typed parent RPC for reads/proposed writes. Brain remains authoritative.
 
 ---
 

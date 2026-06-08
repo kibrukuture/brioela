@@ -1,4 +1,4 @@
-# Proactive Speech Engine — Prompt Builder
+# Mira Speech Decision Engine — Prompt Builder
 
 ## Purpose
 

@@ -11,7 +11,7 @@ A Cloudflare Durable Object can be evicted and restarted at any time. When a new
 
 ## Decision: Drizzle Manages This Table, Not Application Code
 
-Drizzle's `drizzle-orm/durable-sqlite/migrator` creates and manages this table automatically under the name `__drizzle_migrations`. Application code — the agent, the Curator, the alarm handler — never touches it. The only writer is the Drizzle migrator, called at DO startup before any other operation.
+Drizzle's `drizzle-orm/durable-sqlite/migrator` creates and manages this table automatically under the name `__drizzle_migrations`. Application code — the agent, the Brain maintenance, the alarm handler — never touches it. The only writer is the Drizzle migrator, called at DO startup before any other operation.
 
 This is documented here because:
 1. It is part of the schema every developer must understand
@@ -77,7 +77,7 @@ The workaround of `DROP TRIGGER IF EXISTS` then `CREATE TRIGGER` on every cold s
 ## Write Rules
 
 - Written ONLY by the Drizzle migrator at DO startup.
-- Never written by application code, the agent, the Curator, or any alarm handler.
+- Never written by application code, the agent, the Brain maintenance, or any alarm handler.
 - If this table is accidentally dropped: all migration history is lost. The migrator will attempt to re-apply all migrations from scratch on the next startup — this will fail on existing tables with "table already exists" errors. Recovery requires manual intervention per affected DO instance.
 
 ## Read Rules
@@ -142,17 +142,17 @@ db.run(sql`PRAGMA wal_autocheckpoint = 1000`)
 // 1000 pages × 4096 bytes/page = ~4MB WAL before auto-checkpoint fires
 ```
 
-**Curator TRUNCATE checkpoint (periodic, forced)**: At the end of every `curator_run`, after all maintenance passes complete, the Curator triggers a forced TRUNCATE checkpoint. This ensures that regardless of what auto-checkpoint missed (partial checkpoints, readers that held back some WAL entries), the WAL is fully flushed and reset to zero bytes at least weekly.
+**Brain maintenance TRUNCATE checkpoint (periodic, forced)**: At the end of every `brain_maintenance_run`, after all maintenance passes complete, the Brain maintenance triggers a forced TRUNCATE checkpoint. This ensures that regardless of what auto-checkpoint missed (partial checkpoints, readers that held back some WAL entries), the WAL is fully flushed and reset to zero bytes at least weekly.
 
 ```typescript
-// Last operation inside the curator_run alarm handler, after all passes complete:
+// Last operation inside the brain_maintenance_run alarm handler, after all passes complete:
 db.run(sql`PRAGMA wal_checkpoint(TRUNCATE)`)
 ```
 
-Why the Curator is the right moment for this:
-- The Curator already has the DO awake and running background work — no extra wake-up cost
-- The Curator run frequency (weekly) is exactly right for a forced full flush — not too frequent (unnecessary overhead), not too infrequent (WAL grows for months)
-- During the Curator pass, all sub-agent tool calls have completed — no active readers are mid-read when the checkpoint runs
+Why the Brain maintenance is the right moment for this:
+- The Brain maintenance already has the DO awake and running background work — no extra wake-up cost
+- The Brain maintenance run frequency (weekly) is exactly right for a forced full flush — not too frequent (unnecessary overhead), not too infrequent (WAL grows for months)
+- During the Brain maintenance pass, all sub-agent tool calls have completed — no active readers are mid-read when the checkpoint runs
 - The forced TRUNCATE guarantees the WAL resets to zero bytes, not just "mostly checkpointed" as PASSIVE mode would leave it
 
 ### What Happens If a Checkpoint Is Blocked
@@ -168,12 +168,12 @@ const result = db.get<{ busy: number, log: number, checkpointed: number }>(
 // checkpointed: frames successfully moved to main file
 ```
 
-If `busy = 1` — a reader held the checkpoint back. This is acceptable. The auto-checkpoint mechanism will clean up the remaining frames on the next write cycle. The Curator logs this result to `agent_state`:
+If `busy = 1` — a reader held the checkpoint back. This is acceptable. The auto-checkpoint mechanism will clean up the remaining frames on the next write cycle. The Brain maintenance logs this result to `agent_state`:
 
 ```typescript
 db.insert(agentState)
   .values({
-    key:       'curator.last_checkpoint',
+    key:       'brain_maintenance.last_checkpoint',
     userId:    ctx.userId,
     value:     JSON.stringify({ busy: result.busy, log: result.log, checkpointed: result.checkpointed, ts: Date.now() }),
     updatedAt: Date.now(),
@@ -182,7 +182,7 @@ db.insert(agentState)
   .run()
 ```
 
-This gives developers a diagnostic signal: if `busy = 1` repeatedly across many Curator runs, something is holding readers open longer than expected — worth investigating.
+This gives developers a diagnostic signal: if `busy = 1` repeatedly across many Brain maintenance runs, something is holding readers open longer than expected — worth investigating.
 
 ### Updated DO Startup Sequence
 
@@ -202,8 +202,8 @@ Step 2 now includes the WAL autocheckpoint setting explicitly:
    → missing or "0" → run initialization sequence
      - seed system skills
      - set default agent_state keys
-     - schedule first curator_run alarm (7 days from now)
-     - schedule first pattern_detection alarm (3 days from now)
+     - schedule first brain_maintenance_run alarm (7 days from now)
+     - schedule first behavior_pattern_detection alarm (3 days from now)
    → "1" → DO is ready, handle the incoming request
 ```
 
@@ -211,8 +211,8 @@ Step 2 now includes the WAL autocheckpoint setting explicitly:
 
 - **Never set `wal_autocheckpoint = 0`** — WAL grows forever, cold starts degrade
 - **Never call `PRAGMA journal_mode=DELETE`** — this turns off WAL mode and loses the concurrency benefits. Once WAL is set, it stays WAL.
-- **The Curator TRUNCATE checkpoint is the only forced full flush** — nothing else in the system calls `PRAGMA wal_checkpoint` explicitly. No application code, no agent, no alarm handler other than the Curator's final step.
-- **Checkpoint result is always logged** — `curator.last_checkpoint` in `agent_state` gives a diagnostic trail. Never silently discard the result.
+- **The Brain maintenance TRUNCATE checkpoint is the only forced full flush** — nothing else in the system calls `PRAGMA wal_checkpoint` explicitly. No application code, no agent, no alarm handler other than the Brain maintenance's final step.
+- **Checkpoint result is always logged** — `brain_maintenance.last_checkpoint` in `agent_state` gives a diagnostic trail. Never silently discard the result.
 
 ## What Is NOT Stored Here
 

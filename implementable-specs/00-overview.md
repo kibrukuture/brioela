@@ -88,7 +88,7 @@ Anthropic's prefix caching reduces token cost by caching the static portion of t
 
 Static context (order matters — most stable to least stable):
 1. Agent identity (from `16-agent-identity.md` — never changes per session)
-2. Active constraints injected wholesale (changes only when Curator runs — stable per session)
+2. Active constraints injected wholesale (changes only when Brain maintenance runs — stable per session)
 3. Skills index — name + description of all active skills (stable per session)
 4. User personality traits (stable per session)
 5. User memory for relevant namespaces (stable per session — loaded once at session start)
@@ -108,8 +108,8 @@ Every table exists because data must persist and be queried. If something can be
 |---|---|
 | memory_event | Agent (any session type) |
 | user_memory | Agent (fact extraction from events) |
-| user_personality | Curator only |
-| skills | Agent (create/update/archive) + Curator (update/archive) |
+| user_personality | Brain maintenance only |
+| skills | Agent (create/update/archive) + Brain maintenance (update/archive) |
 | skill_versions | update_user_skill execution path only |
 | constraints | Agent only (propose/confirm/reject) |
 | sessions | BrioelaBrain + MiraSession (each owns its own row) |

@@ -11,7 +11,7 @@ then A must be in a lower-numbered layer than B. No exceptions.
 - `01-layer-foundation.md`
 - `02-layer-auth.md`
 - `03-layer-brain.md`
-- `04-layer-memory-engine.md`
+- `04-layer-brain-memory.md`
 - `05-layer-scanner.md`
 - `06-layer-cooking-session.md`
 - `07-layer-ground.md`

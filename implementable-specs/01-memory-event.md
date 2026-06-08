@@ -13,7 +13,7 @@ Without this table, these features are impossible:
 - **Illness detective**: has nothing to look back at across the last 72 hours
 - **Personalized recall alerts**: cannot match a government recall to a product scanned 6 weeks ago
 - **Travel pre-load**: has no logged travel intent to act on when the alarm fires
-- **Behavioral pattern detection**: has no raw material to find stress-eating patterns or sickness correlations
+- **Behavioral behavior pattern detection**: has no raw material to find stress-eating patterns or sickness correlations
 - **Sickness follow-up**: has no original event to return to when the 24h alarm fires
 
 It is the only place in the system with the complete, unmodified history of what the user did. Everything else (`user_memory`, `user_personality`) is derived from it or ephemeral.
@@ -121,7 +121,7 @@ CREATE INDEX idx_memory_event_session     ON memory_event (session_id) WHERE ses
 **Why these indexes:**
 - `(kind, captured_at)` — illness detective: `WHERE kind IN (...) AND captured_at > ?` — the most common query pattern
 - `(entity_kind, entity_id, captured_at)` — recall alert: `WHERE entity_kind = 'product' AND entity_id = ?` — find all scans of a specific product ever
-- `(captured_at)` — behavioral pattern detection: full chronological scan of all events
+- `(captured_at)` — behavioral behavior pattern detection: full chronological scan of all events
 - `(session_id)` — partial index (non-null only) — group all events from a single session
 
 ## Write Rules
@@ -136,7 +136,7 @@ CREATE INDEX idx_memory_event_session     ON memory_event (session_id) WHERE ses
 
 - Read by the illness detective (`run_illness_detective` tool): last 72h of events, all kinds.
 - Read by recall alert infrastructure: all `product_scanned` events for a given entity_id.
-- Read by behavioral pattern detection (DO alarm): full chronological scan.
+- Read by behavioral behavior pattern detection (DO alarm): full chronological scan.
 - Read by travel pre-load (DO alarm): the specific `travel_intent` event that triggered the alarm.
 - Read by sickness follow-up (DO alarm): the specific `sickness_logged` event that triggered the alarm.
 - NEVER bulk-loaded into system prompts. Events are queried on demand, not preloaded.

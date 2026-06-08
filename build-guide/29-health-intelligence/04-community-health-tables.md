@@ -47,7 +47,7 @@ export const anonymousHealthGroups = brioela.table('anonymous_health_groups', {
   dietaryTags:            text('dietary_tags').array().notNull(),
 
   // Enrichment — keeps anonymous groups specific enough that aggregate signals are not noise.
-  dietaryPatternSignature: text('dietary_pattern_signature').notNull().default(''),
+  dietaryPatternSignature: text('dietary_behavior_pattern_signature').notNull().default(''),
   cuisineProfile:          jsonb('cuisine_profile').notNull().default({}),
   metabolicMarkerBucket:   text('metabolic_marker_bucket').notNull().default('unknown'),
 
@@ -313,7 +313,7 @@ CREATE INDEX idx_rac_promoted    ON brioela.anonymous_research_association_candi
 
 ## Postgres Functions (Upsert Helpers)
 
-The Health Agent calls these via `supabase.rpc()`. They handle upsert logic, statistical recomputation, and significance testing atomically.
+The Health Insight Agent calls these via `supabase.rpc()`. They handle upsert logic, statistical recomputation, and significance testing atomically.
 
 ```sql
 -- Upsert an exposure-event association, recomputing statistics

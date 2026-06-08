@@ -10,7 +10,7 @@ New private SQLite tables in the Brain DO: `medications`, `health_events`, and o
 
 Three tables are added to the Brain DO schema alongside the existing 12. They follow all the same rules: per-user private, never shared, Drizzle ORM, WAL mode.
 
-There is no `medication_reminders` table — the medication-call outcome is recorded on the firing alarm via `scheduled_alarms.action_outcome_status` + `action_outcome_json` (see `06-memory-engine/01-sqlite-schema.md`). There is no `biometric_readings` or `medical_documents` table either — both fold into the single generic `health_captures` table below.
+There is no `medication_reminders` table — the medication-call outcome is recorded on the firing alarm via `scheduled_alarms.action_outcome_status` + `action_outcome_json` (see `06-brain-memory/01-sqlite-schema.md`). There is no `biometric_readings` or `medical_documents` table either — both fold into the single generic `health_captures` table below.
 
 ```typescript
 // backend/src/agents/brain/_schema/medications.schema.ts
@@ -90,7 +90,7 @@ Stool (Bristol)        → captureType:'measurement', metricKey:'bristol',      
 
 ### Via Photo (most common)
 
-User photographs a prescription bottle or medication packaging. The visual intake pipeline (`06-memory-engine/04-visual-intake.md`) handles this — GPT-4o mini vision extraction returns structured data and writes it to the `medications` table after Zod validation.
+User photographs a prescription bottle or medication packaging. The visual intake pipeline (`06-brain-memory/04-visual-intake.md`) handles this — GPT-4o mini vision extraction returns structured data and writes it to the `medications` table after Zod validation.
 
 The extraction prompt for medications:
 

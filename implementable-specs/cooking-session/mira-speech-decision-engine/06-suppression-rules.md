@@ -1,4 +1,4 @@
-# Proactive Speech Engine — Suppression Rules
+# Mira Speech Decision Engine — Suppression Rules
 
 ## Purpose
 

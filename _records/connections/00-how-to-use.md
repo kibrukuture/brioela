@@ -23,7 +23,7 @@ spec: brioela-specs/35-ground-community-intelligence.md
 - `04-ground-connections.md`
 - `05-map-connections.md`
 - `06-bela-connections.md`
-- `06-memory-engine-connections.md`
+- `06-brain-memory-connections.md`
 - `07-auth-connections.md`
 - `08-notifications-connections.md`
 - `09-receipt-intelligence-connections.md`

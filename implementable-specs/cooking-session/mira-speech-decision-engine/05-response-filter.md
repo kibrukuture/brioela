@@ -1,4 +1,4 @@
-# Proactive Speech Engine — Response Filter
+# Mira Speech Decision Engine — Response Filter
 
 ## Purpose
 

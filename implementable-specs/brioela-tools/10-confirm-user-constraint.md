@@ -4,7 +4,7 @@
 
 `confirm_user_constraint` resolves a `proposed` constraint — moving it to `confirmed`, `auto_confirmed`, or `rejected`. It is also the mechanism for recording that the agent has surfaced a constraint to the user for confirmation (incrementing `surfaced_count` without resolving the constraint yet).
 
-This tool is the only way a constraint's status changes after proposal. The Curator never calls this tool. The agent calls it at two distinct moments:
+This tool is the only way a constraint's status changes after proposal. The Brain maintenance never calls this tool. The agent calls it at two distinct moments:
 
 1. **Surfacing moment** — Agent surfaces the constraint to the user ("You've been avoiding peanuts — is that an allergy?"). Before or after surfacing, call this tool with `mark_surfaced: true` and no `outcome`. This records the attempt.
 2. **Resolution moment** — User responds. Agent calls this tool with `outcome` set to the user's answer. Or the agent determines behavioral threshold is met and auto-confirms.
@@ -236,7 +236,7 @@ None beyond the row update. No alarm triggered. The resolved constraint takes ef
 ## Who Can Call It
 
 - **Agent** — during any active session, for surfacing and resolution
-- **NOT the Curator** — Curator never writes to the constraints table
+- **NOT the Brain maintenance** — Brain maintenance never writes to the constraints table
 - **NOT device SDK** — tool-layer only
 
 ## What Is NOT This Tool's Job

@@ -248,4 +248,4 @@ export const scanEvents = brioela.table('scan_events', {
 **Why Supabase, not DO SQLite only:**
 Recall alerts (spec 26) must match a single product recall against all users who scanned that product. That cross-user query is impossible if scan history is siloed in per-user DO SQLite. Supabase is the shared cross-user store — scan_events lands there so recall matching can run globally.
 
-The Brain DO also logs scan events to its own `memory_event` table — that copy is for per-user illness detective and behavioral pattern detection, which only need the individual user's history.
+The Brain DO also logs scan events to its own `memory_event` table — that copy is for per-user illness detective and behavioral behavior pattern detection, which only need the individual user's history.

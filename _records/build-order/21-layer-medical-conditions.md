@@ -11,7 +11,7 @@
 ## Depends On
 
 - `03-layer-brain.md`
-- `04-layer-memory-engine.md`
+- `04-layer-brain-memory.md`
 - `05-layer-scanner.md`
 - `12-layer-pantry-meal-plan.md`
 - `15-layer-menu-scanning.md`

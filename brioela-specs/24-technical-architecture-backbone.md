@@ -83,7 +83,7 @@ new_sqlite_classes = ["BrioelaBrain"]
 DO capabilities used by Brioela:
 - **SQLite via Drizzle**: full SQL, type-safe schema, migrations, 10GB limit, unlimited rows.
 - **KV storage**: also available via `this.ctx.storage.get/put` for simple key-value access.
-- **Alarms**: `this.ctx.storage.setAlarm(timestamp)` — DO wakes itself at a future time. The core mechanism for ambient intelligence (weekly summaries, pattern detection, travel pre-load, sickness follow-up) without any cron jobs. Each alarm event triggers `async alarm()` on the DO.
+- **Alarms**: `this.ctx.storage.setAlarm(timestamp)` — DO wakes itself at a future time. The core mechanism for ambient intelligence (weekly summaries, behavior pattern detection, travel pre-load, sickness follow-up) without any cron jobs. Each alarm event triggers `async alarm()` on the DO.
 - **WebSocket hibernation**: DO holds WebSocket connections open and hibernates between messages at zero cost. Wakes in milliseconds on message arrival. This is how 2-hour cooking sessions work within the CPU limits.
 - **CPU time**: 30 seconds per request, configurable to 5 minutes. But each WebSocket message is its own event with a fresh CPU budget — a 2-hour session is thousands of tiny events, each ~50-100ms CPU, total active CPU well under 5 minutes.
 - **FTS5 full-text search**: built into DO SQLite. Used for searching user scan history and recipe notes without external search.
@@ -487,7 +487,7 @@ Before replying, scan this list. If one matches your current task, call skill_vi
 ${allSkills.map(s => `- ${s.name}: ${s.description}`).join('\n')}
 ` : ''
 
-  return `${SOUL_MD}
+  return `${BRIOELA_IDENTITY_PROMPT}
 
 ${memoryBlock}
 ${skillsIndex}
@@ -558,11 +558,11 @@ const recipes = await result.json()
 
 The parent never awaits a sub-agent for more than the user's request timeout allows. If a sub-agent task is too slow for inline response, the parent fires it via QStash and collects the result in a follow-up alarm.
 
-### 5. The Curator Uses the Alarm System (Not a Cron)
+### 5. The Brain maintenance Uses the Alarm System (Not a Cron)
 
-The Curator (the background skill maintenance pass described in spec 09) runs on the same DO alarm mechanism as all other ambient features — not a separate cron job or scheduled function. Every alarm wake checks two conditions before running the Curator: enough time elapsed since the last run, and the agent has been idle long enough. If both are true, the Curator runs as part of the normal `alarm()` handler.
+The Brain maintenance (the background skill maintenance pass described in spec 09) runs on the same DO alarm mechanism as all other ambient features — not a separate cron job or scheduled function. Every alarm wake checks two conditions before running the Brain maintenance: enough time elapsed since the last run, and the agent has been idle long enough. If both are true, the Brain maintenance runs as part of the normal `alarm()` handler.
 
-This means no additional infrastructure for the Curator. It is a pure DO alarm — zero cost while waiting, fires exactly when conditions are met, and requires no external scheduler. The same pattern used for the weekly food summary, the travel pre-load, and sickness follow-up is the pattern that powers the Curator.
+This means no additional infrastructure for the Brain maintenance. It is a pure DO alarm — zero cost while waiting, fires exactly when conditions are met, and requires no external scheduler. The same pattern used for the weekly food summary, the travel pre-load, and sickness follow-up is the pattern that powers the Brain maintenance.
 
 The implication: every user's skill library gets quietly maintained over time purely as a side effect of DO alarms that were already in place.
 

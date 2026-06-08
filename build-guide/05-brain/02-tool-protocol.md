@@ -86,17 +86,17 @@ export const writeUserMemoryTool = (db: DrizzleDB) => tool({
 
 | # | Tool name | File | Table | Who can call |
 |---|---|---|---|---|
-| 01 | `log_memory_event` | `log-memory-event.tool.ts` | `memory_event` | chat, cooking, alarm, pattern_detection |
-| 02 | `write_user_memory` | `write-user-memory.tool.ts` | `user_memory` | chat, cooking, curator, pattern_detection |
+| 01 | `log_memory_event` | `log-memory-event.tool.ts` | `memory_event` | chat, cooking, alarm, behavior_pattern_detection |
+| 02 | `write_user_memory` | `write-user-memory.tool.ts` | `user_memory` | chat, cooking, brain maintenance, behavior_pattern_detection |
 | 03 | `read_user_memory` | `read-user-memory.tool.ts` | `user_memory` | chat, cooking |
 | 04 | `create_user_skill` | `create-user-skill.tool.ts` | `skills` | chat, cooking |
-| 05 | `update_user_skill` | `update-user-skill.tool.ts` | `skills` + `skill_versions` | chat, cooking, curator |
+| 05 | `update_user_skill` | `update-user-skill.tool.ts` | `skills` + `skill_versions` | chat, cooking, brain maintenance |
 | 06 | `view_user_skill` | `view-user-skill.tool.ts` | `skills` | chat, cooking |
-| 07 | `archive_user_skill` | `archive-user-skill.tool.ts` | `skills` | chat, cooking, curator |
+| 07 | `archive_user_skill` | `archive-user-skill.tool.ts` | `skills` | chat, cooking, brain maintenance |
 | 08 | `delete_user_skill` | `delete-user-skill.tool.ts` | `skills` | chat, cooking |
 | 09 | `propose_user_constraint` | `propose-user-constraint.tool.ts` | `constraints` | chat, cooking |
 | 10 | `confirm_user_constraint` | `confirm-user-constraint.tool.ts` | `constraints` | chat |
-| 11 | `schedule_user_alarm` | `schedule-user-alarm.tool.ts` | `scheduled_alarms` | chat, cooking, curator, pattern_detection |
+| 11 | `schedule_user_alarm` | `schedule-user-alarm.tool.ts` | `scheduled_alarms` | chat, cooking, brain maintenance, behavior_pattern_detection |
 | 12 | `cancel_user_alarm` | `cancel-user-alarm.tool.ts` | `scheduled_alarms` | chat, cooking |
 | 13 | `view_user_recipe` | `view-user-recipe.tool.ts` | `recipes` | chat, cooking |
 | 14 | `update_user_recipe` | `update-user-recipe.tool.ts` | `recipes` | chat, cooking |
@@ -163,7 +163,7 @@ import { searchSessionHistoryTool } from './search-session-history.tool'
 import type { DrizzleDB } from '@/types/db'
 import type { SessionType } from '@brioela/shared'
 
-const TOOL_PERMISSIONS: Record<SessionType | 'curator' | 'pattern_detection', string[]> = {
+const TOOL_PERMISSIONS: Record<SessionType | 'brain_maintenance' | 'behavior_pattern_detection', string[]> = {
   chat: [
     'log_memory_event', 'write_user_memory', 'read_user_memory',
     'create_user_skill', 'update_user_skill', 'view_user_skill',
@@ -186,15 +186,15 @@ const TOOL_PERMISSIONS: Record<SessionType | 'curator' | 'pattern_detection', st
     'log_memory_event', 'write_user_memory',
     'schedule_user_alarm', 'cancel_user_alarm',
   ],
-  curator: [
+  brain_maintenance: [
     'write_user_memory', 'update_user_skill', 'archive_user_skill', 'schedule_user_alarm',
   ],
-  pattern_detection: [
+  behavior_pattern_detection: [
     'log_memory_event', 'write_user_memory', 'schedule_user_alarm',
   ],
 }
 
-export function getToolsForSessionType(db: DrizzleDB, caller: SessionType | 'curator' | 'pattern_detection') {
+export function getToolsForSessionType(db: DrizzleDB, caller: SessionType | 'brain_maintenance' | 'behavior_pattern_detection') {
   const allowed = new Set(TOOL_PERMISSIONS[caller])
   const all = buildAllTools(db)
   return Object.fromEntries(
@@ -229,7 +229,7 @@ function buildAllTools(db: DrizzleDB) {
 
 ## `/internal/tool-call` — Sub-Agent Tool Forwarding Endpoint
 
-Sub-agents (CuratorAgent, PatternDetectionAgent, CompressorAgent) have no SQLite. When they call a tool, the call is forwarded over HTTP to the Brain's `/internal/tool-call` endpoint, which executes it against the user's SQLite and returns the result.
+Sub-agents (BrainMaintenanceAgent, BehaviorPatternAgent, SessionContextCompressor) have no SQLite. When they call a tool, the call is forwarded over HTTP to the Brain's `/internal/tool-call` endpoint, which executes it against the user's SQLite and returns the result.
 
 ```typescript
 // backend/src/agents/brain/_handlers/internal-tool.handler.ts
@@ -240,7 +240,7 @@ import type { Env } from '@/types/env'
 
 const InternalToolCallSchema = z.object({
   tool:   z.string(),
-  caller: z.enum(['curator', 'pattern_detection', 'compressor', 'cooking']),
+  caller: z.enum(['brain_maintenance', 'behavior_pattern_detection', 'compressor', 'cooking']),
   args:   z.record(z.unknown()),
   run_id: z.string(),
 })

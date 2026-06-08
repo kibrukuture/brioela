@@ -172,4 +172,4 @@ export interface Env {
 }
 ```
 
-`INTERNAL_SECRET` is a shared secret used to authenticate `/internal/tool-call` requests from sub-agents (CuratorAgent, PatternDetectionAgent) back to the Brain. Never exposed to clients.
+`INTERNAL_SECRET` is a shared secret used to authenticate `/internal/tool-call` requests from sub-agents (BrainMaintenanceAgent, BehaviorPatternAgent) back to the Brain. Never exposed to clients.

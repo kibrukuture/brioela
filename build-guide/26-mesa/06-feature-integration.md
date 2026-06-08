@@ -105,7 +105,7 @@ Mesa can later provide member-specific constraints for child members if owner cr
 
 ---
 
-## Shared Content Router
+## Shared Content Classifier
 
 If user shares a place, recipe, menu, or product and Mesa is active, Brioela can ask:
 

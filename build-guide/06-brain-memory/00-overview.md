@@ -1,8 +1,8 @@
-# Memory Engine — Overview
+# Brain Memory — Overview
 
 ## What This Folder Covers
 
-The Brain DO's data layer: core SQLite table definitions plus private feature extensions, the Curator maintenance passes, Cloudflare Vectorize semantic search integration, and the universal visual intake pipeline. This is the data side of the Brain. The agent behavior, tool protocol, and session lifecycle live in `05-brain/`.
+The Brain DO's data layer: core SQLite table definitions plus private feature extensions, the Brain maintenance maintenance passes, Cloudflare Vectorize semantic search integration, and the universal visual intake pipeline. This is the data side of the Brain. The agent behavior, tool protocol, and session lifecycle live in `05-brain/`.
 
 ## Status
 [x] complete — Health Intelligence extends the private SQLite schema in `01-sqlite-schema.md`
@@ -12,7 +12,7 @@ The Brain DO's data layer: core SQLite table definitions plus private feature ex
 | File | Contents |
 |---|---|
 | `01-sqlite-schema.md` | Core tables plus Health Intelligence private extensions: CREATE TABLE SQL, Drizzle schema, column decisions, indexes, write rules, read rules. Full DO startup sequence. |
-| `02-curator-passes.md` | CuratorAgent three passes: skill maintenance (archive stale user skills), trait decay (update strength, archive low-strength traits), trait inference (create new personality traits from user_memory patterns). PatternDetectionAgent behavioral pattern pass. |
+| `02-brain-maintenance-passes.md` | BrainMaintenanceAgent three passes: skill maintenance (archive stale user skills), trait decay (update strength, archive low-strength traits), trait inference (create new personality traits from user_memory patterns). BehaviorPatternAgent behavioral pattern pass. |
 | `03-vectorize.md` | Cohere embed-multilingual-v2.0, 20-shard index structure, shard assignment, wrangler.jsonc bindings, fire-and-forget embedding at session close, semantic query path, failure handling, account setup checklist. |
 | `04-visual-intake.md` | Single Gemini vision call, structured JSON output, memory vs skills decision, memory routing by category, medication photo chain, stool Bristol Scale classification, discard decision rules. |
 
@@ -30,10 +30,10 @@ The Brain DO's data layer: core SQLite table definitions plus private feature ex
 - `implementable-specs/10-scheduled-alarms.md` — scheduled_alarms table, Path A vs Path B distinction
 - `implementable-specs/11-agent-state.md` — agent_state table, all known keys
 - `implementable-specs/12-schema-version.md` — __drizzle_migrations, DO startup sequence
-- `implementable-specs/15-curator.md` — CuratorAgent + PatternDetectionAgent passes, TOOL_PERMISSIONS
+- `implementable-specs/15-brain-maintenance-and-behavior-patterns.md` — BrainMaintenanceAgent + BehaviorPatternAgent passes, TOOL_PERMISSIONS
 - `implementable-specs/18-vectorize.md` — embedding model, shard structure, query implementation
 - `brioela-specs/34-universal-visual-intake.md` — visual intake pipeline, memory vs skills, Ground boundary
-- `brioela-specs/08-personal-food-memory-engine.md` — memory domains, what gets stored
+- `brioela-specs/08-personal-food-brain-memory.md` — memory domains, what gets stored
 
 ## Key Decisions From Specs
 
@@ -41,11 +41,11 @@ The Brain DO's data layer: core SQLite table definitions plus private feature ex
 - `user_memory` id = `"${namespace}:${key}"` — human-readable composite, not UUID
 - Namespace cap: 40 distinct namespaces max, enforced in `write_user_memory` tool before insert
 - `user_memory` facts are never deleted — only deactivated (`active = 0`)
-- `user_personality` traits written by Curator only — not by agent mid-session
-- `constraints` table never touched by Curator — too safety-critical
+- `user_personality` traits written by Brain maintenance only — not by agent mid-session
+- `constraints` table never touched by Brain maintenance — too safety-critical
 - `hard_allergy` requires `confirmation_source = 'user_explicit'` — behavioral threshold alone not enough
-- Curator only modifies `source = 'user'` skills — never system skills
-- Mass-archive guard: Curator archives max 5 skills per pass, flags anomaly if more needed
+- Brain maintenance only modifies `source = 'user'` skills — never system skills
+- Mass-archive guard: Brain maintenance archives max 5 skills per pass, flags anomaly if more needed
 - Vectorize: Cohere `embed-multilingual-v2.0` (768 dims), 20 shards × 50k namespaces = 1M users
 - Embedding created fire-and-forget at session close via `ctx.waitUntil()`
 - Visual intake: single Gemini vision call, structured JSON output, discard threshold intentionally high

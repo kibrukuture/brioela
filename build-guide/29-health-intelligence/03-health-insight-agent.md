@@ -1,30 +1,30 @@
-# Health Intelligence — Health Agent
+# Health Intelligence — Health Insight Agent
 
 ## What This File Covers
 
-The Health Agent: a weekly per-user background agent that reads bounded private health data, detects food-health correlations, enforces explicit contribution consent and k-anonymity, and writes eligible anonymized aggregate evidence to community Postgres tables.
+The Health Insight Agent: a weekly per-user background agent that reads bounded private health data, detects food-health correlations, enforces explicit contribution consent and k-anonymity, and writes eligible anonymized aggregate evidence to community Postgres tables.
 
 ---
 
 ## Architecture — Brain-Owned Health Pass
 
-The Health Agent is a per-run sub-agent/facet started by the Brain. It does not own user
+The Health Insight Agent is a per-run sub-agent/facet started by the Brain. It does not own user
 truth. The Brain remains the only writer of user SQLite truth.
 
-The Health Agent can reason over a bounded snapshot and propose writes. The Brain performs
+The Health Insight Agent can reason over a bounded snapshot and propose writes. The Brain performs
 the actual reads/writes through typed parent calls or Brain-owned tools. Do not use custom
 `/internal/tool-call` HTTP forwarding for this path unless a later platform boundary requires it.
 
 ```
-scheduled_alarms row: health_agent_run
+scheduled_alarms row: health_insight_run
   ↓
 Brain wake method runs
   ↓
-Brain starts HealthAgent sub-agent/run
+Brain starts HealthInsightAgent sub-agent/run
   key: health_{userId}_{runId}
   no user-truth ownership
   ↓
-HealthAgent receives bounded snapshot:
+HealthInsightAgent receives bounded snapshot:
   - All active medications
   - health_events from last 14 days
   - health_captures from last 14 days
@@ -37,19 +37,19 @@ k-anonymity check via Supabase:
   No → Brain stores pending contribution in agent_state, retry next week
   Yes + user opted in → write eligible aggregate evidence to community Postgres tables
   ↓
-Brain writes action outcome to scheduled_alarms.action_outcome_status/action_outcome_json and schedules next health_agent_run
+Brain writes action outcome to scheduled_alarms.action_outcome_status/action_outcome_json and schedules next health_insight_run
 ```
 
 ---
 
-## Capability Subset for Health Agent
+## Capability Subset for Health Insight Agent
 
-The Health Agent is allowed only these Brain-owned capabilities:
+The Health Insight Agent is allowed only these Brain-owned capabilities:
 
 ```typescript
-health_agent: [
+health_insight: [
   // Read tools
-  'get_medications_for_health_agent',     // all active medications
+  'get_medications_for_health_insight',     // all active medications
   'get_health_events_since',              // health_events since N days ago
   'get_health_captures_since',            // health_captures (measurements, labs, documents) since N days ago
   'get_memory_events_since',              // scan + food history from memory_event
@@ -74,7 +74,7 @@ The agent reads all health events from the last 14 days and all scan/food events
 
 ```typescript
 const HEALTH_AGENT_CORRELATION_PROMPT = `
-You are Brioela's Health Agent. You have a complete 14-day history of this user's food consumption and health events.
+You are Brioela's Health Insight Agent. You have a complete 14-day history of this user's food consumption and health events.
 
 Your job: find food-health correlations worth recording.
 
@@ -148,7 +148,7 @@ async function runCommunityContributionPass(
   if (!anonymousHealthGroup || anonymousHealthGroup.k_anonymity_group_size < 100) {
     // Anonymous health group too small — store locally and retry next week
     await db.insert(agentState).values({
-      key:       `health_agent.pending_contribution.${crypto.randomUUID()}`,
+      key:       `health_insight.pending_contribution.${crypto.randomUUID()}`,
       userId,
       value:     JSON.stringify({ correlations, anonymousHealthGroupFingerprint, pendingSince: Date.now() }),
       updatedAt: Date.now(),
@@ -238,14 +238,14 @@ function buildAnonymousHealthGroupFingerprint(db: DrizzleDB, userId: string): An
 
 ## Privacy Guarantees
 
-The Health Agent enforces these before any community write:
+The Health Insight Agent enforces these before any community write:
 
 1. **Explicit opt-in.** No health-derived community contribution is written unless the user opted into health contribution.
 2. **k-anonymity ≥ 100.** No row is written to community tables unless the anonymous health group has at least 100 members in Supabase.
 3. **Category-level only.** Medication names become medication categories. Specific conditions become condition tags. Geographic data becomes region buckets or approved coarse geography.
 4. **No temporal precision.** Timestamps contributed to community tables are rounded to the week.
 5. **No linking.** A user's individual contributions across multiple weeks cannot be linked — each contribution uses the anonymous health group hash, not any user identifier.
-6. **Stop sharing.** If the user says "stop sharing my data with the community" — `agent_state` key `health_agent.community_contribution_opt_in = "0"` is set and Pass 3 is skipped permanently until the user opts back in.
+6. **Stop sharing.** If the user says "stop sharing my data with the community" — `agent_state` key `health_insight.community_contribution_opt_in = "0"` is set and Pass 3 is skipped permanently until the user opts back in.
 
 ---
 
@@ -257,7 +257,7 @@ The Health Agent enforces these before any community write:
 db.insert(scheduledAlarms).values({
   id:          crypto.randomUUID(),
   userId,
-  alarmType:   'health_agent_run',
+  alarmType:   'health_insight_run',
   payload:     JSON.stringify({ userId }),
   scheduledAt: Date.now() + 7 * 24 * 60 * 60 * 1000,  // first run: 7 days from account creation
   status:      'pending',
@@ -265,11 +265,11 @@ db.insert(scheduledAlarms).values({
 }).run()
 ```
 
-The Health Agent re-schedules itself at the end of each run. It runs at a time the user is likely asleep — derived from their scan pattern (when they stop scanning) — so the run never overlaps with an active session.
+The Health Insight Agent re-schedules itself at the end of each run. It runs at a time the user is likely asleep — derived from their scan pattern (when they stop scanning) — so the run never overlaps with an active session.
 
 ---
 
-## What the Health Agent Never Does
+## What the Health Insight Agent Never Does
 
 - Never modifies `constraints` — safety-critical, only the agent and user interaction can do that
 - Never deletes `health_events` or `medications` — these are permanent records

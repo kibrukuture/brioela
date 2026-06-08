@@ -13,7 +13,7 @@ There are two related records:
 - Import job/source artifacts: evidence and processing state.
 - User recipe: the normalized private recipe in the user's library.
 
-For non-recipe shares, this folder does not create a recipe row. It routes to the relevant feature/memory path described in `08-shared-content-router.md`.
+For non-recipe shares, this folder does not create a recipe row. It routes to the relevant feature/memory path described in `08-shared-content-classifier.md`.
 
 The final user recipe belongs in the Brain DO SQLite `recipes` table. Source artifacts can be stored with the import job and scoped to the user.
 
@@ -21,7 +21,7 @@ The final user recipe belongs in the Brain DO SQLite `recipes` table. Source art
 
 ## User Recipe Write
 
-The existing Memory Engine recipe schema is the target:
+The existing Brain Memory recipe schema is the target:
 
 ```typescript
 type RecipeRow = {
@@ -48,7 +48,7 @@ For imported recipes:
 - `content` stores the normalized recipe JSON plus attribution, warnings, and ranking metadata.
 - `confidence` stores overall import confidence.
 
-If implementation needs finer source types later (`video`, `image`, `shared_url`), update the Memory Engine schema intentionally instead of overloading silently.
+If implementation needs finer source types later (`video`, `image`, `shared_url`), update the Brain Memory schema intentionally instead of overloading silently.
 
 ---
 

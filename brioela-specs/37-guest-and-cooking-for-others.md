@@ -92,7 +92,7 @@ The promotion decision is made by the AI during the alarm-triggered weekly revie
 - The current `user_memory` for the `social` namespace
 - A prompt to evaluate: are there patterns here worth remembering?
 
-The AI writes to memory using the standard `memory_update` tool if it decides a pattern is worth preserving. It does not write if the evidence is weak. The Curator (spec 09) applies the same rules to guest-promoted memories as to any other memory — they age, they can be pruned, they can be overridden.
+The AI writes to memory using the standard `memory_update` tool if it decides a pattern is worth preserving. It does not write if the evidence is weak. The Brain maintenance (spec 09) applies the same rules to guest-promoted memories as to any other memory — they age, they can be pruned, they can be overridden.
 
 ## Data Model
 

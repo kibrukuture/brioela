@@ -129,7 +129,7 @@ Auto-confirms in 9:58...
 - Shopper payout held until resolution
 
 **User does not respond within 10 minutes:**
-- OrderAgent DO alarm fires (set at door-scan time)
+- BelaOrderAgent DO alarm fires (set at door-scan time)
 - Auto-capture executes: same as user confirming
 - `orders.status` → `completed`
 - User can still raise a dispute within 30 minutes of auto-capture

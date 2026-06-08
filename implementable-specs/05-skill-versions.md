@@ -2,7 +2,7 @@
 
 ## Why This Table Exists
 
-Every time `update_user_skill` is called, the current skill content is overwritten. Without history, a bad Curator pass or a poorly-reasoned agent update permanently destroys a skill that took months of real sessions to build. There is no undo.
+Every time `update_user_skill` is called, the current skill content is overwritten. Without history, a bad Brain maintenance pass or a poorly-reasoned agent update permanently destroys a skill that took months of real sessions to build. There is no undo.
 
 `skill_versions` is the undo. Before every overwrite, the old content is archived here as a row. The `skills` table always has the current state. This table has every previous state — full content, the description at that version, who made the change, and why.
 
@@ -28,7 +28,7 @@ CREATE TABLE skill_versions (
   version       INTEGER NOT NULL,   -- the version number at the time this was archived (matches skills.version before the update)
   content       TEXT NOT NULL,      -- full markdown content of this version
   description   TEXT NOT NULL,      -- description at this version — may differ from current
-  updated_by    TEXT NOT NULL,      -- 'agent' | 'curator' — who triggered the update_user_skill that replaced this version
+  updated_by    TEXT NOT NULL,      -- 'agent' | 'brain_maintenance' — who triggered the update_user_skill that replaced this version
   update_reason TEXT NOT NULL,      -- reason string passed to update_user_skill(name, content, reason) — required, never empty
   archived_at   INTEGER NOT NULL    -- unix timestamp ms — when this version was replaced by the next one
 );
@@ -46,7 +46,7 @@ export const skillVersions = sqliteTable('skill_versions', {
   version:      integer('version').notNull(),
   content:      text('content').notNull(),
   description:  text('description').notNull(),
-  updatedBy:    text('updated_by').notNull(),    // 'agent' | 'curator'
+  updatedBy:    text('updated_by').notNull(),    // 'agent' | 'brain_maintenance'
   updateReason: text('update_reason').notNull(),
   archivedAt:   integer('archived_at').notNull(),
 })
@@ -72,11 +72,11 @@ The complete previous content. Nothing truncated. This is the rollback material.
 **`description` — description at this version**
 Archived alongside content because description can change between updates. A complete history requires both.
 
-**`updated_by` — 'agent' or 'curator'**
-Tells you who decided to rewrite the skill. An agent rewrite means the agent found a better approach mid-conversation. A Curator rewrite means the scheduled maintenance pass made a consolidation or improvement decision. Different accountability.
+**`updated_by` — 'agent' or 'brain_maintenance'**
+Tells you who decided to rewrite the skill. An agent rewrite means the agent found a better approach mid-conversation. A Brain maintenance rewrite means the scheduled maintenance pass made a consolidation or improvement decision. Different accountability.
 
 **`update_reason` — required, never empty**
-The reason string from `update_user_skill(name, content, reason)`. Zod enforces `.min(1)` on reason in the `SkillUpdateSchema` — no silent rewrites allowed. The reason is permanently stored here so future developers and the Curator know why each version was replaced.
+The reason string from `update_user_skill(name, content, reason)`. Zod enforces `.min(1)` on reason in the `SkillUpdateSchema` — no silent rewrites allowed. The reason is permanently stored here so future developers and the Brain maintenance know why each version was replaced.
 
 **`archived_at` — when this version was replaced**
 The timestamp of the `update_user_skill` call that replaced this version. Combined with `version`, gives a complete timeline of when each rewrite happened.
@@ -105,7 +105,7 @@ CREATE INDEX idx_skill_versions_user    ON skill_versions (user_id);
 - Read by developers for inspection and rollback via Cloudflare Data Studio or admin tooling.
 - Never read by the agent during normal operation.
 - Never injected into any prompt.
-- The Curator may read this table to understand how many times a skill has been rewritten and why — but it does not use it to make automated decisions.
+- The Brain maintenance may read this table to understand how many times a skill has been rewritten and why — but it does not use it to make automated decisions.
 
 ## What Is NOT Stored Here
 

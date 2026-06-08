@@ -10,7 +10,7 @@ This is the only tool that writes to both `skills` and `skill_versions`. The ver
 
 Call `update_user_skill` when:
 - The agent found a better approach to an existing procedure mid-session
-- The Curator determined during its maintenance pass that a skill needs refinement
+- The Brain maintenance determined during its maintenance pass that a skill needs refinement
 - The skill's description needs to be made more specific for better index selection
 
 Do NOT call `update_user_skill` for:
@@ -44,7 +44,7 @@ export const UpdateUserSkillSchema = z.object({
   // Stored permanently in skill_versions.update_reason.
   // Examples: "Refined coaching steps after grandma session revealed better timing approach"
 
-  updated_by: z.enum(['agent', 'curator']),
+  updated_by: z.enum(['agent', 'brain_maintenance']),
   // Who is making this update. Determines accountability in skill_versions.
 })
 ```
@@ -133,7 +133,7 @@ None beyond the two table writes. No alarm triggered. The skill index refreshes 
 ## Who Can Call It
 
 - **Agent** — for `source = 'user'` skills, during any active session
-- **Curator** — for `source = 'user'` skills only, during its maintenance pass
+- **Brain maintenance** — for `source = 'user'` skills only, during its maintenance pass
 - **Neither** — for `source = 'system'` skills
 
 ## What Is NOT This Tool's Job

@@ -104,7 +104,7 @@ If no shopper accepts within 15 minutes: the user is notified, order returns to 
 
 ```
 pending        → shopper notified, no escrow yet
-accepted       → shopper committed, escrow hold placed, OrderAgent DO created
+accepted       → shopper committed, escrow hold placed, BelaOrderAgent DO created
 shopping       → shopper has started scanning, live scan session available
 in_transit     → shopper confirmed "on my way" with delivery photo submitted
 delivered      → shopper marked delivered, awaiting user confirmation
@@ -120,7 +120,7 @@ Every state transition is written to Supabase `order_events` append-only table w
 
 ## Item Resolution at Scan Time
 
-When the shopper scans a product in the store, the OrderAgent DO resolves the scanned product against the order item:
+When the shopper scans a product in the store, the BelaOrderAgent DO resolves the scanned product against the order item:
 
 - **Exact match**: scanned product ID matches the expected product ID from the user's scan history → green check on the order item
 - **Category match**: scanned product is in the same category and brand is acceptable → shown to user in live session for silent approval (auto-approved after 10 seconds of no rejection)

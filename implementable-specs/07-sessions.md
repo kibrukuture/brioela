@@ -16,7 +16,7 @@ Not all sessions are user-initiated conversations. There are four types:
 
 **`alarm`** — the `BrioelaBrain` DO woke up from a DO alarm and ran an autonomous job. No user present. The agent read an event, did something (sent a notification, pre-loaded travel data, ran illness detective), and wrote results. This is still a session — it consumed tokens, it produced outcomes, it must be tracked.
 
-**`background`** — a Curator pass, a skill deduplication job, a pattern detection run. Similar to alarm but not necessarily triggered by a DO alarm — could be triggered by an Upstash Workflow step.
+**`background`** — a Brain maintenance pass, a skill deduplication job, a behavior pattern detection run. Similar to alarm but not necessarily triggered by a DO alarm — could be triggered by an Upstash Workflow step.
 
 ## Decision: Both DOs Write to the Same Table
 
@@ -106,7 +106,7 @@ export const sessions = sqliteTable('sessions', {
 Sessions are referenced from `session_turns` (foreign key), `memory_event` (session_id), `constraints` (surfaced in which session), `scheduled_alarms` (which session spawned this alarm). UUID is the stable cross-table reference.
 
 **`session_type` — four types, free text, Zod-enforced**
-Determines how the session is processed at end time. A `cooking` session end triggers transcript summarization and fact extraction. An `alarm` session end triggers outcome writing back to the event log. A `background` session end updates Curator metadata. The type drives the end-of-session logic.
+Determines how the session is processed at end time. A `cooking` session end triggers transcript summarization and fact extraction. An `alarm` session end triggers outcome writing back to the event log. A `background` session end updates Brain maintenance metadata. The type drives the end-of-session logic.
 
 **`parent_session_id` — nullable, compression chain**
 NULL for normal sessions. Set when this session was created to compress an older one. Following the chain: current session → `parent_session_id` → grandparent → ... gives the full history. The chain is the archive.
@@ -115,7 +115,7 @@ NULL for normal sessions. Set when this session was created to compress an older
 Only set for `cooking` sessions. Links this session to the specific recipe being cooked. Enables "what sessions have we cooked this recipe in" queries and pre-loading recipe notes from prior sessions.
 
 **`alarm_type` — nullable**
-Only set for `alarm` sessions. Values match the alarm types in `scheduled_alarms`: `sickness_followup`, `travel_preload`, `recall_check`, `pattern_detection`, `curator_run`. Tells the DO what to do when it wakes up.
+Only set for `alarm` sessions. Values match the alarm types in `scheduled_alarms`: `sickness_followup`, `travel_preload`, `recall_check`, `behavior_pattern_detection`, `brain_maintenance_run`. Tells the DO what to do when it wakes up.
 
 **`status` — four states**
 - `active`: session is running right now

@@ -96,7 +96,7 @@ Under `tools/product-scan/`:
 ## What This Folder Depends On
 
 - `05-brain` — constraint profile, private `medications` table, user_memory summary mirror, memory_event write
-- `06-memory-engine` — memory_event schema, user_memory schema
+- `06-brain-memory` — memory_event schema, user_memory schema
 - `03-foundation` — Supabase for scan_events and products tables, Upstash Redis for product cache
 
 ## What Depends On This Folder

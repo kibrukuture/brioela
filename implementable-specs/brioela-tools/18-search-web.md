@@ -201,7 +201,7 @@ ctx.waitUntil(
 ```
 
 Why log web searches to memory_event:
-- Creates a searchable record of what the user asked about externally — the Curator can eventually see what gaps in the user's stored knowledge triggered external lookups
+- Creates a searchable record of what the user asked about externally — the Brain maintenance can eventually see what gaps in the user's stored knowledge triggered external lookups
 - Diagnostic trail — if the agent returned bad information, the log shows exactly what query was run and what provider was used
 - Consistent with the observability principle: silent external calls should never be invisible
 
@@ -241,8 +241,8 @@ Controlled by `TOOL_PERMISSIONS` in the Brain.
 | `chat` | ✓ | Core use case — user asks factual or research questions mid-conversation |
 | `cooking` | ✓ | Agent may need to look up food safety, substitutions, or technique during a session |
 | `product_scan` | ✓ | May need to look up ingredient details not in user's stored data |
-| `curator` | ✗ | Curator works entirely on internal data — no external lookups needed |
-| `pattern_detection` | ✗ | Works on raw internal events — no external lookups needed |
+| `brain_maintenance` | ✗ | Brain maintenance works entirely on internal data — no external lookups needed |
+| `behavior_pattern_detection` | ✗ | Works on raw internal events — no external lookups needed |
 
 ---
 

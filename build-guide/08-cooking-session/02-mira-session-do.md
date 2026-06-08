@@ -27,7 +27,7 @@ backend/src/agents/cooking/
 │   ├── mobile-audio.handler.ts      ← mobile receives Gemini audio here
 │   ├── alarm.handler.ts             ← timer alarms
 │   └── index.ts
-├── proactive-speech/
+├── mira-speech-decision/
 │   ├── silence-tracker.ts
 │   ├── visual-change-detector.ts
 │   ├── adaptive-frequency.ts
@@ -43,7 +43,7 @@ backend/src/agents/cooking/
 ## DO Class
 
 ```typescript
-// backend/src/agents/cooking/cooking.agent.ts
+// backend/src/agents/mira/mira-session.agent.ts
 
 import { Agent } from 'agents'
 import type { Env } from '@/types/env'

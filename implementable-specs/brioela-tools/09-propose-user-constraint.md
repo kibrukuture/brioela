@@ -6,7 +6,7 @@
 
 A proposed constraint is active but unverified. It surfaces warnings but does not yet block (for hard allergies) or filter silently (for dislikes). The full blocking and filtering behavior activates only after `confirm_user_constraint` transitions it to `confirmed` or `auto_confirmed`.
 
-This tool is the agent's only way to write to `constraints`. The Curator never writes to this table — constraints are too safety-critical for autonomous background modification.
+This tool is the agent's only way to write to `constraints`. The Brain maintenance never writes to this table — constraints are too safety-critical for autonomous background modification.
 
 ## Why Evidence Is Mandatory
 
@@ -180,7 +180,7 @@ None beyond the insert. No alarm triggered. The constraint is active as `propose
 ## Who Can Call It
 
 - **Agent** — during any active session, when behavioral inference is supported by memory_event evidence
-- **NOT the Curator** — Curator reads constraints for context, never writes to this table
+- **NOT the Brain maintenance** — Brain maintenance reads constraints for context, never writes to this table
 - **NOT device SDK** — tool-layer only
 
 ## What Is NOT This Tool's Job

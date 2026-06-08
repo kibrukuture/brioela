@@ -178,7 +178,7 @@ CREATE INDEX idx_recipes_source      ON recipes (source_session_id) WHERE source
 - `cook_count` and `last_cooked_at` updated at the end of every cooking session that uses this recipe — fire and forget, never awaited.
 - `update_user_recipe` — agent rewrites `content`. Must re-extract and update `ingredients` in the same write. `updated_at` always updated.
 - `archive_user_recipe` — sets `active = 0`. Never deletes.
-- Curator does NOT write to this table. Recipe lifecycle is agent-driven and user-confirmed.
+- Brain maintenance does NOT write to this table. Recipe lifecycle is agent-driven and user-confirmed.
 
 ## Read Rules
 

@@ -119,7 +119,7 @@ export async function handleAlarm(
 
   switch (alarmType) {
     case 'weekly-summary':    return runWeeklySummary(db, env)
-    case 'pattern-detection': return runPatternDetection(db, env)
+    case 'pattern-detection': return runBehaviorPattern(db, env)
     case 'pantry-prediction': return runPantryPrediction(db, env)
     case 'pre-trip-prefetch': return runPreTripPrefetch(db, env)
     case 'illness-followup':  return runIllnessFollowup(db, env)
@@ -146,7 +146,7 @@ async function scheduleNextAlarm(agent: BrioelaBrain, type: AlarmType, delayMs: 
 The MiraSession DO holds WebSocket connections open using CF hibernation. WebSocket lifecycle methods are defined directly on the class:
 
 ```ts
-// backend/src/agents/cooking/cooking.agent.ts
+// backend/src/agents/mira/mira-session.agent.ts
 import { Agent } from 'agents'
 
 export class MiraSession extends Agent<Env> {

@@ -8,7 +8,7 @@ How medication reminders are delivered: AI voice call as primary (Vapi/Bland AI)
 
 ## Where the Outcome Is Recorded
 
-There is no `medication_reminders` table. A medication reminder *is* a `scheduled_alarms` row (`alarm_type = 'medication_reminder'`). The outcome of the call — did they take it, which provider call ID, when they answered — lands back on that same row through the two generic outcome columns (`06-memory-engine/01-sqlite-schema.md`):
+There is no `medication_reminders` table. A medication reminder *is* a `scheduled_alarms` row (`alarm_type = 'medication_reminder'`). The outcome of the call — did they take it, which provider call ID, when they answered — lands back on that same row through the two generic outcome columns (`06-brain-memory/01-sqlite-schema.md`):
 
 - `action_outcome_status` — `'calling'` | `'answered'` | `'missed'` | `'notified'` | `'failed'`
 - `action_outcome_json` — `{"took": 1, "call_sid": "vapi_xxx", "answered_at": 1718000000000}`

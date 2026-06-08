@@ -1,4 +1,4 @@
-# Proactive Speech Engine — Silence Tracker
+# Mira Speech Decision Engine — Silence Tracker
 
 ## Purpose
 

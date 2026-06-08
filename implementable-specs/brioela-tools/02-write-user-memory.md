@@ -21,7 +21,7 @@ Call `write_user_memory` when:
 Do NOT call `write_user_memory` for:
 - Raw events (something that happened) → use `log_memory_event`
 - Safety constraints (allergies, intolerances) → use `propose_user_constraint`
-- Personality traits (behavioral patterns) → Curator only, no tool
+- Personality traits (behavioral patterns) → Brain maintenance only, no tool
 - Anything the agent is uncertain about — only write facts with reasonable confidence
 
 ## Input Schema
@@ -167,7 +167,7 @@ On success:
 
 `read_count` increment on context load is fire-and-forget — not triggered by this tool. This tool only writes.
 
-No alarm or background job is triggered by a memory write. Pattern detection runs on schedule, not per-write.
+No alarm or background job is triggered by a memory write. Behavior behavior pattern detection runs on schedule, not per-write.
 
 ## Error Cases
 
@@ -180,7 +180,7 @@ No alarm or background job is triggered by a memory write. Pattern detection run
 ## Who Can Call It
 
 - **Agent** — during any active session
-- **NOT the Curator** — the Curator reads `user_memory` to infer personality traits. It never writes to `user_memory` directly.
+- **NOT the Brain maintenance** — the Brain maintenance reads `user_memory` to infer personality traits. It never writes to `user_memory` directly.
 - **NOT device SDK** — device events write to `memory_event` via the device endpoint. The agent extracts facts from those events and writes them here.
 
 ## What Is NOT This Tool's Job

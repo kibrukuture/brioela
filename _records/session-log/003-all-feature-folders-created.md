@@ -18,7 +18,7 @@
 04-auth-and-onboarding
 05-brain          ← per-user agent DO, the critical path
 07-scanner               ← number overlap intentional; build-order clarifies sequence
-06-memory-engine         ← data layer for brain (SQLite schema, Curator, Vectorize)
+06-brain-memory         ← data layer for brain (SQLite schema, Brain maintenance, Vectorize)
 08-cooking-session
 09-ground
 11-bela                  ← number overlap with 10-map; both valid, different features
@@ -46,7 +46,7 @@ Actual build order is in `_records/build-order/` (not yet written — next sessi
 - `brioela-specs/40-wearables-integration.md` — CGM integration is described as "the killer feature"; personal glucose response to specific foods
 - `brioela-specs/32-grandma-style-flavor-profile.md` — style extraction from generational sessions; lives inside 08-cooking-session build folder
 - `brioela-specs/38-food-time-machine.md` — pure read layer over existing data; no new collection; lives in 18-ambient-intelligence
-- Universal visual intake (spec 34) + memory curator both live in 06-memory-engine scope
+- Universal visual intake (spec 34) + memory brain maintenance both live in 06-brain-memory scope
 - `implementable-specs/13-gaps-and-missing-specs.md` NOT YET READ — flagged to read before building
 - `brioela-specs/18-verified-business-and-practitioner-profiles.md` and `brioela-specs/20-platform-and-app-distribution.md` NOT YET READ — low priority, read when building those features
 
@@ -54,7 +54,7 @@ Actual build order is in `_records/build-order/` (not yet written — next sessi
 - `brioela-specs/18-verified-business-and-practitioner-profiles.md`
 - `brioela-specs/20-platform-and-app-distribution.md`
 - `implementable-specs/13-gaps-and-missing-specs.md` ← READ BEFORE BUILDING ANYTHING
-- All implementable-specs root files (01-18) — detailed schema files, read when building 06-memory-engine
+- All implementable-specs root files (01-18) — detailed schema files, read when building 06-brain-memory
 - All implementable-specs/brioela-tools/ files — read when building 05-brain tools section
 
 ## What Is Next

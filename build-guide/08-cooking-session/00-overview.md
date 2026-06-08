@@ -13,8 +13,8 @@ Mira in the cooking scene: live voice + camera guidance, Gemini 3.1 Flash Live, 
 |---|---|
 | `01-room-lifecycle.md` | RealtimeKit Meeting creation, participant token, SFU track adapter configuration, mobile join flow, active-session teardown, environment variables |
 | `02-mira-session-do.md` | Mira cooking session runtime DO class, endpoints (/init /stream /audio /alarm-fired), in-memory state, initialization, DO eviction recovery, Brain tool forwarding, agent_state keys |
-| `03-gemini-live-session.md` | Model selection, latency reality, opening the session, setup message, system instruction construction (SOUL + constraints + memory + skills), audio forwarding (PCM), video forwarding (JPEG as client_content not realtime_input.video), proactive reconnect at 90s, tool call handling (BLOCKING), session chaining |
-| `04-proactive-speech-engine.md` | ProactiveSpeechEngine interface, silence tracker, visual change detector, adaptive frequency, prompt builder, response filter, suppression rules, human behaviors (non-response, adaptive verbosity, phase awareness) |
+| `03-gemini-live-session.md` | Model selection, latency reality, opening the session, setup message, system instruction construction (BrioelaIdentity + constraints + memory + skills), audio forwarding (PCM), video forwarding (JPEG as client_content not realtime_input.video), proactive reconnect at 90s, tool call handling (BLOCKING), session chaining |
+| `04-mira-speech-decision-engine.md` | MiraSpeechDecisionEngine interface, silence tracker, visual change detector, adaptive frequency, prompt builder, response filter, suppression rules, human behaviors (non-response, adaptive verbosity, phase awareness) |
 | `05-timers.md` | Timer tool implementation, Agents SDK schedule callbacks, timer fire dispatch, timer cancellation, session end timer cleanup |
 | `06-session-end-and-recipe.md` | Four end types, end sequence (close Gemini → cancel timers → close room → processing), recipe decision tree, outcome_summary construction, memory consolidation via Brain, session row finalization |
 
@@ -31,7 +31,7 @@ Mira in the cooking scene: live voice + camera guidance, Gemini 3.1 Flash Live, 
 - `implementable-specs/cooking-session/08-session-end.md` — end sequence, recipe decision tree
 - `implementable-specs/cooking-session/09-reconnection.md` — Gemini reconnect, mobile reconnect, session chaining
 - `implementable-specs/cooking-session/10-human-behaviors.md` — non-response, adaptive verbosity, phase awareness
-- `implementable-specs/cooking-session/proactive-speech-engine/` — all 6 files
+- `implementable-specs/cooking-session/mira-speech-decision-engine/` — all 6 files
 - `brioela-specs/13-generational-recipe-capture.md` — grandma session, recipe reconstruction
 - `brioela-specs/32-grandma-style-flavor-profile.md` — style extraction from transcript
 
@@ -55,7 +55,7 @@ Under `tools/mira-session/`:
 ## What This Folder Depends On
 
 - `05-brain` — durable user context loaded into Mira at session start; facts, constraints, skills written back at session end
-- `06-memory-engine` — session_turns schema, sessions schema, recipes schema
+- `06-brain-memory` — session_turns schema, sessions schema, recipes schema
 - `03-foundation` — Cloudflare RealtimeKit/SFU env (`CLOUDFLARE_ACCOUNT_ID`, `REALTIMEKIT_APP_ID`, optional `REALTIME_SFU_APP_ID`), Gemini API key
 
 ## What Depends On This Folder

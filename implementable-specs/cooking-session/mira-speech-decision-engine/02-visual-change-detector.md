@@ -1,4 +1,4 @@
-# Proactive Speech Engine — Visual Change Detector
+# Mira Speech Decision Engine — Visual Change Detector
 
 ## Purpose
 

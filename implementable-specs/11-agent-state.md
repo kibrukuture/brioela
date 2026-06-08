@@ -8,7 +8,7 @@ This is NOT user data. User facts go in `user_memory`. Personality traits go in 
 
 Without this table, the DO would either:
 - Re-run initialization on every restart, duplicating system skills and overwriting user state
-- Have no protection against duplicate Curator or pattern detection runs firing simultaneously
+- Have no protection against duplicate Brain maintenance or behavior pattern detection runs firing simultaneously
 - Have a read-before-write race on session turn numbers
 
 ## Design Decision: Key-Value Structure
@@ -20,8 +20,8 @@ Without this table, the DO would either:
 Keys follow a dot-namespaced format for readability and grouping:
 - `do.initialized` — DO-level flags
 - `turn_counter.{session_id}` — per-session counters
-- `curator.last_run` — Curator operational timestamps
-- `pattern_detection.last_run` — pattern detection timestamps
+- `brain_maintenance.last_run` — Brain maintenance operational timestamps
+- `behavior_pattern_detection.last_run` — behavior pattern detection timestamps
 
 This is a convention, not enforced by SQL. New keys follow the same pattern.
 
@@ -33,28 +33,28 @@ Value: `"1"` or `"0"`. Has this DO completed its full startup initialization —
 **`turn_counter.{session_id}`**
 Value: integer as string, e.g. `"7"`. The current turn number for an active session. Incremented atomically before every `session_turns` insert. Eliminates the read-before-write race that `MAX(turn_number)` would create — two concurrent writes reading the same MAX would produce duplicate turn numbers. Key is created when a session starts, deleted when the session ends.
 
-**`curator.last_run`**
-Value: unix timestamp ms as string. When the Curator last ran. Checked before scheduling a new Curator run — if last run was less than the minimum interval ago, skip scheduling. Without this, two rapid events could both trigger a Curator run simultaneously, producing duplicate trait updates and wasting tokens.
+**`brain_maintenance.last_run`**
+Value: unix timestamp ms as string. When the Brain maintenance last ran. Checked before scheduling a new Brain maintenance run — if last run was less than the minimum interval ago, skip scheduling. Without this, two rapid events could both trigger a Brain maintenance run simultaneously, producing duplicate trait updates and wasting tokens.
 
-**`pattern_detection.last_run`**
-Value: unix timestamp ms as string. Same purpose as `curator.last_run` but for the pattern detection pass.
+**`behavior_pattern_detection.last_run`**
+Value: unix timestamp ms as string. Same purpose as `brain_maintenance.last_run` but for the behavior pattern detection pass.
 
 **`active_session_id`**
 Value: session UUID string or `""` (empty = no active session). Which session is currently open. Set when a session starts, cleared when it ends. Lets the DO answer "is there a live session right now" without querying `sessions WHERE status = 'active'`. Used as a guard before starting a new session.
 
 **`memory.write_failure.{session_id}`**
-Value: JSON string `{ namespace, key, error, ts }`. Written when `write_user_memory` fails after passing Zod validation — meaning the SQLite write itself failed. This is a silent failure mode: the agent believes it wrote a fact, the user sees a normal response, but the fact was never persisted. Logging to `agent_state` creates a diagnostic trail. Key is per-session so failures from multiple sessions do not overwrite each other. The Curator reads all `memory.write_failure.*` keys on its pass and logs them to a summary for developer inspection.
+Value: JSON string `{ namespace, key, error, ts }`. Written when `write_user_memory` fails after passing Zod validation — meaning the SQLite write itself failed. This is a silent failure mode: the agent believes it wrote a fact, the user sees a normal response, but the fact was never persisted. Logging to `agent_state` creates a diagnostic trail. Key is per-session so failures from multiple sessions do not overwrite each other. The Brain maintenance reads all `memory.write_failure.*` keys on its pass and logs them to a summary for developer inspection.
 
 **`memory.empty_read.{session_id}`**
-Value: JSON string `{ namespace, key_attempted, ts }`. Written when `read_user_memory` is called with a namespace that exists in the user's namespace list but returns zero active entries. This indicates a namespace where all entries have been deactivated — possibly over-aggressive Curator pruning. Not an error on its own, but repeated occurrences across sessions signal a pruning calibration problem.
+Value: JSON string `{ namespace, key_attempted, ts }`. Written when `read_user_memory` is called with a namespace that exists in the user's namespace list but returns zero active entries. This indicates a namespace where all entries have been deactivated — possibly over-aggressive Brain maintenance pruning. Not an error on its own, but repeated occurrences across sessions signal a pruning calibration problem.
 
-**`curator.anomaly.{run_id}`**
-Value: JSON string `{ type, detail, ts }`. Written when the Curator detects unexpected state during its pass:
+**`brain_maintenance.anomaly.{run_id}`**
+Value: JSON string `{ type, detail, ts }`. Written when the Brain maintenance detects unexpected state during its pass:
 - `type: "namespace_cap_reached"` — user is at exactly 40 namespaces, agent cannot create any new ones
-- `type: "mass_deactivation"` — Curator deactivated more than 10 entries in a single pass (suggests aggressive pruning or a data quality problem)
+- `type: "mass_deactivation"` — Brain maintenance deactivated more than 10 entries in a single pass (suggests aggressive pruning or a data quality problem)
 - `type: "high_importance_stale"` — a fact with `importance >= 7` has `last_read` older than 90 days (important fact that is never being loaded — possible namespace misclassification)
 
-These keys are never read during normal operation. They exist purely as a diagnostic trail for developers. The Curator does not act on them — it only writes them.
+These keys are never read during normal operation. They exist purely as a diagnostic trail for developers. The Brain maintenance does not act on them — it only writes them.
 
 ## CREATE TABLE
 
@@ -98,11 +98,11 @@ All values stored as strings. Readers parse:
 No type coercion in SQL. Parsing happens in the application layer. This keeps the schema stable forever regardless of what new keys are added.
 
 **`updated_at`**
-Audit trail. When was this key last set. Useful for debugging — if `curator.last_run` was set 3 days ago but the Curator should run weekly, something is wrong.
+Audit trail. When was this key last set. Useful for debugging — if `brain_maintenance.last_run` was set 3 days ago but the Brain maintenance should run weekly, something is wrong.
 
 ## Write Rules
 
-- Written by the DO's own internal logic only — never by the agent's user-facing tools, never by the Curator's domain logic.
+- Written by the DO's own internal logic only — never by the agent's user-facing tools, never by the Brain maintenance's domain logic.
 - Upsert on every write: `INSERT OR REPLACE` — keys are created on first write, updated on subsequent writes.
 - `turn_counter.{session_id}` — incremented before every `session_turns` insert. Deleted when session ends.
 - `do.initialized` — set to `"1"` once at the end of the initialization routine. Never reset to `"0"` by any code path. If initialization must be re-run, the key is deleted manually by a developer.
@@ -112,7 +112,7 @@ Audit trail. When was this key last set. Useful for debugging — if `curator.la
 
 - Read on every DO startup: `do.initialized` — determines whether initialization runs.
 - Read before every `session_turns` insert: `turn_counter.{session_id}` — get current counter, increment, use as turn_number.
-- Read before scheduling Curator or pattern detection: `curator.last_run`, `pattern_detection.last_run` — check minimum interval.
+- Read before scheduling Brain maintenance or behavior pattern detection: `brain_maintenance.last_run`, `behavior_pattern_detection.last_run` — check minimum interval.
 - Read as guard before new session start: `active_session_id`.
 - Never injected into any user-facing prompt.
 

@@ -6,9 +6,9 @@ This file documents everything missing from the current implementable specs. Ite
 
 ## CRITICAL — Blocks Implementation
 
-### 1. No Agent Identity / SOUL Equivalent
+### 1. No Agent Identity / BrioelaIdentity Equivalent
 
-Hermes has `SOUL.md` — a document defining who the agent is: its values, voice, personality, how it handles conflict, what it cares about. Brioela has no equivalent. Without this, the agent has no consistent identity across sessions. Every session it starts fresh with no sense of self. This is not a SQLite table — it is a document that lives in the system prompt. It needs to be designed.
+Hermes has `BrioelaIdentity.md` — a document defining who the agent is: its values, voice, personality, how it handles conflict, what it cares about. Brioela has no equivalent. Without this, the agent has no consistent identity across sessions. Every session it starts fresh with no sense of self. This is not a SQLite table — it is a document that lives in the system prompt. It needs to be designed.
 
 **Status**: CLOSED → `16-agent-identity.md`
 
@@ -22,19 +22,19 @@ Every table references tools: `log_memory_event`, `write_user_memory`, `create_u
 
 ---
 
-### 3. No Curator Spec
+### 3. No Brain maintenance Spec
 
-The Curator is mentioned 40+ times across every file. It writes to `user_personality`, manages `skills`, reads `constraints`, triggers from `scheduled_alarms`. But there is no single document that says: what does the Curator actually do, in what order, how often, what happens if it fails halfway through, how does it avoid race conditions with an active agent session.
+The Brain maintenance is mentioned 40+ times across every file. It writes to `user_personality`, manages `skills`, reads `constraints`, triggers from `scheduled_alarms`. But there is no single document that says: what does the Brain maintenance actually do, in what order, how often, what happens if it fails halfway through, how does it avoid race conditions with an active agent session.
 
-**Status**: CLOSED → `15-curator.md`
+**Status**: CLOSED → `15-brain-maintenance-and-behavior-patterns.md`
 
 ---
 
 ### 4. Trait Inference Algorithm Missing
 
-`user_personality` table is fully defined. But HOW the Curator actually infers a trait is nowhere documented. What does it read, what model pass does it run, what is the threshold for "this is a real pattern vs noise." Without this, nobody can implement the Curator's personality pass.
+`user_personality` table is fully defined. But HOW the Brain maintenance actually infers a trait is nowhere documented. What does it read, what model pass does it run, what is the threshold for "this is a real pattern vs noise." Without this, nobody can implement the Brain maintenance's personality pass.
 
-**Status**: CLOSED → `15-curator.md` Pass 3 — LLM sub-call prompt, evidence requirements, strength rules, dedup guard
+**Status**: CLOSED → `15-brain-maintenance-and-behavior-patterns.md` Pass 3 — LLM sub-call prompt, evidence requirements, strength rules, dedup guard
 
 ---
 
@@ -52,7 +52,7 @@ The Curator is mentioned 40+ times across every file. It writes to `user_persona
 
 WAL mode is set in `00-overview.md` but WAL files grow unbounded without checkpointing. No `PRAGMA wal_autocheckpoint` value defined, no periodic checkpoint call documented. On a heavily used user DO this becomes a cold-start performance problem over time.
 
-**Status**: CLOSED → `12-schema-version.md` — autocheckpoint=1000 pages always on; Curator runs PRAGMA wal_checkpoint(TRUNCATE) at end of every pass; result logged to agent_state
+**Status**: CLOSED → `12-schema-version.md` — autocheckpoint=1000 pages always on; Brain maintenance runs PRAGMA wal_checkpoint(TRUNCATE) at end of every pass; result logged to agent_state
 
 ---
 
@@ -60,15 +60,15 @@ WAL mode is set in `00-overview.md` but WAL files grow unbounded without checkpo
 
 Session compression via `parent_session_id` chains is described in `07-sessions.md` and `08-session-turns.md`. But WHEN compression triggers is not defined. After N turns? After X tokens? After Y minutes? Nobody can implement compression without this threshold.
 
-**Status**: CLOSED → `17-session-lifecycle.md` — chat: 40 turns / 60k tokens; cooking: 80 turns / 100k tokens; CompressorAgent produces four-field summary; last 10 turns kept verbatim
+**Status**: CLOSED → `17-session-lifecycle.md` — chat: 40 turns / 60k tokens; cooking: 80 turns / 100k tokens; SessionContextCompressor produces four-field summary; last 10 turns kept verbatim
 
 ---
 
-### 8. Curator Scheduling — Who Schedules the First Run?
+### 8. Brain maintenance Scheduling — Who Schedules the First Run?
 
-The `curator_run` alarm type exists in `10-scheduled-alarms.md`. But who inserts the first row into `scheduled_alarms`? The DO initialization sequence in `12-schema-version.md` does not mention it. Without this, the Curator never runs for any user until someone manually triggers it.
+The `brain_maintenance_run` alarm type exists in `10-scheduled-alarms.md`. But who inserts the first row into `scheduled_alarms`? The DO initialization sequence in `12-schema-version.md` does not mention it. Without this, the Brain maintenance never runs for any user until someone manually triggers it.
 
-**Status**: CLOSED → `15-curator.md` — DO initialization seeds both `curator_run` (7 days) and `pattern_detection` (3 days) on first boot
+**Status**: CLOSED → `15-brain-maintenance-and-behavior-patterns.md` — DO initialization seeds both `brain_maintenance_run` (7 days) and `behavior_pattern_detection` (3 days) on first boot
 
 ---
 
@@ -93,15 +93,15 @@ The vector layer is architecturally described in `00-overview.md` but missing:
 
 `06-constraints.md` lines 154–156 define thresholds ("5+ avoidance events", "3+ negative outcome events", "7+ scan or receipt events") but over what time period? Ever? Last 90 days? Last 30 days? Without a time window, old irrelevant behavior counts forever.
 
-**Status**: CLOSED → `15-curator.md` — dislike: 90 days, intolerance: 60 days, boycott: 120 days
+**Status**: CLOSED → `15-brain-maintenance-and-behavior-patterns.md` — dislike: 90 days, intolerance: 60 days, boycott: 120 days
 
 ---
 
 ### 11. Stale Skill Thresholds Not Defined
 
-`04-skills.md` says "low use_count + old last_used_at = stale candidate" but never defines what "low" or "old" means numerically. The Curator cannot implement stale detection without these numbers.
+`04-skills.md` says "low use_count + old last_used_at = stale candidate" but never defines what "low" or "old" means numerically. The Brain maintenance cannot implement stale detection without these numbers.
 
-**Status**: CLOSED → `15-curator.md` Pass 1 — use_count < 3 AND last_used > 30d → stale; stale AND last_used > 60d → archive
+**Status**: CLOSED → `15-brain-maintenance-and-behavior-patterns.md` Pass 1 — use_count < 3 AND last_used > 30d → stale; stale AND last_used > 60d → archive
 
 ---
 
@@ -143,7 +143,7 @@ Hermes is the NousResearch agent framework. It uses three persistent documents a
 
 | Hermes | Brioela equivalent | Gap |
 |---|---|---|
-| SOUL.md — agent identity and values | Nothing | **Missing entirely — see item 1** |
+| BrioelaIdentity.md — agent identity and values | Nothing | **Missing entirely — see item 1** |
 | MEMORY.md — 2200 char rolling agent notes | user_memory + outcome_summary | Covered differently |
 | USER.md — 1375 char compact user profile | user_memory | Covered |
 | state.db sessions + FTS5 | sessions + session_turns + FTS virtual tables | Covered |
@@ -161,7 +161,7 @@ These are not implementation details — they need their own spec documents:
 | File | What it covers | Status |
 |---|---|---|
 | `brioela-tools/01–17` | Formal definition of all 17 tools — input schema, output schema, side effects, error handling | ✓ DONE |
-| `15-curator.md` | The Curator process — what it does, in what order, frequency, failure handling, race condition handling, trait inference algorithm | OPEN |
+| `15-brain-maintenance-and-behavior-patterns.md` | The Brain maintenance process — what it does, in what order, frequency, failure handling, race condition handling, trait inference algorithm | OPEN |
 | `16-agent-identity.md` | Who Brioela is — voice, values, personality, how it handles conflict, what it cares about | ✓ DONE |
 
 ---
@@ -170,17 +170,17 @@ These are not implementation details — they need their own spec documents:
 
 | Item | What | Where |
 |---|---|---|
-| 1 | Agent identity / SOUL | `16-agent-identity.md` |
+| 1 | Agent identity / BrioelaIdentity | `16-agent-identity.md` |
 | 2 | Tool definitions (all 17 tools) | `brioela-tools/01–17` |
-| 3 | Curator + PatternDetection spec | `15-curator.md` |
-| 4 | Trait inference algorithm | `15-curator.md` Pass 3 |
-| 8 | First Curator run scheduling | `15-curator.md` — DO init seeds both alarms |
-| 10 | Auto-confirm time windows | `15-curator.md` — dislike 90d, intolerance 60d, boycott 120d |
-| 11 | Stale skill thresholds | `15-curator.md` Pass 1 — use_count < 3, last_used > 30d/60d |
+| 3 | Brain maintenance + BehaviorPattern spec | `15-brain-maintenance-and-behavior-patterns.md` |
+| 4 | Trait inference algorithm | `15-brain-maintenance-and-behavior-patterns.md` Pass 3 |
+| 8 | First Brain maintenance run scheduling | `15-brain-maintenance-and-behavior-patterns.md` — DO init seeds both alarms |
+| 10 | Auto-confirm time windows | `15-brain-maintenance-and-behavior-patterns.md` — dislike 90d, intolerance 60d, boycott 120d |
+| 11 | Stale skill thresholds | `15-brain-maintenance-and-behavior-patterns.md` Pass 1 — use_count < 3, last_used > 30d/60d |
 | 5 | Session abandoned detection | `17-session-lifecycle.md` — session_watchdog alarm |
-| 7 | Compression trigger + CompressorAgent | `17-session-lifecycle.md` — full lifecycle spec |
+| 7 | Compression trigger + SessionContextCompressor | `17-session-lifecycle.md` — full lifecycle spec |
 | 9 | Vectorize embedding details | `18-vectorize.md` — Cohere multilingual, 768 dims, FNV-1a sharding |
-| 6 | WAL checkpoint strategy | `12-schema-version.md` — autocheckpoint=1000, Curator TRUNCATE checkpoint weekly |
+| 6 | WAL checkpoint strategy | `12-schema-version.md` — autocheckpoint=1000, Brain maintenance TRUNCATE checkpoint weekly |
 | 13 | FTS5 triggers — no `IF NOT EXISTS` | `12-schema-version.md` — triggers in migration files only, startup sequence banned |
 | 14 | Multi-dish cooking session | `09-recipes.md` — agent judgment from transcript; two confident dishes → two rows; ambiguous → one row + note |
 | 15 | Recipe variant vs update | `09-recipes.md` — same cook refining → update; different person/purpose → new row, original preserved |

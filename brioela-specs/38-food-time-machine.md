@@ -6,7 +6,7 @@ Surface the user's personal food history as meaningful, emotionally resonant mom
 
 ## Why This Exists
 
-Brioela accumulates an enormous amount of food data over time: every scan, every recipe, every cooking session, every receipt, every product first encountered. None of this is surfaced back to the user as personal history. It sits in the memory engine as structured data but never becomes meaningful.
+Brioela accumulates an enormous amount of food data over time: every scan, every recipe, every cooking session, every receipt, every product first encountered. None of this is surfaced back to the user as personal history. It sits in the brain memory as structured data but never becomes meaningful.
 
 The Food Time Machine reads that same data and surfaces it as moments. Not metrics. Not summaries. Moments.
 

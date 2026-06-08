@@ -49,7 +49,7 @@ Before writing, read:
 - `brioela-specs/16-weekly-food-summary.md`
 - `brioela-specs/33-minimum-spend-meal-plan.md`
 - `brioela-specs/36-predictive-pantry-intelligence.md`
-- dependencies: Brain, Memory Engine, Scanner, Receipt Intelligence, Map, Notifications
+- dependencies: Brain, Brain Memory, Scanner, Receipt Intelligence, Map, Notifications
 
 ## Blockers / Decisions
 

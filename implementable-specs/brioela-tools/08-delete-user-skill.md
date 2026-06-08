@@ -136,7 +136,7 @@ On success:
 ## Who Can Call It
 
 - **Agent** — for `source = 'user'` skills, only when user's intent is unambiguous permanent removal
-- **NOT the Curator** — the Curator archives, it never deletes
+- **NOT the Brain maintenance** — the Brain maintenance archives, it never deletes
 - **Neither** — for `source = 'system'` skills
 
 ## What Is NOT This Tool's Job

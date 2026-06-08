@@ -23,7 +23,7 @@ Core product philosophy and feature specs. These are the "what and why" layer.
 | [x] | `05-origin-supply-chain-and-boycott-filters.md` | Country-of-origin tracking, supply chain, user boycott enforcement |
 | [x] | `06-receipt-spend-intelligence.md` | Receipt scanning, spend tracking, price intelligence |
 | [x] | `07-allergy-dislike-and-dietary-guardrails.md` | Allergy system, dietary restrictions, hard blocks vs soft guidance |
-| [x] | `08-personal-food-memory-engine.md` | User food memory — what they cook, buy, prefer, avoid |
+| [x] | `08-personal-food-brain-memory.md` | User food memory — what they cook, buy, prefer, avoid |
 | [x] | `09-per-user-brain.md` | Brain DO — the central agent, CRITICAL PATH for everything |
 | [x] | `10-mira-cooking-voice.md` | Voice cooking assistant — precursor to cooking session spec |
 | [x] | `11-live-vision-cooking-coach.md` | Camera-based cooking coach — precursor to cooking session spec |
@@ -84,7 +84,7 @@ Brain DO SQLite schema and memory system — the data layer everything runs on.
 | [x] | `11-agent-state.md` | Agent state key/value store in DO SQLite |
 | [x] | `12-schema-version.md` | Schema migration versioning |
 | [x] | `13-gaps-and-missing-specs.md` | Known gaps — all blockers closed or superseded in current build-guide records |
-| [x] | `15-curator.md` | Curator — background maintenance job (note: no file 14) |
+| [x] | `15-brain-maintenance-and-behavior-patterns.md` | Brain maintenance — background maintenance job (note: no file 14) |
 | [x] | `16-agent-identity.md` | Agent identity — who Brioela is, how it presents itself |
 | [x] | `17-session-lifecycle.md` | Full session lifecycle from open to close |
 | [x] | `18-vectorize.md` | Cloudflare Vectorize integration — semantic search |
@@ -136,13 +136,13 @@ Full cooking session implementation — MiraSession DO, Gemini Live, audio/video
 | [x] | `08-session-end.md` | Clean session end, state flush, memory writes |
 | [x] | `09-reconnection.md` | Gemini reconnect logic, DO eviction recovery |
 | [x] | `10-human-behaviors.md` | Human-like AI behaviors — tone, hesitation, proactive observations |
-| [x] | `proactive-speech-engine/00-index.md` | Proactive speech engine overview |
-| [x] | `proactive-speech-engine/01-silence-tracker.md` | Tracks silence duration to decide when AI can speak |
-| [x] | `proactive-speech-engine/02-visual-change-detector.md` | Detects visual changes in camera feed |
-| [x] | `proactive-speech-engine/03-adaptive-frequency.md` | Adjusts how often AI speaks based on session context |
-| [x] | `proactive-speech-engine/04-prompt-builder.md` | Builds observation prompts sent to Gemini |
-| [x] | `proactive-speech-engine/05-response-filter.md` | Filters Gemini responses — suppresses "ok", passes real observations |
-| [x] | `proactive-speech-engine/06-suppression-rules.md` | Rules for when AI must not speak |
+| [x] | `mira-speech-decision-engine/00-index.md` | Proactive speech engine overview |
+| [x] | `mira-speech-decision-engine/01-silence-tracker.md` | Tracks silence duration to decide when AI can speak |
+| [x] | `mira-speech-decision-engine/02-visual-change-detector.md` | Detects visual changes in camera feed |
+| [x] | `mira-speech-decision-engine/03-adaptive-frequency.md` | Adjusts how often AI speaks based on session context |
+| [x] | `mira-speech-decision-engine/04-prompt-builder.md` | Builds observation prompts sent to Gemini |
+| [x] | `mira-speech-decision-engine/05-response-filter.md` | Filters Gemini responses — suppresses "ok", passes real observations |
+| [x] | `mira-speech-decision-engine/06-suppression-rules.md` | Rules for when AI must not speak |
 
 ---
 

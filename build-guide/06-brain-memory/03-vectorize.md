@@ -1,4 +1,4 @@
-# Memory Engine — Vectorize Semantic Search
+# Brain Memory — Vectorize Semantic Search
 
 ## What This File Covers
 
@@ -196,7 +196,7 @@ async function embedAndStore(
 }
 ```
 
-**Failed embeddings:** logged to `agent_state` with key `embedding.failed.{sessionId}`. A background Upstash Workflow job (separate from the Curator) scans for failed embeddings and retries them. FTS5 keyword search still works for sessions with missing vectors — only semantic search misses them until retried.
+**Failed embeddings:** logged to `agent_state` with key `embedding.failed.{sessionId}`. A background Upstash Workflow job (separate from the Brain maintenance) scans for failed embeddings and retries them. FTS5 keyword search still works for sessions with missing vectors — only semantic search misses them until retried.
 
 ---
 

@@ -35,9 +35,9 @@ Canonical Bela data model after resolving stale wallet/Issuing conflicts.
 - `bela_card_last4`
 - `bela_card_brand`
 
-## OrderAgent DO State
+## BelaOrderAgent DO State
 
-OrderAgent owns live order state, WebSocket clients, scan relay, Mira Bela shopper session, and constraint snapshot cache.
+BelaOrderAgent owns live order state, WebSocket clients, scan relay, Mira Bela shopper session, and constraint snapshot cache.
 
 Supabase remains durable source of truth.
 

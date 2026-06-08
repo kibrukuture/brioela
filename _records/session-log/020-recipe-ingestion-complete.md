@@ -13,7 +13,7 @@ Deep read pass before writing:
 - `brioela-specs/02-recipe-ingestion-from-shared-content.md`
 - `brioela-specs/20-platform-and-app-distribution.md`
 - `brioela-specs/25-viral-growth-and-sharing.md`
-- dependency docs: Foundation Upstash/QStash notes, Memory Engine recipes schema, Brain recipe tools, Cooking Session recipe reconstruction, Scanner GPT-4o mini vision fallback, Pantry Meal Plan overview
+- dependency docs: Foundation Upstash/QStash notes, Brain Memory recipes schema, Brain recipe tools, Cooking Session recipe reconstruction, Scanner GPT-4o mini vision fallback, Pantry Meal Plan overview
 
 Written — `build-guide/19-recipe-ingestion/`:
 - `00-overview.md` — updated to complete, file list and dependencies added
@@ -51,7 +51,7 @@ Before writing, read:
 - latest session log
 - `build-guide/20-wearables/00-overview.md`
 - `brioela-specs/40-wearables-integration.md`
-- dependencies: Ambient Intelligence, Notifications, Brain, Memory Engine
+- dependencies: Ambient Intelligence, Notifications, Brain, Brain Memory
 
 ## Blockers / Decisions
 

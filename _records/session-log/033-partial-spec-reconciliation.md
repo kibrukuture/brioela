@@ -14,7 +14,7 @@ Deep read pass:
 - `brioela-specs/24-technical-architecture-backbone.md`
 - `brioela-specs/39-generative-ui.md`
 - `implementable-specs/13-gaps-and-missing-specs.md`
-- current build-guide docs for Design System, Foundation, Cooking Session, Auth, Brain, Memory Engine
+- current build-guide docs for Design System, Foundation, Cooking Session, Auth, Brain, Brain Memory
 
 Reconciled records:
 - `_records/inventory/inventory.md`
@@ -39,7 +39,7 @@ Reconciled records:
 
 - Source specs are reconciled into the current build-guide decisions.
 - `brioela-specs/12-multi-person-cooking-rooms.md` is considered processed because current Cooking Session build-guide implements the room concept through Cloudflare Realtime / RealtimeKit.
-- `brioela-specs/24-technical-architecture-backbone.md` is considered processed because Foundation, Brain, Memory Engine, and Cooking Session build-guides now own the current architecture decisions.
+- `brioela-specs/24-technical-architecture-backbone.md` is considered processed because Foundation, Brain, Brain Memory, and Cooking Session build-guides now own the current architecture decisions.
 - `implementable-specs/13-gaps-and-missing-specs.md` is considered processed because all listed blockers are closed or superseded in current implementable/build-guide records, despite one historical OPEN row remaining in the source file.
 
 ## What Is Next

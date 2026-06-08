@@ -38,7 +38,7 @@ When a user disconnects a device:
 3. Ask whether to delete already stored data from that device.
 4. If yes, delete `health.*` memory entries sourced from that connection.
 5. Delete provider tokens/credentials where applicable.
-6. Flag any derived personality traits citing that device for Curator review.
+6. Flag any derived personality traits citing that device for Brain maintenance review.
 
 Copy:
 
@@ -69,7 +69,7 @@ Deletion should flag, not automatically erase:
 - meal plan history already generated from wearable context
 - user-authored notes mentioning wearable data
 
-Flagged traits go to Curator for review or are hidden until revalidated.
+Flagged traits go to Brain maintenance for review or are hidden until revalidated.
 
 ---
 

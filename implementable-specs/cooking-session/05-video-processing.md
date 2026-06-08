@@ -151,6 +151,6 @@ No frames are "missed" in a meaningful sense — the cooking session continues. 
 - Frames are NOT stored anywhere. No frame is written to SQLite, R2, or any storage.
 - Frames are NOT part of the transcript. The session_turns table does not contain image data.
 - Frames are NOT used for recipe reconstruction. The recipe is reconstructed from the conversation transcript, not from the video.
-- Frames are NOT accessible to the Curator or any background process.
+- Frames are NOT accessible to the Brain maintenance or any background process.
 
 The frame stream is transient: mobile camera → SFU → DO → Gemini. It exists only in memory during the live session. Nothing persists.

@@ -17,7 +17,7 @@ The share-sheet pipeline: a user shares food-related content from TikTok, YouTub
 | `05-confidence-and-constraints.md` | uncertain quantities, missing steps, user constraint checks, re-rankable recipes |
 | `06-storage-and-library.md` | recipe persistence in Brain SQLite, source artifacts, memory events |
 | `07-import-status-and-growth-loop.md` | user-facing import states, failure handling, share-sheet acquisition loop |
-| `08-shared-content-router.md` | classify any shared food content and route non-recipes to the right Brioela feature/memory |
+| `08-shared-content-classifier.md` | classify any shared food content and route non-recipes to the right Brioela feature/memory |
 
 ## Specs This Folder Draws From
 - `brioela-specs/02-recipe-ingestion-from-shared-content.md` — full spec: share-sheet ingestion, URL ingestion, video transcript extraction, recipe normalization, confidence schema, data model, API surface
@@ -54,7 +54,7 @@ user_recipe:         user_id, recipe_id, title, ingredients_json, steps_json, cu
 ## What This Folder Depends On
 - `05-brain` — completed recipes written to user's recipe library in Brain DO SQLite
 - `03-foundation` — Upstash Workflow runs the multi-step import job (fetch → extract → normalize → store); share-sheet extension is a native iOS/Android target registered in the Cloudflare Worker
-- `06-memory-engine` — `recipes`, `memory_event`, and session context schema
+- `06-brain-memory` — `recipes`, `memory_event`, and session context schema
 - `07-scanner` — screenshot image extraction reuses server-side GPT-4o mini vision patterns and confidence caveats
 - `30-mira` — uncertain or conflicting imports can escalate into Mira recipe review
 - `08-cooking-session` — imported recipes must be immediately cookable by Mira in the cooking scene

@@ -2,7 +2,7 @@
 
 ## What This File Covers
 
-Session open, system prompt construction (SOUL + order), compression triggers, CompressorAgent sub-agent, abandoned session detection, and the watchdog alarm.
+Session open, system prompt construction (BrioelaIdentity + order), compression triggers, SessionContextCompressor sub-agent, abandoned session detection, and the watchdog alarm.
 
 ---
 
@@ -55,7 +55,7 @@ The order of blocks in the system prompt is governed by Anthropic's prefix cachi
 ```typescript
 // backend/src/agents/brain/_handlers/system-prompt.builder.ts
 
-import { SOUL } from '../soul'                     // 800-token constant string
+import { BrioelaIdentity } from '../identity-prompt'                     // 800-token constant string
 import type { DrizzleDB } from '@/types/db'
 
 export async function buildSystemPrompt(
@@ -65,8 +65,8 @@ export async function buildSystemPrompt(
 ): Promise<string> {
   const blocks: string[] = []
 
-  // Block 1 — SOUL (universal, never changes per user, never changes per session)
-  blocks.push(SOUL)
+  // Block 1 — BrioelaIdentity (universal, never changes per user, never changes per session)
+  blocks.push(BrioelaIdentity)
 
   // Block 2 — constraints (safety-critical — always complete, always near top)
   const hardConstraints = db.select().from(constraints)
@@ -167,9 +167,9 @@ Compression runs BEFORE the new user turn is processed. The new turn goes into t
 
 ---
 
-### CompressorAgent
+### SessionContextCompressor
 
-CompressorAgent is an ephemeral sub-agent DO. It receives all turns from the current session, reasons over them, and returns a four-field structured summary. It calls no tools — pure reasoning with structured output.
+SessionContextCompressor is an ephemeral sub-agent DO. It receives all turns from the current session, reasons over them, and returns a four-field structured summary. It calls no tools — pure reasoning with structured output.
 
 ```typescript
 // backend/src/agents/brain/_handlers/session.handler.ts
@@ -193,7 +193,7 @@ export async function runCompression(
     .orderBy(asc(sessionTurns.turnNumber))
     .all()
 
-  // Spin up CompressorAgent DO — ephemeral, dies when work is done
+  // Spin up SessionContextCompressor DO — ephemeral, dies when work is done
   const compressorId = env.BRAIN.idFromName(`compressor_${userId}_${sessionId}`)
   const compressorStub = env.BRAIN.get(compressorId)
 

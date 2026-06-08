@@ -83,7 +83,7 @@ Blocked:
 - one glucose spike → personality trait
 - temporary illness week → personality trait
 
-Personality writes should be handled by Curator or ambient pattern review, not the daily summary ingestion path.
+Personality writes should be handled by Brain maintenance or ambient pattern review, not the daily summary ingestion path.
 
 ---
 

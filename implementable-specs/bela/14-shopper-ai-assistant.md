@@ -16,18 +16,18 @@ No one types anything. No one reads a list on a screen. The shopper just talks a
 
 Same stack as the cooking session (`cooking-session/03-gemini-session.md`):
 - **Model**: Gemini 3.1 Flash Live (`gemini-3.1-flash-live-preview`)
-- **Transport**: Cloudflare Realtime SFU for mobile audio + video → OrderAgent DO → Gemini WebSocket
+- **Transport**: Cloudflare Realtime SFU for mobile audio + video → BelaOrderAgent DO → Gemini WebSocket
 - **Audio out**: Gemini responds in voice to the shopper's earbuds or phone speaker
 - **Video in**: shopper's rear camera streams JPEG frames via `client_content` inline_data (same method as cooking session — avoids the 2-minute session cap)
 - **Audio in**: PCM from the shopper's microphone via Cloudflare Realtime WebSocket adapter
 
-The OrderAgent DO gains a second Gemini Live session alongside the existing order state machine. The shopper's Gemini session is separate from anything on the user's side — the user's live scan-together session is a data channel; the shopper's AI session is a voice + vision channel.
+The BelaOrderAgent DO gains a second Gemini Live session alongside the existing order state machine. The shopper's Gemini session is separate from anything on the user's side — the user's live scan-together session is a data channel; the shopper's AI session is a voice + vision channel.
 
 ---
 
 ## What Mira Knows In Bela Shopper Scene
 
-At the start of the shopping session, the OrderAgent DO builds a system instruction for the shopper's Gemini session from:
+At the start of the shopping session, the BelaOrderAgent DO builds a system instruction for the shopper's Gemini session from:
 
 1. **The full order item list** — every item the user needs, with quantities and user notes
 2. **The constraint snapshot** — every hard block and soft guidance, loaded from `order_constraint_snapshot`
@@ -137,7 +137,7 @@ Cloudflare Realtime SFU
   (nearest PoP — anycast)
         │
         ▼
-OrderAgent DO (WebSocket adapter)
+BelaOrderAgent DO (WebSocket adapter)
   - PCM audio chunks → forwarded to Gemini as realtime_input.audio
   - JPEG frames → forwarded to Gemini as client_content inline_data
         │
@@ -146,14 +146,14 @@ Gemini 3.1 Flash Live
   (sees product labels, reads ingredients, hears shopper)
         │
         ▼
-OrderAgent DO
+BelaOrderAgent DO
   - Audio response chunks → forwarded to Shopper's phone
         │
         ▼
 Shopper hears AI response through phone speaker or earbuds
 ```
 
-This is the Mira live presence runtime in the Bela shopper scene, owned by the OrderAgent DO rather than the cooking session runtime.
+This is the Mira live presence runtime in the Bela shopper scene, owned by the BelaOrderAgent DO rather than the cooking session runtime.
 
 ---
 
@@ -183,7 +183,7 @@ Just like Mira watches the kitchen in the cooking scene, Mira watches the store 
 
 - **Product not on the order list in the shopper's hand**: if the shopper appears to be adding something extra — "That's not on the list — did you mean to grab it?"
 
-Proactive observations are suppressed if the shopper just spoke (5-second dead zone after any shopper speech) and if the AI spoke in the last 30 seconds (cooldown). Same suppression logic as the cooking session's `ProactiveSpeechEngine` — adapted for the shopping context.
+Proactive observations are suppressed if the shopper just spoke (5-second dead zone after any shopper speech) and if the AI spoke in the last 30 seconds (cooldown). Same suppression logic as the cooking session's `MiraSpeechDecisionEngine` — adapted for the shopping context.
 
 ---
 
@@ -224,12 +224,12 @@ If the shopper loses network connectivity in a poor-signal area of the store:
 
 ---
 
-## OrderAgent DO — Additions for Mira Bela Shopper Scene
+## BelaOrderAgent DO — Additions for Mira Bela Shopper Scene
 
-The `OrderAgent` state gains a `shopperGeminiWs` alongside the existing WebSocket connections:
+The `BelaOrderAgent` state gains a `shopperGeminiWs` alongside the existing WebSocket connections:
 
 ```typescript
-interface OrderAgentState {
+interface BelaOrderAgentState {
   // ... existing fields ...
   shopperGeminiWs:   WebSocket | null   // Gemini Live session for the shopper
   shopperRealtimeWs: WebSocket | null   // Cloudflare Realtime adapter for shopper audio+video

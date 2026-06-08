@@ -26,7 +26,7 @@ API endpoint: `wss://generativelanguage.googleapis.com/ws/google.ai.generativela
 
 ## Proactive Speech — How Gemini Speaks Without Being Asked
 
-Gemini does not have a native proactive decision loop. By default it is reactive — it speaks when the user speaks. The ProactiveSpeechEngine (see `proactive-speech-engine/`) implements this behavior by sending Gemini periodic `client_content` observation prompts when the conditions are right.
+Gemini does not have a native proactive decision loop. By default it is reactive — it speaks when the user speaks. The MiraSpeechDecisionEngine (see `mira-speech-decision-engine/`) implements this behavior by sending Gemini periodic `client_content` observation prompts when the conditions are right.
 
 **The mechanism:**
 1. The Mira session runtime calls `speechEngine.tick()` every second

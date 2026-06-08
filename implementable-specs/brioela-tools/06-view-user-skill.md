@@ -66,7 +66,7 @@ ctx.waitUntil(
 )
 ```
 
-These counters are the Curator's primary signal for stale detection. Every `view_user_skill` call extends the skill's active life.
+These counters are the Brain maintenance's primary signal for stale detection. Every `view_user_skill` call extends the skill's active life.
 
 ## What It Returns
 
@@ -109,7 +109,7 @@ Not an error. The agent should check the index and re-evaluate.
 ## Who Can Call It
 
 - **Agent** — during any active session
-- **NOT the Curator** — the Curator reads skill content directly in its maintenance pass, not through tools
+- **NOT the Brain maintenance** — the Brain maintenance reads skill content directly in its maintenance pass, not through tools
 - **NOT device SDK**
 
 ## What Is NOT This Tool's Job

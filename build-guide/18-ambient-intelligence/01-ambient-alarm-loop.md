@@ -32,8 +32,8 @@ Existing alarm types involved:
 
 | Alarm | Role in Ambient Intelligence |
 |---|---|
-| `pattern_detection` | behavioral pattern pass and wellbeing correlations |
-| `curator_run` | memory maintenance and guest-pattern promotion support |
+| `behavior_pattern_detection` | behavioral pattern pass and wellbeing correlations |
+| `brain_maintenance_run` | memory maintenance and guest-pattern promotion support |
 | `weekly_food_summary` | one possible surface for Time Machine moments |
 | `travel_preload` | destination food intelligence preload |
 
@@ -81,7 +81,7 @@ Candidate queues prevent raw background inference from immediately becoming user
 ```typescript
 type AmbientCandidate = {
   id: string
-  kind: "pattern_intervention" | "travel_preload" | "time_machine_moment" | "guest_memory_promotion"
+  kind: "behavior_pattern_intervention" | "travel_preload" | "time_machine_moment" | "guest_memory_promotion"
   payloadJson: string
   confidence: number
   priority: "low" | "medium" | "high"

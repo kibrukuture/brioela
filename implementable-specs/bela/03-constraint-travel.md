@@ -10,7 +10,7 @@ This is the feature no competitor has. It is also the feature that makes Brioela
 
 ## What Travels with the Order
 
-At order confirmation, the `OrderAgent` DO reads the user's full constraint table from their `Brain DO SQLite` and writes a snapshot to the `order_constraint_snapshot` table in Supabase. This snapshot is used for all constraint checks during the order — it is frozen at order time so that any changes the user makes to their constraints after placing the order do not affect the in-progress shopping.
+At order confirmation, the `BelaOrderAgent` DO reads the user's full constraint table from their `Brain DO SQLite` and writes a snapshot to the `order_constraint_snapshot` table in Supabase. This snapshot is used for all constraint checks during the order — it is frozen at order time so that any changes the user makes to their constraints after placing the order do not affect the in-progress shopping.
 
 **What is included in the snapshot:**
 
@@ -37,7 +37,7 @@ interface OrderConstraintSnapshot {
 }
 ```
 
-The snapshot is read by the `OrderAgent` DO every time the shopper scans a product. It is not re-fetched from the Brain per scan — it is loaded into the OrderAgent's memory at session start and cached for the duration of the shopping session.
+The snapshot is read by the `BelaOrderAgent` DO every time the shopper scans a product. It is not re-fetched from the Brain per scan — it is loaded into the BelaOrderAgent's memory at session start and cached for the duration of the shopping session.
 
 ---
 
@@ -209,7 +209,7 @@ Unresolved products are NOT soft-approved automatically. The shopper must manual
 The constraint snapshot stored in Supabase `order_constraint_snapshot` contains the user's dietary restrictions and health information. This is sensitive data.
 
 Privacy rules:
-- The snapshot is readable only by the `OrderAgent` DO for this specific order — it is not accessible to the shopper directly (they see the scanner result, not the raw constraint database)
+- The snapshot is readable only by the `BelaOrderAgent` DO for this specific order — it is not accessible to the shopper directly (they see the scanner result, not the raw constraint database)
 - The snapshot is retained for 90 days after order completion (needed for dispute investigation) then deleted
 - The shopper never sees the user's full constraint list in text form — they only see scanner feedback per product, which is the minimum required
 - The shopper does not know WHY a block exists (medical, ethical, personal) — only that this product cannot be purchased for this order

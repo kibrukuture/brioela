@@ -20,7 +20,7 @@ A separate table per domain (health_memory, diet_memory, location_memory) seems 
 - Adding a new fact domain requires a migration.
 - The AI invents namespace names — it cannot be constrained to predefined domains.
 - Cross-domain queries (everything about this user for session context) require joining multiple tables.
-- The Curator runs one pass over all facts — one table is one query.
+- The Brain maintenance runs one pass over all facts — one table is one query.
 
 One table with a `namespace` column gives the AI full freedom to invent structure while keeping the database simple and the queries fast.
 
@@ -90,7 +90,7 @@ The key identifies the specific thing. Under `health.medications`, keys are medi
 The AI writes structured observations, not flat strings. `{ "dose": "500mg", "frequency": "2x daily" }` not `"500mg"`. A JSON object can absorb new fields on subsequent writes without losing old ones — the merge logic spreads new keys over existing keys. A bare string cannot merge.
 
 **`confidence` — 0.0 to 1.0**
-Inferred facts carry lower confidence than explicitly declared ones. A user saying "I'm allergic to nuts" → `confidence: 1.0`. The agent inferring a dislike from 3 scans where the user always put the product back → `confidence: 0.6`. The Curator uses this when deciding what to clean up. Low confidence + low read + old last_write = candidate for deactivation.
+Inferred facts carry lower confidence than explicitly declared ones. A user saying "I'm allergic to nuts" → `confidence: 1.0`. The agent inferring a dislike from 3 scans where the user always put the product back → `confidence: 0.6`. The Brain maintenance uses this when deciding what to clean up. Low confidence + low read + old last_write = candidate for deactivation.
 
 **`source` — free text, Zod-enforced known values**
 Known values: `'image' | 'conversation' | 'inferred' | 'cron'`. New sources can be added without migration. Zod enforces at tool boundary — the AI cannot write an unknown source.
@@ -104,17 +104,17 @@ Not the same as `confidence`. `confidence` answers "how certain is this fact tru
 - One-time observation that user preferred green tea once → `confidence: 0.9, importance: 3`
 - Agent inferred a dislike from 2 scans → `confidence: 0.6, importance: 4`
 
-The LLM self-assesses `importance` at write time using the context it just learned. Scale: 1 = trivial observation, 5 = useful fact worth keeping, 9–10 = safety-critical or identity-defining (allergy, medication, religious restriction). The Curator uses `importance` alongside `read_count` when choosing pruning candidates — a high-importance, low-read fact is never a candidate for deactivation regardless of age; a low-importance, low-read, old fact is the first to go.
+The LLM self-assesses `importance` at write time using the context it just learned. Scale: 1 = trivial observation, 5 = useful fact worth keeping, 9–10 = safety-critical or identity-defining (allergy, medication, religious restriction). The Brain maintenance uses `importance` alongside `read_count` when choosing pruning candidates — a high-importance, low-read fact is never a candidate for deactivation regardless of age; a low-importance, low-read, old fact is the first to go.
 
-**`read_count` vs `write_count` — two different Curator signals**
-These are not symmetric and the Curator uses them differently:
+**`read_count` vs `write_count` — two different Brain maintenance signals**
+These are not symmetric and the Brain maintenance uses them differently:
 - High `read_count`, low `write_count` → core stable memory. A medication entry written once from one photo, read in every health conversation. Never touch this.
-- Low `read_count`, low `write_count`, old `last_write` → one-time observation never acted on. Curator candidate for deactivation.
+- Low `read_count`, low `write_count`, old `last_write` → one-time observation never acted on. Brain maintenance candidate for deactivation.
 - High `write_count`, rising `confidence` → actively reinforced fact. Healthy — keep it.
-- Recent `last_write` (within 14 days), low `read_count` → new entry, give it time. Curator grace period — never touch it yet.
+- Recent `last_write` (within 14 days), low `read_count` → new entry, give it time. Brain maintenance grace period — never touch it yet.
 
 **`last_read` and `last_write` — timestamps, not just counts**
-The count alone doesn't tell you when. An entry with `read_count: 50` but `last_read` two years ago is very different from one with `read_count: 50` and `last_read` yesterday. The Curator needs both the frequency and the recency.
+The count alone doesn't tell you when. An entry with `read_count: 50` but `last_read` two years ago is very different from one with `read_count: 50` and `last_read` yesterday. The Brain maintenance needs both the frequency and the recency.
 
 ## Zod Schema (Tool Boundary Enforcement)
 
@@ -268,7 +268,7 @@ CREATE INDEX idx_user_memory_source      ON user_memory (source);
 
 **Why these indexes:**
 - `(namespace, active)` — the most common read: load all active entries under a namespace for prompt injection
-- `(active, last_write)` — Curator pass: find all active entries ordered by recency to identify stale candidates
+- `(active, last_write)` — Brain maintenance pass: find all active entries ordered by recency to identify stale candidates
 - `(source)` — audit queries: "show me everything inferred vs everything declared explicitly"
 
 ## Write Rules
@@ -284,7 +284,7 @@ CREATE INDEX idx_user_memory_source      ON user_memory (source);
 
 - Passively loaded into every session prompt via `loadMemoryForPrompt()` — `read_count` increments as a side effect.
 - Explicitly read by `read_user_memory(namespace, key?)` tool when the AI needs to check a specific fact mid-conversation.
-- Read by the Curator on its maintenance pass to identify stale, low-value, or duplicate entries.
+- Read by the Brain maintenance on its maintenance pass to identify stale, low-value, or duplicate entries.
 - Active entries only (`active = 1`) are loaded into prompts. Deactivated entries are invisible to the AI during sessions.
 
 ## What Is NOT Stored Here

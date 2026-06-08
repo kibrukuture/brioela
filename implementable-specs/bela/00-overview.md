@@ -29,16 +29,16 @@ User App                    Shopper App Mode               Backend
 ────────────────────        ────────────────────           ────────────────────────────
 Order creation flow    →    Order queue + map              Brain DO (per user)
 AI list generation          Constraint-enforced scanner    Mira cooking session runtime (session link)
-Live scan-together view     Live scan sync                 OrderAgent DO (per order)
+Live scan-together view     Live scan sync                 BelaOrderAgent DO (per order)
 Authorization + confirm UI  Delivery confirmation          Stripe Connect (hold + payout)
 Standing order setup        Ground auto-draft              Supabase Postgres (shared tables)
 Cooking intent trigger      Shopper quality tracker        Cloudflare R2 (delivery photos)
 Dispute submission          Routing map
 ```
 
-### The OrderAgent Durable Object
+### The BelaOrderAgent Durable Object
 
-Each active order gets its own `OrderAgent` DO, keyed by `order_id`. It controls:
+Each active order gets its own `BelaOrderAgent` DO, keyed by `order_id`. It controls:
 - Order state machine (created → accepted → shopping → in-transit → delivered → completed)
 - Live scan-together WebSocket relay (shopper scans → user sees result)
 - Constraint enforcement lookup (reads from user's Brain DO)
@@ -47,7 +47,7 @@ Each active order gets its own `OrderAgent` DO, keyed by `order_id`. It controls
 
 DO ID: `env.ORDER_AGENT.idFromName(orderId)`
 
-The OrderAgent is created when a shopper accepts an order. It is archived (no longer addressed) after completion or cancellation. All order state is flushed to Supabase Postgres before the DO can be evicted.
+The BelaOrderAgent is created when a shopper accepts an order. It is archived (no longer addressed) after completion or cancellation. All order state is flushed to Supabase Postgres before the DO can be evicted.
 
 The live scan-together loop is Bela's core trust primitive. The shopper is not just buying a list;
 they are temporarily acting as the user's hands in the store while Brioela carries the user's food
@@ -58,7 +58,7 @@ Example:
 
 ```text
 Shopper scans substitute cereal.
-OrderAgent checks the user's constraint snapshot.
+BelaOrderAgent checks the user's constraint snapshot.
 Scanner blocks sesame.
 Shopper hears: "Not this one. Sesame conflicts with the order."
 User sees the blocked scan in the live order view.
@@ -73,7 +73,7 @@ User sees the blocked scan in the live order view.
 2. User approves the list and selects a delivery window
 3. Order enters Supabase orders table with status = 'pending'
 4. Nearest available KYC-verified shoppers are notified
-5. A shopper accepts → OrderAgent DO is created → status = 'accepted'
+5. A shopper accepts → BelaOrderAgent DO is created → status = 'accepted'
 6. Authorization hold placed on user's card (Stripe PaymentIntent, capture_method: 'manual') — money locked, not yet charged
 7. Shopper navigates to the store using the smart route (Ground + product_sighting data)
 8. Mira Bela shopper scene (voice + camera) activates — shopper talks to the AI throughout the shop
@@ -84,7 +84,7 @@ User sees the blocked scan in the live order view.
 13. User receives full-screen confirmation prompt — "Confirm delivery?" with 10-minute timer
 14. User confirms → Stripe PaymentIntent captured → Stripe Connect transfer fires immediately to shopper
 15. Platform retains service fee; shopper receives grocery reimbursement + delivery fee in one transfer
-16. If user does not confirm in 10 minutes → auto-capture fires (OrderAgent DO alarm)
+16. If user does not confirm in 10 minutes → auto-capture fires (BelaOrderAgent DO alarm)
 17. AI updates pantry memory from delivered items
 18. If order was cooking-intent-triggered → "Ready to start cooking?" prompt appears
 ```
@@ -95,10 +95,10 @@ User sees the blocked scan in the live order view.
 
 | Layer | Technology | Why |
 |---|---|---|
-| Order state | OrderAgent Durable Object | Session-scoped, survives eviction, WebSocket relay |
+| Order state | BelaOrderAgent Durable Object | Session-scoped, survives eviction, WebSocket relay |
 | Shared tables | Supabase Postgres | orders, order_items, shoppers, disputes — shared across all users |
 | Escrow + payout | Stripe Connect | PaymentIntent manual capture for authorization hold; Express accounts for shopper payout |
-| User constraint data | Brain DO SQLite | Read at order creation, cached in OrderAgent for scanner enforcement |
+| User constraint data | Brain DO SQLite | Read at order creation, cached in BelaOrderAgent for scanner enforcement |
 | Delivery photos | Cloudflare R2 | Shopper uploads; user views; retained for dispute window |
 | Routing intelligence | Ground `location_signal_summary` + `product_sighting` | Price and availability signals for multi-store routing |
 | Shopper KYC | Veriff (or equivalent) | ID verification + criminal background check |

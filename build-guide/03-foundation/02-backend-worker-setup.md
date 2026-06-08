@@ -138,7 +138,7 @@ import { errorMiddleware } from '@/core/middleware/error.middleware'
 
 // CF requires all DO classes exported from the Worker entry point
 export { BrioelaBrain } from './agents/brain/brain.agent'
-export { MiraSession }       from './agents/cooking/cooking.agent'
+export { MiraSession }       from './agents/mira/mira-session.agent'
 
 export const app = new Hono<{
   Variables: {

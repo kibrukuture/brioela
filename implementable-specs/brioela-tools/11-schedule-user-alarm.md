@@ -11,7 +11,7 @@ This tool is exclusively for time-based autonomous work: things that must fire a
 Call `schedule_user_alarm` when:
 - User mentions or confirms a future event that requires agent preparation (travel, medical followup)
 - Agent detects a pattern that warrants a delayed check-in (user felt unwell — schedule sickness followup for 6 hours later)
-- A `curator_run` or `pattern_detection` pass is due and none is currently pending
+- A `brain_maintenance_run` or `behavior_pattern_detection` pass is due and none is currently pending
 
 Do NOT call `schedule_user_alarm` when:
 - The work should happen immediately on event detection → Upstash Workflow (Path B)
@@ -20,7 +20,7 @@ Do NOT call `schedule_user_alarm` when:
 
 ## Duplicate Check Before Scheduling
 
-For recurring alarm types (`curator_run`, `pattern_detection`), the agent must check before scheduling:
+For recurring alarm types (`brain_maintenance_run`, `behavior_pattern_detection`), the agent must check before scheduling:
 
 ```typescript
 const existing = db.select()
@@ -54,7 +54,7 @@ import { z } from 'zod'
 export const ScheduleUserAlarmSchema = z.object({
   alarm_type: z.string().min(1),
   // Free text — not an enum. Known types at launch: 'sickness_followup', 'travel_preload',
-  // 'pattern_detection', 'curator_run'. New types are added by writing a new handler branch.
+  // 'behavior_pattern_detection', 'brain_maintenance_run'. New types are added by writing a new handler branch.
   // No Zod enum update needed when adding new types.
 
   scheduled_for: z.number().int().positive(),
@@ -67,12 +67,12 @@ export const ScheduleUserAlarmSchema = z.object({
   // Examples by alarm type:
   //   sickness_followup:  { memory_event_ids: ["..."], symptoms_reported: "nausea after dinner" }
   //   travel_preload:     { destination: "Addis Ababa", departure_at: 1748390400000 }
-  //   pattern_detection:  {}
-  //   curator_run:        {}
+  //   behavior_pattern_detection:  {}
+  //   brain_maintenance_run:        {}
 
   triggering_session_id: z.string().uuid().optional(),
   // The session that scheduled this alarm. Pass the current session_id.
-  // NULL for system-scheduled alarms (e.g. recurring pattern_detection at DO init).
+  // NULL for system-scheduled alarms (e.g. recurring behavior_pattern_detection at DO init).
 })
 .refine(
   (data) => data.scheduled_for > Date.now(),
@@ -156,8 +156,8 @@ The agent can report the scheduled alarm to the user: "I've set a check-in for 6
 ## Who Can Call It
 
 - **Agent** — during any active session
-- **DO initialization** — for seeding first `curator_run` and `pattern_detection` alarms (with `triggering_session_id: null`)
-- **NOT the Curator** — the Curator reschedules itself by inserting a new alarm row directly in the handler, not through this tool
+- **DO initialization** — for seeding first `brain_maintenance_run` and `behavior_pattern_detection` alarms (with `triggering_session_id: null`)
+- **NOT the Brain maintenance** — the Brain maintenance reschedules itself by inserting a new alarm row directly in the handler, not through this tool
 - **NOT device SDK**
 
 ## What Is NOT This Tool's Job

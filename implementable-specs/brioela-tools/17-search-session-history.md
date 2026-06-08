@@ -166,7 +166,7 @@ None. Pure reads. No writes, no counters incremented.
 ## Who Can Call It
 
 - **Agent** — during any active session, when the user asks about past sessions not in recent context
-- **NOT the Curator** — reads sessions directly for its maintenance pass
+- **NOT the Brain maintenance** — reads sessions directly for its maintenance pass
 - **NOT device SDK** — tool-layer only
 
 ## What Is NOT This Tool's Job

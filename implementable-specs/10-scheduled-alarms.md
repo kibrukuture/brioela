@@ -2,7 +2,7 @@
 
 ## Why This Table Exists
 
-The Cloudflare Durable Object has one built-in alarm slot — one pending timestamp at a time. Setting a new alarm overwrites the previous one. A single user can have multiple alarms pending simultaneously: a sickness followup due tomorrow morning, a travel preload due before their flight, a Curator pass due Sunday night. One slot cannot hold multiple alarms.
+The Cloudflare Durable Object has one built-in alarm slot — one pending timestamp at a time. Setting a new alarm overwrites the previous one. A single user can have multiple alarms pending simultaneously: a sickness followup due tomorrow morning, a travel preload due before their flight, a Brain maintenance pass due Sunday night. One slot cannot hold multiple alarms.
 
 `scheduled_alarms` is the queue. The DO alarm slot is only the wake-up clock. When the DO wakes up, it reads this table to find all due work, processes it, then sets the DO alarm slot to the next earliest pending row. The table is the brain. The slot is the trigger.
 
@@ -44,9 +44,9 @@ Known time-based alarm types at launch:
 
 **`travel_preload`** — user has a trip detected (from calendar event or explicit mention). Alarm fires before departure timestamp. Agent pre-loads destination food context, dietary restriction compatibility for local cuisine, known safe options.
 
-**`pattern_detection`** — periodic background pass. Agent scans recent `memory_event` entries for emerging patterns not yet captured in `user_memory` or `user_personality`. Typically weekly.
+**`behavior_pattern_detection`** — periodic background pass. Agent scans recent `memory_event` entries for emerging patterns not yet captured in `user_memory` or `user_personality`. Typically weekly.
 
-**`curator_run`** — scheduled Curator maintenance pass. Evaluates skill staleness, personality trait decay, constraint resurfacing candidates. Typically weekly.
+**`brain_maintenance_run`** — scheduled Brain maintenance maintenance pass. Evaluates skill staleness, personality trait decay, constraint resurfacing candidates. Typically weekly.
 
 **What does NOT belong here — `recall_check` example:**
 A product recall notification fires the moment the condition is detected — not at a scheduled future time. That is event-based: product scanned → recall database checked → if recalled → notify immediately. This flows through Upstash Workflow (Path B), creates a `background` session directly, and never touches this table.
@@ -132,10 +132,10 @@ The target fire time. The DO alarm slot is always set to `MIN(scheduled_for) WHE
 What the handler needs when it wakes up. Without this, the handler has no context for why it was scheduled. Examples:
 - `sickness_followup`: `{ "memory_event_ids": ["..."], "symptoms_reported": "felt nauseous after dinner" }`
 - `travel_preload`: `{ "destination": "Addis Ababa", "departure_at": 1234567890 }`
-- `pattern_detection`, `curator_run`: `{}`
+- `behavior_pattern_detection`, `brain_maintenance_run`: `{}`
 
 **`triggering_session_id` — nullable**
-Which session scheduled this alarm. NULL for system-scheduled alarms (pattern_detection, curator_run). Set for agent-triggered alarms (sickness_followup triggered mid-chat, travel_preload triggered when user mentions a trip).
+Which session scheduled this alarm. NULL for system-scheduled alarms (behavior_pattern_detection, brain_maintenance_run). Set for agent-triggered alarms (sickness_followup triggered mid-chat, travel_preload triggered when user mentions a trip).
 
 **`attempts` + `last_attempted_at` — retry tracking**
 If processing fails, `attempts` increments and the alarm is retried on the next DO wake-up. Max retry count enforced in handler logic. After max attempts: `status = 'failed'`, `fail_reason` written.
@@ -168,7 +168,7 @@ CREATE INDEX idx_alarms_type_status  ON scheduled_alarms (alarm_type, status);
 
 **Why these indexes:**
 - `(status, scheduled_for ASC)` partial on pending — the critical query: find the next alarm to fire and all currently due alarms. Runs every DO wake-up.
-- `(alarm_type, status)` — check if a pending curator_run or pattern_detection already exists before scheduling a duplicate.
+- `(alarm_type, status)` — check if a pending brain_maintenance_run or behavior_pattern_detection already exists before scheduling a duplicate.
 
 ## Write Rules
 
@@ -180,7 +180,7 @@ CREATE INDEX idx_alarms_type_status  ON scheduled_alarms (alarm_type, status);
 ## Read Rules
 
 - Read by DO alarm handler on every wake-up: `WHERE status = 'pending' AND scheduled_for <= now()`.
-- Read before scheduling a new `curator_run` or `pattern_detection` to check if one is already pending — prevent duplicates.
+- Read before scheduling a new `brain_maintenance_run` or `behavior_pattern_detection` to check if one is already pending — prevent duplicates.
 - Read by agent to tell the user what alarms are set: "you have a sickness followup scheduled for tomorrow morning."
 
 ## What Is NOT Stored Here

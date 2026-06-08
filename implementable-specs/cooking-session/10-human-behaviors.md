@@ -2,7 +2,7 @@
 
 ## What This File Is
 
-This file specifies behaviors that make the Mira in the cooking scene feel like a human coach rather than a voice assistant. Most of these are encoded in the Gemini system instruction. Some are enforced by the ProactiveSpeechEngine. Some are enforced by the Mira session runtime.
+This file specifies behaviors that make the Mira in the cooking scene feel like a human coach rather than a voice assistant. Most of these are encoded in the Gemini system instruction. Some are enforced by the MiraSpeechDecisionEngine. Some are enforced by the Mira session runtime.
 
 The test: at the end of a session, the user should not think "I was talking to an AI." They should think "that was helpful" — and not think about what it was.
 
@@ -52,7 +52,7 @@ Late session: trust the cook — brief affirmations, timer management, minimal i
 If grandma clearly knows exactly what she is doing, your role shifts from teacher to quiet watchful presence. The best compliment a cook can give a kitchen companion is that they forgot you were there.
 ```
 
-**Mira session runtime reinforcement:** The ProactiveSpeechEngine's adaptive frequency controller extends observation intervals over time when the visual change detector shows stable, consistent cooking activity — the DO detects the cook is in their rhythm and backs off automatically.
+**Mira session runtime reinforcement:** The MiraSpeechDecisionEngine's adaptive frequency controller extends observation intervals over time when the visual change detector shows stable, consistent cooking activity — the DO detects the cook is in their rhythm and backs off automatically.
 
 ---
 
@@ -87,7 +87,7 @@ FINISHING: Be warm. The dish is nearly done. Acknowledge the achievement. Offer 
 
 ## 4. Speech Cooldown After Speaking
 
-A human coach who just said something does not immediately say something else. They let it land. 25 seconds of minimum silence from Gemini after Gemini finishes speaking is enforced by the ProactiveSpeechEngine's suppression rules.
+A human coach who just said something does not immediately say something else. They let it land. 25 seconds of minimum silence from Gemini after Gemini finishes speaking is enforced by the MiraSpeechDecisionEngine's suppression rules.
 
 This is already specced in `06-suppression-rules.md`. It is listed here because it is a human behavior, not just an engine rule.
 
@@ -162,7 +162,7 @@ After the emergency passes, return to your normal tone.
 
 ## 8. Memory of What Was Said — No Repeating Within the Session
 
-The ProactiveSpeechEngine's no-repeat memory handles this mechanically. But the system instruction reinforces it at the model level:
+The MiraSpeechDecisionEngine's no-repeat memory handles this mechanically. But the system instruction reinforces it at the model level:
 
 **System instruction section:**
 

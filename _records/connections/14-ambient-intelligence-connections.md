@@ -30,7 +30,7 @@ build-guide: build-guide/05-brain/
   → build-guide/18-ambient-intelligence/03-pre-trip-food-intelligence.md [x] done
   → build-guide/18-ambient-intelligence/05-guest-mode.md [x] done
 
-build-guide: build-guide/06-memory-engine/
+build-guide: build-guide/06-brain-memory/
   → build-guide/18-ambient-intelligence/01-ambient-alarm-loop.md [x] done
   → build-guide/18-ambient-intelligence/02-behavioral-patterns.md [x] done
   → build-guide/18-ambient-intelligence/04-food-time-machine.md [x] done

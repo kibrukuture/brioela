@@ -1,4 +1,4 @@
-# Memory Engine — Universal Visual Intake
+# Brain Memory — Universal Visual Intake
 
 ## What This File Covers
 
@@ -45,7 +45,7 @@ Brain DO handler parses JSON
   shouldProcess = true  →
       ↓
     write memoryUpdates to user_memory (always synchronous)
-    create personalitySignals in user_personality if present (Curator-level, queued)
+    create personalitySignals in user_personality if present (Brain maintenance-level, queued)
     if newSkill.create = true → call create_user_skill
       ↓
 One-line confirmation shown to user ONLY if a new skill was created

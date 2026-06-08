@@ -199,7 +199,7 @@ user_find_history (
 - **Spec 04 (Healthy Food Map)**: Ground signals overlay the same map used for the healthy food map. They are different data layers on the same base map. The food map shows curated health data; Ground shows real-time community observations. Both visible simultaneously with layer toggles.
 - **Spec 03 (Hyperlocal Community Notes)**: Ground supersedes spec 03. Spec 03 described a generic community note system. Ground is the fully designed, privacy-first, authenticity-gated replacement. Spec 03 should be treated as deprecated in favor of this spec.
 - **Spec 26 (Recall Alerts)**: health signal type finds (red) are visually consistent with recall alert styling. A recall match surfaces in the same red color family on the map. They are different data sources but the same visual vocabulary.
-- **Spec 08 (Memory Engine)**: Ground does not write to user memory by default. If a user acts on a find (taps "I went here", or it triggers a scan), the downstream action may write to memory. The find itself does not.
+- **Spec 08 (Brain Memory)**: Ground does not write to user memory by default. If a user acts on a find (taps "I went here", or it triggers a scan), the downstream action may write to memory. The find itself does not.
 
 ## Success Metrics
 

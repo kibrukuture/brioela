@@ -1,4 +1,4 @@
-# Mesa — Compatibility Engine
+# Mesa — Food Audience Compatibility Engine
 
 ## What This File Covers
 

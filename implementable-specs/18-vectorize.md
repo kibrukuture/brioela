@@ -244,7 +244,7 @@ async function createAndStoreEmbedding(
 
 ### Failure Handling
 
-Failed embeddings are logged to `agent_state` with key `embedding.failed.{sessionId}`. A future Upstash Workflow background job (not the Curator — this is event-based, Path B) scans for failed embeddings and retries them. The session row itself is already written correctly — only the vector is missing. The FTS5 keyword search still works for that session; only semantic search misses it until retried.
+Failed embeddings are logged to `agent_state` with key `embedding.failed.{sessionId}`. A future Upstash Workflow background job (not the Brain maintenance — this is event-based, Path B) scans for failed embeddings and retries them. The session row itself is already written correctly — only the vector is missing. The FTS5 keyword search still works for that session; only semantic search misses it until retried.
 
 ---
 

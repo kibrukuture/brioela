@@ -1,14 +1,14 @@
-# Cooking Session — Proactive Speech Engine
+# Cooking Session — Mira Speech Decision Engine
 
 ## What This File Covers
 
-How Gemini decides to speak without being asked — the ProactiveSpeechEngine module, all six sub-components, and the human behavior rules encoded in the system instruction.
+How Gemini decides to speak without being asked — the MiraSpeechDecisionEngine module, all six sub-components, and the human behavior rules encoded in the system instruction.
 
 ---
 
 ## Why This Exists
 
-Without this engine, Gemini is reactive — it only speaks when the user speaks. A real cooking coach watches, notices things, and speaks when something matters. The ProactiveSpeechEngine implements that behavior by deciding when to send Gemini an observation prompt and what that prompt should be.
+Without this engine, Gemini is reactive — it only speaks when the user speaks. A real cooking coach watches, notices things, and speaks when something matters. The MiraSpeechDecisionEngine implements that behavior by deciding when to send Gemini an observation prompt and what that prompt should be.
 
 The engine does not talk to Gemini directly. It does not write to SQLite. It produces `ObservationRequest | null` — the MiraSession DO acts on the request.
 
@@ -17,7 +17,7 @@ The engine does not talk to Gemini directly. It does not write to SQLite. It pro
 ## TypeScript Interface
 
 ```typescript
-// backend/src/agents/cooking/proactive-speech/index.ts
+// backend/src/agents/cooking/mira-speech-decision/index.ts
 
 export type CookingPhase = 'prep' | 'active' | 'simmering' | 'finishing'
 
@@ -33,7 +33,7 @@ export interface ObservationResponse {
   topic?:   string                   // track for no-repeat memory
 }
 
-export class ProactiveSpeechEngine {
+export class MiraSpeechDecisionEngine {
   constructor(config: { sessionId: string; userId: string }) {}
 
   onVoiceActivity(active: boolean): void   // called on every audio frame metadata
@@ -57,7 +57,7 @@ The MiraSession calls `tick()` every second. If it returns an `ObservationReques
 Tracks how long the user has been silent. The Cloudflare Realtime adapter sends audio metadata with VAD (voice activity detection) state.
 
 ```typescript
-// backend/src/agents/cooking/proactive-speech/silence-tracker.ts
+// backend/src/agents/cooking/mira-speech-decision/silence-tracker.ts
 
 export class SilenceTracker {
   private silentSince: number | null = null
@@ -91,7 +91,7 @@ export class SilenceTracker {
 Compares incoming JPEG frames to detect meaningful motion or change. Simple pixel-diff at low resolution — no ML.
 
 ```typescript
-// backend/src/agents/cooking/proactive-speech/visual-change-detector.ts
+// backend/src/agents/cooking/mira-speech-decision/visual-change-detector.ts
 
 export class VisualChangeDetector {
   private lastFrameData: Uint8Array | null = null
@@ -127,7 +127,7 @@ export class VisualChangeDetector {
 Determines how often to attempt an observation, based on cooking phase and session state.
 
 ```typescript
-// backend/src/agents/cooking/proactive-speech/adaptive-frequency.ts
+// backend/src/agents/cooking/mira-speech-decision/adaptive-frequency.ts
 
 const PHASE_INTERVALS: Record<CookingPhase, { min: number; max: number }> = {
   prep:      { min: 45_000, max: 90_000  },  // 45s–90s between observations
@@ -167,7 +167,7 @@ export class AdaptiveFrequency {
 Builds the observation prompt sent to Gemini based on current context.
 
 ```typescript
-// backend/src/agents/cooking/proactive-speech/prompt-builder.ts
+// backend/src/agents/cooking/mira-speech-decision/prompt-builder.ts
 
 export function buildObservationPrompt(
   phase: CookingPhase,
@@ -215,7 +215,7 @@ export function buildObservationPrompt(
 Determines whether Gemini's response to an observation prompt should be forwarded to the mobile speaker.
 
 ```typescript
-// backend/src/agents/cooking/proactive-speech/response-filter.ts
+// backend/src/agents/cooking/mira-speech-decision/response-filter.ts
 
 // Responses that should never reach the user's speaker
 const SILENT_PATTERNS = [
@@ -268,7 +268,7 @@ export function filterObservationResponse(responseText: string): ObservationResp
 Hard rules that override everything. If any suppression rule is active, `tick()` returns null.
 
 ```typescript
-// backend/src/agents/cooking/proactive-speech/suppression-rules.ts
+// backend/src/agents/cooking/mira-speech-decision/suppression-rules.ts
 
 export function isSuppressed(params: {
   isUserSpeaking:     boolean

@@ -1,14 +1,14 @@
-# Memory Engine — Curator and Pattern Detection Passes
+# Brain Memory — Brain maintenance and Behavior Pattern Passes
 
 ## What This File Covers
 
-The three CuratorAgent passes (skill maintenance, trait decay, trait inference) and the PatternDetectionAgent pass. This file covers only the logic of the passes — the DO architecture and HTTP forwarding protocol that makes them run is documented in `05-brain/04-sub-agents.md`.
+The three BrainMaintenanceAgent passes (skill maintenance, trait decay, trait inference) and the BehaviorPatternAgent pass. This file covers only the logic of the passes — the DO architecture and HTTP forwarding protocol that makes them run is documented in `05-brain/04-sub-agents.md`.
 
 ---
 
-## CuratorAgent — Three Passes in Order
+## BrainMaintenanceAgent — Three Passes in Order
 
-The Curator runs once every 7 days per user. It runs sequentially — Pass 1 completes before Pass 2 starts, Pass 2 completes before Pass 3 starts. The order matters: skill maintenance (Pass 1) produces a clean skill state that trait inference (Pass 3) reads from.
+The Brain maintenance runs once every 7 days per user. It runs sequentially — Pass 1 completes before Pass 2 starts, Pass 2 completes before Pass 3 starts. The order matters: skill maintenance (Pass 1) produces a clean skill state that trait inference (Pass 3) reads from.
 
 ---
 
@@ -16,10 +16,10 @@ The Curator runs once every 7 days per user. It runs sequentially — Pass 1 com
 
 Goal: keep the skills table clean. Archive skills that are stale or never used. Never touch system skills (`source = 'system'`).
 
-The Curator calls `get_skills_for_curator` (a Curator-only read tool) to fetch all user skills. For each skill it evaluates:
+The Brain maintenance calls `get_skills_for_brain_maintenance` (a Brain maintenance-only read tool) to fetch all user skills. For each skill it evaluates:
 
 ```typescript
-// Curator's evaluation per skill
+// Brain maintenance's evaluation per skill
 
 const age_days  = (Date.now() - skill.createdAt) / 86_400_000
 const idle_days = skill.lastUsedAt
@@ -38,7 +38,7 @@ if (skill.useCount < 3 && idle_days > 60) {
   continue
 }
 
-// Rule 3: Status = 'stale' (Curator previously flagged it) + now meets archive criteria
+// Rule 3: Status = 'stale' (Brain maintenance previously flagged it) + now meets archive criteria
 if (skill.status === 'stale' && idle_days > 30) {
   → call archive_user_skill(name, reason: 'stale: no recovery in 30 days since stale flagging')
   continue
@@ -46,8 +46,8 @@ if (skill.status === 'stale' && idle_days > 30) {
 
 // Rule 4: Borderline (use_count 3–5, idle 30–59 days) → mark stale but don't archive
 if (skill.useCount >= 3 && skill.useCount <= 5 && idle_days > 30) {
-  // Curator calls a curator-only update — not archive_user_skill
-  → write to agent_state: 'curator.stale_flag.{skillName}' = JSON.stringify({ flaggedAt: Date.now() })
+  // Brain maintenance calls a brain-maintenance-only update — not archive_user_skill
+  → write to agent_state: 'brain_maintenance.stale_flag.{skillName}' = JSON.stringify({ flaggedAt: Date.now() })
   // skill.status stays 'active' but the flag is noted
   continue
 }
@@ -55,7 +55,7 @@ if (skill.useCount >= 3 && skill.useCount <= 5 && idle_days > 30) {
 // Otherwise: skill is healthy — no action
 ```
 
-Mass deactivation guard: if Pass 1 would archive more than 5 skills in one run, the Curator pauses and writes a `curator.anomaly.{runId}` entry to `agent_state` with `type: "mass_archive_threshold"`. It archives the 5 least-used skills and defers the rest to the next Curator run. This prevents a runaway curator pass from decimating a healthy skills table.
+Mass deactivation guard: if Pass 1 would archive more than 5 skills in one run, the Brain maintenance pauses and writes a `brain_maintenance.anomaly.{runId}` entry to `agent_state` with `type: "mass_archive_threshold"`. It archives the 5 least-used skills and defers the rest to the next Brain maintenance run. This prevents a runaway brain maintenance pass from decimating a healthy skills table.
 
 ---
 
@@ -63,7 +63,7 @@ Mass deactivation guard: if Pass 1 would archive more than 5 skills in one run, 
 
 Goal: keep the `user_personality` table accurate. Decay traits that are no longer supported by current behavior. Archive traits that fall below the strength floor.
 
-The Curator calls `get_personality_traits_for_curator` to fetch all active traits. For each trait:
+The Brain maintenance calls `get_personality_traits_for_brain_maintenance` to fetch all active traits. For each trait:
 
 ```typescript
 const days_since_seen = (Date.now() - trait.lastSeenAt) / 86_400_000
@@ -76,8 +76,8 @@ const live_evidence = evidence_ids.filter(id => {
 })
 const dead_evidence = evidence_ids.length - live_evidence.length
 
-// Step 2: Check for NEW supporting evidence (user_memory entries in same domain written since last Curator run)
-// The Curator identifies supporting evidence by namespace pattern matching against the trait
+// Step 2: Check for NEW supporting evidence (user_memory entries in same domain written since last Brain maintenance run)
+// The Brain maintenance identifies supporting evidence by namespace pattern matching against the trait
 // e.g. trait 'stress-eater' → look for new user_memory entries in 'diet.*' written in the last 7 days
 const new_supporting_count = countNewSupportingEvidence(trait, db)
 const new_contradicting_count = countNewContradictingEvidence(trait, db)
@@ -119,10 +119,10 @@ if (new_strength < 0.15) {
 
 Goal: synthesize new personality traits from patterns that have accumulated in `user_memory` but have not yet been recognized as traits.
 
-The Curator reads all active `user_memory` entries, clusters them by namespace, and asks the LLM whether any clusters suggest a stable personality trait not yet in `user_personality`.
+The Brain maintenance reads all active `user_memory` entries, clusters them by namespace, and asks the LLM whether any clusters suggest a stable personality trait not yet in `user_personality`.
 
 ```typescript
-// Curator system prompt for Pass 3
+// Brain maintenance system prompt for Pass 3
 
 const PASS_3_PROMPT = `
 You are running personality trait inference for one Brioela user.
@@ -151,19 +151,19 @@ Return a JSON array. Empty array if no new traits found. For each trait:
 `
 ```
 
-For each trait returned, the Curator calls `create_personality_trait` (a Curator-only write tool — not in the 17 agent tools). This is not the agent creating traits mid-conversation — it is the Curator's exclusive synthesis operation.
+For each trait returned, the Brain maintenance calls `create_personality_trait` (a Brain maintenance-only write tool — not in the 17 agent tools). This is not the agent creating traits mid-conversation — it is the Brain maintenance's exclusive synthesis operation.
 
 ---
 
-## PatternDetectionAgent — Behavioral Pattern Pass
+## BehaviorPatternAgent — Behavioral Pattern Pass
 
 Runs every 14 days. Reads `memory_event` rows (NOT `user_memory` — raw events, not derived facts) and looks for behavioral correlations that should be written to `user_memory` under the `patterns.*` namespace.
 
 ### What It Looks For
 
 ```typescript
-const PATTERN_DETECTION_PROMPT = `
-You are Brioela's behavioral pattern detection agent.
+const BEHAVIOR_PATTERN_PROMPT = `
+You are Brioela's behavioral behavior pattern detection agent.
 You have the user's food event history from the last 14 days.
 
 Find behavioral patterns the user probably does not consciously know about.
@@ -184,7 +184,7 @@ Only report patterns with confidence >= 0.65 and evidence_count >= 3.
 Return JSON array. Each item:
 {
   "namespace":      "patterns.{domain}",
-  "key":            "snake_case_pattern_name",
+  "key":            "snake_case_behavior_pattern_name",
   "value":          "{ description: string, first_seen: number, occurrences: number }",
   "confidence":     number,
   "source":         "cron"
@@ -192,13 +192,13 @@ Return JSON array. Each item:
 `
 ```
 
-For each pattern returned, PatternDetectionAgent calls `write_user_memory` via the forwarding protocol, writing to the `patterns.*` namespace. These entries look like any other `user_memory` entry to the agent — they are injected into session context the same way, available for the agent to reference.
+For each pattern returned, BehaviorPatternAgent calls `write_user_memory` via the forwarding protocol, writing to the `patterns.*` namespace. These entries look like any other `user_memory` entry to the agent — they are injected into session context the same way, available for the agent to reference.
 
-The Curator's Pass 3 (trait inference) reads these `patterns.*` entries as potential trait evidence on its next run — a pattern that persists across multiple PatternDetectionAgent passes can graduate to a `user_personality` trait.
+The Brain maintenance's Pass 3 (trait inference) reads these `patterns.*` entries as potential trait evidence on its next run — a pattern that persists across multiple BehaviorPatternAgent passes can graduate to a `user_personality` trait.
 
 ---
 
-## What the Curator Never Does
+## What the Brain maintenance Never Does
 
 - Never modifies `constraints` — too safety-critical
 - Never modifies `memory_event` — append-only

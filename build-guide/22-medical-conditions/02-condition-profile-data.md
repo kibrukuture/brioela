@@ -32,7 +32,7 @@ type MedicalConditionProfile = {
 }
 ```
 
-This can be an explicit table in the Brain schema or a structured `user_memory` entry under `health.conditions`. If implementation creates a new table, update Memory Engine docs and migrations intentionally.
+This can be an explicit table in the Brain schema or a structured `user_memory` entry under `health.conditions`. If implementation creates a new table, update Brain Memory docs and migrations intentionally.
 
 ---
 

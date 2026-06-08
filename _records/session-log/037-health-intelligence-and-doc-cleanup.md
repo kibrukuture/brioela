@@ -19,7 +19,7 @@ Health Intelligence:
 - Confirmed no separate `medication_reminders` table: medication reminders are `scheduled_alarms` rows.
 - Added `action_outcome_status` and `action_outcome_json` to `scheduled_alarms` in memory schema docs.
 - Replaced narrow biometric/document tables with one generic `health_captures` table.
-- Updated Health Agent docs to be Brain-owned and ambient, not chat-first.
+- Updated Health Insight Agent docs to be Brain-owned and ambient, not chat-first.
 
 Global cleanup:
 - Removed all Markdown references to the old realtime provider path. Current realtime transport is Cloudflare Realtime / RealtimeKit only.
@@ -45,7 +45,7 @@ Global cleanup:
 - `build-guide/29-health-intelligence/00-overview.md`
 - `build-guide/29-health-intelligence/01-medication-tracking.md`
 - `build-guide/29-health-intelligence/02-medication-reminders.md`
-- `build-guide/29-health-intelligence/03-health-agent.md`
+- `build-guide/29-health-intelligence/03-health-insight-agent.md`
 - `build-guide/29-health-intelligence/04-community-health-tables.md`
 - `_records/connections/26-health-intelligence-connections.md`
 - `_records/build-order/27-layer-health-intelligence.md`

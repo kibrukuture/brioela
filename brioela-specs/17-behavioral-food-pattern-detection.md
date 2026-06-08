@@ -1,4 +1,4 @@
-# 17. Behavioral Food Pattern Detection
+# 17. Behavioral Food Behavior Pattern
 
 ## Goal
 Detect food-related behavior patterns over time and surface useful interventions only when the confidence and usefulness are high enough. All data collection is passive — the user is never asked to log, rate, or report anything.
@@ -58,7 +58,7 @@ The insight surfaces during conversation. Never as a dashboard. Never as an aler
 ```sql
 behavior_pattern (
   user_id       text,
-  pattern_type  text,    -- 'energy_correlation', 'stress_eating', 'aversion', 'dietary_drift', etc.
+  behavior_pattern_type  text,    -- 'energy_correlation', 'stress_eating', 'aversion', 'dietary_drift', etc.
   evidence_json text,    -- array of event IDs and timestamps supporting this pattern
   confidence    real,
   first_seen_at integer,
@@ -74,9 +74,9 @@ wellbeing_signal (
   captured_at      integer
 )
 
-pattern_intervention (
+behavior_pattern_intervention (
   user_id           text,
-  pattern_id        text,
+  behavior_pattern_id        text,
   intervention_type text,
   surfaced_in       text,   -- session_id where the insight was mentioned conversationally
   created_at        integer,

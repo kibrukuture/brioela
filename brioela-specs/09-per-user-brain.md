@@ -80,7 +80,7 @@ Brioela uses alarms for:
 - Weekly food summary: alarm fires Sunday morning, generates summary, notifies user.
 - "You scanned X a week ago, did you buy it?" — set 7-day alarm on scan.
 - Travel pre-load: alarm fires 48 hours before departure date to pre-load destination food intel.
-- Pattern detection: alarm fires after accumulating enough behavioral data to analyze.
+- Behavior behavior pattern detection: alarm fires after accumulating enough behavioral data to analyze.
 - Sickness follow-up: alarm fires 24 hours after user logs a sickness event.
 
 Alarms are per-DO, cost nothing while waiting, and fire exactly once. This eliminates the need for any external cron system for user-specific timed events.
@@ -189,8 +189,8 @@ skills: name, description, content (markdown), tags (JSON), source (system|user)
 - `description` is one line — this is the only part shown in the index (cheap, always injected).
 - `content` is full markdown — only loaded when the AI calls `skill_view(name)`.
 - `use_count` increments on every load — the foundation of skill evolution.
-- `source`: `system` = bundled skills Brioela ships with; `user` = skills the agent created itself from conversations. The Curator only ever touches `user` skills. System skills are never modified or archived automatically.
-- `status`: three states — `active` (in the index), `stale` (Curator flagged it as long-unused, still in index but deprioritized), `archived` (excluded from the index entirely).
+- `source`: `system` = bundled skills Brioela ships with; `user` = skills the agent created itself from conversations. The Brain maintenance only ever touches `user` skills. System skills are never modified or archived automatically.
+- `status`: three states — `active` (in the index), `stale` (Brain maintenance flagged it as long-unused, still in index but deprioritized), `archived` (excluded from the index entirely).
 
 ### Skill Name Enforcement — Zod at the Tool Boundary
 
@@ -209,7 +209,7 @@ This matters because `skill_view(name)` does an exact string match against the n
 
 ### System Skills — The Starting Library
 
-System skills are the skills Brioela ships with at deploy time. They are seeded into the `skills` table on first DO initialization with `source = 'system'`. The Curator never touches them. They are permanent.
+System skills are the skills Brioela ships with at deploy time. They are seeded into the `skills` table on first DO initialization with `source = 'system'`. The Brain maintenance never touches them. They are permanent.
 
 **Current system skills (complete list):**
 - `cooking-coach` — Step-by-step voice cooking methodology with intervention logic
@@ -261,44 +261,44 @@ Skills are not static. The agent improves them over time:
 
 A skill that starts as a rough outline after one session becomes a precise, tested procedure after a hundred. The agent builds its own library from experience.
 
-### The Curator
+### The Brain maintenance
 
-The Curator is a background maintenance pass that runs automatically against user-created skills. It keeps the skill library clean and prevents it from accumulating noise.
+The Brain maintenance is a background maintenance pass that runs automatically against user-created skills. It keeps the skill library clean and prevents it from accumulating noise.
 
 **What it does:**
 - Tracks how often each skill is viewed and used.
 - Moves long-unused skills through the lifecycle: `active` → `stale` → `archived`.
-- Runs a short auxiliary model pass that reads all user skills and proposes consolidations: if two skills cover overlapping territory, the Curator proposes merging them and calls `skill_update` or `skill_archive` accordingly.
-- Patches drift: if a skill's instructions reference a workflow that has since changed (e.g., an API the agent no longer uses), the Curator flags it for review.
+- Runs a short auxiliary model pass that reads all user skills and proposes consolidations: if two skills cover overlapping territory, the Brain maintenance proposes merging them and calls `skill_update` or `skill_archive` accordingly.
+- Patches drift: if a skill's instructions reference a workflow that has since changed (e.g., an API the agent no longer uses), the Brain maintenance flags it for review.
 
 **When it runs:**
-The Curator is triggered by a DO alarm — not a cron daemon. On every Brain DO wake, it checks two conditions:
-1. Has enough time passed since the last Curator run? (Default interval: 7 days.)
+The Brain maintenance is triggered by a DO alarm — not a cron daemon. On every Brain DO wake, it checks two conditions:
+1. Has enough time passed since the last Brain maintenance run? (Default interval: 7 days.)
 2. Has the agent been idle long enough that running now won't interrupt active work? (Default: 2+ hours since last user interaction.)
 
-If both conditions are true, the Curator runs. Otherwise it schedules itself again at the next alarm cycle.
+If both conditions are true, the Brain maintenance runs. Otherwise it schedules itself again at the next alarm cycle.
 
 ```typescript
 async alarm() {
-  const lastCuratorRun = await this.ctx.storage.get('curator_last_run')
+  const lastBrainMaintenanceRun = await this.ctx.storage.get('brain_maintenance_last_run')
   const lastActivity = await this.ctx.storage.get('last_activity')
   const now = Date.now()
 
-  const curatorDue = !lastCuratorRun || (now - lastCuratorRun) > CURATOR_INTERVAL_MS
-  const agentIdle = !lastActivity || (now - lastActivity) > CURATOR_MIN_IDLE_MS
+  const brainMaintenanceDue = !lastBrainMaintenanceRun || (now - lastBrainMaintenanceRun) > BRAIN_MAINTENANCE_INTERVAL_MS
+  const agentIdle = !lastActivity || (now - lastActivity) > BRAIN_MAINTENANCE_MIN_IDLE_MS
 
-  if (curatorDue && agentIdle) {
-    await this.runCurator()
-    await this.ctx.storage.put('curator_last_run', now)
+  if (brainMaintenanceDue && agentIdle) {
+    await this.runBrainMaintenance()
+    await this.ctx.storage.put('brain_maintenance_last_run', now)
   }
 
   // reschedule next check
-  await this.ctx.storage.setAlarm(now + CURATOR_CHECK_INTERVAL_MS)
+  await this.ctx.storage.setAlarm(now + BRAIN_MAINTENANCE_CHECK_INTERVAL_MS)
 }
 ```
 
-**What the Curator never touches:**
-System skills (`source = 'system'`) — the bundled skills Brioela ships with (cooking coach, allergy detection, illness detective, recipe reconstruction, medication awareness). These are permanent. The Curator only manages skills the agent itself created.
+**What the Brain maintenance never touches:**
+System skills (`source = 'system'`) — the bundled skills Brioela ships with (cooking coach, allergy detection, illness detective, recipe reconstruction, medication awareness). These are permanent. The Brain maintenance only manages skills the agent itself created.
 
 ### Skill Deduplication on Create (Background, Not Hot Path)
 
@@ -351,12 +351,12 @@ CREATE TABLE user_memory (
 );
 ```
 
-**`read_count` vs `write_count` are different signals and the curator uses both differently:**
+**`read_count` vs `write_count` are different signals and the brain maintenance uses both differently:**
 
 - High read, low write = very valuable, core memory — never touch. (Medication entry: written once from one photo, read 200 times in every health conversation.)
 - Low read, low write, old `last_write` = candidate for archival. (A one-time observation never used again.)
 - High write, rising confidence = actively reinforced fact — healthy, keep it.
-- Written recently (within 14 days), not yet read much = new entry, give it time — grace period, curator never touches it.
+- Written recently (within 14 days), not yet read much = new entry, give it time — grace period, brain maintenance never touches it.
 
 ### The Zod Schema (Tool Boundary Enforcement)
 
@@ -488,7 +488,7 @@ async loadMemoryForPrompt(namespaces: string[]): Promise<MemoryEntry[]> {
 }
 ```
 
-This runs every time a session context is assembled. The increment is a side effect of normal operation — zero extra developer action required. Over weeks, the counts naturally reflect actual usage. The curator reads these counts and knows what matters.
+This runs every time a session context is assembled. The increment is a side effect of normal operation — zero extra developer action required. Over weeks, the counts naturally reflect actual usage. The brain maintenance reads these counts and knows what matters.
 
 ### Option A — AI Sees Existing Namespaces (Intelligence Layer)
 

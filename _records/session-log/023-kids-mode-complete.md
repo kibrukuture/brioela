@@ -46,7 +46,7 @@ Before writing, read:
 - latest session log
 - `build-guide/22-medical-conditions/00-overview.md`
 - `brioela-specs/28-medical-condition-food-profile.md`
-- dependencies: Brain, Memory Engine, Scanner, Wearables if relevant
+- dependencies: Brain, Brain Memory, Scanner, Wearables if relevant
 
 ## Blockers / Decisions
 

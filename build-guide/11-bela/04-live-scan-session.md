@@ -2,7 +2,7 @@
 
 ## What This File Covers
 
-OrderAgent live scan relay between shopper and user.
+BelaOrderAgent live scan relay between shopper and user.
 
 ## Sources
 
@@ -13,7 +13,7 @@ OrderAgent live scan relay between shopper and user.
 
 This is data sync, not a video call.
 
-## OrderAgent Responsibilities
+## BelaOrderAgent Responsibilities
 
 - shopper WebSocket
 - user WebSocket

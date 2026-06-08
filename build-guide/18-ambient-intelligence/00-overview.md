@@ -1,7 +1,7 @@
 # Ambient Intelligence — Overview
 
 ## What This Folder Covers
-The background intelligence layer that makes Brioela feel alive without the user doing anything. Four features that run on the DO alarm cycle and surface insights conversationally (never as dashboards): behavioral food pattern detection (energy correlations, stress eating, dietary drift), pre-trip food intelligence (destination map pre-load from travel intent), food time machine (personal food history surfaced as emotionally resonant moments), and guest mode (temporary constraint layering when cooking for others).
+The background intelligence layer that makes Brioela feel alive without the user doing anything. Four features that run on the DO alarm cycle and surface insights conversationally (never as dashboards): behavioral food behavior pattern detection (energy correlations, stress eating, dietary drift), pre-trip food intelligence (destination map pre-load from travel intent), food time machine (personal food history surfaced as emotionally resonant moments), and guest mode (temporary constraint layering when cooking for others).
 
 ## Status
 [x] complete — six files written
@@ -18,7 +18,7 @@ The background intelligence layer that makes Brioela feel alive without the user
 | `06-surfacing-and-privacy.md` | conversation-first surfacing, notification boundaries, privacy rules |
 
 ## Specs This Folder Draws From
-- `brioela-specs/17-behavioral-food-pattern-detection.md` — passive pattern detection, wellbeing signals from voice sessions, energy correlations, intervention surfaced conversationally never as dashboard
+- `brioela-specs/17-behavioral-food-pattern-detection.md` — passive behavior pattern detection, wellbeing signals from voice sessions, energy correlations, intervention surfaced conversationally never as dashboard
 - `brioela-specs/22-pre-trip-food-intelligence.md` — travel intent detection (voice/calendar/map search), destination pre-load via QStash job, location switch on arrival
 - `brioela-specs/38-food-time-machine.md` — ambient surfacing at scan/recipe/weekly summary moments; milestone moments (not gamification); computed in weekly alarm cycle
 - `brioela-specs/37-guest-and-cooking-for-others.md` — conversational guest mode activation, temporary constraint layering, archive-to-memory promotion after repeated patterns

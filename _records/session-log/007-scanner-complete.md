@@ -39,7 +39,7 @@ Nothing half-done.
 
 Source specs to read before writing 08-cooking-session:
 - implementable-specs/cooking-session/00-overview.md through 10-human-behaviors.md (all 11 files)
-- implementable-specs/cooking-session/proactive-speech-engine/ (all 7 files)
+- implementable-specs/cooking-session/mira-speech-decision-engine/ (all 7 files)
 - brioela-specs/10-mira-cooking-voice.md
 - brioela-specs/11-live-vision-cooking-coach.md
 - brioela-specs/12-multi-person-cooking-rooms.md
@@ -49,7 +49,7 @@ Source specs to read before writing 08-cooking-session:
 Files to write for 08-cooking-session:
 - 02-mira-session-do.md — MiraSession DO class, state management, fetch/alarm handlers
 - 02-gemini-live-connection.md — WebSocket setup, audio stream, video frame pipeline, reconnection
-- 03-proactive-speech-engine.md — silence tracker, visual change detector, adaptive frequency, response filter
+- 03-mira-speech-decision-engine.md — silence tracker, visual change detector, adaptive frequency, response filter
 - 04-tool-protocol.md — tools available in cooking session, forwarding to Brain
 - 05-realtimekit-multi-person.md — multi-person room lifecycle, realtime room setup, participant management
 - 06-session-end-and-recipe.md — session end, recipe decision tree, transcript summary, memory writes

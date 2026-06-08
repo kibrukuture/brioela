@@ -141,7 +141,7 @@ Raw readings in `readings_json` are deleted after the derived values (peak, AUC)
 
 ## How Wearables Make Existing Features Better
 
-**Spec 17 (Behavioral Pattern Detection):**
+**Spec 17 (Behavioral Behavior Pattern):**
 Before wearables, the agent infers energy from what users say in conversation. After: HRV and sleep data are actual physiological evidence. Correlations between food and energy become real biology, not linguistic inference. The wellbeing signal table in spec 17 gains a `wearable_corroboration` field — when a user says "I'm exhausted" and HRV confirms it, confidence is higher.
 
 **Spec 30 (Food Illness Detective):**
@@ -171,7 +171,7 @@ User can disconnect any device at any time from settings. On disconnect:
 - Future syncs stop immediately
 - The user is asked: "Remove health data already stored from this device?" — explicit choice
 - If yes: all `health.biometrics`, `health.sleep`, `health.activity`, `health.glucose` memory entries sourced from that device are deleted from DO SQLite
-- Derived personality traits that cited wearable evidence are flagged for curator review
+- Derived personality traits that cited wearable evidence are flagged for brain maintenance review
 
 ## Privacy — The Non-Negotiables
 

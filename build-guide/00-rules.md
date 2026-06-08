@@ -18,12 +18,12 @@ build-guide/
     00-overview.md
     02-mira-session-do.md
     02-gemini-live-connection.md
-    03-proactive-speech-engine.md
+    03-mira-speech-decision-engine.md
     04-tools-this-feature-needs.md   ← tools described HERE, inside the feature
     05-timer-system.md
 ```
 
-The `implementable-specs/brioela-tools/` files and `proactive-speech-engine/` files are
+The `implementable-specs/brioela-tools/` files and `mira-speech-decision-engine/` files are
 SOURCE MATERIAL for reading — they inform what gets written inside the relevant feature
 folder. They are not separate build-guide features of their own.
 

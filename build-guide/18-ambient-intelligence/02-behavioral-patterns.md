@@ -2,7 +2,7 @@
 
 ## What This File Covers
 
-Passive food behavior pattern detection: wellbeing signals, evidence windows, confidence thresholds, intervention candidates, and strict boundaries against mood tracking or medical claims.
+Passive food behavior behavior pattern detection: wellbeing signals, evidence windows, confidence thresholds, intervention candidates, and strict boundaries against mood tracking or medical claims.
 
 ---
 
@@ -84,7 +84,7 @@ Thresholds:
 - Dietary drift: minimum 30 days of changed behavior, confidence >= 0.7.
 - Post-sickness association: minimum 3 illness-linked instances, but only as a soft candidate, never a cause claim.
 
-The general PatternDetectionAgent rule from `05-brain/04-sub-agents.md` allows 3 evidence points for lower-risk patterns. Ambient wellbeing patterns use stricter thresholds.
+The general BehaviorPatternAgent rule from `05-brain/04-sub-agents.md` allows 3 evidence points for lower-risk patterns. Ambient wellbeing patterns use stricter thresholds.
 
 ---
 
@@ -110,7 +110,7 @@ Patterns can be stored as explicit tables if implemented, or as structured `user
 
 ## Intervention Candidate
 
-Pattern detection does not immediately interrupt the user.
+Behavior behavior pattern detection does not immediately interrupt the user.
 
 It creates an intervention candidate:
 

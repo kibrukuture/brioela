@@ -30,13 +30,13 @@ Provider direction: Brioela owns wearable connectors directly. Do not add a thir
 - CGM: 2-hour observation window opened on each scan event; 15-min glucose readings during window; derived values (peak, AUC, time-to-peak) stored; raw readings deleted after derivation
 - `glucose_meal_window` table in Brain DO SQLite — private, never Supabase
 - 3+ CGM correlation events for same product → `spike_trigger` memory fact with confidence
-- Disconnect: all `health.*` memory entries sourced from that device deleted on request; derived personality traits flagged for Curator review
+- Disconnect: all `health.*` memory entries sourced from that device deleted on request; derived personality traits flagged for Brain maintenance review
 - Health data encrypted at rest in DO SQLite — most sensitive data in the entire app
 - Current platform docs check: Apple/Dexcom docs were JS-gated from this environment; Oura docs confirm V2/OAuth path; implementation docs here stay at permission/OAuth/aggregation boundaries, not exact SDK calls
 
 ## What This Folder Depends On
 - `05-brain` — all wearable data routes to Brain DO memory namespaces
-- `06-memory-engine` — `user_memory`, `user_personality`, and private CGM tables live in Brain SQLite
+- `06-brain-memory` — `user_memory`, `user_personality`, and private CGM tables live in Brain SQLite
 - `07-scanner` — CGM correlation triggered by scan events
 - `18-ambient-intelligence` — wearable data corroborates ambient wellbeing patterns
 - `12-notifications` — any wearable-driven surfacing obeys notification suppression and quiet rules

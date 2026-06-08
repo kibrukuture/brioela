@@ -14,7 +14,7 @@ Deep read pass before writing:
 - `brioela-specs/22-pre-trip-food-intelligence.md`
 - `brioela-specs/38-food-time-machine.md`
 - `brioela-specs/37-guest-and-cooking-for-others.md`
-- dependency docs: Brain alarm system/sub-agents, Memory Engine SQLite schema, Cooking Session session end, Map overview, Notifications overview/surfaces/delivery rules, Menu Scanning addendum
+- dependency docs: Brain alarm system/sub-agents, Brain Memory SQLite schema, Cooking Session session end, Map overview, Notifications overview/surfaces/delivery rules, Menu Scanning addendum
 
 Written — `build-guide/18-ambient-intelligence/`:
 - `00-overview.md` — updated to complete, file list added, dependency graph updated
@@ -52,7 +52,7 @@ Before writing, read:
 - latest session log
 - `build-guide/19-recipe-ingestion/00-overview.md`
 - `brioela-specs/02-recipe-ingestion-from-shared-content.md`
-- dependencies: Brain, Memory Engine, Cooking Session, Scanner vision extraction if screenshots are involved
+- dependencies: Brain, Brain Memory, Cooking Session, Scanner vision extraction if screenshots are involved
 
 ## Blockers / Decisions
 

@@ -19,7 +19,7 @@ spec: brioela-specs/20-platform-and-app-distribution.md
   → build-guide/04-auth-and-onboarding/00-overview.md [x] done
   → build-guide/12-notifications/05-permission-timing.md [x] done
   → build-guide/19-recipe-ingestion/01-share-sheet-entry.md [x] done
-  → build-guide/19-recipe-ingestion/08-shared-content-router.md [x] done
+  → build-guide/19-recipe-ingestion/08-shared-content-classifier.md [x] done
   → build-guide/24-viral-sharing/05-creator-and-attribution-loop.md [x] done
   → build-guide/20-wearables/01-connection-model.md [x] done
 
@@ -28,7 +28,7 @@ spec: brioela-specs/24-technical-architecture-backbone.md
   → build-guide/03-foundation/02-backend-worker-setup.md [x] done
   → build-guide/05-brain/01-do-class-and-setup.md [x] done
   → build-guide/05-brain/03-session-lifecycle.md [x] done
-  → build-guide/06-memory-engine/01-sqlite-schema.md [x] done
+  → build-guide/06-brain-memory/01-sqlite-schema.md [x] done
   → build-guide/08-cooking-session/00-overview.md [x] done
   note: current realtime architecture is Cloudflare Realtime / RealtimeKit in current build-guide
 
@@ -42,5 +42,5 @@ spec: implementable-specs/13-gaps-and-missing-specs.md
   → build-guide/05-brain/04-sub-agents.md [x] done
   → build-guide/05-brain/05-alarm-system.md [x] done
   → build-guide/05-brain/06-agent-identity.md [x] done
-  → build-guide/06-memory-engine/03-vectorize.md [x] done
-  note: source file contains historical OPEN text for Curator in one table, but current implementable specs/build-guides close those gaps
+  → build-guide/06-brain-memory/03-vectorize.md [x] done
+  note: source file contains historical OPEN text for Brain maintenance in one table, but current implementable specs/build-guides close those gaps

@@ -26,7 +26,7 @@ build-guide: build-guide/05-brain/
   → build-guide/17-menu-scanning/03-dish-verdicts.md [x] done
   → build-guide/17-menu-scanning/05-storage-offline-map.md [x] done
 
-build-guide: build-guide/06-memory-engine/
+build-guide: build-guide/06-brain-memory/
   → build-guide/17-menu-scanning/03-dish-verdicts.md [x] done
   → build-guide/17-menu-scanning/05-storage-offline-map.md [x] done
 

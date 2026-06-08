@@ -1,4 +1,4 @@
-# Proactive Speech Engine — Adaptive Frequency Controller
+# Mira Speech Decision Engine — Adaptive Frequency Controller
 
 ## Purpose
 

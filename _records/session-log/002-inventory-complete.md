@@ -8,7 +8,7 @@
 - Discovered 112 spec files across 6 areas (more than anticipated)
 - Found areas not previously accounted for:
   - `implementable-specs/brioela-tools/` — 19 tool spec files (full AI tool protocol)
-  - `implementable-specs/cooking-session/proactive-speech-engine/` — 6 files (subfolder)
+  - `implementable-specs/cooking-session/mira-speech-decision-engine/` — 6 files (subfolder)
   - `implementable-specs/` root level — 18 files (Brain DO data layer)
 - Wrote `_records/inventory/inventory.md` — all 112 files listed with status and one-line description
 - Marked 4 bela spec files as `[~]` (updated this session): 00-overview, 02-shopper-platform, 05-escrow-payment, 15-checkout-payment
@@ -29,8 +29,8 @@ After each group: update inventory.md statuses and write relevant build-guide fi
 ## Key discoveries from inventory
 - 112 total files — significantly more than the ~70 estimated
 - `brioela-tools/` area is entirely unaccounted for in current build-guide structure
-  → `build-guide/` will need a `06-memory-engine/` scope that includes the tool protocol
-- `proactive-speech-engine/` is a standalone subsystem inside cooking-session
+  → `build-guide/` will need a `06-brain-memory/` scope that includes the tool protocol
+- `mira-speech-decision-engine/` is a standalone subsystem inside cooking-session
   → needs its own set of files inside `build-guide/08-cooking-session/`
 - `brioela-specs/39-generative-ui.md` exists — must be read before any design-system work
 - `brioela-specs/13-gaps-and-missing-specs.md` — read early to know what is intentionally unspecced

@@ -18,7 +18,7 @@ The shopper never sees the full private profile. The shopper only sees per-produ
 
 Create `order_constraint_snapshot` when order enters `pending`.
 
-OrderAgent loads the frozen snapshot when shopper accepts.
+BelaOrderAgent loads the frozen snapshot when shopper accepts.
 
 ## Snapshot Contents
 

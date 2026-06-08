@@ -12,7 +12,7 @@ Deep read pass before writing:
 - `build-guide/24-viral-sharing/00-overview.md`
 - `brioela-specs/25-viral-growth-and-sharing.md`
 - `build-guide/23-verified-profiles/04-verified-profile.md`
-- `build-guide/19-recipe-ingestion/08-shared-content-router.md`
+- `build-guide/19-recipe-ingestion/08-shared-content-classifier.md`
 - dependency docs: Scanner share action, Kids Mode share card, Menu Scanning personalized discovery, Mesa overview, Wearables CGM sharing boundary
 
 Written/updated — `build-guide/23-verified-profiles/`:

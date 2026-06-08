@@ -36,7 +36,7 @@ Updated completed/partial statuses for:
 - Memory engine source specs
 - Scanner source specs
 - Cooking-session source specs
-- Cooking proactive-speech-engine specs
+- Cooking mira-speech-decision-engine specs
 
 ## In Progress
 

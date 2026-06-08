@@ -10,10 +10,10 @@ This is not a video call. The shopper does not need to hold up their phone and s
 
 ## Architecture
 
-The live scan session runs through the `OrderAgent` Durable Object.
+The live scan session runs through the `BelaOrderAgent` Durable Object.
 
 ```
-Shopper phone                  OrderAgent DO                  User phone
+Shopper phone                  BelaOrderAgent DO                  User phone
 ─────────────────              ──────────────────────         ─────────────────
 Scans product   ──────────►   Receives scan payload           
                                Runs product resolution        
@@ -23,9 +23,9 @@ Scans product   ──────────►   Receives scan payload
 Shopper sees card              (both WebSocket connections)    User sees same card
 ```
 
-Both phones maintain a WebSocket connection to the `OrderAgent` DO for the duration of the shopping session. The DO broadcasts every scan result to both connections simultaneously.
+Both phones maintain a WebSocket connection to the `BelaOrderAgent` DO for the duration of the shopping session. The DO broadcasts every scan result to both connections simultaneously.
 
-**OrderAgent DO endpoint:** `/scan-session`
+**BelaOrderAgent DO endpoint:** `/scan-session`
 
 Both shopper and user connect here:
 - Shopper connects with role `shopper` and order authentication token
@@ -125,13 +125,13 @@ The user does not have to join. Joining is optional. The session runs regardless
 ### Session Active
 
 While the shopper is scanning:
-- The OrderAgent DO maintains both WebSocket connections
+- The BelaOrderAgent DO maintains both WebSocket connections
 - Scan results are broadcast to both in real time (< 200ms from scan to display on user's screen)
 - The DO writes each scan result to `order_events` for the dispute trail
 
 If the user's WebSocket disconnects (they close the app, lose signal briefly): scan results that occurred during the gap are delivered in batch when they reconnect, newest first. The user sees a "While you were away" summary.
 
-If the shopper's WebSocket disconnects: the session enters a degraded state. The user sees: "Shopper connection interrupted — results will sync when they reconnect." The shopper can continue scanning; results are queued in the OrderAgent and broadcast when the connection restores.
+If the shopper's WebSocket disconnects: the session enters a degraded state. The user sees: "Shopper connection interrupted — results will sync when they reconnect." The shopper can continue scanning; results are queued in the BelaOrderAgent and broadcast when the connection restores.
 
 ### Session Ends
 

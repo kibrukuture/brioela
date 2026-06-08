@@ -32,7 +32,7 @@ Declare a medical condition once by voice and the entire app adapts permanently:
 
 ## What This Folder Depends On
 - `05-brain` — condition profile stored in Brain DO; loaded into all scan and recipe calls
-- `06-memory-engine` — private condition profile data lives in Brain SQLite/user memory path
+- `06-brain-memory` — private condition profile data lives in Brain SQLite/user memory path
 - `07-scanner` — condition flag row appears in scan result alongside standard verdict
 - `20-wearables` — CGM and biometric context can support condition-aware food intelligence when user connects devices
 

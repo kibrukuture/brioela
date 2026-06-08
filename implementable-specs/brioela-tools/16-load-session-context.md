@@ -18,7 +18,7 @@ Call `load_session_context` exactly once:
 Do NOT call `load_session_context`:
 - Mid-session — context is already loaded
 - More than once per session
-- In `background` sessions where the Curator or pattern detection runs — those sessions read what they need directly
+- In `background` sessions where the Brain maintenance or behavior pattern detection runs — those sessions read what they need directly
 
 ## Input Schema
 
@@ -218,7 +218,7 @@ No `found: false` case — if there are no prior sessions, the response is valid
 ## Who Can Call It
 
 - **Agent** — once per session, at session start
-- **NOT the Curator** — reads its own state directly
+- **NOT the Brain maintenance** — reads its own state directly
 - **NOT device SDK**
 
 ## What Is NOT This Tool's Job

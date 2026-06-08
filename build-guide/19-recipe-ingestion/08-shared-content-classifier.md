@@ -1,4 +1,4 @@
-# Recipe Ingestion — Shared Content Router
+# Recipe Ingestion — Shared Content Classifier
 
 ## What This File Covers
 
