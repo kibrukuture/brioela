@@ -216,12 +216,15 @@ This gives developers a diagnostic signal: if `busy = 1` repeatedly across many 
 
 ### Updated DO Startup Sequence
 
-Step 2 now includes the WAL autocheckpoint setting explicitly:
+The Brain startup sequence is readiness-gated. The Brain migration runtime calls the Drizzle migrator internally, then runs Brioela manifest checks and smoke tests before normal work can proceed. WAL setup happens after migration readiness checks and before normal reads/writes.
 
 ```
-1. Run Drizzle migrator
+1. Run Brain SQLite migration runtime
    → reads __drizzle_migrations
-   → applies any unapplied migrations in order
+   → applies allowed unapplied migrations in order
+   → validates manifest expectations
+   → runs smoke tests
+   → writes Brain readiness state
 
 2. Set WAL mode and autocheckpoint
    → PRAGMA journal_mode=WAL
