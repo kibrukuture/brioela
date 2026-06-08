@@ -12,7 +12,7 @@ import {
 } from './_helpers'
 
 const workspaceRoot = resolveWorkspaceRoot()
-const bunExecutablePath = execPath
+const bunExecutablePath = execPath.includes('/Cellar/bun/') ? '/opt/homebrew/bin/bun' : execPath
 
 if (!bunExecutablePath) {
   throw new Error('Could not find bun on PATH. Install Bun before installing the Brioela Name Guard daemon.')

@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 
-import { bootoutNameGuardDaemon, launchdLabel } from './_helpers'
+import { hardStopNameGuardDaemon, launchdLabel } from './_helpers'
 
-bootoutNameGuardDaemon()
+hardStopNameGuardDaemon()
 console.log(`Brioela Name Guard daemon stopped: ${launchdLabel}`)
