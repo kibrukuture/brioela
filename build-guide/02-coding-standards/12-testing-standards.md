@@ -23,7 +23,7 @@ bun test --coverage               # coverage report
 | Branded types | Constructor functions produce correct branded output |
 | Tool functions | Every AI-callable tool — correct output for valid input, correct error for invalid |
 | Business logic | Functions in `backend/src/lib/` — pure input/output, no network |
-| Utility functions | `mobile/src/lib/` — pure functions, no UI |
+| Utility functions | `mobile/lib/` — pure functions, no UI |
 | Error factories | `AppError` factories produce correct codes and status codes |
 
 ### Test When Practical
@@ -60,7 +60,7 @@ shared/validator/scan/
 ├── scan.schema.test.ts             ← schema tests
 └── index.ts
 
-mobile/src/lib/
+mobile/lib/
 ├── cn.ts
 ├── cn.test.ts
 └── format.ts

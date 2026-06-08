@@ -125,22 +125,16 @@ Never manually edit generated migration files. If a migration is wrong, generate
 
 ```ts
 // backend/src/core/database/db.client.ts
-import { drizzle } from 'drizzle-orm/node-postgres'
-import { Pool } from 'pg'
+import { drizzle } from 'drizzle-orm/postgres-js'
+import postgres from 'postgres'
 import { schema } from '@brioela/shared/drizzle/schema'
 
 let _db: ReturnType<typeof drizzle> | null = null
 
 export function getDb() {
   if (_db) return _db
-  const pool = new Pool({
-    connectionString: env.DATABASE_URL,
-    max:              20,
-    idleTimeoutMillis: 30_000,
-    connectionTimeoutMillis: 5_000,
-    maxUses:          1,   // required for CF Workers
-  })
-  _db = drizzle({ client: pool, schema })
+  const client = postgres(env.DATABASE_URL)
+  _db = drizzle(client, { schema })
   return _db
 }
 ```

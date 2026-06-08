@@ -6,7 +6,7 @@ Brioela uses Drizzle in two separate contexts:
 
 | Context | DB | Import | Where |
 |---|---|---|---|
-| Supabase Postgres | Shared global data | `drizzle-orm/postgres-js` | `backend/src/db/` |
+| Supabase Postgres | Shared global data | `drizzle-orm/postgres-js` | `shared/drizzle/` |
 | DO SQLite | Per-user private data | `drizzle-orm/durable-sqlite` | `backend/src/agents/{agent}/` |
 
 They are completely separate. Never mix schemas between them. Never query Supabase from inside a DO — if DO logic needs shared data, it calls the appropriate backend endpoint via HTTP.
@@ -18,7 +18,7 @@ They are completely separate. Never mix schemas between them. Never query Supaba
 Tables are grouped by domain. Each domain file is a Drizzle schema file with related tables. A `_shared.ts` file defines reusable column helpers.
 
 ```ts
-// backend/src/db/schema/_shared.schema.ts
+// shared/drizzle/schema/_shared.schema.ts
 import { timestamp } from 'drizzle-orm/pg-core'
 
 export const timestamps = {
@@ -32,7 +32,7 @@ export const softDelete = {
 ```
 
 ```ts
-// backend/src/db/schema/products.schema.ts
+// shared/drizzle/schema/products.schema.ts
 import { pgTable, varchar, text, jsonb, real } from 'drizzle-orm/pg-core'
 import { timestamps } from './_shared'
 
@@ -59,7 +59,7 @@ export const productSightings = pgTable('product_sightings', {
 ```
 
 ```ts
-// backend/src/db/schema/index.ts
+// shared/drizzle/schema/index.ts
 // This file is the Drizzle schema entry point for migrations
 export * from './_shared.schema'
 export * from './products.schema'
@@ -80,7 +80,7 @@ The Drizzle client for Supabase is created once and reused:
 // backend/src/core/database/db.client.ts
 import { drizzle } from 'drizzle-orm/postgres-js'
 import postgres from 'postgres'
-import * as schema from './schema'
+import * as schema from '@brioela/shared/drizzle/schema'
 
 let _db: ReturnType<typeof drizzle> | null = null
 
@@ -146,7 +146,7 @@ return JSON.parse(memory.value) as DietaryIdentity
 
 ### Supabase Postgres
 
-Migrations live in `backend/src/db/migrations/`. Drizzle Kit generates them from the schema:
+Migrations live with the shared Drizzle package configuration. Drizzle Kit generates them from `shared/drizzle/schema/`:
 
 ```bash
 # Generate migration from schema diff
@@ -160,7 +160,7 @@ Never manually edit generated migration files. If a migration is wrong, generate
 
 ### DO SQLite
 
-DO SQLite migrations are declared in `wrangler.toml`:
+DO SQLite migrations are declared in `wrangler.jsonc`:
 
 ```toml
 [[migrations]]

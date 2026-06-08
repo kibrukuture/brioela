@@ -142,10 +142,10 @@ export { listScanHistory }  from './list.scan.handler'
 
 ## Shared Route Definitions
 
-Route paths are defined once in `shared/src/routes/{feature}.routes.ts` and imported everywhere. Two objects per file:
+Route paths are defined once in `shared/routes/{feature}.routes.ts` and imported everywhere. Two objects per file:
 
 ```ts
-// shared/src/routes/scan.routes.ts
+// shared/routes/scan.routes.ts
 export const SCAN_ROUTES = {
   base:        '/api/scan',
   create:      () => '/api/scan',
@@ -162,7 +162,7 @@ export const SCAN_ROUTE_PATTERNS = {
 ```
 
 ```ts
-// shared/src/routes/index.ts
+// shared/routes/index.ts
 import { SCAN_ROUTES, SCAN_ROUTE_PATTERNS }     from './scan.routes'
 import { RECIPE_ROUTES, RECIPE_ROUTE_PATTERNS } from './recipe.routes'
 // ...
@@ -191,6 +191,7 @@ Backend uses `API_ROUTE_PATTERNS`. Mobile uses `API_ROUTES`. Neither writes raw 
 ```ts
 // backend/src/index.ts
 export const app = new Hono<{
+  Bindings: Env
   Variables: {
     userId:    UserId   // injected by auth middleware
     requestId: string   // injected by logging middleware
@@ -212,17 +213,17 @@ Each middleware lives in `core/middleware/` — one file, one concern:
 // backend/src/core/middleware/auth.middleware.ts
 import type { MiddlewareHandler } from 'hono'
 import type { AppContext } from '@/index'
-import { verifyJwt } from '@/core/auth/verify.jwt.helper'
+import { supabase } from '@/core/auth/supabase.server'
 import { asUserId } from '@brioela/shared/types'
 
 export const authMiddleware: MiddlewareHandler<AppContext> = async (c, next) => {
   const token = c.req.header('Authorization')?.replace('Bearer ', '')
   if (!token) return c.json({ error: 'UNAUTHORIZED' }, 401)
 
-  const payload = await verifyJwt(token)
-  if (!payload) return c.json({ error: 'UNAUTHORIZED' }, 401)
+  const { data, error } = await supabase.auth.getUser(token)
+  if (error || !data.user) return c.json({ error: 'UNAUTHORIZED' }, 401)
 
-  c.set('userId', asUserId(payload.sub))
+  c.set('userId', asUserId(data.user.id))
   await next()
 }
 ```

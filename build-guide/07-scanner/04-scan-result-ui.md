@@ -15,6 +15,41 @@ same result.
 The compact result is assertive: one color, one headline reason, one primary action. Expanded details
 show how Brioela reached that answer.
 
+The implementation contract for scanner verdicting is:
+
+```typescript
+type ScanComputationInput = {
+  productFactSnapshot: ResolvedProductFactSnapshot
+  communityHealth: ProductCommunityHealthOverlay | null
+  constraintResult: ConstraintCheckResult
+}
+
+type ProductCommunityHealthOverlay = {
+  productId: string
+  confidenceScore: number
+  evidenceVolumeScore: number
+  disagreementScore: number
+  reportedEventRate: number | null
+  elevatedConditionTags: string[]
+}
+
+type VerdictTraceStep =
+  | { kind: 'product_identity_resolved'; productId: string; confidence: number }
+  | { kind: 'fact_snapshot_built'; approvedForSafetyDecisions: boolean; evidenceCount: number }
+  | { kind: 'base_score_computed'; score: number; drivers: string[] }
+  | { kind: 'hard_constraint_checked'; matched: boolean; matchCount: number }
+  | { kind: 'medication_food_checked'; severity: 'none' | 'note' | 'warn' | 'block' }
+  | { kind: 'community_association_checked'; applied: boolean; strongestScore: number | null }
+  | { kind: 'origin_context_attached'; boycottMatched: boolean }
+  | { kind: 'guardrails_unavailable'; reason: string }
+  | { kind: 'final_verdict_built'; level: 'green' | 'yellow' | 'red'; reason: string }
+
+type VerdictTrace = VerdictTraceStep[]
+```
+
+`VerdictTrace` is internal/audit data. The compact UI does not show it raw. The expanded result uses it
+to explain the verdict as a coherent evidence story.
+
 ```typescript
 // shared/validator/scan.schema.ts
 
@@ -47,6 +82,7 @@ export const VerdictSchema = z.object({
     sourceRefs:   z.array(z.object({ source: z.string(), id: z.string() })),
     confidence:   z.number(),              // 0.0–1.0 — how confident is this product data
   }),
+  trace: z.array(VerdictTraceStepSchema),   // internal/evidence story source, not raw UI copy
 })
 
 export type Verdict = z.infer<typeof VerdictSchema>
@@ -124,12 +160,13 @@ export function computeBaseScore(product: Product): number {
 }
 
 export function buildVerdict(
-  product: Product,
+  product: ResolvedProductFactSnapshot,
   constraintResult: ConstraintCheckResult,
   communityHealth: ProductCommunityHealthOverlay | null,
 ): Verdict {
   const baseScore = computeBaseScore(product)
   const communityOverlay = buildCommunityHealthVerdictOverlay(communityHealth, constraintResult)
+  const trace: VerdictTrace = buildInitialVerdictTrace(product, constraintResult, communityHealth, baseScore)
 
   if (constraintResult.level === 'guardrails_unavailable') {
     return {
@@ -140,6 +177,7 @@ export function buildVerdict(
       communityHealth,
       origin:     buildOrigin(product),
       expandedDetail: buildExpandedDetail(product),
+      trace: [...trace, { kind: 'guardrails_unavailable', reason: 'constraint check failed' }, { kind: 'final_verdict_built', level: baseScore >= 40 ? 'yellow' : 'red', reason: 'Product facts are available, but personal safety checks are unavailable right now.' }],
     }
   }
 
@@ -153,6 +191,7 @@ export function buildVerdict(
       communityHealth,
       origin:     buildOrigin(product),
       expandedDetail: buildExpandedDetail(product),
+      trace: [...trace, { kind: 'final_verdict_built', level: 'red', reason: buildConstraintReason(constraintResult.matches[0]!) }],
     }
   }
 
@@ -169,6 +208,7 @@ export function buildVerdict(
       communityHealth,
       origin:     buildOrigin(product),
       expandedDetail: buildExpandedDetail(product),
+      trace: [...trace, { kind: 'final_verdict_built', level: 'yellow', reason: warningReason }],
     }
   }
 
@@ -187,7 +227,25 @@ export function buildVerdict(
     communityHealth,
     origin:     buildOrigin(product),
     expandedDetail: buildExpandedDetail(product),
+    trace: [...trace, { kind: 'final_verdict_built', level, reason: communityOverlay.reason ?? buildScoreReason(baseScore, product) }],
   }
+}
+
+function buildInitialVerdictTrace(
+  product: ResolvedProductFactSnapshot,
+  constraintResult: ConstraintCheckResult,
+  communityHealth: ProductCommunityHealthOverlay | null,
+  baseScore: number,
+): VerdictTrace {
+  return [
+    { kind: 'product_identity_resolved', productId: product.productId, confidence: product.confidence },
+    { kind: 'fact_snapshot_built', approvedForSafetyDecisions: product.approvedForSafetyDecisions, evidenceCount: product.factEvidence.length },
+    { kind: 'base_score_computed', score: baseScore, drivers: getBaseScoreDrivers(product) },
+    { kind: 'hard_constraint_checked', matched: constraintResult.matches.length > 0, matchCount: constraintResult.matches.length },
+    { kind: 'medication_food_checked', severity: getMedicationFoodSeverity(constraintResult.medicationFoodInteractions) },
+    { kind: 'community_association_checked', applied: constraintResult.communityHealthAssociations.length > 0, strongestScore: getStrongestAssociationScore(constraintResult.communityHealthAssociations) },
+    { kind: 'origin_context_attached', boycottMatched: product.origin?.boycottActive === true },
+  ]
 }
 
 function buildCommunityHealthVerdictOverlay(

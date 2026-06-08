@@ -171,7 +171,7 @@ The `ErrorState` component is a shared design system component. It receives an `
 Zod parse errors on API responses indicate a backend/mobile contract mismatch — a bug, not a user-facing problem. These are logged and surfaced as generic errors:
 
 ```ts
-// mobile/src/network/recipe/recipe.api.ts
+// mobile/network/recipe/recipe.api.ts
 export async function getRecipe(id: string): Promise<Recipe> {
   const raw = await api.get<unknown>(API_ROUTES.recipes.getById(id))
   try {
@@ -191,7 +191,7 @@ export async function getRecipe(id: string): Promise<Recipe> {
 React error boundaries wrap each major screen section. If a component throws during render, the boundary catches it and renders a fallback without crashing the whole app.
 
 ```tsx
-// mobile/src/components/ErrorBoundary/ErrorBoundary.tsx
+// mobile/components/ErrorBoundary/ErrorBoundary.tsx
 import React from 'react'
 
 type State = { hasError: boolean }

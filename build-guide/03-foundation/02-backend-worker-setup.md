@@ -206,9 +206,6 @@ const envSchema = z.object({
   // Email
   RESEND_API_KEY:            z.string(),
 
-  // Auth
-  JWT_SECRET:                z.string(),
-
   // Environment
   ENVIRONMENT: z.enum(['production', 'development']),
 })
@@ -253,7 +250,6 @@ STRIPE_WEBHOOK_SECRET=whsec_...
 ONESIGNAL_APP_ID=...
 ONESIGNAL_REST_API_KEY=...
 RESEND_API_KEY=re_...
-JWT_SECRET=...
 ENVIRONMENT=development
 ```
 

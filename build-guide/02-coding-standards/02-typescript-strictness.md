@@ -31,8 +31,8 @@ All packages extend this. The root config is the floor — packages may add stri
     "allowJs": false,
 
     "paths": {
-      "@brioela/shared": ["./shared/src/index.ts"],
-      "@brioela/shared/*": ["./shared/src/*"],
+      "@brioela/shared": ["./shared/index.ts"],
+      "@brioela/shared/*": ["./shared/*"],
       "@/": ["./src/"]
     }
   }

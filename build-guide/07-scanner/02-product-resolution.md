@@ -295,6 +295,7 @@ type ResolvedProductFactSnapshot = {
   origin: {
     country: string | null
     parentCompany: string | null
+    boycottActive: boolean
   } | null
   factEvidence: ProductFactEvidence[]
   confidence: number

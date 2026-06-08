@@ -553,7 +553,7 @@ mobile/
 **Rule 5 — Routes come from shared. Never write a raw URL string.**
 Backend: `scanRouter.post(API_ROUTE_PATTERNS.scan.create, controller.onCreateScan)`.
 Mobile: `api.post<Scan>(API_ROUTES.scan.create(), body)`.
-The `shared/src/routes/index.ts` is the single source of truth.
+The `shared/routes/index.ts` is the single source of truth.
 
 **Rule 6 — Network hooks live in `network/`, not in features.**
 `network/scan/use.create.scan.hook.ts` is the TanStack Query mutation hook. Feature `_hooks/` contains UI state hooks that may call network hooks — they are not network hooks themselves.
@@ -564,8 +564,8 @@ The `shared/src/routes/index.ts` is the single source of truth.
 
 | Question | Answer |
 |---|---|
-| Route URL string for scan create | `shared/src/routes/scan.routes.ts` → `SCAN_ROUTES.create()` |
-| Hono path pattern for scan create | `shared/src/routes/scan.routes.ts` → `SCAN_ROUTE_PATTERNS.create` |
+| Route URL string for scan create | `shared/routes/scan.routes.ts` → `SCAN_ROUTES.create()` |
+| Hono path pattern for scan create | `shared/routes/scan.routes.ts` → `SCAN_ROUTE_PATTERNS.create` |
 | Backend Hono router for scan | `backend/src/api/scan/scan.route.ts` |
 | Controller wrapper for scan handlers | `backend/src/api/scan/scan.controller.ts` |
 | Handler that creates a scan | `backend/src/api/scan/_handlers/create.scan.handler.ts` |
@@ -573,7 +573,7 @@ The `shared/src/routes/index.ts` is the single source of truth.
 | Orchestrator DO class | `backend/src/agents/orchestrator/orchestrator.agent.ts` |
 | Orchestrator SQLite table schemas | `backend/src/agents/orchestrator/_schema/*.schema.ts` |
 | AI tool for writing memory | `backend/src/tools/memory/write.user.memory.tool.ts` |
-| Supabase Postgres table schema | `backend/src/db/schema/products.schema.ts` |
+| Supabase Postgres table schema | `shared/drizzle/schema/products.schema.ts` |
 | Hono middleware | `backend/src/core/middleware/auth.middleware.ts` |
 | Shared Zod schemas | `shared/validator/scan/scan.schema.ts` |
 | Branded ID types | `shared/validator/user/user.id.type.ts` |

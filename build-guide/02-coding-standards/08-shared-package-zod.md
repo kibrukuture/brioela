@@ -245,7 +245,7 @@ export async function importRecipe(c: AppContext) {
 ## Using Validators on the Mobile
 
 ```ts
-// mobile/src/network/recipe/recipe.api.ts
+// mobile/network/recipe/recipe.api.ts
 import { ImportRecipeSchema, RecipeSchema } from '@brioela/shared'
 import type { Recipe, ImportRecipeJob } from '@brioela/shared'
 import * as api from '@/network/core'

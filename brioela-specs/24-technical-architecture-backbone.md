@@ -48,7 +48,7 @@ import { CookingAgent } from './agents/cooking'
 const app = new Hono<{ Bindings: Env }>()
 
 app.post('/scan', async (c) => {
-  const userId = c.req.header('x-user-id')!
+  const userId = c.get('userId') // derived from Supabase bearer token middleware
   const id = c.env.ORCHESTRATOR.idFromName(userId)
   const orchestrator = c.env.ORCHESTRATOR.get(id)
   return orchestrator.fetch(c.req.raw)

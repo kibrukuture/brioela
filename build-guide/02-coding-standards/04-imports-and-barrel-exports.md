@@ -82,17 +82,17 @@ A barrel file (`index.ts`) is a re-export file. It controls what is public from 
 
 ### When to use a barrel:
 
-- Every feature folder in `mobile/src/features/{feature}/` has an `index.ts`
-- Every shared component folder (`mobile/src/components/{Component}/`) has an `index.ts`
+- Every feature folder in `mobile/features/{feature}/` has an `index.ts`
+- Every shared component folder (`mobile/components/{Component}/`) has an `index.ts`
 - Every tool domain folder (`backend/src/tools/{domain}/`) does NOT need a barrel — only `backend/src/tools/index.ts` exists (the single tool access point)
-- `shared/src/index.ts` — the single entry point for the shared package
+- `shared/index.ts` — the single entry point for the shared package
 
 ### Barrel rules:
 
 **Only export what other folders/packages actually need.** A barrel is not "export everything." It is a deliberate public API for that module.
 
 ```ts
-// mobile/src/features/scanner/index.ts
+// mobile/features/scanner/index.ts
 // ✓ — exports what other parts of the app need
 export { useScanner } from './hooks/useScanner'
 export { useBarcodeDetector } from './hooks/useBarcodeDetector'
@@ -192,15 +192,15 @@ components → design-system
 design-system → (nothing internal — only external packages)
 ```
 
-**Features never import from other features.** If two features need to share something, it moves to `mobile/src/components/` (if UI) or `mobile/src/lib/` (if logic) or `shared/` (if needed on backend too).
+**Features never import from other features.** If two features need to share something, it moves to `mobile/components/` (if UI) or `mobile/lib/` (if logic) or `shared/` (if needed on backend too).
 
 ```ts
 // ✗ feature importing from another feature — circular risk
-// mobile/src/features/ground/hooks/useGround.ts
+// mobile/features/ground/hooks/useGround.ts
 import { useScannerState } from '@/features/scanner'
 
 // ✓ — extract the shared need to a neutral location
-// mobile/src/lib/scan-state.ts
+// mobile/lib/scan-state.ts
 export function getScanContext(): ScanContext {}
 
 // Both features import from lib
