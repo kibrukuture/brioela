@@ -49,8 +49,8 @@ export function tryBootstrapTypeGuardDaemon(): LaunchctlResult {
 
 export function hardStopTypeGuardDaemonWithResults(): LaunchctlResult[] {
   return [
-    tryLaunchctl(['bootout', launchdService()]),
     tryLaunchctl(['bootout', launchdDomain(), launchdPlistPath]),
+    tryLaunchctl(['bootout', launchdService()]),
     tryLaunchctl(['remove', launchdLabel]),
   ]
 }

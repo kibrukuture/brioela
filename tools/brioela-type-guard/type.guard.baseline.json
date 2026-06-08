@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-06-08T09:37:44.501Z",
+  "generatedAt": "2026-06-08T09:47:26.890Z",
   "violations": [
     {
       "rule": "ban-any",
@@ -1793,6 +1793,542 @@
       "column": 1,
       "message": "Unsafe suppression comment `@ts-ignore` is illegal.",
       "suggestion": "Fix the type problem directly. If a third-party boundary is bad, wrap it with a typed adapter."
+    },
+    {
+      "rule": "enforce-async-boundary",
+      "path": "backend/src/core/background/background-tasks.ts",
+      "line": 19,
+      "column": 4,
+      "message": "Promise chains are illegal in Brioela application code.",
+      "suggestion": "Use `await`, `ctx.waitUntil(...)`, or `explicitlyDetached(...)` with a reason."
+    },
+    {
+      "rule": "enforce-async-boundary",
+      "path": "mobile/components/settings/subscription-modal.tsx",
+      "line": 52,
+      "column": 19,
+      "message": "Promise chains are illegal in Brioela application code.",
+      "suggestion": "Use `await`, `ctx.waitUntil(...)`, or `explicitlyDetached(...)` with a reason."
+    },
+    {
+      "rule": "enforce-async-boundary",
+      "path": "mobile/components/settings/support-modal.tsx",
+      "line": 41,
+      "column": 15,
+      "message": "Promise chains are illegal in Brioela application code.",
+      "suggestion": "Use `await`, `ctx.waitUntil(...)`, or `explicitlyDetached(...)` with a reason."
+    },
+    {
+      "rule": "enforce-async-boundary",
+      "path": "mobile/features/auth/components/reset-password.tsx",
+      "line": 55,
+      "column": 5,
+      "message": "Promise chains are illegal in Brioela application code.",
+      "suggestion": "Use `await`, `ctx.waitUntil(...)`, or `explicitlyDetached(...)` with a reason."
+    },
+    {
+      "rule": "enforce-async-boundary",
+      "path": "mobile/features/auth/components/reset-password.tsx",
+      "line": 55,
+      "column": 5,
+      "message": "Promise chains are illegal in Brioela application code.",
+      "suggestion": "Use `await`, `ctx.waitUntil(...)`, or `explicitlyDetached(...)` with a reason."
+    },
+    {
+      "rule": "enforce-async-boundary",
+      "path": "mobile/lib/useColorScheme.tsx",
+      "line": 42,
+      "column": 5,
+      "message": "Promise chains are illegal in Brioela application code.",
+      "suggestion": "Use `await`, `ctx.waitUntil(...)`, or `explicitlyDetached(...)` with a reason."
+    },
+    {
+      "rule": "enforce-async-boundary",
+      "path": "mobile/network/in-app-notifications/use-in-app-notifications-websocket.ts",
+      "line": 15,
+      "column": 5,
+      "message": "Promise chains are illegal in Brioela application code.",
+      "suggestion": "Use `await`, `ctx.waitUntil(...)`, or `explicitlyDetached(...)` with a reason."
+    },
+    {
+      "rule": "enforce-async-boundary",
+      "path": "shared/drizzle/migrate.ts",
+      "line": 19,
+      "column": 1,
+      "message": "Promise chains are illegal in Brioela application code.",
+      "suggestion": "Use `await`, `ctx.waitUntil(...)`, or `explicitlyDetached(...)` with a reason."
+    },
+    {
+      "rule": "enforce-async-boundary",
+      "path": "tools/brioela-name-guard/_watch/watch.workspace.handler.ts",
+      "line": 20,
+      "column": 7,
+      "message": "`void promise()` fire-and-forget calls are illegal.",
+      "suggestion": "Use `ctx.waitUntil(...)` in Workers or `explicitlyDetached(promise, reason)`."
+    },
+    {
+      "rule": "enforce-async-boundary",
+      "path": "tools/brioela-name-guard/_watch/watch.workspace.handler.ts",
+      "line": 32,
+      "column": 3,
+      "message": "`void promise()` fire-and-forget calls are illegal.",
+      "suggestion": "Use `ctx.waitUntil(...)` in Workers or `explicitlyDetached(promise, reason)`."
+    },
+    {
+      "rule": "enforce-async-boundary",
+      "path": "tools/brioela-type-guard/_watch/watch.workspace.types.handler.ts",
+      "line": 20,
+      "column": 7,
+      "message": "`void promise()` fire-and-forget calls are illegal.",
+      "suggestion": "Use `ctx.waitUntil(...)` in Workers or `explicitlyDetached(promise, reason)`."
+    },
+    {
+      "rule": "enforce-async-boundary",
+      "path": "tools/brioela-type-guard/_watch/watch.workspace.types.handler.ts",
+      "line": 32,
+      "column": 3,
+      "message": "`void promise()` fire-and-forget calls are illegal.",
+      "suggestion": "Use `ctx.waitUntil(...)` in Workers or `explicitlyDetached(promise, reason)`."
+    },
+    {
+      "rule": "enforce-config-boundary",
+      "path": "backend/src/api/notifications/courier.controller.ts",
+      "line": 11,
+      "column": 18,
+      "message": "Raw `process.env` access is illegal outside config boundary files.",
+      "suggestion": "Read env once in a `.config.ts` or runtime boundary, validate it, and pass typed config inward."
+    },
+    {
+      "rule": "enforce-config-boundary",
+      "path": "backend/src/api/notifications/push.service.ts",
+      "line": 36,
+      "column": 18,
+      "message": "Raw `process.env` access is illegal outside config boundary files.",
+      "suggestion": "Read env once in a `.config.ts` or runtime boundary, validate it, and pass typed config inward."
+    },
+    {
+      "rule": "enforce-config-boundary",
+      "path": "backend/src/api/notifications/push.service.ts",
+      "line": 80,
+      "column": 18,
+      "message": "Raw `process.env` access is illegal outside config boundary files.",
+      "suggestion": "Read env once in a `.config.ts` or runtime boundary, validate it, and pass typed config inward."
+    },
+    {
+      "rule": "enforce-config-boundary",
+      "path": "backend/src/api/stress-test/banking-session-test.ts",
+      "line": 19,
+      "column": 23,
+      "message": "Raw `process.env` access is illegal outside config boundary files.",
+      "suggestion": "Read env once in a `.config.ts` or runtime boundary, validate it, and pass typed config inward."
+    },
+    {
+      "rule": "enforce-config-boundary",
+      "path": "backend/src/api/stress-test/setup.ts",
+      "line": 7,
+      "column": 33,
+      "message": "Raw `process.env` access is illegal outside config boundary files.",
+      "suggestion": "Read env once in a `.config.ts` or runtime boundary, validate it, and pass typed config inward."
+    },
+    {
+      "rule": "enforce-config-boundary",
+      "path": "backend/src/api/stress-test/stress-test.route.ts",
+      "line": 108,
+      "column": 19,
+      "message": "Raw `process.env` access is illegal outside config boundary files.",
+      "suggestion": "Read env once in a `.config.ts` or runtime boundary, validate it, and pass typed config inward."
+    },
+    {
+      "rule": "enforce-config-boundary",
+      "path": "backend/src/api/stress-test/stress-test.route.ts",
+      "line": 173,
+      "column": 17,
+      "message": "Raw `process.env` access is illegal outside config boundary files.",
+      "suggestion": "Read env once in a `.config.ts` or runtime boundary, validate it, and pass typed config inward."
+    },
+    {
+      "rule": "enforce-config-boundary",
+      "path": "backend/src/api/stress-test/stress-test.route.ts",
+      "line": 39,
+      "column": 12,
+      "message": "Raw `process.env` access is illegal outside config boundary files.",
+      "suggestion": "Read env once in a `.config.ts` or runtime boundary, validate it, and pass typed config inward."
+    },
+    {
+      "rule": "enforce-config-boundary",
+      "path": "backend/src/core/ai/clients/gemini-client.ts",
+      "line": 7,
+      "column": 17,
+      "message": "Raw `process.env` access is illegal outside config boundary files.",
+      "suggestion": "Read env once in a `.config.ts` or runtime boundary, validate it, and pass typed config inward."
+    },
+    {
+      "rule": "enforce-config-boundary",
+      "path": "backend/src/core/ai/clients/openai-client.ts",
+      "line": 16,
+      "column": 17,
+      "message": "Raw `process.env` access is illegal outside config boundary files.",
+      "suggestion": "Read env once in a `.config.ts` or runtime boundary, validate it, and pass typed config inward."
+    },
+    {
+      "rule": "enforce-config-boundary",
+      "path": "backend/src/core/clients/align.ts",
+      "line": 8,
+      "column": 11,
+      "message": "Raw `process.env` access is illegal outside config boundary files.",
+      "suggestion": "Read env once in a `.config.ts` or runtime boundary, validate it, and pass typed config inward."
+    },
+    {
+      "rule": "enforce-config-boundary",
+      "path": "backend/src/core/clients/maps/client.ts",
+      "line": 18,
+      "column": 16,
+      "message": "Raw `process.env` access is illegal outside config boundary files.",
+      "suggestion": "Read env once in a `.config.ts` or runtime boundary, validate it, and pass typed config inward."
+    },
+    {
+      "rule": "enforce-config-boundary",
+      "path": "backend/src/core/clients/onesignal.ts",
+      "line": 24,
+      "column": 11,
+      "message": "Raw `process.env` access is illegal outside config boundary files.",
+      "suggestion": "Read env once in a `.config.ts` or runtime boundary, validate it, and pass typed config inward."
+    },
+    {
+      "rule": "enforce-config-boundary",
+      "path": "backend/src/core/clients/onesignal.ts",
+      "line": 9,
+      "column": 15,
+      "message": "Raw `process.env` access is illegal outside config boundary files.",
+      "suggestion": "Read env once in a `.config.ts` or runtime boundary, validate it, and pass typed config inward."
+    },
+    {
+      "rule": "enforce-config-boundary",
+      "path": "backend/src/core/clients/redis.ts",
+      "line": 8,
+      "column": 8,
+      "message": "Raw `process.env` access is illegal outside config boundary files.",
+      "suggestion": "Read env once in a `.config.ts` or runtime boundary, validate it, and pass typed config inward."
+    },
+    {
+      "rule": "enforce-config-boundary",
+      "path": "backend/src/core/clients/redis.ts",
+      "line": 9,
+      "column": 10,
+      "message": "Raw `process.env` access is illegal outside config boundary files.",
+      "suggestion": "Read env once in a `.config.ts` or runtime boundary, validate it, and pass typed config inward."
+    },
+    {
+      "rule": "enforce-config-boundary",
+      "path": "backend/src/core/clients/resend.ts",
+      "line": 4,
+      "column": 20,
+      "message": "Raw `process.env` access is illegal outside config boundary files.",
+      "suggestion": "Read env once in a `.config.ts` or runtime boundary, validate it, and pass typed config inward."
+    },
+    {
+      "rule": "enforce-config-boundary",
+      "path": "backend/src/core/clients/stripe.ts",
+      "line": 4,
+      "column": 20,
+      "message": "Raw `process.env` access is illegal outside config boundary files.",
+      "suggestion": "Read env once in a `.config.ts` or runtime boundary, validate it, and pass typed config inward."
+    },
+    {
+      "rule": "enforce-config-boundary",
+      "path": "backend/src/core/clients/third-web.ts",
+      "line": 21,
+      "column": 12,
+      "message": "Raw `process.env` access is illegal outside config boundary files.",
+      "suggestion": "Read env once in a `.config.ts` or runtime boundary, validate it, and pass typed config inward."
+    },
+    {
+      "rule": "enforce-config-boundary",
+      "path": "backend/src/core/clients/third-web.ts",
+      "line": 5,
+      "column": 14,
+      "message": "Raw `process.env` access is illegal outside config boundary files.",
+      "suggestion": "Read env once in a `.config.ts` or runtime boundary, validate it, and pass typed config inward."
+    },
+    {
+      "rule": "enforce-config-boundary",
+      "path": "backend/src/core/config/env.ts",
+      "line": 91,
+      "column": 37,
+      "message": "Raw `process.env` access is illegal outside config boundary files.",
+      "suggestion": "Read env once in a `.config.ts` or runtime boundary, validate it, and pass typed config inward."
+    },
+    {
+      "rule": "enforce-config-boundary",
+      "path": "backend/src/core/crypto/decrypt-with-aes-256-gcm.ts",
+      "line": 11,
+      "column": 7,
+      "message": "Raw `process.env` access is illegal outside config boundary files.",
+      "suggestion": "Read env once in a `.config.ts` or runtime boundary, validate it, and pass typed config inward."
+    },
+    {
+      "rule": "enforce-config-boundary",
+      "path": "backend/src/core/crypto/decrypt-with-aes-256-gcm.ts",
+      "line": 14,
+      "column": 26,
+      "message": "Raw `process.env` access is illegal outside config boundary files.",
+      "suggestion": "Read env once in a `.config.ts` or runtime boundary, validate it, and pass typed config inward."
+    },
+    {
+      "rule": "enforce-config-boundary",
+      "path": "backend/src/core/crypto/encrypt-with-aes-256-gcm.ts",
+      "line": 11,
+      "column": 7,
+      "message": "Raw `process.env` access is illegal outside config boundary files.",
+      "suggestion": "Read env once in a `.config.ts` or runtime boundary, validate it, and pass typed config inward."
+    },
+    {
+      "rule": "enforce-config-boundary",
+      "path": "backend/src/core/crypto/encrypt-with-aes-256-gcm.ts",
+      "line": 14,
+      "column": 26,
+      "message": "Raw `process.env` access is illegal outside config boundary files.",
+      "suggestion": "Read env once in a `.config.ts` or runtime boundary, validate it, and pass typed config inward."
+    },
+    {
+      "rule": "enforce-config-boundary",
+      "path": "backend/src/core/database/client.ts",
+      "line": 18,
+      "column": 21,
+      "message": "Raw `process.env` access is illegal outside config boundary files.",
+      "suggestion": "Read env once in a `.config.ts` or runtime boundary, validate it, and pass typed config inward."
+    },
+    {
+      "rule": "enforce-config-boundary",
+      "path": "backend/src/core/database/supabase-admin-client.ts",
+      "line": 10,
+      "column": 4,
+      "message": "Raw `process.env` access is illegal outside config boundary files.",
+      "suggestion": "Read env once in a `.config.ts` or runtime boundary, validate it, and pass typed config inward."
+    },
+    {
+      "rule": "enforce-config-boundary",
+      "path": "backend/src/core/database/supabase-admin-client.ts",
+      "line": 8,
+      "column": 4,
+      "message": "Raw `process.env` access is illegal outside config boundary files.",
+      "suggestion": "Read env once in a `.config.ts` or runtime boundary, validate it, and pass typed config inward."
+    },
+    {
+      "rule": "enforce-config-boundary",
+      "path": "backend/src/core/email/client.ts",
+      "line": 4,
+      "column": 16,
+      "message": "Raw `process.env` access is illegal outside config boundary files.",
+      "suggestion": "Read env once in a `.config.ts` or runtime boundary, validate it, and pass typed config inward."
+    },
+    {
+      "rule": "enforce-config-boundary",
+      "path": "backend/src/core/email/client.ts",
+      "line": 4,
+      "column": 50,
+      "message": "Raw `process.env` access is illegal outside config boundary files.",
+      "suggestion": "Read env once in a `.config.ts` or runtime boundary, validate it, and pass typed config inward."
+    },
+    {
+      "rule": "enforce-config-boundary",
+      "path": "backend/src/core/email/nodemailer.ts",
+      "line": 26,
+      "column": 9,
+      "message": "Raw `process.env` access is illegal outside config boundary files.",
+      "suggestion": "Read env once in a `.config.ts` or runtime boundary, validate it, and pass typed config inward."
+    },
+    {
+      "rule": "enforce-config-boundary",
+      "path": "backend/src/core/email/nodemailer.ts",
+      "line": 30,
+      "column": 10,
+      "message": "Raw `process.env` access is illegal outside config boundary files.",
+      "suggestion": "Read env once in a `.config.ts` or runtime boundary, validate it, and pass typed config inward."
+    },
+    {
+      "rule": "enforce-config-boundary",
+      "path": "backend/src/core/email/nodemailer.ts",
+      "line": 31,
+      "column": 10,
+      "message": "Raw `process.env` access is illegal outside config boundary files.",
+      "suggestion": "Read env once in a `.config.ts` or runtime boundary, validate it, and pass typed config inward."
+    },
+    {
+      "rule": "enforce-config-boundary",
+      "path": "backend/src/core/email/send.ts",
+      "line": 70,
+      "column": 42,
+      "message": "Raw `process.env` access is illegal outside config boundary files.",
+      "suggestion": "Read env once in a `.config.ts` or runtime boundary, validate it, and pass typed config inward."
+    },
+    {
+      "rule": "enforce-config-boundary",
+      "path": "backend/src/core/email/send.ts",
+      "line": 75,
+      "column": 37,
+      "message": "Raw `process.env` access is illegal outside config boundary files.",
+      "suggestion": "Read env once in a `.config.ts` or runtime boundary, validate it, and pass typed config inward."
+    },
+    {
+      "rule": "enforce-config-boundary",
+      "path": "backend/src/core/errors/normalize-unknown-error.ts",
+      "line": 375,
+      "column": 6,
+      "message": "Raw `process.env` access is illegal outside config boundary files.",
+      "suggestion": "Read env once in a `.config.ts` or runtime boundary, validate it, and pass typed config inward."
+    },
+    {
+      "rule": "enforce-config-boundary",
+      "path": "backend/src/core/errors/normalize-unknown-error.ts",
+      "line": 442,
+      "column": 13,
+      "message": "Raw `process.env` access is illegal outside config boundary files.",
+      "suggestion": "Read env once in a `.config.ts` or runtime boundary, validate it, and pass typed config inward."
+    },
+    {
+      "rule": "enforce-config-boundary",
+      "path": "backend/src/core/errors/normalize-unknown-error.ts",
+      "line": 463,
+      "column": 13,
+      "message": "Raw `process.env` access is illegal outside config boundary files.",
+      "suggestion": "Read env once in a `.config.ts` or runtime boundary, validate it, and pass typed config inward."
+    },
+    {
+      "rule": "enforce-config-boundary",
+      "path": "backend/src/core/errors/normalize-unknown-error.ts",
+      "line": 478,
+      "column": 13,
+      "message": "Raw `process.env` access is illegal outside config boundary files.",
+      "suggestion": "Read env once in a `.config.ts` or runtime boundary, validate it, and pass typed config inward."
+    },
+    {
+      "rule": "enforce-config-boundary",
+      "path": "backend/src/core/storage/s3-client.ts",
+      "line": 10,
+      "column": 26,
+      "message": "Raw `process.env` access is illegal outside config boundary files.",
+      "suggestion": "Read env once in a `.config.ts` or runtime boundary, validate it, and pass typed config inward."
+    },
+    {
+      "rule": "enforce-config-boundary",
+      "path": "backend/src/core/storage/s3-client.ts",
+      "line": 14,
+      "column": 13,
+      "message": "Raw `process.env` access is illegal outside config boundary files.",
+      "suggestion": "Read env once in a `.config.ts` or runtime boundary, validate it, and pass typed config inward."
+    },
+    {
+      "rule": "enforce-config-boundary",
+      "path": "backend/src/core/storage/s3-client.ts",
+      "line": 25,
+      "column": 9,
+      "message": "Raw `process.env` access is illegal outside config boundary files.",
+      "suggestion": "Read env once in a `.config.ts` or runtime boundary, validate it, and pass typed config inward."
+    },
+    {
+      "rule": "enforce-config-boundary",
+      "path": "backend/src/core/storage/s3-client.ts",
+      "line": 9,
+      "column": 22,
+      "message": "Raw `process.env` access is illegal outside config boundary files.",
+      "suggestion": "Read env once in a `.config.ts` or runtime boundary, validate it, and pass typed config inward."
+    },
+    {
+      "rule": "enforce-config-boundary",
+      "path": "backend/src/core/webhooks/helpers/log-webhook-event.ts",
+      "line": 9,
+      "column": 15,
+      "message": "Raw `process.env` access is illegal outside config boundary files.",
+      "suggestion": "Read env once in a `.config.ts` or runtime boundary, validate it, and pass typed config inward."
+    },
+    {
+      "rule": "enforce-config-boundary",
+      "path": "backend/src/core/webhooks/stripe/middleware/verify-stripe-signature.ts",
+      "line": 8,
+      "column": 25,
+      "message": "Raw `process.env` access is illegal outside config boundary files.",
+      "suggestion": "Read env once in a `.config.ts` or runtime boundary, validate it, and pass typed config inward."
+    },
+    {
+      "rule": "enforce-config-boundary",
+      "path": "backend/src/core/webhooks/stripe/stripe.controller.ts",
+      "line": 21,
+      "column": 29,
+      "message": "Raw `process.env` access is illegal outside config boundary files.",
+      "suggestion": "Read env once in a `.config.ts` or runtime boundary, validate it, and pass typed config inward."
+    },
+    {
+      "rule": "enforce-config-boundary",
+      "path": "backend/src/core/webhooks/stripe/stripe.controller.ts",
+      "line": 26,
+      "column": 60,
+      "message": "Raw `process.env` access is illegal outside config boundary files.",
+      "suggestion": "Read env once in a `.config.ts` or runtime boundary, validate it, and pass typed config inward."
+    },
+    {
+      "rule": "enforce-config-boundary",
+      "path": "backend/src/core/webhooks/superwall/middleware/verify-superwall-signature.ts",
+      "line": 6,
+      "column": 24,
+      "message": "Raw `process.env` access is illegal outside config boundary files.",
+      "suggestion": "Read env once in a `.config.ts` or runtime boundary, validate it, and pass typed config inward."
+    },
+    {
+      "rule": "enforce-config-boundary",
+      "path": "backend/src/core/webhooks/superwall/services/subscription-created.service.ts",
+      "line": 114,
+      "column": 38,
+      "message": "Raw `process.env` access is illegal outside config boundary files.",
+      "suggestion": "Read env once in a `.config.ts` or runtime boundary, validate it, and pass typed config inward."
+    },
+    {
+      "rule": "enforce-config-boundary",
+      "path": "backend/src/core/webhooks/superwall/services/subscription-created.service.ts",
+      "line": 118,
+      "column": 30,
+      "message": "Raw `process.env` access is illegal outside config boundary files.",
+      "suggestion": "Read env once in a `.config.ts` or runtime boundary, validate it, and pass typed config inward."
+    },
+    {
+      "rule": "enforce-config-boundary",
+      "path": "backend/src/message-queue/upstash-client.ts",
+      "line": 13,
+      "column": 10,
+      "message": "Raw `process.env` access is illegal outside config boundary files.",
+      "suggestion": "Read env once in a `.config.ts` or runtime boundary, validate it, and pass typed config inward."
+    },
+    {
+      "rule": "enforce-config-boundary",
+      "path": "backend/src/message-queue/verify.ts",
+      "line": 16,
+      "column": 22,
+      "message": "Raw `process.env` access is illegal outside config boundary files.",
+      "suggestion": "Read env once in a `.config.ts` or runtime boundary, validate it, and pass typed config inward."
+    },
+    {
+      "rule": "enforce-config-boundary",
+      "path": "backend/src/message-queue/verify.ts",
+      "line": 17,
+      "column": 19,
+      "message": "Raw `process.env` access is illegal outside config boundary files.",
+      "suggestion": "Read env once in a `.config.ts` or runtime boundary, validate it, and pass typed config inward."
+    },
+    {
+      "rule": "enforce-config-boundary",
+      "path": "mobile/lib/push-notifications/one-signal.ts",
+      "line": 4,
+      "column": 15,
+      "message": "Raw `process.env` access is illegal outside config boundary files.",
+      "suggestion": "Read env once in a `.config.ts` or runtime boundary, validate it, and pass typed config inward."
+    },
+    {
+      "rule": "enforce-config-boundary",
+      "path": "shared/drizzle/migrate.ts",
+      "line": 7,
+      "column": 23,
+      "message": "Raw `process.env` access is illegal outside config boundary files.",
+      "suggestion": "Read env once in a `.config.ts` or runtime boundary, validate it, and pass typed config inward."
     },
     {
       "rule": "enforce-contract-boundary",
@@ -5651,6 +6187,654 @@
       "suggestion": "Use contract-backed request helpers or generated ts-rest hooks."
     },
     {
+      "rule": "enforce-error-boundary",
+      "path": "backend/src/api/banking/handlers/transactions/delete-banking-transaction-attachment.handler.ts",
+      "line": 41,
+      "column": 4,
+      "message": "Bare `catch` clauses are illegal.",
+      "suggestion": "Catch `error`, narrow it, and either rethrow a typed error or handle it explicitly."
+    },
+    {
+      "rule": "enforce-error-boundary",
+      "path": "backend/src/api/banking/handlers/transactions/delete-banking-transaction-attachment.handler.ts",
+      "line": 41,
+      "column": 4,
+      "message": "Empty catch blocks are illegal.",
+      "suggestion": "Handle the error, emit typed telemetry, or rethrow a domain error."
+    },
+    {
+      "rule": "enforce-error-boundary",
+      "path": "backend/src/api/banking/helpers/offramp-outbox/outgoing-payouts/get-outgoing-payout-offramp-bank-details.ts",
+      "line": 61,
+      "column": 4,
+      "message": "Bare `catch` clauses are illegal.",
+      "suggestion": "Catch `error`, narrow it, and either rethrow a typed error or handle it explicitly."
+    },
+    {
+      "rule": "enforce-error-boundary",
+      "path": "backend/src/api/banking/helpers/offramp-outbox/pay-requests/execute-pay-request-offramp.ts",
+      "line": 93,
+      "column": 5,
+      "message": "Bare `catch` clauses are illegal.",
+      "suggestion": "Catch `error`, narrow it, and either rethrow a typed error or handle it explicitly."
+    },
+    {
+      "rule": "enforce-error-boundary",
+      "path": "backend/src/api/users/handlers/update-profile-picture.handler.ts",
+      "line": 82,
+      "column": 4,
+      "message": "Empty catch blocks are illegal.",
+      "suggestion": "Handle the error, emit typed telemetry, or rethrow a domain error."
+    },
+    {
+      "rule": "enforce-error-boundary",
+      "path": "backend/src/core/clients/thirdweb-utils/decimal-string-to-usdc-atomic.ts",
+      "line": 18,
+      "column": 4,
+      "message": "Bare `catch` clauses are illegal.",
+      "suggestion": "Catch `error`, narrow it, and either rethrow a typed error or handle it explicitly."
+    },
+    {
+      "rule": "enforce-error-boundary",
+      "path": "backend/src/core/notifications/in-app-notifications/send-in-app-notification.ts",
+      "line": 8,
+      "column": 3,
+      "message": "Vague `throw new Error(...)` is illegal in Brioela application code.",
+      "suggestion": "Throw a named domain error or return a typed error result."
+    },
+    {
+      "rule": "enforce-error-boundary",
+      "path": "mobile/app/+native-intent.tsx",
+      "line": 11,
+      "column": 5,
+      "message": "Bare `catch` clauses are illegal.",
+      "suggestion": "Catch `error`, narrow it, and either rethrow a typed error or handle it explicitly."
+    },
+    {
+      "rule": "enforce-error-boundary",
+      "path": "mobile/app/cards/spending-limits.tsx",
+      "line": 42,
+      "column": 7,
+      "message": "Bare `catch` clauses are illegal.",
+      "suggestion": "Catch `error`, narrow it, and either rethrow a typed error or handle it explicitly."
+    },
+    {
+      "rule": "enforce-error-boundary",
+      "path": "mobile/app/profile/index.tsx",
+      "line": 306,
+      "column": 9,
+      "message": "Vague `throw new Error(...)` is illegal in Brioela application code.",
+      "suggestion": "Throw a named domain error or return a typed error result."
+    },
+    {
+      "rule": "enforce-error-boundary",
+      "path": "mobile/app/profile/limits.tsx",
+      "line": 95,
+      "column": 7,
+      "message": "Bare `catch` clauses are illegal.",
+      "suggestion": "Catch `error`, narrow it, and either rethrow a typed error or handle it explicitly."
+    },
+    {
+      "rule": "enforce-error-boundary",
+      "path": "mobile/app/request-money/create-link.tsx",
+      "line": 40,
+      "column": 7,
+      "message": "Bare `catch` clauses are illegal.",
+      "suggestion": "Catch `error`, narrow it, and either rethrow a typed error or handle it explicitly."
+    },
+    {
+      "rule": "enforce-error-boundary",
+      "path": "mobile/app/request-money/create-link.tsx",
+      "line": 40,
+      "column": 7,
+      "message": "Empty catch blocks are illegal.",
+      "suggestion": "Handle the error, emit typed telemetry, or rethrow a domain error."
+    },
+    {
+      "rule": "enforce-error-boundary",
+      "path": "mobile/components/settings/billing-management.tsx",
+      "line": 48,
+      "column": 11,
+      "message": "Bare `catch` clauses are illegal.",
+      "suggestion": "Catch `error`, narrow it, and either rethrow a typed error or handle it explicitly."
+    },
+    {
+      "rule": "enforce-error-boundary",
+      "path": "mobile/components/transaction/activ/transaction-detail-bottom-sheet.tsx",
+      "line": 412,
+      "column": 31,
+      "message": "Bare `catch` clauses are illegal.",
+      "suggestion": "Catch `error`, narrow it, and either rethrow a typed error or handle it explicitly."
+    },
+    {
+      "rule": "enforce-error-boundary",
+      "path": "mobile/features/auth/components/account.tsx",
+      "line": 107,
+      "column": 7,
+      "message": "Bare `catch` clauses are illegal.",
+      "suggestion": "Catch `error`, narrow it, and either rethrow a typed error or handle it explicitly."
+    },
+    {
+      "rule": "enforce-error-boundary",
+      "path": "mobile/features/auth/components/account.tsx",
+      "line": 107,
+      "column": 7,
+      "message": "Empty catch blocks are illegal.",
+      "suggestion": "Handle the error, emit typed telemetry, or rethrow a domain error."
+    },
+    {
+      "rule": "enforce-error-boundary",
+      "path": "mobile/features/auth/components/account.tsx",
+      "line": 115,
+      "column": 7,
+      "message": "Bare `catch` clauses are illegal.",
+      "suggestion": "Catch `error`, narrow it, and either rethrow a typed error or handle it explicitly."
+    },
+    {
+      "rule": "enforce-error-boundary",
+      "path": "mobile/features/auth/components/account.tsx",
+      "line": 115,
+      "column": 7,
+      "message": "Empty catch blocks are illegal.",
+      "suggestion": "Handle the error, emit typed telemetry, or rethrow a domain error."
+    },
+    {
+      "rule": "enforce-error-boundary",
+      "path": "mobile/features/auth/components/account.tsx",
+      "line": 273,
+      "column": 9,
+      "message": "Vague `throw new Error(...)` is illegal in Brioela application code.",
+      "suggestion": "Throw a named domain error or return a typed error result."
+    },
+    {
+      "rule": "enforce-error-boundary",
+      "path": "mobile/features/auth/components/account.tsx",
+      "line": 287,
+      "column": 9,
+      "message": "Vague `throw new Error(...)` is illegal in Brioela application code.",
+      "suggestion": "Throw a named domain error or return a typed error result."
+    },
+    {
+      "rule": "enforce-error-boundary",
+      "path": "mobile/features/auth/components/app-lock-overlay.tsx",
+      "line": 30,
+      "column": 9,
+      "message": "Bare `catch` clauses are illegal.",
+      "suggestion": "Catch `error`, narrow it, and either rethrow a typed error or handle it explicitly."
+    },
+    {
+      "rule": "enforce-error-boundary",
+      "path": "mobile/features/auth/components/app-lock-overlay.tsx",
+      "line": 67,
+      "column": 9,
+      "message": "Bare `catch` clauses are illegal.",
+      "suggestion": "Catch `error`, narrow it, and either rethrow a typed error or handle it explicitly."
+    },
+    {
+      "rule": "enforce-error-boundary",
+      "path": "mobile/features/auth/components/email-verification-code.tsx",
+      "line": 52,
+      "column": 7,
+      "message": "Bare `catch` clauses are illegal.",
+      "suggestion": "Catch `error`, narrow it, and either rethrow a typed error or handle it explicitly."
+    },
+    {
+      "rule": "enforce-error-boundary",
+      "path": "mobile/features/auth/components/email-verification-code.tsx",
+      "line": 72,
+      "column": 7,
+      "message": "Bare `catch` clauses are illegal.",
+      "suggestion": "Catch `error`, narrow it, and either rethrow a typed error or handle it explicitly."
+    },
+    {
+      "rule": "enforce-error-boundary",
+      "path": "mobile/features/auth/components/forgot-password-code.tsx",
+      "line": 57,
+      "column": 7,
+      "message": "Bare `catch` clauses are illegal.",
+      "suggestion": "Catch `error`, narrow it, and either rethrow a typed error or handle it explicitly."
+    },
+    {
+      "rule": "enforce-error-boundary",
+      "path": "mobile/features/auth/components/forgot-password-code.tsx",
+      "line": 74,
+      "column": 7,
+      "message": "Bare `catch` clauses are illegal.",
+      "suggestion": "Catch `error`, narrow it, and either rethrow a typed error or handle it explicitly."
+    },
+    {
+      "rule": "enforce-error-boundary",
+      "path": "mobile/features/auth/components/reset-password-form.tsx",
+      "line": 51,
+      "column": 7,
+      "message": "Bare `catch` clauses are illegal.",
+      "suggestion": "Catch `error`, narrow it, and either rethrow a typed error or handle it explicitly."
+    },
+    {
+      "rule": "enforce-error-boundary",
+      "path": "mobile/features/auth/hooks/use-device-auth-gate.ts",
+      "line": 29,
+      "column": 9,
+      "message": "Bare `catch` clauses are illegal.",
+      "suggestion": "Catch `error`, narrow it, and either rethrow a typed error or handle it explicitly."
+    },
+    {
+      "rule": "enforce-error-boundary",
+      "path": "mobile/features/camera/hooks/use-camera-manager.ts",
+      "line": 38,
+      "column": 7,
+      "message": "Vague `throw new Error(...)` is illegal in Brioela application code.",
+      "suggestion": "Throw a named domain error or return a typed error result."
+    },
+    {
+      "rule": "enforce-error-boundary",
+      "path": "mobile/features/camera/hooks/use-camera-manager.ts",
+      "line": 50,
+      "column": 9,
+      "message": "Vague `throw new Error(...)` is illegal in Brioela application code.",
+      "suggestion": "Throw a named domain error or return a typed error result."
+    },
+    {
+      "rule": "enforce-error-boundary",
+      "path": "mobile/features/camera/hooks/use-camera-manager.ts",
+      "line": 55,
+      "column": 9,
+      "message": "Vague `throw new Error(...)` is illegal in Brioela application code.",
+      "suggestion": "Throw a named domain error or return a typed error result."
+    },
+    {
+      "rule": "enforce-error-boundary",
+      "path": "mobile/features/camera/hooks/use-camera-manager.ts",
+      "line": 90,
+      "column": 9,
+      "message": "Vague `throw new Error(...)` is illegal in Brioela application code.",
+      "suggestion": "Throw a named domain error or return a typed error result."
+    },
+    {
+      "rule": "enforce-error-boundary",
+      "path": "mobile/features/camera/hooks/use-camera.ts",
+      "line": 105,
+      "column": 29,
+      "message": "Vague `throw new Error(...)` is illegal in Brioela application code.",
+      "suggestion": "Throw a named domain error or return a typed error result."
+    },
+    {
+      "rule": "enforce-error-boundary",
+      "path": "mobile/features/camera/hooks/use-camera.ts",
+      "line": 110,
+      "column": 31,
+      "message": "Vague `throw new Error(...)` is illegal in Brioela application code.",
+      "suggestion": "Throw a named domain error or return a typed error result."
+    },
+    {
+      "rule": "enforce-error-boundary",
+      "path": "mobile/features/camera/hooks/use-camera.ts",
+      "line": 112,
+      "column": 27,
+      "message": "Vague `throw new Error(...)` is illegal in Brioela application code.",
+      "suggestion": "Throw a named domain error or return a typed error result."
+    },
+    {
+      "rule": "enforce-error-boundary",
+      "path": "mobile/features/camera/hooks/use-camera.ts",
+      "line": 140,
+      "column": 9,
+      "message": "Vague `throw new Error(...)` is illegal in Brioela application code.",
+      "suggestion": "Throw a named domain error or return a typed error result."
+    },
+    {
+      "rule": "enforce-error-boundary",
+      "path": "mobile/features/onboarding/temp/prototypes/scene-01-ember/ember.scene.tsx",
+      "line": 17,
+      "column": 21,
+      "message": "Vague `throw new Error(...)` is illegal in Brioela application code.",
+      "suggestion": "Throw a named domain error or return a typed error result."
+    },
+    {
+      "rule": "enforce-error-boundary",
+      "path": "mobile/lib/banking/banking-balances.ts",
+      "line": 38,
+      "column": 9,
+      "message": "Bare `catch` clauses are illegal.",
+      "suggestion": "Catch `error`, narrow it, and either rethrow a typed error or handle it explicitly."
+    },
+    {
+      "rule": "enforce-error-boundary",
+      "path": "mobile/lib/calendar-utils.ts",
+      "line": 399,
+      "column": 5,
+      "message": "Vague `throw new Error(...)` is illegal in Brioela application code.",
+      "suggestion": "Throw a named domain error or return a typed error result."
+    },
+    {
+      "rule": "enforce-error-boundary",
+      "path": "mobile/lib/time-utils.ts",
+      "line": 122,
+      "column": 5,
+      "message": "Vague `throw new Error(...)` is illegal in Brioela application code.",
+      "suggestion": "Throw a named domain error or return a typed error result."
+    },
+    {
+      "rule": "enforce-error-boundary",
+      "path": "mobile/lib/time-utils.ts",
+      "line": 43,
+      "column": 5,
+      "message": "Vague `throw new Error(...)` is illegal in Brioela application code.",
+      "suggestion": "Throw a named domain error or return a typed error result."
+    },
+    {
+      "rule": "enforce-error-boundary",
+      "path": "mobile/lib/time-utils.ts",
+      "line": 51,
+      "column": 5,
+      "message": "Vague `throw new Error(...)` is illegal in Brioela application code.",
+      "suggestion": "Throw a named domain error or return a typed error result."
+    },
+    {
+      "rule": "enforce-error-boundary",
+      "path": "mobile/lib/time-utils.ts",
+      "line": 61,
+      "column": 5,
+      "message": "Vague `throw new Error(...)` is illegal in Brioela application code.",
+      "suggestion": "Throw a named domain error or return a typed error result."
+    },
+    {
+      "rule": "enforce-error-boundary",
+      "path": "mobile/lib/time-utils.ts",
+      "line": 87,
+      "column": 5,
+      "message": "Vague `throw new Error(...)` is illegal in Brioela application code.",
+      "suggestion": "Throw a named domain error or return a typed error result."
+    },
+    {
+      "rule": "enforce-error-boundary",
+      "path": "mobile/lib/zod-fetcher.ts",
+      "line": 17,
+      "column": 9,
+      "message": "Vague `throw new Error(...)` is illegal in Brioela application code.",
+      "suggestion": "Throw a named domain error or return a typed error result."
+    },
+    {
+      "rule": "enforce-error-boundary",
+      "path": "mobile/lib/zod-fetcher.ts",
+      "line": 18,
+      "column": 9,
+      "message": "Bare `catch` clauses are illegal.",
+      "suggestion": "Catch `error`, narrow it, and either rethrow a typed error or handle it explicitly."
+    },
+    {
+      "rule": "enforce-error-boundary",
+      "path": "mobile/lib/zod-fetcher.ts",
+      "line": 19,
+      "column": 9,
+      "message": "Vague `throw new Error(...)` is illegal in Brioela application code.",
+      "suggestion": "Throw a named domain error or return a typed error result."
+    },
+    {
+      "rule": "enforce-error-boundary",
+      "path": "mobile/lib/zod-fetcher.ts",
+      "line": 39,
+      "column": 7,
+      "message": "Vague `throw new Error(...)` is illegal in Brioela application code.",
+      "suggestion": "Throw a named domain error or return a typed error result."
+    },
+    {
+      "rule": "enforce-error-boundary",
+      "path": "mobile/network/banking/use-pay-request.ts",
+      "line": 11,
+      "column": 9,
+      "message": "Vague `throw new Error(...)` is illegal in Brioela application code.",
+      "suggestion": "Throw a named domain error or return a typed error result."
+    },
+    {
+      "rule": "enforce-error-boundary",
+      "path": "mobile/network/core/create-ws-client.ts",
+      "line": 54,
+      "column": 9,
+      "message": "Bare `catch` clauses are illegal.",
+      "suggestion": "Catch `error`, narrow it, and either rethrow a typed error or handle it explicitly."
+    },
+    {
+      "rule": "enforce-error-boundary",
+      "path": "mobile/network/core/create-ws-client.ts",
+      "line": 54,
+      "column": 9,
+      "message": "Empty catch blocks are illegal.",
+      "suggestion": "Handle the error, emit typed telemetry, or rethrow a domain error."
+    },
+    {
+      "rule": "enforce-error-boundary",
+      "path": "mobile/network/core/create-ws-client.ts",
+      "line": 73,
+      "column": 7,
+      "message": "Bare `catch` clauses are illegal.",
+      "suggestion": "Catch `error`, narrow it, and either rethrow a typed error or handle it explicitly."
+    },
+    {
+      "rule": "enforce-error-boundary",
+      "path": "mobile/network/core/create-ws-client.ts",
+      "line": 82,
+      "column": 7,
+      "message": "Bare `catch` clauses are illegal.",
+      "suggestion": "Catch `error`, narrow it, and either rethrow a typed error or handle it explicitly."
+    },
+    {
+      "rule": "enforce-error-boundary",
+      "path": "mobile/network/core/create-ws-client.ts",
+      "line": 82,
+      "column": 7,
+      "message": "Empty catch blocks are illegal.",
+      "suggestion": "Handle the error, emit typed telemetry, or rethrow a domain error."
+    },
+    {
+      "rule": "enforce-error-boundary",
+      "path": "mobile/providers/search-animation.tsx",
+      "line": 96,
+      "column": 5,
+      "message": "Vague `throw new Error(...)` is illegal in Brioela application code.",
+      "suggestion": "Throw a named domain error or return a typed error result."
+    },
+    {
+      "rule": "enforce-error-boundary",
+      "path": "shared/utils/money.ts",
+      "line": 19,
+      "column": 5,
+      "message": "Vague `throw new Error(...)` is illegal in Brioela application code.",
+      "suggestion": "Throw a named domain error or return a typed error result."
+    },
+    {
+      "rule": "enforce-error-boundary",
+      "path": "shared/utils/money.ts",
+      "line": 8,
+      "column": 5,
+      "message": "Vague `throw new Error(...)` is illegal in Brioela application code.",
+      "suggestion": "Throw a named domain error or return a typed error result."
+    },
+    {
+      "rule": "enforce-error-boundary",
+      "path": "tools/brioela-name-guard/_helpers/baseline.helper.ts",
+      "line": 18,
+      "column": 5,
+      "message": "Bare `catch` clauses are illegal.",
+      "suggestion": "Catch `error`, narrow it, and either rethrow a typed error or handle it explicitly."
+    },
+    {
+      "rule": "enforce-error-boundary",
+      "path": "tools/brioela-name-guard/_helpers/read.file.if.exists.helper.ts",
+      "line": 6,
+      "column": 5,
+      "message": "Bare `catch` clauses are illegal.",
+      "suggestion": "Catch `error`, narrow it, and either rethrow a typed error or handle it explicitly."
+    },
+    {
+      "rule": "enforce-error-boundary",
+      "path": "tools/brioela-name-guard/_helpers/run.launchctl.helper.ts",
+      "line": 8,
+      "column": 5,
+      "message": "Vague `throw new Error(...)` is illegal in Brioela application code.",
+      "suggestion": "Throw a named domain error or return a typed error result."
+    },
+    {
+      "rule": "enforce-error-boundary",
+      "path": "tools/brioela-name-guard/_schema/naming.scope.schema.ts",
+      "line": 10,
+      "column": 5,
+      "message": "Vague `throw new Error(...)` is illegal in Brioela application code.",
+      "suggestion": "Throw a named domain error or return a typed error result."
+    },
+    {
+      "rule": "enforce-error-boundary",
+      "path": "tools/brioela-name-guard/_schema/naming.scope.schema.ts",
+      "line": 25,
+      "column": 5,
+      "message": "Vague `throw new Error(...)` is illegal in Brioela application code.",
+      "suggestion": "Throw a named domain error or return a typed error result."
+    },
+    {
+      "rule": "enforce-error-boundary",
+      "path": "tools/brioela-name-guard/_schema/naming.scope.schema.ts",
+      "line": 5,
+      "column": 5,
+      "message": "Vague `throw new Error(...)` is illegal in Brioela application code.",
+      "suggestion": "Throw a named domain error or return a typed error result."
+    },
+    {
+      "rule": "enforce-error-boundary",
+      "path": "tools/brioela-name-guard/_watch/watch.workspace.handler.ts",
+      "line": 27,
+      "column": 7,
+      "message": "Bare `catch` clauses are illegal.",
+      "suggestion": "Catch `error`, narrow it, and either rethrow a typed error or handle it explicitly."
+    },
+    {
+      "rule": "enforce-error-boundary",
+      "path": "tools/brioela-name-guard/_watch/watch.workspace.handler.ts",
+      "line": 27,
+      "column": 7,
+      "message": "Empty catch blocks are illegal.",
+      "suggestion": "Handle the error, emit typed telemetry, or rethrow a domain error."
+    },
+    {
+      "rule": "enforce-error-boundary",
+      "path": "tools/brioela-name-guard/install.name.guard.daemon.handler.ts",
+      "line": 18,
+      "column": 3,
+      "message": "Vague `throw new Error(...)` is illegal in Brioela application code.",
+      "suggestion": "Throw a named domain error or return a typed error result."
+    },
+    {
+      "rule": "enforce-error-boundary",
+      "path": "tools/brioela-name-guard/start.name.guard.daemon.handler.ts",
+      "line": 53,
+      "column": 3,
+      "message": "Vague `throw new Error(...)` is illegal in Brioela application code.",
+      "suggestion": "Throw a named domain error or return a typed error result."
+    },
+    {
+      "rule": "enforce-error-boundary",
+      "path": "tools/brioela-name-guard/start.name.guard.daemon.handler.ts",
+      "line": 74,
+      "column": 3,
+      "message": "Vague `throw new Error(...)` is illegal in Brioela application code.",
+      "suggestion": "Throw a named domain error or return a typed error result."
+    },
+    {
+      "rule": "enforce-error-boundary",
+      "path": "tools/brioela-type-guard/_helpers/baseline.helper.ts",
+      "line": 18,
+      "column": 5,
+      "message": "Bare `catch` clauses are illegal.",
+      "suggestion": "Catch `error`, narrow it, and either rethrow a typed error or handle it explicitly."
+    },
+    {
+      "rule": "enforce-error-boundary",
+      "path": "tools/brioela-type-guard/_helpers/baseline.helper.ts",
+      "line": 42,
+      "column": 5,
+      "message": "Vague `throw new Error(...)` is illegal in Brioela application code.",
+      "suggestion": "Throw a named domain error or return a typed error result."
+    },
+    {
+      "rule": "enforce-error-boundary",
+      "path": "tools/brioela-type-guard/_helpers/read.file.if.exists.helper.ts",
+      "line": 6,
+      "column": 5,
+      "message": "Bare `catch` clauses are illegal.",
+      "suggestion": "Catch `error`, narrow it, and either rethrow a typed error or handle it explicitly."
+    },
+    {
+      "rule": "enforce-error-boundary",
+      "path": "tools/brioela-type-guard/_helpers/run.launchctl.helper.ts",
+      "line": 8,
+      "column": 5,
+      "message": "Vague `throw new Error(...)` is illegal in Brioela application code.",
+      "suggestion": "Throw a named domain error or return a typed error result."
+    },
+    {
+      "rule": "enforce-error-boundary",
+      "path": "tools/brioela-type-guard/_policies/enforce.schema.pairing.policy.ts",
+      "line": 44,
+      "column": 5,
+      "message": "Bare `catch` clauses are illegal.",
+      "suggestion": "Catch `error`, narrow it, and either rethrow a typed error or handle it explicitly."
+    },
+    {
+      "rule": "enforce-error-boundary",
+      "path": "tools/brioela-type-guard/_watch/watch.workspace.types.handler.ts",
+      "line": 27,
+      "column": 7,
+      "message": "Bare `catch` clauses are illegal.",
+      "suggestion": "Catch `error`, narrow it, and either rethrow a typed error or handle it explicitly."
+    },
+    {
+      "rule": "enforce-error-boundary",
+      "path": "tools/brioela-type-guard/_watch/watch.workspace.types.handler.ts",
+      "line": 27,
+      "column": 7,
+      "message": "Empty catch blocks are illegal.",
+      "suggestion": "Handle the error, emit typed telemetry, or rethrow a domain error."
+    },
+    {
+      "rule": "enforce-error-boundary",
+      "path": "tools/brioela-type-guard/start.type.guard.daemon.handler.ts",
+      "line": 53,
+      "column": 3,
+      "message": "Vague `throw new Error(...)` is illegal in Brioela application code.",
+      "suggestion": "Throw a named domain error or return a typed error result."
+    },
+    {
+      "rule": "enforce-error-boundary",
+      "path": "tools/brioela-type-guard/start.type.guard.daemon.handler.ts",
+      "line": 74,
+      "column": 3,
+      "message": "Vague `throw new Error(...)` is illegal in Brioela application code.",
+      "suggestion": "Throw a named domain error or return a typed error result."
+    },
+    {
+      "rule": "enforce-import-direction",
+      "path": "mobile/app/profile/limits.tsx",
+      "line": 11,
+      "column": 1,
+      "message": "`mobile/` must not import backend, database, or server runtime code.",
+      "suggestion": "Use shared contracts and generated ts-rest hooks instead."
+    },
+    {
+      "rule": "enforce-import-direction",
+      "path": "mobile/lib/banking/banking-balances.ts",
+      "line": 3,
+      "column": 1,
+      "message": "`mobile/` must not import backend, database, or server runtime code.",
+      "suggestion": "Use shared contracts and generated ts-rest hooks instead."
+    },
+    {
+      "rule": "enforce-import-direction",
+      "path": "mobile/network/users/users.api.ts",
+      "line": 2,
+      "column": 1,
+      "message": "`mobile/` must not import backend, database, or server runtime code.",
+      "suggestion": "Use shared contracts and generated ts-rest hooks instead."
+    },
+    {
       "rule": "enforce-mobile-network-boundary",
       "path": "mobile/lib/zod-fetcher.ts",
       "line": 11,
@@ -6697,6 +7881,574 @@
       "column": 3,
       "message": "`useIsomorphicLayoutEffect` is only allowed inside hook files.",
       "suggestion": "Move side-effect logic into a `use.*.hook.ts` file and let components consume the hook."
+    },
+    {
+      "rule": "enforce-schema-pairing",
+      "path": "backend/src/api/availability/handlers/check-schnl-tag.handler.ts",
+      "line": 1,
+      "column": 1,
+      "message": "Boundary files must have a nearby schema or contract file.",
+      "suggestion": "Add a `.schema.ts` or `.contract.ts` file beside the boundary, or move the boundary into an existing contract folder."
+    },
+    {
+      "rule": "enforce-schema-pairing",
+      "path": "backend/src/api/banking/handlers/balances/list-banking-balances.handler.ts",
+      "line": 1,
+      "column": 1,
+      "message": "Boundary files must have a nearby schema or contract file.",
+      "suggestion": "Add a `.schema.ts` or `.contract.ts` file beside the boundary, or move the boundary into an existing contract folder."
+    },
+    {
+      "rule": "enforce-schema-pairing",
+      "path": "backend/src/api/banking/handlers/customer-address/get-customer-address.handler.ts",
+      "line": 1,
+      "column": 1,
+      "message": "Boundary files must have a nearby schema or contract file.",
+      "suggestion": "Add a `.schema.ts` or `.contract.ts` file beside the boundary, or move the boundary into an existing contract folder."
+    },
+    {
+      "rule": "enforce-schema-pairing",
+      "path": "backend/src/api/banking/handlers/fx-rate/get-banking-fx-rate.handler.ts",
+      "line": 1,
+      "column": 1,
+      "message": "Boundary files must have a nearby schema or contract file.",
+      "suggestion": "Add a `.schema.ts` or `.contract.ts` file beside the boundary, or move the boundary into an existing contract folder."
+    },
+    {
+      "rule": "enforce-schema-pairing",
+      "path": "backend/src/api/banking/handlers/kyc/get-kyc-link.handler.ts",
+      "line": 1,
+      "column": 1,
+      "message": "Boundary files must have a nearby schema or contract file.",
+      "suggestion": "Add a `.schema.ts` or `.contract.ts` file beside the boundary, or move the boundary into an existing contract folder."
+    },
+    {
+      "rule": "enforce-schema-pairing",
+      "path": "backend/src/api/banking/handlers/limits/get-banking-limits.handler.ts",
+      "line": 1,
+      "column": 1,
+      "message": "Boundary files must have a nearby schema or contract file.",
+      "suggestion": "Add a `.schema.ts` or `.contract.ts` file beside the boundary, or move the boundary into an existing contract folder."
+    },
+    {
+      "rule": "enforce-schema-pairing",
+      "path": "backend/src/api/banking/handlers/limits/update-banking-limit.handler.ts",
+      "line": 1,
+      "column": 1,
+      "message": "Boundary files must have a nearby schema or contract file.",
+      "suggestion": "Add a `.schema.ts` or `.contract.ts` file beside the boundary, or move the boundary into an existing contract folder."
+    },
+    {
+      "rule": "enforce-schema-pairing",
+      "path": "backend/src/api/banking/handlers/outgoing-payouts/create-outgoing-payout.handler.ts",
+      "line": 1,
+      "column": 1,
+      "message": "Boundary files must have a nearby schema or contract file.",
+      "suggestion": "Add a `.schema.ts` or `.contract.ts` file beside the boundary, or move the boundary into an existing contract folder."
+    },
+    {
+      "rule": "enforce-schema-pairing",
+      "path": "backend/src/api/banking/handlers/outgoing-payouts/precheck-outgoing-payout.handler.ts",
+      "line": 1,
+      "column": 1,
+      "message": "Boundary files must have a nearby schema or contract file.",
+      "suggestion": "Add a `.schema.ts` or `.contract.ts` file beside the boundary, or move the boundary into an existing contract folder."
+    },
+    {
+      "rule": "enforce-schema-pairing",
+      "path": "backend/src/api/banking/handlers/pay-requests/cancel-pay-request.handler.ts",
+      "line": 1,
+      "column": 1,
+      "message": "Boundary files must have a nearby schema or contract file.",
+      "suggestion": "Add a `.schema.ts` or `.contract.ts` file beside the boundary, or move the boundary into an existing contract folder."
+    },
+    {
+      "rule": "enforce-schema-pairing",
+      "path": "backend/src/api/banking/handlers/pay-requests/claim-pay-request.handler.ts",
+      "line": 1,
+      "column": 1,
+      "message": "Boundary files must have a nearby schema or contract file.",
+      "suggestion": "Add a `.schema.ts` or `.contract.ts` file beside the boundary, or move the boundary into an existing contract folder."
+    },
+    {
+      "rule": "enforce-schema-pairing",
+      "path": "backend/src/api/banking/handlers/pay-requests/create-pay-request-by-email.handler.ts",
+      "line": 1,
+      "column": 1,
+      "message": "Boundary files must have a nearby schema or contract file.",
+      "suggestion": "Add a `.schema.ts` or `.contract.ts` file beside the boundary, or move the boundary into an existing contract folder."
+    },
+    {
+      "rule": "enforce-schema-pairing",
+      "path": "backend/src/api/banking/handlers/pay-requests/get-pay-request.handler.ts",
+      "line": 1,
+      "column": 1,
+      "message": "Boundary files must have a nearby schema or contract file.",
+      "suggestion": "Add a `.schema.ts` or `.contract.ts` file beside the boundary, or move the boundary into an existing contract folder."
+    },
+    {
+      "rule": "enforce-schema-pairing",
+      "path": "backend/src/api/banking/handlers/pay-requests/precheck-pay-request-payout.handler.ts",
+      "line": 1,
+      "column": 1,
+      "message": "Boundary files must have a nearby schema or contract file.",
+      "suggestion": "Add a `.schema.ts` or `.contract.ts` file beside the boundary, or move the boundary into an existing contract folder."
+    },
+    {
+      "rule": "enforce-schema-pairing",
+      "path": "backend/src/api/banking/handlers/pay-requests/submit-pay-request-payout-details.handler.ts",
+      "line": 1,
+      "column": 1,
+      "message": "Boundary files must have a nearby schema or contract file.",
+      "suggestion": "Add a `.schema.ts` or `.contract.ts` file beside the boundary, or move the boundary into an existing contract folder."
+    },
+    {
+      "rule": "enforce-schema-pairing",
+      "path": "backend/src/api/banking/handlers/peer-to-peer-transfers/create-peer-to-peer-transfer.handler.ts",
+      "line": 1,
+      "column": 1,
+      "message": "Boundary files must have a nearby schema or contract file.",
+      "suggestion": "Add a `.schema.ts` or `.contract.ts` file beside the boundary, or move the boundary into an existing contract folder."
+    },
+    {
+      "rule": "enforce-schema-pairing",
+      "path": "backend/src/api/banking/handlers/peer-to-peer-transfers/precheck-peer-to-peer-transfer.handler.ts",
+      "line": 1,
+      "column": 1,
+      "message": "Boundary files must have a nearby schema or contract file.",
+      "suggestion": "Add a `.schema.ts` or `.contract.ts` file beside the boundary, or move the boundary into an existing contract folder."
+    },
+    {
+      "rule": "enforce-schema-pairing",
+      "path": "backend/src/api/banking/handlers/recipients/create-banking-recipient.handler.ts",
+      "line": 1,
+      "column": 1,
+      "message": "Boundary files must have a nearby schema or contract file.",
+      "suggestion": "Add a `.schema.ts` or `.contract.ts` file beside the boundary, or move the boundary into an existing contract folder."
+    },
+    {
+      "rule": "enforce-schema-pairing",
+      "path": "backend/src/api/banking/handlers/recipients/delete-banking-recipient.handler.ts",
+      "line": 1,
+      "column": 1,
+      "message": "Boundary files must have a nearby schema or contract file.",
+      "suggestion": "Add a `.schema.ts` or `.contract.ts` file beside the boundary, or move the boundary into an existing contract folder."
+    },
+    {
+      "rule": "enforce-schema-pairing",
+      "path": "backend/src/api/banking/handlers/recipients/get-banking-recipient.handler.ts",
+      "line": 1,
+      "column": 1,
+      "message": "Boundary files must have a nearby schema or contract file.",
+      "suggestion": "Add a `.schema.ts` or `.contract.ts` file beside the boundary, or move the boundary into an existing contract folder."
+    },
+    {
+      "rule": "enforce-schema-pairing",
+      "path": "backend/src/api/banking/handlers/recipients/list-banking-recipients.handler.ts",
+      "line": 1,
+      "column": 1,
+      "message": "Boundary files must have a nearby schema or contract file.",
+      "suggestion": "Add a `.schema.ts` or `.contract.ts` file beside the boundary, or move the boundary into an existing contract folder."
+    },
+    {
+      "rule": "enforce-schema-pairing",
+      "path": "backend/src/api/banking/handlers/session/get-session-config.handler.ts",
+      "line": 1,
+      "column": 1,
+      "message": "Boundary files must have a nearby schema or contract file.",
+      "suggestion": "Add a `.schema.ts` or `.contract.ts` file beside the boundary, or move the boundary into an existing contract folder."
+    },
+    {
+      "rule": "enforce-schema-pairing",
+      "path": "backend/src/api/banking/handlers/session/get-session-status.handler.ts",
+      "line": 1,
+      "column": 1,
+      "message": "Boundary files must have a nearby schema or contract file.",
+      "suggestion": "Add a `.schema.ts` or `.contract.ts` file beside the boundary, or move the boundary into an existing contract folder."
+    },
+    {
+      "rule": "enforce-schema-pairing",
+      "path": "backend/src/api/banking/handlers/session/register-session.handler.ts",
+      "line": 1,
+      "column": 1,
+      "message": "Boundary files must have a nearby schema or contract file.",
+      "suggestion": "Add a `.schema.ts` or `.contract.ts` file beside the boundary, or move the boundary into an existing contract folder."
+    },
+    {
+      "rule": "enforce-schema-pairing",
+      "path": "backend/src/api/banking/handlers/session/test-delegated-tx.handler.ts",
+      "line": 1,
+      "column": 1,
+      "message": "Boundary files must have a nearby schema or contract file.",
+      "suggestion": "Add a `.schema.ts` or `.contract.ts` file beside the boundary, or move the boundary into an existing contract folder."
+    },
+    {
+      "rule": "enforce-schema-pairing",
+      "path": "backend/src/api/banking/handlers/statements/generate-statement.handler.ts",
+      "line": 1,
+      "column": 1,
+      "message": "Boundary files must have a nearby schema or contract file.",
+      "suggestion": "Add a `.schema.ts` or `.contract.ts` file beside the boundary, or move the boundary into an existing contract folder."
+    },
+    {
+      "rule": "enforce-schema-pairing",
+      "path": "backend/src/api/banking/handlers/transactions/delete-banking-transaction-attachment.handler.ts",
+      "line": 1,
+      "column": 1,
+      "message": "Boundary files must have a nearby schema or contract file.",
+      "suggestion": "Add a `.schema.ts` or `.contract.ts` file beside the boundary, or move the boundary into an existing contract folder."
+    },
+    {
+      "rule": "enforce-schema-pairing",
+      "path": "backend/src/api/banking/handlers/transactions/email-banking-transaction-receipt.handler.ts",
+      "line": 1,
+      "column": 1,
+      "message": "Boundary files must have a nearby schema or contract file.",
+      "suggestion": "Add a `.schema.ts` or `.contract.ts` file beside the boundary, or move the boundary into an existing contract folder."
+    },
+    {
+      "rule": "enforce-schema-pairing",
+      "path": "backend/src/api/banking/handlers/transactions/get-banking-transaction-receipt.handler.ts",
+      "line": 1,
+      "column": 1,
+      "message": "Boundary files must have a nearby schema or contract file.",
+      "suggestion": "Add a `.schema.ts` or `.contract.ts` file beside the boundary, or move the boundary into an existing contract folder."
+    },
+    {
+      "rule": "enforce-schema-pairing",
+      "path": "backend/src/api/banking/handlers/transactions/list-banking-transactions.handler.ts",
+      "line": 1,
+      "column": 1,
+      "message": "Boundary files must have a nearby schema or contract file.",
+      "suggestion": "Add a `.schema.ts` or `.contract.ts` file beside the boundary, or move the boundary into an existing contract folder."
+    },
+    {
+      "rule": "enforce-schema-pairing",
+      "path": "backend/src/api/banking/handlers/transactions/set-banking-transaction-category.handler.ts",
+      "line": 1,
+      "column": 1,
+      "message": "Boundary files must have a nearby schema or contract file.",
+      "suggestion": "Add a `.schema.ts` or `.contract.ts` file beside the boundary, or move the boundary into an existing contract folder."
+    },
+    {
+      "rule": "enforce-schema-pairing",
+      "path": "backend/src/api/banking/handlers/transactions/set-banking-transaction-note.handler.ts",
+      "line": 1,
+      "column": 1,
+      "message": "Boundary files must have a nearby schema or contract file.",
+      "suggestion": "Add a `.schema.ts` or `.contract.ts` file beside the boundary, or move the boundary into an existing contract folder."
+    },
+    {
+      "rule": "enforce-schema-pairing",
+      "path": "backend/src/api/banking/handlers/transactions/upload-banking-transaction-attachment.handler.ts",
+      "line": 1,
+      "column": 1,
+      "message": "Boundary files must have a nearby schema or contract file.",
+      "suggestion": "Add a `.schema.ts` or `.contract.ts` file beside the boundary, or move the boundary into an existing contract folder."
+    },
+    {
+      "rule": "enforce-schema-pairing",
+      "path": "backend/src/api/banking/handlers/virtual-accounts/create-virtual-account.handler.ts",
+      "line": 1,
+      "column": 1,
+      "message": "Boundary files must have a nearby schema or contract file.",
+      "suggestion": "Add a `.schema.ts` or `.contract.ts` file beside the boundary, or move the boundary into an existing contract folder."
+    },
+    {
+      "rule": "enforce-schema-pairing",
+      "path": "backend/src/api/banking/handlers/virtual-accounts/get-virtual-accounts.handler.ts",
+      "line": 1,
+      "column": 1,
+      "message": "Boundary files must have a nearby schema or contract file.",
+      "suggestion": "Add a `.schema.ts` or `.contract.ts` file beside the boundary, or move the boundary into an existing contract folder."
+    },
+    {
+      "rule": "enforce-schema-pairing",
+      "path": "backend/src/api/banking/handlers/virtual-accounts/remove-virtual-account.handler.ts",
+      "line": 1,
+      "column": 1,
+      "message": "Boundary files must have a nearby schema or contract file.",
+      "suggestion": "Add a `.schema.ts` or `.contract.ts` file beside the boundary, or move the boundary into an existing contract folder."
+    },
+    {
+      "rule": "enforce-schema-pairing",
+      "path": "backend/src/api/banking/handlers/wallet/activate.handler.ts",
+      "line": 1,
+      "column": 1,
+      "message": "Boundary files must have a nearby schema or contract file.",
+      "suggestion": "Add a `.schema.ts` or `.contract.ts` file beside the boundary, or move the boundary into an existing contract folder."
+    },
+    {
+      "rule": "enforce-schema-pairing",
+      "path": "backend/src/api/banking/handlers/wallet/create-activation-challenge.handler.ts",
+      "line": 1,
+      "column": 1,
+      "message": "Boundary files must have a nearby schema or contract file.",
+      "suggestion": "Add a `.schema.ts` or `.contract.ts` file beside the boundary, or move the boundary into an existing contract folder."
+    },
+    {
+      "rule": "enforce-schema-pairing",
+      "path": "backend/src/api/banking/handlers/wallet/get-embedded-wallet.handler.ts",
+      "line": 1,
+      "column": 1,
+      "message": "Boundary files must have a nearby schema or contract file.",
+      "suggestion": "Add a `.schema.ts` or `.contract.ts` file beside the boundary, or move the boundary into an existing contract folder."
+    },
+    {
+      "rule": "enforce-schema-pairing",
+      "path": "backend/src/api/cards/handlers/cancel-card.handler.ts",
+      "line": 1,
+      "column": 1,
+      "message": "Boundary files must have a nearby schema or contract file.",
+      "suggestion": "Add a `.schema.ts` or `.contract.ts` file beside the boundary, or move the boundary into an existing contract folder."
+    },
+    {
+      "rule": "enforce-schema-pairing",
+      "path": "backend/src/api/cards/handlers/create-card-order.handler.ts",
+      "line": 1,
+      "column": 1,
+      "message": "Boundary files must have a nearby schema or contract file.",
+      "suggestion": "Add a `.schema.ts` or `.contract.ts` file beside the boundary, or move the boundary into an existing contract folder."
+    },
+    {
+      "rule": "enforce-schema-pairing",
+      "path": "backend/src/api/cards/handlers/freeze-card.handler.ts",
+      "line": 1,
+      "column": 1,
+      "message": "Boundary files must have a nearby schema or contract file.",
+      "suggestion": "Add a `.schema.ts` or `.contract.ts` file beside the boundary, or move the boundary into an existing contract folder."
+    },
+    {
+      "rule": "enforce-schema-pairing",
+      "path": "backend/src/api/cards/handlers/get-apple-wallet-provisioning.handler.ts",
+      "line": 1,
+      "column": 1,
+      "message": "Boundary files must have a nearby schema or contract file.",
+      "suggestion": "Add a `.schema.ts` or `.contract.ts` file beside the boundary, or move the boundary into an existing contract folder."
+    },
+    {
+      "rule": "enforce-schema-pairing",
+      "path": "backend/src/api/cards/handlers/get-card-order.handler.ts",
+      "line": 1,
+      "column": 1,
+      "message": "Boundary files must have a nearby schema or contract file.",
+      "suggestion": "Add a `.schema.ts` or `.contract.ts` file beside the boundary, or move the boundary into an existing contract folder."
+    },
+    {
+      "rule": "enforce-schema-pairing",
+      "path": "backend/src/api/cards/handlers/get-card-spending-limits.handler.ts",
+      "line": 1,
+      "column": 1,
+      "message": "Boundary files must have a nearby schema or contract file.",
+      "suggestion": "Add a `.schema.ts` or `.contract.ts` file beside the boundary, or move the boundary into an existing contract folder."
+    },
+    {
+      "rule": "enforce-schema-pairing",
+      "path": "backend/src/api/cards/handlers/get-google-pay-provisioning.handler.ts",
+      "line": 1,
+      "column": 1,
+      "message": "Boundary files must have a nearby schema or contract file.",
+      "suggestion": "Add a `.schema.ts` or `.contract.ts` file beside the boundary, or move the boundary into an existing contract folder."
+    },
+    {
+      "rule": "enforce-schema-pairing",
+      "path": "backend/src/api/cards/handlers/list-cards.handler.ts",
+      "line": 1,
+      "column": 1,
+      "message": "Boundary files must have a nearby schema or contract file.",
+      "suggestion": "Add a `.schema.ts` or `.contract.ts` file beside the boundary, or move the boundary into an existing contract folder."
+    },
+    {
+      "rule": "enforce-schema-pairing",
+      "path": "backend/src/api/cards/handlers/set-card-label.handler.ts",
+      "line": 1,
+      "column": 1,
+      "message": "Boundary files must have a nearby schema or contract file.",
+      "suggestion": "Add a `.schema.ts` or `.contract.ts` file beside the boundary, or move the boundary into an existing contract folder."
+    },
+    {
+      "rule": "enforce-schema-pairing",
+      "path": "backend/src/api/cards/handlers/unfreeze-card.handler.ts",
+      "line": 1,
+      "column": 1,
+      "message": "Boundary files must have a nearby schema or contract file.",
+      "suggestion": "Add a `.schema.ts` or `.contract.ts` file beside the boundary, or move the boundary into an existing contract folder."
+    },
+    {
+      "rule": "enforce-schema-pairing",
+      "path": "backend/src/api/cards/handlers/update-card-spending-limits.handler.ts",
+      "line": 1,
+      "column": 1,
+      "message": "Boundary files must have a nearby schema or contract file.",
+      "suggestion": "Add a `.schema.ts` or `.contract.ts` file beside the boundary, or move the boundary into an existing contract folder."
+    },
+    {
+      "rule": "enforce-schema-pairing",
+      "path": "backend/src/api/communication-codes/handlers/get-communication-code.handler.ts",
+      "line": 1,
+      "column": 1,
+      "message": "Boundary files must have a nearby schema or contract file.",
+      "suggestion": "Add a `.schema.ts` or `.contract.ts` file beside the boundary, or move the boundary into an existing contract folder."
+    },
+    {
+      "rule": "enforce-schema-pairing",
+      "path": "backend/src/api/communication-codes/handlers/update-communication-code.handler.ts",
+      "line": 1,
+      "column": 1,
+      "message": "Boundary files must have a nearby schema or contract file.",
+      "suggestion": "Add a `.schema.ts` or `.contract.ts` file beside the boundary, or move the boundary into an existing contract folder."
+    },
+    {
+      "rule": "enforce-schema-pairing",
+      "path": "backend/src/api/in-app-notifications/handlers/list-in-app-notifications.handler.ts",
+      "line": 1,
+      "column": 1,
+      "message": "Boundary files must have a nearby schema or contract file.",
+      "suggestion": "Add a `.schema.ts` or `.contract.ts` file beside the boundary, or move the boundary into an existing contract folder."
+    },
+    {
+      "rule": "enforce-schema-pairing",
+      "path": "backend/src/api/in-app-notifications/handlers/mark-all-in-app-notifications-read.handler.ts",
+      "line": 1,
+      "column": 1,
+      "message": "Boundary files must have a nearby schema or contract file.",
+      "suggestion": "Add a `.schema.ts` or `.contract.ts` file beside the boundary, or move the boundary into an existing contract folder."
+    },
+    {
+      "rule": "enforce-schema-pairing",
+      "path": "backend/src/api/in-app-notifications/handlers/mint-in-app-notifications-ws-ticket.handler.ts",
+      "line": 1,
+      "column": 1,
+      "message": "Boundary files must have a nearby schema or contract file.",
+      "suggestion": "Add a `.schema.ts` or `.contract.ts` file beside the boundary, or move the boundary into an existing contract folder."
+    },
+    {
+      "rule": "enforce-schema-pairing",
+      "path": "backend/src/api/in-app-notifications/handlers/update-in-app-notification.handler.ts",
+      "line": 1,
+      "column": 1,
+      "message": "Boundary files must have a nearby schema or contract file.",
+      "suggestion": "Add a `.schema.ts` or `.contract.ts` file beside the boundary, or move the boundary into an existing contract folder."
+    },
+    {
+      "rule": "enforce-schema-pairing",
+      "path": "backend/src/api/maps/handlers/location-search.handler.ts",
+      "line": 1,
+      "column": 1,
+      "message": "Boundary files must have a nearby schema or contract file.",
+      "suggestion": "Add a `.schema.ts` or `.contract.ts` file beside the boundary, or move the boundary into an existing contract folder."
+    },
+    {
+      "rule": "enforce-schema-pairing",
+      "path": "backend/src/api/payments/stripe/handlers/create-billing-portal-session.handler.ts",
+      "line": 1,
+      "column": 1,
+      "message": "Boundary files must have a nearby schema or contract file.",
+      "suggestion": "Add a `.schema.ts` or `.contract.ts` file beside the boundary, or move the boundary into an existing contract folder."
+    },
+    {
+      "rule": "enforce-schema-pairing",
+      "path": "backend/src/api/payments/stripe/handlers/create-topup-intent.handler.ts",
+      "line": 1,
+      "column": 1,
+      "message": "Boundary files must have a nearby schema or contract file.",
+      "suggestion": "Add a `.schema.ts` or `.contract.ts` file beside the boundary, or move the boundary into an existing contract folder."
+    },
+    {
+      "rule": "enforce-schema-pairing",
+      "path": "backend/src/api/stress-test/handlers/send-in-app-notification-to-all-users.handler.ts",
+      "line": 1,
+      "column": 1,
+      "message": "Boundary files must have a nearby schema or contract file.",
+      "suggestion": "Add a `.schema.ts` or `.contract.ts` file beside the boundary, or move the boundary into an existing contract folder."
+    },
+    {
+      "rule": "enforce-schema-pairing",
+      "path": "backend/src/api/stress-test/handlers/simulate-customer.handler.ts",
+      "line": 1,
+      "column": 1,
+      "message": "Boundary files must have a nearby schema or contract file.",
+      "suggestion": "Add a `.schema.ts` or `.contract.ts` file beside the boundary, or move the boundary into an existing contract folder."
+    },
+    {
+      "rule": "enforce-schema-pairing",
+      "path": "backend/src/api/users/handlers/get-user.handler.ts",
+      "line": 1,
+      "column": 1,
+      "message": "Boundary files must have a nearby schema or contract file.",
+      "suggestion": "Add a `.schema.ts` or `.contract.ts` file beside the boundary, or move the boundary into an existing contract folder."
+    },
+    {
+      "rule": "enforce-schema-pairing",
+      "path": "backend/src/api/users/handlers/kyc-legal-name.handler.ts",
+      "line": 1,
+      "column": 1,
+      "message": "Boundary files must have a nearby schema or contract file.",
+      "suggestion": "Add a `.schema.ts` or `.contract.ts` file beside the boundary, or move the boundary into an existing contract folder."
+    },
+    {
+      "rule": "enforce-schema-pairing",
+      "path": "backend/src/api/users/handlers/search-users.handler.ts",
+      "line": 1,
+      "column": 1,
+      "message": "Boundary files must have a nearby schema or contract file.",
+      "suggestion": "Add a `.schema.ts` or `.contract.ts` file beside the boundary, or move the boundary into an existing contract folder."
+    },
+    {
+      "rule": "enforce-schema-pairing",
+      "path": "backend/src/api/users/handlers/set-schnl-tag.handler.ts",
+      "line": 1,
+      "column": 1,
+      "message": "Boundary files must have a nearby schema or contract file.",
+      "suggestion": "Add a `.schema.ts` or `.contract.ts` file beside the boundary, or move the boundary into an existing contract folder."
+    },
+    {
+      "rule": "enforce-schema-pairing",
+      "path": "backend/src/api/users/handlers/update-privacy.handler.ts",
+      "line": 1,
+      "column": 1,
+      "message": "Boundary files must have a nearby schema or contract file.",
+      "suggestion": "Add a `.schema.ts` or `.contract.ts` file beside the boundary, or move the boundary into an existing contract folder."
+    },
+    {
+      "rule": "enforce-schema-pairing",
+      "path": "backend/src/api/users/handlers/update-profile-picture.handler.ts",
+      "line": 1,
+      "column": 1,
+      "message": "Boundary files must have a nearby schema or contract file.",
+      "suggestion": "Add a `.schema.ts` or `.contract.ts` file beside the boundary, or move the boundary into an existing contract folder."
+    },
+    {
+      "rule": "enforce-schema-pairing",
+      "path": "backend/src/core/webhooks/align/handlers/customer-kycs-updated.handler.ts",
+      "line": 1,
+      "column": 1,
+      "message": "Boundary files must have a nearby schema or contract file.",
+      "suggestion": "Add a `.schema.ts` or `.contract.ts` file beside the boundary, or move the boundary into an existing contract folder."
+    },
+    {
+      "rule": "enforce-schema-pairing",
+      "path": "backend/src/core/webhooks/align/handlers/log-unhandled-event.handler.ts",
+      "line": 1,
+      "column": 1,
+      "message": "Boundary files must have a nearby schema or contract file.",
+      "suggestion": "Add a `.schema.ts` or `.contract.ts` file beside the boundary, or move the boundary into an existing contract folder."
+    },
+    {
+      "rule": "enforce-schema-pairing",
+      "path": "backend/src/core/webhooks/align/handlers/offramp-transfer-status-updated.handler.ts",
+      "line": 1,
+      "column": 1,
+      "message": "Boundary files must have a nearby schema or contract file.",
+      "suggestion": "Add a `.schema.ts` or `.contract.ts` file beside the boundary, or move the boundary into an existing contract folder."
+    },
+    {
+      "rule": "enforce-schema-pairing",
+      "path": "backend/src/core/webhooks/align/handlers/onramp-transfer-status-updated.handler.ts",
+      "line": 1,
+      "column": 1,
+      "message": "Boundary files must have a nearby schema or contract file.",
+      "suggestion": "Add a `.schema.ts` or `.contract.ts` file beside the boundary, or move the boundary into an existing contract folder."
     },
     {
       "rule": "enforce-side-effect-placement",
