@@ -27,25 +27,28 @@ export async function runBrainMigrations(
 	const migrationRunId = nanoid(24)
 	const deploymentId = createBrainMigrationDeploymentId(migration)
 
-
-	writeBrainMigrationRun(database, {
-		id: migrationRunId,
-		migrationId: migration.tag,
-		fromVersion: migration.idx,
-		toVersion: migration.idx,
-		phase: 'expand',
-		risk: 'low',
-		startedAt: checkedAtEpochMs,
-		finishedAt: null,
-		status: 'started',
-		attempt: 1,
-		errorJson: null,
-		deploymentId,
-	})
-
 	let hasBrainMigrationLock = false
+	let hasBrainMigrationRun = false
 
 	try {
+		await applyDurableSqliteMigration(database, brainMigrationBundle)
+
+		writeBrainMigrationRun(database, {
+			id: migrationRunId,
+			migrationId: migration.tag,
+			fromVersion: migration.idx,
+			toVersion: migration.idx,
+			phase: 'expand',
+			risk: 'low',
+			startedAt: checkedAtEpochMs,
+			finishedAt: null,
+			status: 'started',
+			attempt: 1,
+			errorJson: null,
+			deploymentId,
+		})
+		hasBrainMigrationRun = true
+
 		acquireBrainMigrationLock(database, migrationRunId, deploymentId, checkedAtEpochMs)
 		hasBrainMigrationLock = true
 
@@ -60,8 +63,6 @@ export async function runBrainMigrations(
 			lastErrorJson: null,
 			updatedAt: checkedAtEpochMs,
 		})
-
-		await applyDurableSqliteMigration(database, brainMigrationBundle)
 
 		writeBrainMigrationRunStatus(database, {
 			id: migrationRunId,
@@ -85,32 +86,34 @@ export async function runBrainMigrations(
 	} catch (error) {
 		const errorJson = formatBrainMigrationError(error)
 
-		writeBrainMigrationRunStatus(database, {
-			id: migrationRunId,
-			status: 'failed',
-			finishedAt: checkedAtEpochMs,
-			errorJson,
-		})
-		writeBrainMigrationSmoke(database, {
-			id: nanoid(24),
-			migrationRunId,
-			smoke: 'brain.migration.runtime',
-			status: 'failed',
-			startedAt: checkedAtEpochMs,
-			finishedAt: checkedAtEpochMs,
-			errorJson,
-		})
-		writeBrainSchemaReadiness(database, {
-			id: 'brain',
-			schemaVersion: migration.idx,
-			minReadableVersion: migration.idx,
-			targetVersion: migration.idx,
-			status: error instanceof BrainMigrationLockedError ? 'needs_retry' : 'migration_failed',
-			lastMigrationId: migration.tag,
-			lastSmokeStatus: 'failed',
-			lastErrorJson: errorJson,
-			updatedAt: checkedAtEpochMs,
-		})
+		if (hasBrainMigrationRun) {
+			writeBrainMigrationRunStatus(database, {
+				id: migrationRunId,
+				status: 'failed',
+				finishedAt: checkedAtEpochMs,
+				errorJson,
+			})
+			writeBrainMigrationSmoke(database, {
+				id: nanoid(24),
+				migrationRunId,
+				smoke: 'brain.migration.runtime',
+				status: 'failed',
+				startedAt: checkedAtEpochMs,
+				finishedAt: checkedAtEpochMs,
+				errorJson,
+			})
+			writeBrainSchemaReadiness(database, {
+				id: 'brain',
+				schemaVersion: migration.idx,
+				minReadableVersion: migration.idx,
+				targetVersion: migration.idx,
+				status: error instanceof BrainMigrationLockedError ? 'needs_retry' : 'migration_failed',
+				lastMigrationId: migration.tag,
+				lastSmokeStatus: 'failed',
+				lastErrorJson: errorJson,
+				updatedAt: checkedAtEpochMs,
+			})
+		}
 		if (hasBrainMigrationLock) {
 			deleteBrainMigrationLock(database)
 		}

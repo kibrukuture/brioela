@@ -11,3 +11,7 @@
 - Ignore old legacy Schnl/mobile code unless it blocks current work.
 - For Cloudflare, Expo, SDK, or external APIs, check current docs before assuming.
 - Use Bun for package scripts and installs.
+- Keep tool output small: prefer targeted `rg`, `sed`, and narrow file reads over large dumps.
+- Use conservative tool output limits and avoid storing long logs in the thread.
+- Do not spawn subagents unless the user explicitly asks for parallel agent work.
+- Prefer a fresh thread after each large finished phase so stale context is not resent on every turn.

@@ -1,0 +1,7 @@
+{
+	"extends": "../../../brain.test.typecheck.config.json",
+	"include": [
+		"brain.test.env.d.ts",
+		"**/*.ts"
+	]
+}

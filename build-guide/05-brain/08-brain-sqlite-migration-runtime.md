@@ -253,8 +253,8 @@ CREATE INDEX idx_brain_migration_smoke_run ON brain_migration_smoke_results (mig
 Allowed migration run statuses:
 
 ```text
-started       row created before applying or checking the migration
-applied       Drizzle applied the migration SQL, smoke has not proven readiness yet
+started       row created after Drizzle has created the product migration tables
+applied       Drizzle schema is present and Brain product smoke has not proven readiness yet
 smoke_passed  required Brioela smoke checks passed for this migration
 failed        migration or smoke failed and readiness must block writes
 blocked       rollout/control-plane policy prevented this migration from running
@@ -269,16 +269,17 @@ Every Brain wake runs this order before any normal product operation:
 ```text
 1. Enter startup critical section with blockConcurrencyWhile.
 2. Create typed Drizzle DB over DO SQLite.
-3. Acquire Brain migration lock through Drizzle repositories.
-4. Write readiness as `migrating` and create a `brain_migration_runs` row.
-5. Read control-plane rollout policy when the control plane exists.
-6. Run Drizzle durable-sqlite migrator for allowed pending migrations.
-7. Mark the run `applied`.
-8. Run required smoke tests through Drizzle repositories.
-9. Record smoke results and mark the run `smoke_passed`.
-10. Set readiness to `ready`.
-11. Release migration lock.
-12. Serve request, callable RPC, schedule callback, or alarm.
+3. Run Drizzle durable-sqlite migrator so Drizzle-owned tables exist before Brioela writes product migration metadata.
+4. Create a `brain_migration_runs` row with status `started`.
+5. Acquire Brain migration lock through Drizzle repositories.
+6. Write readiness as `migrating`.
+7. Read control-plane rollout policy when the control plane exists.
+8. Mark the run `applied`.
+9. Run required smoke tests through Drizzle repositories.
+10. Record smoke results and mark the run `smoke_passed`.
+11. Set readiness to `ready`.
+12. Release migration lock.
+13. Serve request, callable RPC, schedule callback, or alarm.
 ```
 
 If any migration or smoke check fails, readiness is not `ready`. The Brain returns a typed unavailable/degraded response instead of serving new code against uncertain data.
