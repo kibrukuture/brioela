@@ -42,7 +42,8 @@
     ]
   },
 
-  // SQLite migrations — required for every DO that uses Drizzle SQLite
+  // Durable Object class migrations. These create the SQLite-backed DO classes.
+  // Drizzle schema migrations are generated/applied separately inside each DO.
   "migrations": [
     {
       "tag": "v1",

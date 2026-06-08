@@ -45,7 +45,7 @@ The per-user agent brain. One `BrioelaBrain` Durable Object per user, forever. T
 - BrioelaIdentity: 800 token cap, universal constant, block order is fixed for Anthropic prefix caching
 - Brioela is ambient, not chat-first; Cloudflare Agents SDK owns durable runtime, Vercel AI SDK owns model/tool calls, and Brioela owns food memory/safety/surfacing policy.
 - Prefer current Agents SDK primitives (`subAgent`, `agentTool`, `schedule`, `queue`, `runFiber`, `keepAliveWhile`, Workflows) over custom runtime plumbing where they express the same behavior.
-- Brain SQLite migrations are not a simple deploy step. Each user's private SQLite migrates lazily under a production runtime with a manifest, per-Brain lock, readiness gate, smoke tests, rollout control, and forward-fix policy.
+- Brain SQLite migrations are not a simple deploy step. Drizzle generates and applies the SQLite schema migrations inside each Brain DO; Brioela wraps that with a production runtime: manifest, per-Brain lock, readiness gate, smoke tests, rollout control, and forward-fix policy.
 - No Brain entry point serves normal work until migration readiness is `ready` or an explicitly supported read-only degraded state.
 
 ## What This Folder Depends On

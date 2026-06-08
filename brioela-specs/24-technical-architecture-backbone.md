@@ -81,7 +81,7 @@ new_sqlite_classes = ["BrioelaBrain"]
 ```
 
 DO capabilities used by Brioela:
-- **SQLite via Drizzle**: full SQL, type-safe schema, migrations, 10GB limit, unlimited rows.
+- **SQLite via Drizzle**: Cloudflare provides the SQLite storage engine; Drizzle provides Brioela's schema, generated migrations, migrator, and ORM language; Brioela gates readiness above Drizzle. Brain product code does not use raw DO SQLite.
 - **KV storage**: also available via `this.ctx.storage.get/put` for simple key-value access.
 - **Alarms**: `this.ctx.storage.setAlarm(timestamp)` — DO wakes itself at a future time. The core mechanism for ambient intelligence (weekly summaries, behavior pattern detection, travel pre-load, sickness follow-up) without any cron jobs. Each alarm event triggers `async alarm()` on the DO.
 - **WebSocket hibernation**: DO holds WebSocket connections open and hibernates between messages at zero cost. Wakes in milliseconds on message arrival. This is how 2-hour cooking sessions work within the CPU limits.
@@ -94,7 +94,9 @@ DO capabilities used by Brioela:
 
 Brain SQLite migrations are distributed runtime events, not a single central deploy event. Every user has a physically isolated SQLite database, so a schema rollout can touch millions of Brains over time as each Durable Object wakes.
 
-Hard rule: Drizzle's `__drizzle_migrations` proves SQL files were applied, but Brioela readiness proves the user's Brain is safe to serve.
+Hard rule: Drizzle's `__drizzle_migrations` proves Drizzle-generated migrations were applied, but Brioela readiness proves the user's Brain is safe to serve.
+
+Drizzle does Drizzle's job: schema declarations, migration generation, in-DO migration application through `drizzle-orm/durable-sqlite/migrator`, and typed ORM queries. Brioela does not spoon-feed or replace Drizzle with a competing homemade SQLite migrator. Brioela builds the safety fortress above Drizzle: control-plane rollout, per-Brain locks, smoke tests, active-session protection, destructive-change blocking, degraded mode, and telemetry.
 
 The Brain startup path must use the migration runtime described in `build-guide/05-brain/08-brain-sqlite-migration-runtime.md`:
 

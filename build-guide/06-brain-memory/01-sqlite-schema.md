@@ -4,9 +4,11 @@
 
 Every table in the `BrioelaBrain` DO SQLite — CREATE TABLE SQL, Drizzle schema, column decisions, indexes, write rules, and read rules for the core memory tables plus feature-owned private extensions. This is the complete data layer of the user's private brain.
 
-All private tables live in one SQLite file per user, managed by Drizzle over `this.ctx.storage`. The schema is version-controlled in `backend/src/agents/brain/migrations/`, and production rollout is governed by the Brain SQLite migration runtime in `build-guide/05-brain/08-brain-sqlite-migration-runtime.md`. No table is shared across users. No Supabase.
+All private tables live in one SQLite file per user, managed by Drizzle over `this.ctx.storage`. Drizzle schema files are the source of truth, Drizzle Kit generates the SQLite migration artifacts, and `drizzle-orm/durable-sqlite/migrator` applies them inside the Brain DO startup path. Production rollout is governed by the Brain SQLite migration runtime in `build-guide/05-brain/08-brain-sqlite-migration-runtime.md`. No table is shared across users. No Supabase.
 
-Migration safety is part of the schema contract. Drizzle tracks which SQL files applied through `__drizzle_migrations`; Brioela tracks whether the user's Brain is safe to serve through product migration readiness tables and smoke results. Both layers are required.
+Migration safety is part of the schema contract. Drizzle tracks which generated migration files applied through `__drizzle_migrations`; Brioela tracks whether the user's Brain is safe to serve through product migration readiness tables and smoke results. Both layers are required.
+
+Hard database rule: Brain code uses Drizzle as the database language. Raw Durable Object SQLite is metal and is not used by feature code. Reads and writes go through typed Drizzle repositories/stores, with schema decoding at repository boundaries.
 
 ---
 
@@ -684,20 +686,23 @@ CREATE TABLE __drizzle_migrations (
 );
 ```
 
-**Rules:** Never edit an applied migration file. Never write to this table in application code. The Drizzle migrator runs at every DO startup before any other operation.
+**Rules:** Never edit an applied migration file. Never write to this table in application code. The Drizzle migrator runs inside the Brain startup gate before normal Brain work. Brioela readiness must still pass before serving product code.
 
 ---
 
 ## DO Startup Sequence — Full Order
 
 ```
-1. drizzle-orm/durable-sqlite/migrator runs
-   → reads __drizzle_migrations
-   → applies unapplied migrations in order
+1. Create typed Drizzle DB over DO SQLite
 
-2. PRAGMA journal_mode=WAL
-   → runs after migrations complete
-   → persists for lifetime of this DO instance
+2. Brain migration runtime enters startup gate
+   → acquires migration lock
+   → checks rollout policy
+   → calls drizzle-orm/durable-sqlite/migrator
+   → reads __drizzle_migrations
+   → applies unapplied generated migrations in order
+   → runs Brioela smoke tests through Drizzle repositories
+   → writes readiness state
 
 3. agent_state: read 'do.initialized'
    → missing or '0' → run initialization:

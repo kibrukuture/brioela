@@ -165,7 +165,9 @@ The service role key bypasses RLS — it is never exposed to clients. Mobile use
 
 ## DO SQLite — Per Durable Object
 
-Each DO has its own isolated SQLite database via `this.ctx.storage`. Drizzle manages the schema.
+Each DO has its own isolated SQLite database via `this.ctx.storage`. Cloudflare provides the storage engine. Drizzle is Brioela's database language for that storage: schema definitions, generated migrations, migration application, and normal ORM queries all go through `drizzle-orm/durable-sqlite`.
+
+Raw DO SQLite is metal. Product code does not call `ctx.storage.sql` or raw SQL directly. The only approved metal boundary is the tiny Brain database adapter/runtime layer that wires Cloudflare storage to Drizzle and handles unavoidable SQLite configuration.
 
 ```ts
 // backend/src/agents/brain/_schema/memory.schema.ts
@@ -200,7 +202,11 @@ export const constraints = sqliteTable('constraints', {
 })
 ```
 
-DO SQLite migrations are declared in `wrangler.jsonc` migration tags — Drizzle Kit does NOT manage them.
+Wrangler migration tags create or rename SQLite-backed Durable Object classes. They do not replace Drizzle schema migrations.
+
+For `BrioelaBrain`, Drizzle Kit generates SQLite migration artifacts from the Brain Drizzle schema, and `drizzle-orm/durable-sqlite/migrator` applies them inside the Brain DO startup path. Brioela's migration runtime wraps that Drizzle migrator with rollout policy, per-Brain locks, smoke tests, readiness state, telemetry, and destructive-change blocking.
+
+Drizzle answers whether schema SQL applied. Brioela answers whether this user's private Brain is safe to serve.
 
 ---
 
@@ -225,7 +231,8 @@ All user-private behavioral data (scans, constraints, recipes, sessions, memory)
 ## Rules
 
 - Never mix schemas: Supabase tables never reference DO SQLite and vice versa.
+- Never bypass Drizzle for Brain SQLite reads, writes, or migrations.
 - Never expose raw Drizzle types to the API. Map through the entity validator before returning.
 - All timestamps use `withTimezone: true` in Postgres. DO SQLite uses `integer` with `mode: 'timestamp'`.
-- `drizzle.config.ts` always points to `drizzle/schema/index.ts` — never individual files.
+- Shared Postgres `drizzle.config.ts` points to `drizzle/schema/index.ts` — never individual files. Brain SQLite has its own Drizzle config pointing at the Brain schema entry point.
 - Never `JSON.stringify` / `JSON.parse` at the query layer. Parse at the handler boundary.

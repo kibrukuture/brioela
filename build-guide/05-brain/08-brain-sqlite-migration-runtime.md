@@ -4,13 +4,24 @@
 
 The production migration system for the per-user `BrioelaBrain` SQLite database. This is not a normal single-database migration problem. One user means one private SQLite database inside one Durable Object. Millions of users means millions of private SQLite databases, each waking and migrating at different times.
 
-This file defines the runtime contract for safe migrations: manifest design, file naming, per-Brain locks, readiness states, rollout control, smoke tests, destructive-change rules, telemetry, and deployment sequencing.
+This file defines the runtime contract for safe migrations: Drizzle-generated migration artifacts, the Brain migration manifest, per-Brain locks, readiness states, rollout control, smoke tests, destructive-change rules, telemetry, and deployment sequencing.
 
 ## Core Principle
 
 Deploying code must not mean blindly mutating every user's private database.
 
-For Brain SQLite, migration is lazy, per-user, observable, gated, and smoke-tested. A Brain is not allowed to serve normal reads, writes, Mira context, or tool calls until its schema is compatible with the running code and the post-migration smoke tests pass.
+For Brain SQLite, migration is lazy, per-user, observable, gated, and smoke-tested. Drizzle owns schema generation, migration application, and ORM access. Brioela owns the fortress above Drizzle: permission to migrate, when to migrate, whether the migrated Brain is safe, and what the runtime may serve afterward.
+
+A Brain is not allowed to serve normal reads, writes, Mira context, or tool calls until its schema is compatible with the running code and the post-migration smoke tests pass.
+
+Hard doctrine:
+
+```text
+Cloudflare Durable Object SQLite = storage engine
+Drizzle durable-sqlite = schema, generated migrations, migrator, ORM language
+Brioela migration runtime = safety gate above Drizzle
+Brioela guards = enforcement against bypassing Drizzle or readiness
+```
 
 ## Why Brain SQLite Is More Dangerous Than Postgres
 
@@ -38,8 +49,24 @@ Future code should use this structure:
 
 ```text
 backend/src/agents/brain/
+├── _schema/
+│   ├── brain.schema.ts
+│   ├── memory.schema.ts
+│   ├── migration.schema.ts
+│   └── index.ts
+├── _database/
+│   ├── create.brain.database.helper.ts
+│   ├── brain.database.type.ts
+│   └── index.ts
+├── _repositories/
+│   ├── memory.repository.ts
+│   ├── readiness.repository.ts
+│   ├── migration.run.repository.ts
+│   ├── smoke.result.repository.ts
+│   └── index.ts
 ├── _migrations/
 │   ├── brain.migration.manifest.ts
+│   ├── drizzle.migrations.ts
 │   ├── index.ts
 │   ├── _handlers/
 │   │   ├── run.brain.migrations.handler.ts
@@ -69,25 +96,25 @@ backend/src/agents/brain/
 │       ├── brain.migration.type.ts
 │       ├── brain.migration.readiness.type.ts
 │       └── index.ts
-└── migrations/
-    ├── 0001.initial.sql
-    ├── 0002.add.memory.event.indexes.sql
-    └── 0003.add.recipe.source.artifacts.sql
+└── drizzle/
+    ├── 0000_initial.sql
+    ├── 0001_add_memory_event_indexes.sql
+    └── meta/
 ```
 
 Naming rules:
 
-- SQL files use `NNNN.short.purpose.sql`.
-- Numbers are four digits and monotonic.
-- Names are lowercase dot-separated words.
+- Drizzle-generated SQL files keep Drizzle's generated names and layout.
+- Generated migration artifacts are an approved generated boundary; do not rename them just to satisfy Brioela role-suffix rules.
 - Never rename an applied migration file.
 - Never edit an applied migration file.
 - Fix mistakes with a new migration.
 - Runtime files use the normal Brioela role suffixes: `.handler.ts`, `.helper.ts`, `.policy.ts`, `.type.ts`.
+- Runtime files must live under matching role folders.
 
 ## Migration Manifest
 
-Every SQL migration has a typed manifest entry. Drizzle applies SQL. The manifest tells Brioela whether that SQL is allowed to run for this Brain, how dangerous it is, and how to prove the Brain is safe afterward.
+Every shipped Drizzle migration has a typed manifest entry. Drizzle applies SQL. The manifest tells Brioela whether that migration is allowed to run for this Brain, how dangerous it is, and how to prove the Brain is safe afterward.
 
 ```typescript
 export const brainMigrationManifest = {
@@ -95,8 +122,8 @@ export const brainMigrationManifest = {
   minReadableSchemaVersion: 2,
   migrations: [
     {
-      id: '0003.add.recipe.source.artifacts',
-      file: '0003.add.recipe.source.artifacts.sql',
+      id: '0001_add_memory_event_indexes',
+      file: '0001_add_memory_event_indexes.sql',
       from: 2,
       to: 3,
       phase: 'expand',
@@ -120,8 +147,8 @@ Required fields:
 
 | Field | Meaning |
 |---|---|
-| `id` | Stable migration id. Must match file name without `.sql`. |
-| `file` | SQL file bundled with Worker deployment. |
+| `id` | Stable migration id. For generated Drizzle migrations, use the generated file name without `.sql`. |
+| `file` | Drizzle-generated SQL file bundled with Worker deployment. |
 | `from` / `to` | Product schema version transition. |
 | `phase` | `expand`, `dual_write`, `backfill`, `verify`, or `contract`. |
 | `risk` | `low`, `medium`, `high`, or `blocked`. |
@@ -133,9 +160,9 @@ Hard rule: every manifest migration must have a smoke list. Empty smoke lists ar
 
 ## Product Migration Tables
 
-Drizzle owns `__drizzle_migrations`. Brioela must not replace it.
+Drizzle owns `__drizzle_migrations`. Brioela must not replace it, write to it, or infer product readiness from it alone.
 
-Brioela adds product-level migration tables so the Brain can know whether it is safe to serve. Drizzle answers: did this SQL file apply? Brioela answers: is this user's Brain ready for product code?
+Brioela adds product-level migration tables so the Brain can know whether it is safe to serve. Drizzle answers: did this migration apply? Brioela answers: is this user's Brain ready for product code?
 
 ### `brain_schema_readiness`
 
@@ -211,13 +238,13 @@ Every Brain wake runs this order before any normal product operation:
 
 ```text
 1. Enter startup critical section with blockConcurrencyWhile.
-2. Open Drizzle over DO SQLite.
-3. Acquire Brain migration lock.
+2. Create typed Drizzle DB over DO SQLite.
+3. Acquire Brain migration lock through Drizzle repositories.
 4. Read control-plane rollout policy.
-5. Run Drizzle migrator for allowed pending migrations.
-6. Run Brioela product migration runtime checks.
-7. Run required smoke tests.
-8. Set WAL mode and wal_autocheckpoint.
+5. Run Drizzle durable-sqlite migrator for allowed pending migrations.
+6. Verify Drizzle migration state.
+7. Run Brioela product migration runtime checks.
+8. Run required smoke tests through Drizzle repositories.
 9. Set readiness to ready.
 10. Release migration lock.
 11. Serve request, callable RPC, schedule callback, or alarm.
@@ -453,12 +480,15 @@ Private details stay inside the user's Brain SQLite. Global telemetry receives h
 ## Hard Bans
 
 - No DDL outside migration SQL files.
+- No competing hand-written SQLite migrator.
 - No editing applied migration files.
 - No deleting applied migration files.
 - No startup-created triggers.
 - No `DROP TABLE` or `DROP COLUMN` in expand phase.
 - No migration without manifest entry.
 - No manifest entry without smoke tests.
+- No Brain product code calling `ctx.storage.sql`, `.storage.sql`, raw `sql\`...\``, `db.run`, `db.get`, `db.all`, or `db.values`.
+- No Brain feature importing schema tables directly when a repository/store owns that table.
 - No normal Brain work while readiness is not `ready` unless explicitly read-only degraded.
 - No LLM calls inside migration or smoke tests.
 - No permanent synthetic user facts from smoke tests.

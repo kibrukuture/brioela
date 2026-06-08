@@ -113,7 +113,9 @@ const product = await db.query.products.findFirst({
 const product = await db.execute(sql`SELECT * FROM products WHERE id = ${upc}`)
 ```
 
-Raw SQL is only permitted for: complex aggregations that Drizzle's query builder cannot express, and full-text search queries (PostgreSQL `tsvector`). Document why whenever raw SQL is used.
+Raw SQL is only permitted for Supabase Postgres when Drizzle cannot express the operation, such as carefully documented full-text search. Product code must not use raw SQL for normal reads, writes, updates, or deletes.
+
+Brain SQLite is stricter: raw Durable Object SQLite is metal, not Brioela's application language. Product Brain code must not call `ctx.storage.sql`, `.storage.sql`, `db.run`, `db.get`, `db.all`, `db.values`, or `sql\`...\`` directly. The only approved raw boundary is Drizzle itself and the tiny Brain database adapter/runtime layer that wires Cloudflare DO storage to Drizzle and, when unavoidable, configures SQLite pragmas. All Brain feature code talks through typed Drizzle repositories/stores.
 
 ### Transactions
 
@@ -131,14 +133,16 @@ await db.transaction(async (tx) => {
 DO SQLite queries use Drizzle exactly like Postgres except for the adapter:
 
 ```ts
-// Inside a DO method
-const memory = await this.db.query.userMemory.findFirst({
+// Inside a Brain repository/store, not directly inside UI, route, or feature code.
+const memory = await db.query.userMemory.findFirst({
   where: eq(userMemory.key, 'dietary_identity'),
 })
 
 if (!memory) return null
-return JSON.parse(memory.value) as DietaryIdentity
+return DietaryIdentitySchema.parse(JSON.parse(memory.value))
 ```
+
+Feature code does not import Brain tables directly. It calls a typed repository/store or a typed Brain RPC method. This keeps all validation, JSON decoding, permissions, and write policy in one enforceable layer.
 
 ---
 
@@ -160,19 +164,19 @@ Never manually edit generated migration files. If a migration is wrong, generate
 
 ### DO SQLite
 
-DO SQLite migrations are declared in `wrangler.jsonc`:
+Wrangler declares the Durable Object class and creates the SQLite-backed DO storage:
 
 ```toml
 [[migrations]]
 tag = "v1"
 new_sqlite_classes = ["BrioelaBrain"]
-
-[[migrations]]
-tag = "v2"
-# new tables or schema changes declared per migration tag
 ```
 
-Drizzle Kit does NOT manage DO SQLite migrations. They are managed via wrangler migration tags.
+Drizzle owns the Brain SQLite schema and migration artifacts. Use Drizzle Kit with the Durable Object SQLite driver to generate migration SQL from `backend/src/agents/brain/_schema/`. Import the generated migration bundle into the Worker, then apply it inside `BrioelaBrain` with `drizzle-orm/durable-sqlite/migrator`.
+
+Brioela does not hand-write a competing SQLite migrator. Brioela's migration runtime is the fortress above Drizzle: rollout policy, per-Brain lock, active-session checks, smoke tests, readiness state, telemetry, and destructive-change blocking. Drizzle answers whether SQL migrations applied. Brioela answers whether this user's Brain is safe to serve.
+
+Generated Drizzle migration artifacts are an approved generated boundary. Do not rename or hand-edit applied generated migrations. If a migration is wrong, update the schema and generate a new correcting migration.
 
 ---
 
@@ -187,6 +191,7 @@ All user-private data lives in DO SQLite, not Supabase. Supabase contains only s
 ## Rules
 
 - Never `this.ctx.storage.get/put` for structured data — use Drizzle.
+- Never use `ctx.storage.sql` or raw Drizzle SQL in Brain product code. Only the approved Brain database adapter/runtime boundary may touch metal SQLite, and only for Drizzle wiring or unavoidable SQLite configuration.
 - Never `JSON.parse` or `JSON.stringify` at the query layer — Drizzle's `jsonb` handles it for Postgres; for DO SQLite, parse at the repository function level, not inside components or route handlers.
 - Column names in SQL: `snake_case`. TypeScript property names: `camelCase`. Drizzle maps them — declare both.
 - Never expose raw Drizzle types in HTTP responses or mobile types. Map to Zod-validated response schemas before returning.

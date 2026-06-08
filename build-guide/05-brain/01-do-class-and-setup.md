@@ -77,6 +77,7 @@ backend/src/agents/brain/
 │   └── index.ts
 ├── _migrations/
 │   ├── brain.migration.manifest.ts
+│   ├── drizzle.migrations.ts
 │   ├── index.ts
 │   ├── _handlers/
 │   │   ├── run.brain.migrations.handler.ts
@@ -111,9 +112,10 @@ backend/src/agents/brain/
 │       ├── session.context.compressor.agent.ts
 │       ├── compress.session.context.handler.ts
 │       └── index.ts
-└── migrations/
-    ├── 0001.initial.sql
-    └── 0002.add.memory.event.indexes.sql
+└── drizzle/
+    ├── 0000_initial.sql
+    ├── 0001_add_memory_event_indexes.sql
+    └── meta/
 ```
 
 The Brain folder is deliberately dense because it is the permanent truth-owner. Every file has one responsibility. Brain-owned child agents live under `_subagents/` so they are visibly subordinate to Brain, not peer brains.
@@ -128,10 +130,11 @@ The Brain folder is deliberately dense because it is the permanent truth-owner. 
 import { Agent } from 'agents'
 import { callable } from 'agents'
 import { drizzle } from 'drizzle-orm/durable-sqlite'
-import { migrate } from 'drizzle-orm/durable-sqlite/migrator'
 import * as schema from './_schema'
 import { readBrainContext, writeBrainMemory, appendMemoryEvent, checkActiveSession } from './_rpc'
 import { dispatchBrainSchedule } from './_handlers'
+import { createBrainDatabase } from './_database'
+import { runBrainMigrations } from './_migrations'
 import type { Env } from '@/types/env'
 
 export class BrioelaBrain extends Agent<Env> {
@@ -141,14 +144,12 @@ export class BrioelaBrain extends Agent<Env> {
     super(ctx, env)
 
     // Wire Drizzle to DO storage. Each user's DO gets its own SQLite.
-    this.db = drizzle(ctx.storage, { schema })
+    this.db = createBrainDatabase(ctx.storage)
 
     // Startup is a gate, not a convenience hook. No request/RPC/alarm runs until
     // migrations and smoke tests mark this Brain ready.
     ctx.blockConcurrencyWhile(async () => {
-      await runBrainMigrations({ db: this.db, storage: ctx.storage, env })
-      await ctx.storage.sql.exec('PRAGMA journal_mode=WAL;')
-      await ctx.storage.sql.exec('PRAGMA wal_autocheckpoint=1000;')
+      await runBrainMigrations({ db: this.db, env })
     })
   }
 
@@ -184,7 +185,9 @@ export class BrioelaBrain extends Agent<Env> {
 }
 ```
 
-The sample uses `runBrainMigrations(...)` instead of calling Drizzle directly from the class. That runtime still calls the Drizzle migrator internally, but it also owns the Brioela product safety layer: manifest checks, rollout policy, migration lock, smoke tests, readiness state, retry/backoff, and telemetry. The DO class must not inline that logic.
+The sample uses `runBrainMigrations(...)` instead of calling the Drizzle migrator directly from the class. That runtime calls `drizzle-orm/durable-sqlite/migrator` internally, then owns the Brioela product safety layer: manifest checks, rollout policy, migration lock, smoke tests, readiness state, retry/backoff, and telemetry. The DO class must not inline that logic.
+
+The DO class also does not call `ctx.storage.sql` directly. Raw Durable Object SQLite is metal. Brain product code uses Drizzle repositories/stores; only the approved database adapter/runtime boundary may touch lower-level storage when Drizzle wiring or unavoidable SQLite configuration requires it.
 
 Hard startup rule:
 
