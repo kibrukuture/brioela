@@ -1,8 +1,8 @@
-# Bela — Mira Shopper Role
+# Bela — Mira Shopper Scene
 
 ## What This File Covers
 
-Mira in shopper role during active Bela orders.
+Mira in the Bela shopper scene during active Bela orders.
 
 ## Sources
 
@@ -11,7 +11,7 @@ Mira in shopper role during active Bela orders.
 
 ## Stack
 
-Reuse the Mira live presence runtime:
+Start a MiraSession with a Bela shopper scene:
 
 - Cloudflare Realtime / RealtimeKit
 - OrderAgent DO for Bela order state and Mira session ownership

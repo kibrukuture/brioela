@@ -57,7 +57,7 @@ user_recipe:         user_id, recipe_id, title, ingredients_json, steps_json, cu
 - `06-memory-engine` — `recipes`, `memory_event`, and session context schema
 - `07-scanner` — screenshot image extraction reuses server-side GPT-4o mini vision patterns and confidence caveats
 - `30-mira` — uncertain or conflicting imports can escalate into Mira recipe review
-- `08-cooking-session` — imported recipes must be immediately cookable by Mira in cooking role
+- `08-cooking-session` — imported recipes must be immediately cookable by Mira in the cooking scene
 - `10-map` — place shares can route to place/map memory rather than recipe import
 - `13-receipt-intelligence` — receipt-like shares can route to receipt processing rather than recipe import
 - `17-menu-scanning` — menu-like shares can route to menu parsing rather than recipe import

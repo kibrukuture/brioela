@@ -12,7 +12,7 @@ Yellow means the user should ask before ordering. The product value is not just 
 
 Every yellow dish must return a question the user can show to staff or read aloud.
 
-If the user and staff do not share a language, the same question can be passed to Mira in menu_language_bridge role
+If the user and staff do not share a language, the same question can be passed to a menu_language_bridge MiraScene
 (`08-language-bridge.md`) so Brioela can speak it in the staff language and summarize the answer back
 to the user.
 

@@ -63,7 +63,7 @@ During an active live cooking session, the user mentions mid-session that they a
 - "Oh no, I don't have enough garlic"
 - "I forgot to buy onions, I have none left"
 
-Mira in cooking role extracts this and sends a `missing_ingredient` signal to the Brain. The Brain checks if an AI shopping order can be placed fast enough to be useful for this session (unlikely for an active cooking session, but possible for a "I'm going to start in 2 hours" scenario).
+Mira in the cooking scene extracts this and sends a `missing_ingredient` signal to the Brain. The Brain checks if an AI shopping order can be placed fast enough to be useful for this session (unlikely for an active cooking session, but possible for a "I'm going to start in 2 hours" scenario).
 
 If same-day delivery is available and the user has a saved payment method: the Brain surfaces an offer: "No garlic — do you want me to order some? I can try to get it here within the hour." If the user says yes, an urgent same-day order is placed through the normal PaymentIntent manual-capture flow.
 

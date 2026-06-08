@@ -86,7 +86,7 @@ Avoid medical certainty:
 
 When an imported recipe has allergy/diet conflicts or major uncertainty, Brioela can offer a live review conversation.
 
-This escalates to Mira, the shared live presence runtime documented in `30-mira`: Gemini Live plus Cloudflare Realtime when needed, with Brain context and tool forwarding. The surface is not limited to cooking. Mira can appear for recipe review, shopper help, restaurant/menu questions, or scan follow-up.
+This starts a MiraSession with a recipe_review MiraScene documented in `30-mira`: Gemini Live plus Cloudflare Realtime when needed, with Brain context, scene context, and capability forwarding. The surface is not limited to cooking. Mira can appear for recipe review, shopper help, restaurant/menu questions, or scan follow-up.
 
 Recipe review examples:
 

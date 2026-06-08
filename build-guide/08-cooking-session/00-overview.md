@@ -2,7 +2,7 @@
 
 ## What This Folder Covers
 
-Mira in cooking role: live voice + camera guidance, Gemini 3.1 Flash Live, session-scoped Agent-backed Durable Object, Cloudflare RealtimeKit for room/participant lifecycle, Cloudflare Realtime SFU track adapters for selected media streams, proactive speech engine, timers via Agents SDK schedules, transcript storage, reconnection, session end with recipe reconstruction, and multi-person cooking rooms. Also covers generational recipe capture and grandma-style flavor profile extraction.
+Mira in the cooking scene: live voice + camera guidance, Gemini 3.1 Flash Live, session-scoped Agent-backed Durable Object, Cloudflare RealtimeKit for room/participant lifecycle, Cloudflare Realtime SFU track adapters for selected media streams, proactive speech engine, timers via Agents SDK schedules, transcript storage, reconnection, session end with recipe reconstruction, and multi-person cooking rooms. Also covers generational recipe capture and grandma-style flavor profile extraction.
 
 ## Status
 [x] complete — six files written
@@ -60,5 +60,5 @@ Under `tools/mira-session/`:
 
 ## What Depends On This Folder
 
-- `11-bela` — Mira in shopper role reuses the same live presence runtime with Bela order context
+- `11-bela` — Mira starts a Bela shopper scene using the same MiraSession runtime
 - `09-ground` — find-to-cooking-session trigger

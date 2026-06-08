@@ -148,7 +148,7 @@ Exists only for constraint checking. When the agent checks "is this recipe safe 
 Points to the first session that produced this recipe. NULL for user_created. Lets you trace back to the original conversation and re-read the grandma session transcript if needed.
 
 **`cook_time_minutes` — nullable integer**
-NULL when grandma does not state a time — never fabricated. When present, the MiraSession uses it at session start to set expectations ("this will take about 2 hours") and to pace the session. The alarm system uses it to warn the user if starting this recipe conflicts with a scheduled event or upcoming alarm.
+NULL when grandma does not state a time — never fabricated. When present, the Mira uses it at session start to set expectations ("this will take about 2 hours") and to pace the session. The alarm system uses it to warn the user if starting this recipe conflicts with a scheduled event or upcoming alarm.
 
 **`cook_count` — incremented by cooking sessions**
 Every time a cooking session with this `recipe_id` completes successfully, `cook_count` increments. This is the primary signal for recipe relevance — recipes the user actually makes vs recipes they saved and never touched. Fire-and-forget increment, never awaited.

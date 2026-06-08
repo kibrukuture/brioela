@@ -132,7 +132,7 @@ Do not store raw shared content in memory by default. Store route, entity refere
 
 ## Live Agent Escalation
 
-If the route needs conversation, Brioela can escalate into Mira.
+If the route needs conversation, Brioela starts a MiraSession with the right MiraScene.
 
 Use cases:
 
@@ -142,7 +142,7 @@ Use cases:
 - shopper needs substitution guidance
 - user asks what to do with a shared place/product
 
-This uses the Mira live presence runtime when realtime conversation is needed. Mira is a reusable Brioela capability, not a cooking-only idea.
+Realtime conversation starts a MiraSession with a scene-specific context package. Mira is reusable Brioela presence, not a cooking-only idea.
 
 ---
 

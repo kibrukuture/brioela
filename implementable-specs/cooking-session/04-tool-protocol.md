@@ -152,7 +152,7 @@ private async forwardToolToBrain(name: string, args: unknown): Promise<unknown> 
   const brainId = this.env.BRAIN.idFromName(this.sessionState.userId)
   const brain   = this.env.BRAIN.get(brainId)
 
-  // Map Mira in cooking role tool names to Brain tool names
+  // Map Mira in the cooking scene tool names to Brain tool names
   const toolMap: Record<string, string> = {
     write_memory:      'write_user_memory',
     propose_constraint: 'propose_user_constraint',

@@ -1,7 +1,7 @@
 # Bela — Overview
 
 ## What This Folder Covers
-Brioela's personal grocery delivery service. The user's constraint profile travels with the order and enforces on the shopper's scanner in real time — this is the differentiator no competitor has. Covers: order creation, shopper onboarding (KYC + dedicated Bela card), Stripe Connect Express payouts, PaymentIntent manual capture escrow, constraint travel (constraint profile enforces on shopper's scanner), live scan-together session, Mira shopper role (Gemini Live, same live presence runtime as cooking), receipt scan at store and door, delivery confirmation, auto-capture alarm, dispute resolution, Ground contribution by shoppers, smart routing, and standing orders.
+Brioela's personal grocery delivery service. The user's constraint profile travels with the order and enforces on the shopper's scanner in real time — this is the differentiator no competitor has. Covers: order creation, shopper onboarding (KYC + dedicated Bela card), Stripe Connect Express payouts, PaymentIntent manual capture escrow, constraint travel (constraint profile enforces on shopper's scanner), live scan-together session, Mira Bela shopper scene (Gemini Live, same live presence runtime as cooking), receipt scan at store and door, delivery confirmation, auto-capture alarm, dispute resolution, Ground contribution by shoppers, smart routing, and standing orders.
 
 ## Status
 [x] complete — fifteen files written
@@ -23,7 +23,7 @@ Brioela's personal grocery delivery service. The user's constraint profile trave
 | `11-for-others.md` | ordering for family/non-users and recipient profiles |
 | `12-dispute-resolution.md` | evidence, windows, refunds, constraint violation incidents |
 | `13-data-model.md` | Supabase, Brain, OrderAgent, R2 tables/state |
-| `14-shopper-ai-assistant.md` | Gemini Live shopper assistant using cooking-session stack |
+| `14-shopper-ai-assistant.md` | Mira Bela shopper scene using shared MiraSession runtime |
 | `15-checkout-payment.md` | store receipt scan, door scan, auto-capture timer |
 
 ## Specs This Folder Draws From
@@ -36,8 +36,8 @@ Brioela's personal grocery delivery service. The user's constraint profile trave
 - Stripe Connect Express for shopper payouts — Express (not Custom), no Issuing required
 - Two-scan proof: shopper scans receipt at store (confirms total, verifies card last-4) AND at door (proves physical presence at delivery)
 - User confirmation: full-screen prompt at door, 10-minute window, auto-capture if no response (DO alarm)
-- OrderAgent DO: one per order — controls state machine, live scan WebSocket relay, constraint enforcement, Mira shopper session
-- Mira shopper role: same live presence runtime as cooking — voice + camera, runs during shopping, reads from order constraint snapshot
+- OrderAgent DO: one per order — controls state machine, live scan WebSocket relay, constraint enforcement, Mira Bela shopper session
+- Mira Bela shopper scene: same live presence runtime as cooking — voice + camera, runs during shopping, reads from order constraint snapshot
 - Standing orders: weekly pantry replenishment with zero management
 - Bela first launch: one city only — build shopper supply, fix quality issues, expand later
 
@@ -50,8 +50,8 @@ Under `tools/bela/`:
 ## What This Folder Depends On
 - `05-brain` — user constraint profile (copied to OrderAgent at order acceptance)
 - `07-scanner` — constraint enforcement pipeline reused for shopper scanner
-- `30-mira` — shared live presence runtime for voice, vision, stimuli, and role context
-- `08-cooking-session` — cooking role implementation pattern
+- `30-mira` — MiraSession and MiraScene contracts: stimuli, capabilities, speech, and privacy
+- `08-cooking-session` — cooking scene implementation pattern
 - `09-ground` — Ground finds and location_signal_summary inform routing
 - `10-map` — product_sighting, price_sighting, map_place_signal, store data
 - `03-foundation` — Stripe, Supabase orders tables

@@ -74,7 +74,7 @@ Rules:
 
 ## Waiter Conversation Mode
 
-Language Bridge uses Mira in menu_language_bridge role when the user explicitly asks Brioela to talk to staff.
+Language Bridge starts a MiraSession with a menu_language_bridge scene when the user explicitly asks Brioela to talk to staff.
 
 Entry points:
 

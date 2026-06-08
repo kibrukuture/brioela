@@ -20,7 +20,7 @@ Upstash Redis (product cache, rate limits, session deduplication)
        ↓ shared reads/writes
 Supabase Postgres (global shared data: products, community notes, map, businesses)
 
-Mira live sessions (cooking role, multi-person):
+Mira live sessions (cooking scene, multi-person):
 Mobile clients → Cloudflare Realtime / RealtimeKit room
                        ↓ WebSocket adapter delivers PCM audio + JPEG frames
                 Mira session DO ← pulls context from Brain DO
@@ -118,7 +118,7 @@ Cost model:
 - Audio + video: 283 tokens/sec → $0.051/min.
 - Audio-only is 10× cheaper than Grok Voice. Vision-on is comparable to Grok Voice but Gemini actually sees the video.
 
-Why Gemini over Grok Voice for Brioela: Grok Voice wins on task-completion benchmarks (67.3% vs 43.8% τ-voice) and raw latency (0.78s vs 0.96s), but Grok Voice is audio-only. Mira in cooking role requires the AI to watch the camera. Gemini is the only full-duplex model with native video support. Grok is not used.
+Why Gemini over Grok Voice for Brioela: Grok Voice wins on task-completion benchmarks (67.3% vs 43.8% τ-voice) and raw latency (0.78s vs 0.96s), but Grok Voice is audio-only. Mira in the cooking scene requires the AI to watch the camera. Gemini is the only full-duplex model with native video support. Grok is not used.
 
 ### Cloudflare Realtime / RealtimeKit (Real-Time Media Transport)
 

@@ -76,7 +76,7 @@ User sees the blocked scan in the live order view.
 5. A shopper accepts → OrderAgent DO is created → status = 'accepted'
 6. Authorization hold placed on user's card (Stripe PaymentIntent, capture_method: 'manual') — money locked, not yet charged
 7. Shopper navigates to the store using the smart route (Ground + product_sighting data)
-8. Mira shopper role (voice + camera) activates — shopper talks to the AI throughout the shop
+8. Mira Bela shopper scene (voice + camera) activates — shopper talks to the AI throughout the shop
 9. Shopper scans each product → constraint check → user sees result (live scan-together) → AI confirms aloud
 10. Shopper pays at checkout till with their dedicated Bela card (their own debit card, registered during onboarding)
 11. Shopper scans receipt in app → actual total confirmed → authorization incremented if needed
