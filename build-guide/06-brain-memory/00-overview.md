@@ -5,7 +5,9 @@
 The Brain DO's data layer: core SQLite table definitions plus private feature extensions, the Brain maintenance maintenance passes, Cloudflare Vectorize semantic search integration, and the universal visual intake pipeline. This is the data side of the Brain. The agent behavior, tool protocol, session lifecycle, and production migration runtime live in `05-brain/`.
 
 ## Status
-[x] complete — Health Intelligence extends the private SQLite schema in `01-sqlite-schema.md`
+[x] guide complete — Brain Memory design and contracts are documented in this folder
+
+Implementation status note: this status tracks build-guide coverage, not backend completion. Backend implementation progress is tracked in `_records/implementation-ledger/brain/` and layer build-order trackers.
 
 ## Files In This Folder
 

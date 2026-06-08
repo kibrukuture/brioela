@@ -1,5 +1,7 @@
 # Connections — Brain Memory
 
+Status note: `[x] done` in this file means the spec-to-build-guide connection has been documented. It does not mean backend implementation exists. Backend implementation status is tracked in `_records/implementation-ledger/brain/` and layer build-order files.
+
 spec: implementable-specs/01-memory-event.md
   → build-guide/06-brain-memory/01-sqlite-schema.md    [x] done (Table 1)
 
