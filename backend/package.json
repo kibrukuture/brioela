@@ -37,6 +37,7 @@
 	},
 	"dependencies": {
 		"@ai-sdk/anthropic": "^3.0.81",
+		"@ai-sdk/openai": "^3.0.68",
 		"@aws-sdk/client-s3": "^3.1063.0",
 		"@onesignal/node-onesignal": "^5.8.0",
 		"@sentry/node": "^10.56.0",
