@@ -3,5 +3,6 @@
 	"include": [
 		"brain.test.env.d.ts",
 		"**/*.ts"
-	]
+	],
+	"exclude": []
 }
