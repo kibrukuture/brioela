@@ -1,6 +1,7 @@
 import type { LexiconWord } from '../../_types'
 
 export const globalStorageLexicon: LexiconWord[] = [
+  { word: 'breakpoints', kind: 'platform', scopes: ['global'], meaning: 'Drizzle migration journal breakpoint field.' },
   { word: 'bundle', kind: 'domain', scopes: ['global'], meaning: 'Runtime collection of generated artifacts loaded together.' },
   { word: 'contract', kind: 'domain', scopes: ['global'], meaning: 'Typed API agreement shared across boundaries.' },
   { word: 'database', kind: 'domain', scopes: ['global'], meaning: 'Persistent structured storage.' },

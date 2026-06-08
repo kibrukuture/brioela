@@ -234,17 +234,17 @@ CREATE INDEX idx_brain_migration_runs_status    ON brain_migration_runs (status,
 
 ```sql
 CREATE TABLE brain_migration_smoke_results (
-  id              TEXT PRIMARY KEY,
-  migration_run_id TEXT NOT NULL,
-  smoke_name      TEXT NOT NULL,
-  status          TEXT NOT NULL,
-  duration_ms     INTEGER NOT NULL,
-  details_json    TEXT,
-  created_at      INTEGER NOT NULL
+  id                 TEXT PRIMARY KEY,
+  migration_run_id   TEXT NOT NULL,
+  smoke              TEXT NOT NULL,
+  status             TEXT NOT NULL,
+  started_at         INTEGER NOT NULL,
+  finished_at        INTEGER,
+  error_json         TEXT,
   CHECK (status IN ('passed', 'failed')),
-  CHECK (duration_ms >= 0),
-  CHECK (details_json IS NULL OR json_valid(details_json)),
-  CHECK (created_at >= 0)
+  CHECK (started_at >= 0),
+  CHECK (finished_at IS NULL OR finished_at >= started_at),
+  CHECK (error_json IS NULL OR json_valid(error_json))
 );
 
 CREATE INDEX idx_brain_migration_smoke_run ON brain_migration_smoke_results (migration_run_id);
@@ -270,14 +270,15 @@ Every Brain wake runs this order before any normal product operation:
 1. Enter startup critical section with blockConcurrencyWhile.
 2. Create typed Drizzle DB over DO SQLite.
 3. Acquire Brain migration lock through Drizzle repositories.
-4. Read control-plane rollout policy.
-5. Run Drizzle durable-sqlite migrator for allowed pending migrations.
-6. Verify Drizzle migration state.
-7. Run Brioela product migration runtime checks.
+4. Write readiness as `migrating` and create a `brain_migration_runs` row.
+5. Read control-plane rollout policy when the control plane exists.
+6. Run Drizzle durable-sqlite migrator for allowed pending migrations.
+7. Mark the run `applied`.
 8. Run required smoke tests through Drizzle repositories.
-9. Set readiness to ready.
-10. Release migration lock.
-11. Serve request, callable RPC, schedule callback, or alarm.
+9. Record smoke results and mark the run `smoke_passed`.
+10. Set readiness to `ready`.
+11. Release migration lock.
+12. Serve request, callable RPC, schedule callback, or alarm.
 ```
 
 If any migration or smoke check fails, readiness is not `ready`. The Brain returns a typed unavailable/degraded response instead of serving new code against uncertain data.
@@ -305,10 +306,12 @@ Lock value:
 
 Rules:
 
+- Lock acquisition happens before readiness becomes `migrating`.
 - Lock acquisition is compare-and-set inside the startup critical section.
 - Stale locks can be taken over only after `expiresAt`.
+- A live lock that has not expired makes the new run `failed` and readiness `needs_retry`; it does not delete the other run's lock.
 - A live active session blocks high-risk migrations.
-- A failed migration releases the lock after writing failure state.
+- A failed migration releases the lock only when the failing run owns that lock.
 
 ## Control Plane
 

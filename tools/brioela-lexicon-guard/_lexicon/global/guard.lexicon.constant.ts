@@ -15,6 +15,7 @@ export const globalGuardLexicon: LexiconWord[] = [
   { word: 'policies', kind: 'role', scopes: ['global'], meaning: 'Many enforceable guard rules.' },
   { word: 'stale', kind: 'predicate', scopes: ['global'], meaning: 'Out of sync with generated source of truth.' },
   { word: 'valid', kind: 'predicate', scopes: ['global'], meaning: 'Accepted by a parser or policy.' },
+  { word: 'verified', kind: 'predicate', scopes: ['global'], meaning: 'Proven by an explicit check.' },
   { word: 'violation', kind: 'domain', scopes: ['global'], meaning: 'Specific guard failure.' },
   { word: 'violations', kind: 'domain', scopes: ['global'], meaning: 'Many specific guard failures.' },
 ]

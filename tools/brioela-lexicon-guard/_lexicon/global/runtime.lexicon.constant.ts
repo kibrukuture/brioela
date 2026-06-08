@@ -1,6 +1,10 @@
 import type { LexiconWord } from '../../_types'
 
 export const globalRuntimeLexicon: LexiconWord[] = [
+  { word: 'ttl', kind: 'domain', scopes: ['global'], meaning: 'Time-to-live duration for expiring runtime claims.' },
+  { word: 'locked', kind: 'domain', scopes: ['global'], meaning: 'Held by an exclusive runtime claim.' },
+  { word: 'lock', kind: 'domain', scopes: ['global'], meaning: 'Exclusive runtime claim that prevents competing work.' },
+  { word: 'deployment', kind: 'domain', scopes: ['global'], meaning: 'One shipped Worker code and migration artifact version.' },
   { word: 'runtime', kind: 'domain', scopes: ['global'], meaning: 'Executing system boundary for code and platform behavior.' },
   { word: 'agent', kind: 'role', scopes: ['global'], meaning: 'Stateful actor that owns AI behavior or durable runtime behavior.' },
   { word: 'app', kind: 'domain', scopes: ['global'], meaning: 'Application instance or app-level runtime surface.' },

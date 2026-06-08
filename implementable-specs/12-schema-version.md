@@ -11,7 +11,7 @@ A Cloudflare Durable Object can be evicted and restarted at any time. When a new
 
 `schema_version` is the SQL application tracker. One row per applied migration. At every DO startup, the Drizzle migrator reads this table, compares the applied migrations against the migration files bundled with the current code deployment, and runs only the unapplied ones.
 
-This is necessary but not sufficient for Brioela production safety. A migration can apply successfully and still leave a Brain unsafe for product code if an expected index, trigger, FTS table, context query, memory write, or active-session check fails. The Brain migration runtime wraps Drizzle with manifest checks, control-plane rollout, per-Brain locking, smoke tests, readiness states, and retry/backoff.
+This is necessary but not sufficient for Brioela production safety. A migration can apply successfully and still leave a Brain unsafe for product code if an expected index, trigger, FTS table, context query, memory write, or active-session check fails. The Brain migration runtime wraps Drizzle with manifest checks, control-plane rollout, per-Brain locking through `agent_state`, smoke tests, readiness states, and retry/backoff. The runtime must record migration runs and smoke results before declaring readiness.
 
 ## Decision: Drizzle Manages This Table, Not Application Code
 

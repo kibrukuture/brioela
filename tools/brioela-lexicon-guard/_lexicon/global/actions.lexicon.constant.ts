@@ -1,6 +1,7 @@
 import type { LexiconWord } from '../../_types'
 
 export const globalActionLexicon: LexiconWord[] = [
+  { word: 'acquire', kind: 'action', scopes: ['global'], meaning: 'Claim ownership of a runtime resource or lock.' },
   { word: 'add', kind: 'action', scopes: ['global'], meaning: 'Put a new item into an existing collection.' },
   { word: 'append', kind: 'action', scopes: ['global'], meaning: 'Add an item to the end of an ordered log.' },
   { word: 'apply', kind: 'action', scopes: ['global'], meaning: 'Execute a prepared change.' },

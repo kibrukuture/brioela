@@ -4,3 +4,10 @@ export class EmptyBrainMigrationJournalError extends Error {
 		this.name = 'EmptyBrainMigrationJournalError'
 	}
 }
+
+export class BrainMigrationLockedError extends Error {
+	constructor() {
+		super('Brain migration lock is held by another run.')
+		this.name = 'BrainMigrationLockedError'
+	}
+}
