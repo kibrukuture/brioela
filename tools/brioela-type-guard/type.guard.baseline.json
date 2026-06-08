@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-06-08T09:47:26.890Z",
+  "generatedAt": "2026-06-08T09:54:57.676Z",
   "violations": [
     {
       "rule": "ban-any",
@@ -6185,6 +6185,646 @@
       "column": 1,
       "message": "Raw `axios` imports are illegal outside `mobile/network/core/`.",
       "suggestion": "Use contract-backed request helpers or generated ts-rest hooks."
+    },
+    {
+      "rule": "enforce-contract-spine",
+      "path": "mobile/network/banking/banking.api.ts",
+      "line": 1,
+      "column": 1,
+      "message": "Normal `.api.ts` files are illegal for ts-rest product endpoints.",
+      "suggestion": "Use `mobile/network/tsr.ts` plus feature hooks wrapping generated ts-rest hooks. `.api.ts` is only for non-standard boundaries."
+    },
+    {
+      "rule": "enforce-contract-spine",
+      "path": "mobile/network/banking/use-activate-wallet.ts",
+      "line": 12,
+      "column": 10,
+      "message": "TanStack query/mutation calls must use contract-derived keys for product endpoints.",
+      "suggestion": "Use `contractKey(API_CONTRACT.feature.endpoint, input)` for `queryKey` or `mutationKey`."
+    },
+    {
+      "rule": "enforce-contract-spine",
+      "path": "mobile/network/banking/use-balances.ts",
+      "line": 6,
+      "column": 10,
+      "message": "TanStack query/mutation calls must use contract-derived keys for product endpoints.",
+      "suggestion": "Use `contractKey(API_CONTRACT.feature.endpoint, input)` for `queryKey` or `mutationKey`."
+    },
+    {
+      "rule": "enforce-contract-spine",
+      "path": "mobile/network/banking/use-banking-limits.ts",
+      "line": 6,
+      "column": 10,
+      "message": "TanStack query/mutation calls must use contract-derived keys for product endpoints.",
+      "suggestion": "Use `contractKey(API_CONTRACT.feature.endpoint, input)` for `queryKey` or `mutationKey`."
+    },
+    {
+      "rule": "enforce-contract-spine",
+      "path": "mobile/network/banking/use-cancel-pay-request.ts",
+      "line": 9,
+      "column": 10,
+      "message": "TanStack query/mutation calls must use contract-derived keys for product endpoints.",
+      "suggestion": "Use `contractKey(API_CONTRACT.feature.endpoint, input)` for `queryKey` or `mutationKey`."
+    },
+    {
+      "rule": "enforce-contract-spine",
+      "path": "mobile/network/banking/use-claim-pay-request.ts",
+      "line": 9,
+      "column": 10,
+      "message": "TanStack query/mutation calls must use contract-derived keys for product endpoints.",
+      "suggestion": "Use `contractKey(API_CONTRACT.feature.endpoint, input)` for `queryKey` or `mutationKey`."
+    },
+    {
+      "rule": "enforce-contract-spine",
+      "path": "mobile/network/banking/use-create-activation-challenge.ts",
+      "line": 6,
+      "column": 10,
+      "message": "TanStack query/mutation calls must use contract-derived keys for product endpoints.",
+      "suggestion": "Use `contractKey(API_CONTRACT.feature.endpoint, input)` for `queryKey` or `mutationKey`."
+    },
+    {
+      "rule": "enforce-contract-spine",
+      "path": "mobile/network/banking/use-create-outgoing-payout.ts",
+      "line": 9,
+      "column": 10,
+      "message": "TanStack query/mutation calls must use contract-derived keys for product endpoints.",
+      "suggestion": "Use `contractKey(API_CONTRACT.feature.endpoint, input)` for `queryKey` or `mutationKey`."
+    },
+    {
+      "rule": "enforce-contract-spine",
+      "path": "mobile/network/banking/use-create-pay-request-by-email.ts",
+      "line": 9,
+      "column": 10,
+      "message": "TanStack query/mutation calls must use contract-derived keys for product endpoints.",
+      "suggestion": "Use `contractKey(API_CONTRACT.feature.endpoint, input)` for `queryKey` or `mutationKey`."
+    },
+    {
+      "rule": "enforce-contract-spine",
+      "path": "mobile/network/banking/use-create-peer-to-peer-transfer.ts",
+      "line": 9,
+      "column": 10,
+      "message": "TanStack query/mutation calls must use contract-derived keys for product endpoints.",
+      "suggestion": "Use `contractKey(API_CONTRACT.feature.endpoint, input)` for `queryKey` or `mutationKey`."
+    },
+    {
+      "rule": "enforce-contract-spine",
+      "path": "mobile/network/banking/use-create-recipient.ts",
+      "line": 9,
+      "column": 10,
+      "message": "TanStack query/mutation calls must use contract-derived keys for product endpoints.",
+      "suggestion": "Use `contractKey(API_CONTRACT.feature.endpoint, input)` for `queryKey` or `mutationKey`."
+    },
+    {
+      "rule": "enforce-contract-spine",
+      "path": "mobile/network/banking/use-create-virtual-account.ts",
+      "line": 9,
+      "column": 10,
+      "message": "TanStack query/mutation calls must use contract-derived keys for product endpoints.",
+      "suggestion": "Use `contractKey(API_CONTRACT.feature.endpoint, input)` for `queryKey` or `mutationKey`."
+    },
+    {
+      "rule": "enforce-contract-spine",
+      "path": "mobile/network/banking/use-customer-address.ts",
+      "line": 6,
+      "column": 10,
+      "message": "TanStack query/mutation calls must use contract-derived keys for product endpoints.",
+      "suggestion": "Use `contractKey(API_CONTRACT.feature.endpoint, input)` for `queryKey` or `mutationKey`."
+    },
+    {
+      "rule": "enforce-contract-spine",
+      "path": "mobile/network/banking/use-delete-banking-transaction-attachment.ts",
+      "line": 8,
+      "column": 10,
+      "message": "TanStack query/mutation calls must use contract-derived keys for product endpoints.",
+      "suggestion": "Use `contractKey(API_CONTRACT.feature.endpoint, input)` for `queryKey` or `mutationKey`."
+    },
+    {
+      "rule": "enforce-contract-spine",
+      "path": "mobile/network/banking/use-delete-recipient.ts",
+      "line": 8,
+      "column": 10,
+      "message": "TanStack query/mutation calls must use contract-derived keys for product endpoints.",
+      "suggestion": "Use `contractKey(API_CONTRACT.feature.endpoint, input)` for `queryKey` or `mutationKey`."
+    },
+    {
+      "rule": "enforce-contract-spine",
+      "path": "mobile/network/banking/use-email-banking-transaction-receipt.ts",
+      "line": 5,
+      "column": 10,
+      "message": "TanStack query/mutation calls must use contract-derived keys for product endpoints.",
+      "suggestion": "Use `contractKey(API_CONTRACT.feature.endpoint, input)` for `queryKey` or `mutationKey`."
+    },
+    {
+      "rule": "enforce-contract-spine",
+      "path": "mobile/network/banking/use-embedded-wallet.ts",
+      "line": 7,
+      "column": 10,
+      "message": "TanStack query/mutation calls must use contract-derived keys for product endpoints.",
+      "suggestion": "Use `contractKey(API_CONTRACT.feature.endpoint, input)` for `queryKey` or `mutationKey`."
+    },
+    {
+      "rule": "enforce-contract-spine",
+      "path": "mobile/network/banking/use-fx-rate.ts",
+      "line": 6,
+      "column": 10,
+      "message": "TanStack query/mutation calls must use contract-derived keys for product endpoints.",
+      "suggestion": "Use `contractKey(API_CONTRACT.feature.endpoint, input)` for `queryKey` or `mutationKey`."
+    },
+    {
+      "rule": "enforce-contract-spine",
+      "path": "mobile/network/banking/use-generate-statement.ts",
+      "line": 5,
+      "column": 10,
+      "message": "TanStack query/mutation calls must use contract-derived keys for product endpoints.",
+      "suggestion": "Use `contractKey(API_CONTRACT.feature.endpoint, input)` for `queryKey` or `mutationKey`."
+    },
+    {
+      "rule": "enforce-contract-spine",
+      "path": "mobile/network/banking/use-get-banking-transaction-receipt.ts",
+      "line": 5,
+      "column": 10,
+      "message": "TanStack query/mutation calls must use contract-derived keys for product endpoints.",
+      "suggestion": "Use `contractKey(API_CONTRACT.feature.endpoint, input)` for `queryKey` or `mutationKey`."
+    },
+    {
+      "rule": "enforce-contract-spine",
+      "path": "mobile/network/banking/use-kyc-link.ts",
+      "line": 6,
+      "column": 10,
+      "message": "TanStack query/mutation calls must use contract-derived keys for product endpoints.",
+      "suggestion": "Use `contractKey(API_CONTRACT.feature.endpoint, input)` for `queryKey` or `mutationKey`."
+    },
+    {
+      "rule": "enforce-contract-spine",
+      "path": "mobile/network/banking/use-pay-request.ts",
+      "line": 6,
+      "column": 10,
+      "message": "TanStack query/mutation calls must use contract-derived keys for product endpoints.",
+      "suggestion": "Use `contractKey(API_CONTRACT.feature.endpoint, input)` for `queryKey` or `mutationKey`."
+    },
+    {
+      "rule": "enforce-contract-spine",
+      "path": "mobile/network/banking/use-precheck-outgoing-payout.ts",
+      "line": 9,
+      "column": 10,
+      "message": "TanStack query/mutation calls must use contract-derived keys for product endpoints.",
+      "suggestion": "Use `contractKey(API_CONTRACT.feature.endpoint, input)` for `queryKey` or `mutationKey`."
+    },
+    {
+      "rule": "enforce-contract-spine",
+      "path": "mobile/network/banking/use-precheck-pay-request-payout.ts",
+      "line": 11,
+      "column": 10,
+      "message": "TanStack query/mutation calls must use contract-derived keys for product endpoints.",
+      "suggestion": "Use `contractKey(API_CONTRACT.feature.endpoint, input)` for `queryKey` or `mutationKey`."
+    },
+    {
+      "rule": "enforce-contract-spine",
+      "path": "mobile/network/banking/use-precheck-peer-to-peer-transfer.ts",
+      "line": 9,
+      "column": 10,
+      "message": "TanStack query/mutation calls must use contract-derived keys for product endpoints.",
+      "suggestion": "Use `contractKey(API_CONTRACT.feature.endpoint, input)` for `queryKey` or `mutationKey`."
+    },
+    {
+      "rule": "enforce-contract-spine",
+      "path": "mobile/network/banking/use-recipient.ts",
+      "line": 6,
+      "column": 10,
+      "message": "TanStack query/mutation calls must use contract-derived keys for product endpoints.",
+      "suggestion": "Use `contractKey(API_CONTRACT.feature.endpoint, input)` for `queryKey` or `mutationKey`."
+    },
+    {
+      "rule": "enforce-contract-spine",
+      "path": "mobile/network/banking/use-recipients.ts",
+      "line": 6,
+      "column": 10,
+      "message": "TanStack query/mutation calls must use contract-derived keys for product endpoints.",
+      "suggestion": "Use `contractKey(API_CONTRACT.feature.endpoint, input)` for `queryKey` or `mutationKey`."
+    },
+    {
+      "rule": "enforce-contract-spine",
+      "path": "mobile/network/banking/use-remove-virtual-account.ts",
+      "line": 11,
+      "column": 10,
+      "message": "TanStack query/mutation calls must use contract-derived keys for product endpoints.",
+      "suggestion": "Use `contractKey(API_CONTRACT.feature.endpoint, input)` for `queryKey` or `mutationKey`."
+    },
+    {
+      "rule": "enforce-contract-spine",
+      "path": "mobile/network/banking/use-session-status.ts",
+      "line": 7,
+      "column": 10,
+      "message": "TanStack query/mutation calls must use contract-derived keys for product endpoints.",
+      "suggestion": "Use `contractKey(API_CONTRACT.feature.endpoint, input)` for `queryKey` or `mutationKey`."
+    },
+    {
+      "rule": "enforce-contract-spine",
+      "path": "mobile/network/banking/use-set-banking-transaction-category.ts",
+      "line": 9,
+      "column": 10,
+      "message": "TanStack query/mutation calls must use contract-derived keys for product endpoints.",
+      "suggestion": "Use `contractKey(API_CONTRACT.feature.endpoint, input)` for `queryKey` or `mutationKey`."
+    },
+    {
+      "rule": "enforce-contract-spine",
+      "path": "mobile/network/banking/use-set-banking-transaction-note.ts",
+      "line": 9,
+      "column": 10,
+      "message": "TanStack query/mutation calls must use contract-derived keys for product endpoints.",
+      "suggestion": "Use `contractKey(API_CONTRACT.feature.endpoint, input)` for `queryKey` or `mutationKey`."
+    },
+    {
+      "rule": "enforce-contract-spine",
+      "path": "mobile/network/banking/use-submit-pay-request-payout-details.ts",
+      "line": 11,
+      "column": 10,
+      "message": "TanStack query/mutation calls must use contract-derived keys for product endpoints.",
+      "suggestion": "Use `contractKey(API_CONTRACT.feature.endpoint, input)` for `queryKey` or `mutationKey`."
+    },
+    {
+      "rule": "enforce-contract-spine",
+      "path": "mobile/network/banking/use-transactions.ts",
+      "line": 6,
+      "column": 10,
+      "message": "TanStack query/mutation calls must use contract-derived keys for product endpoints.",
+      "suggestion": "Use `contractKey(API_CONTRACT.feature.endpoint, input)` for `queryKey` or `mutationKey`."
+    },
+    {
+      "rule": "enforce-contract-spine",
+      "path": "mobile/network/banking/use-update-banking-limit.ts",
+      "line": 8,
+      "column": 10,
+      "message": "TanStack query/mutation calls must use contract-derived keys for product endpoints.",
+      "suggestion": "Use `contractKey(API_CONTRACT.feature.endpoint, input)` for `queryKey` or `mutationKey`."
+    },
+    {
+      "rule": "enforce-contract-spine",
+      "path": "mobile/network/banking/use-upload-banking-transaction-attachment.ts",
+      "line": 8,
+      "column": 10,
+      "message": "TanStack query/mutation calls must use contract-derived keys for product endpoints.",
+      "suggestion": "Use `contractKey(API_CONTRACT.feature.endpoint, input)` for `queryKey` or `mutationKey`."
+    },
+    {
+      "rule": "enforce-contract-spine",
+      "path": "mobile/network/banking/use-virtual-accounts.ts",
+      "line": 6,
+      "column": 10,
+      "message": "TanStack query/mutation calls must use contract-derived keys for product endpoints.",
+      "suggestion": "Use `contractKey(API_CONTRACT.feature.endpoint, input)` for `queryKey` or `mutationKey`."
+    },
+    {
+      "rule": "enforce-contract-spine",
+      "path": "mobile/network/card-controls/card-controls.api.ts",
+      "line": 1,
+      "column": 1,
+      "message": "Normal `.api.ts` files are illegal for ts-rest product endpoints.",
+      "suggestion": "Use `mobile/network/tsr.ts` plus feature hooks wrapping generated ts-rest hooks. `.api.ts` is only for non-standard boundaries."
+    },
+    {
+      "rule": "enforce-contract-spine",
+      "path": "mobile/network/card-controls/use-card-controls.ts",
+      "line": 7,
+      "column": 10,
+      "message": "TanStack query/mutation calls must use contract-derived keys for product endpoints.",
+      "suggestion": "Use `contractKey(API_CONTRACT.feature.endpoint, input)` for `queryKey` or `mutationKey`."
+    },
+    {
+      "rule": "enforce-contract-spine",
+      "path": "mobile/network/card-controls/use-update-card-controls.ts",
+      "line": 11,
+      "column": 10,
+      "message": "TanStack query/mutation calls must use contract-derived keys for product endpoints.",
+      "suggestion": "Use `contractKey(API_CONTRACT.feature.endpoint, input)` for `queryKey` or `mutationKey`."
+    },
+    {
+      "rule": "enforce-contract-spine",
+      "path": "mobile/network/cards/cards.api.ts",
+      "line": 1,
+      "column": 1,
+      "message": "Normal `.api.ts` files are illegal for ts-rest product endpoints.",
+      "suggestion": "Use `mobile/network/tsr.ts` plus feature hooks wrapping generated ts-rest hooks. `.api.ts` is only for non-standard boundaries."
+    },
+    {
+      "rule": "enforce-contract-spine",
+      "path": "mobile/network/cards/use-apple-wallet-provisioning.ts",
+      "line": 6,
+      "column": 10,
+      "message": "TanStack query/mutation calls must use contract-derived keys for product endpoints.",
+      "suggestion": "Use `contractKey(API_CONTRACT.feature.endpoint, input)` for `queryKey` or `mutationKey`."
+    },
+    {
+      "rule": "enforce-contract-spine",
+      "path": "mobile/network/cards/use-cancel-card.ts",
+      "line": 8,
+      "column": 10,
+      "message": "TanStack query/mutation calls must use contract-derived keys for product endpoints.",
+      "suggestion": "Use `contractKey(API_CONTRACT.feature.endpoint, input)` for `queryKey` or `mutationKey`."
+    },
+    {
+      "rule": "enforce-contract-spine",
+      "path": "mobile/network/cards/use-card-order.ts",
+      "line": 7,
+      "column": 10,
+      "message": "TanStack query/mutation calls must use contract-derived keys for product endpoints.",
+      "suggestion": "Use `contractKey(API_CONTRACT.feature.endpoint, input)` for `queryKey` or `mutationKey`."
+    },
+    {
+      "rule": "enforce-contract-spine",
+      "path": "mobile/network/cards/use-card-spending-limits.ts",
+      "line": 7,
+      "column": 10,
+      "message": "TanStack query/mutation calls must use contract-derived keys for product endpoints.",
+      "suggestion": "Use `contractKey(API_CONTRACT.feature.endpoint, input)` for `queryKey` or `mutationKey`."
+    },
+    {
+      "rule": "enforce-contract-spine",
+      "path": "mobile/network/cards/use-cards.ts",
+      "line": 7,
+      "column": 10,
+      "message": "TanStack query/mutation calls must use contract-derived keys for product endpoints.",
+      "suggestion": "Use `contractKey(API_CONTRACT.feature.endpoint, input)` for `queryKey` or `mutationKey`."
+    },
+    {
+      "rule": "enforce-contract-spine",
+      "path": "mobile/network/cards/use-create-card-order.ts",
+      "line": 11,
+      "column": 10,
+      "message": "TanStack query/mutation calls must use contract-derived keys for product endpoints.",
+      "suggestion": "Use `contractKey(API_CONTRACT.feature.endpoint, input)` for `queryKey` or `mutationKey`."
+    },
+    {
+      "rule": "enforce-contract-spine",
+      "path": "mobile/network/cards/use-freeze-card.ts",
+      "line": 8,
+      "column": 10,
+      "message": "TanStack query/mutation calls must use contract-derived keys for product endpoints.",
+      "suggestion": "Use `contractKey(API_CONTRACT.feature.endpoint, input)` for `queryKey` or `mutationKey`."
+    },
+    {
+      "rule": "enforce-contract-spine",
+      "path": "mobile/network/cards/use-google-pay-provisioning.ts",
+      "line": 6,
+      "column": 10,
+      "message": "TanStack query/mutation calls must use contract-derived keys for product endpoints.",
+      "suggestion": "Use `contractKey(API_CONTRACT.feature.endpoint, input)` for `queryKey` or `mutationKey`."
+    },
+    {
+      "rule": "enforce-contract-spine",
+      "path": "mobile/network/cards/use-set-card-label.ts",
+      "line": 11,
+      "column": 10,
+      "message": "TanStack query/mutation calls must use contract-derived keys for product endpoints.",
+      "suggestion": "Use `contractKey(API_CONTRACT.feature.endpoint, input)` for `queryKey` or `mutationKey`."
+    },
+    {
+      "rule": "enforce-contract-spine",
+      "path": "mobile/network/cards/use-unfreeze-card.ts",
+      "line": 8,
+      "column": 10,
+      "message": "TanStack query/mutation calls must use contract-derived keys for product endpoints.",
+      "suggestion": "Use `contractKey(API_CONTRACT.feature.endpoint, input)` for `queryKey` or `mutationKey`."
+    },
+    {
+      "rule": "enforce-contract-spine",
+      "path": "mobile/network/cards/use-update-card-spending-limits.ts",
+      "line": 11,
+      "column": 10,
+      "message": "TanStack query/mutation calls must use contract-derived keys for product endpoints.",
+      "suggestion": "Use `contractKey(API_CONTRACT.feature.endpoint, input)` for `queryKey` or `mutationKey`."
+    },
+    {
+      "rule": "enforce-contract-spine",
+      "path": "mobile/network/communication-codes/communication-codes.api.ts",
+      "line": 1,
+      "column": 1,
+      "message": "Normal `.api.ts` files are illegal for ts-rest product endpoints.",
+      "suggestion": "Use `mobile/network/tsr.ts` plus feature hooks wrapping generated ts-rest hooks. `.api.ts` is only for non-standard boundaries."
+    },
+    {
+      "rule": "enforce-contract-spine",
+      "path": "mobile/network/communication-codes/use-communication-code.ts",
+      "line": 10,
+      "column": 10,
+      "message": "TanStack query/mutation calls must use contract-derived keys for product endpoints.",
+      "suggestion": "Use `contractKey(API_CONTRACT.feature.endpoint, input)` for `queryKey` or `mutationKey`."
+    },
+    {
+      "rule": "enforce-contract-spine",
+      "path": "mobile/network/communication-codes/use-communication-code.ts",
+      "line": 18,
+      "column": 10,
+      "message": "TanStack query/mutation calls must use contract-derived keys for product endpoints.",
+      "suggestion": "Use `contractKey(API_CONTRACT.feature.endpoint, input)` for `queryKey` or `mutationKey`."
+    },
+    {
+      "rule": "enforce-contract-spine",
+      "path": "mobile/network/in-app-notifications/in-app-notifications.api.ts",
+      "line": 1,
+      "column": 1,
+      "message": "Normal `.api.ts` files are illegal for ts-rest product endpoints.",
+      "suggestion": "Use `mobile/network/tsr.ts` plus feature hooks wrapping generated ts-rest hooks. `.api.ts` is only for non-standard boundaries."
+    },
+    {
+      "rule": "enforce-contract-spine",
+      "path": "mobile/network/in-app-notifications/use-in-app-notifications.ts",
+      "line": 6,
+      "column": 10,
+      "message": "TanStack query/mutation calls must use contract-derived keys for product endpoints.",
+      "suggestion": "Use `contractKey(API_CONTRACT.feature.endpoint, input)` for `queryKey` or `mutationKey`."
+    },
+    {
+      "rule": "enforce-contract-spine",
+      "path": "mobile/network/in-app-notifications/use-mark-all-in-app-notifications-read.ts",
+      "line": 8,
+      "column": 10,
+      "message": "TanStack query/mutation calls must use contract-derived keys for product endpoints.",
+      "suggestion": "Use `contractKey(API_CONTRACT.feature.endpoint, input)` for `queryKey` or `mutationKey`."
+    },
+    {
+      "rule": "enforce-contract-spine",
+      "path": "mobile/network/in-app-notifications/use-update-in-app-notification.ts",
+      "line": 9,
+      "column": 10,
+      "message": "TanStack query/mutation calls must use contract-derived keys for product endpoints.",
+      "suggestion": "Use `contractKey(API_CONTRACT.feature.endpoint, input)` for `queryKey` or `mutationKey`."
+    },
+    {
+      "rule": "enforce-contract-spine",
+      "path": "mobile/network/lab-work/lab-work.api.ts",
+      "line": 1,
+      "column": 1,
+      "message": "Normal `.api.ts` files are illegal for ts-rest product endpoints.",
+      "suggestion": "Use `mobile/network/tsr.ts` plus feature hooks wrapping generated ts-rest hooks. `.api.ts` is only for non-standard boundaries."
+    },
+    {
+      "rule": "enforce-contract-spine",
+      "path": "mobile/network/lab-work/use-post-lab-work.ts",
+      "line": 5,
+      "column": 10,
+      "message": "TanStack query/mutation calls must use contract-derived keys for product endpoints.",
+      "suggestion": "Use `contractKey(API_CONTRACT.feature.endpoint, input)` for `queryKey` or `mutationKey`."
+    },
+    {
+      "rule": "enforce-contract-spine",
+      "path": "mobile/network/maps/maps.api.ts",
+      "line": 1,
+      "column": 1,
+      "message": "Normal `.api.ts` files are illegal for ts-rest product endpoints.",
+      "suggestion": "Use `mobile/network/tsr.ts` plus feature hooks wrapping generated ts-rest hooks. `.api.ts` is only for non-standard boundaries."
+    },
+    {
+      "rule": "enforce-contract-spine",
+      "path": "mobile/network/maps/use-location-search.ts",
+      "line": 7,
+      "column": 10,
+      "message": "TanStack query/mutation calls must use contract-derived keys for product endpoints.",
+      "suggestion": "Use `contractKey(API_CONTRACT.feature.endpoint, input)` for `queryKey` or `mutationKey`."
+    },
+    {
+      "rule": "enforce-contract-spine",
+      "path": "mobile/network/medications/medications.api.ts",
+      "line": 1,
+      "column": 1,
+      "message": "Normal `.api.ts` files are illegal for ts-rest product endpoints.",
+      "suggestion": "Use `mobile/network/tsr.ts` plus feature hooks wrapping generated ts-rest hooks. `.api.ts` is only for non-standard boundaries."
+    },
+    {
+      "rule": "enforce-contract-spine",
+      "path": "mobile/network/medications/use-medications.ts",
+      "line": 6,
+      "column": 10,
+      "message": "TanStack query/mutation calls must use contract-derived keys for product endpoints.",
+      "suggestion": "Use `contractKey(API_CONTRACT.feature.endpoint, input)` for `queryKey` or `mutationKey`."
+    },
+    {
+      "rule": "enforce-contract-spine",
+      "path": "mobile/network/notifications/courier.api.ts",
+      "line": 1,
+      "column": 1,
+      "message": "Normal `.api.ts` files are illegal for ts-rest product endpoints.",
+      "suggestion": "Use `mobile/network/tsr.ts` plus feature hooks wrapping generated ts-rest hooks. `.api.ts` is only for non-standard boundaries."
+    },
+    {
+      "rule": "enforce-contract-spine",
+      "path": "mobile/network/notifications/notifications.api.ts",
+      "line": 1,
+      "column": 1,
+      "message": "Normal `.api.ts` files are illegal for ts-rest product endpoints.",
+      "suggestion": "Use `mobile/network/tsr.ts` plus feature hooks wrapping generated ts-rest hooks. `.api.ts` is only for non-standard boundaries."
+    },
+    {
+      "rule": "enforce-contract-spine",
+      "path": "mobile/network/notifications/use-courier.ts",
+      "line": 6,
+      "column": 10,
+      "message": "TanStack query/mutation calls must use contract-derived keys for product endpoints.",
+      "suggestion": "Use `contractKey(API_CONTRACT.feature.endpoint, input)` for `queryKey` or `mutationKey`."
+    },
+    {
+      "rule": "enforce-contract-spine",
+      "path": "mobile/network/notifications/use-push-notifications.ts",
+      "line": 15,
+      "column": 10,
+      "message": "TanStack query/mutation calls must use contract-derived keys for product endpoints.",
+      "suggestion": "Use `contractKey(API_CONTRACT.feature.endpoint, input)` for `queryKey` or `mutationKey`."
+    },
+    {
+      "rule": "enforce-contract-spine",
+      "path": "mobile/network/notifications/use-push-notifications.ts",
+      "line": 9,
+      "column": 10,
+      "message": "TanStack query/mutation calls must use contract-derived keys for product endpoints.",
+      "suggestion": "Use `contractKey(API_CONTRACT.feature.endpoint, input)` for `queryKey` or `mutationKey`."
+    },
+    {
+      "rule": "enforce-contract-spine",
+      "path": "mobile/network/search/search.api.ts",
+      "line": 1,
+      "column": 1,
+      "message": "Normal `.api.ts` files are illegal for ts-rest product endpoints.",
+      "suggestion": "Use `mobile/network/tsr.ts` plus feature hooks wrapping generated ts-rest hooks. `.api.ts` is only for non-standard boundaries."
+    },
+    {
+      "rule": "enforce-contract-spine",
+      "path": "mobile/network/search/use-search.ts",
+      "line": 7,
+      "column": 10,
+      "message": "TanStack query/mutation calls must use contract-derived keys for product endpoints.",
+      "suggestion": "Use `contractKey(API_CONTRACT.feature.endpoint, input)` for `queryKey` or `mutationKey`."
+    },
+    {
+      "rule": "enforce-contract-spine",
+      "path": "mobile/network/users/use-check-schnl-tag.ts",
+      "line": 6,
+      "column": 10,
+      "message": "TanStack query/mutation calls must use contract-derived keys for product endpoints.",
+      "suggestion": "Use `contractKey(API_CONTRACT.feature.endpoint, input)` for `queryKey` or `mutationKey`."
+    },
+    {
+      "rule": "enforce-contract-spine",
+      "path": "mobile/network/users/use-delete-user.ts",
+      "line": 5,
+      "column": 10,
+      "message": "TanStack query/mutation calls must use contract-derived keys for product endpoints.",
+      "suggestion": "Use `contractKey(API_CONTRACT.feature.endpoint, input)` for `queryKey` or `mutationKey`."
+    },
+    {
+      "rule": "enforce-contract-spine",
+      "path": "mobile/network/users/use-kyc-legal-name-and-wallet.ts",
+      "line": 8,
+      "column": 10,
+      "message": "TanStack query/mutation calls must use contract-derived keys for product endpoints.",
+      "suggestion": "Use `contractKey(API_CONTRACT.feature.endpoint, input)` for `queryKey` or `mutationKey`."
+    },
+    {
+      "rule": "enforce-contract-spine",
+      "path": "mobile/network/users/use-search-users.ts",
+      "line": 7,
+      "column": 10,
+      "message": "TanStack query/mutation calls must use contract-derived keys for product endpoints.",
+      "suggestion": "Use `contractKey(API_CONTRACT.feature.endpoint, input)` for `queryKey` or `mutationKey`."
+    },
+    {
+      "rule": "enforce-contract-spine",
+      "path": "mobile/network/users/use-update-profile-picture.ts",
+      "line": 8,
+      "column": 10,
+      "message": "TanStack query/mutation calls must use contract-derived keys for product endpoints.",
+      "suggestion": "Use `contractKey(API_CONTRACT.feature.endpoint, input)` for `queryKey` or `mutationKey`."
+    },
+    {
+      "rule": "enforce-contract-spine",
+      "path": "mobile/network/users/use-update-user.ts",
+      "line": 21,
+      "column": 10,
+      "message": "TanStack query/mutation calls must use contract-derived keys for product endpoints.",
+      "suggestion": "Use `contractKey(API_CONTRACT.feature.endpoint, input)` for `queryKey` or `mutationKey`."
+    },
+    {
+      "rule": "enforce-contract-spine",
+      "path": "mobile/network/users/use-update-user.ts",
+      "line": 8,
+      "column": 10,
+      "message": "TanStack query/mutation calls must use contract-derived keys for product endpoints.",
+      "suggestion": "Use `contractKey(API_CONTRACT.feature.endpoint, input)` for `queryKey` or `mutationKey`."
+    },
+    {
+      "rule": "enforce-contract-spine",
+      "path": "mobile/network/users/use-user.ts",
+      "line": 9,
+      "column": 10,
+      "message": "TanStack query/mutation calls must use contract-derived keys for product endpoints.",
+      "suggestion": "Use `contractKey(API_CONTRACT.feature.endpoint, input)` for `queryKey` or `mutationKey`."
+    },
+    {
+      "rule": "enforce-contract-spine",
+      "path": "mobile/network/users/users.api.ts",
+      "line": 1,
+      "column": 1,
+      "message": "Normal `.api.ts` files are illegal for ts-rest product endpoints.",
+      "suggestion": "Use `mobile/network/tsr.ts` plus feature hooks wrapping generated ts-rest hooks. `.api.ts` is only for non-standard boundaries."
     },
     {
       "rule": "enforce-error-boundary",
