@@ -1,4 +1,5 @@
-import { env, runInDurableObject } from 'cloudflare:test'
+import { runInDurableObject } from 'cloudflare:test'
+import { env } from "cloudflare:workers"
 import { describe, expect, it } from 'vitest'
 import { createBrainDatabase } from '@/agents/brain/_database'
 import { brainMigrationBundle } from '@/agents/brain/_migrations/brain.migration'
