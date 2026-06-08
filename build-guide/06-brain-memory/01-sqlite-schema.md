@@ -4,7 +4,9 @@
 
 Every table in the `BrioelaBrain` DO SQLite — CREATE TABLE SQL, Drizzle schema, column decisions, indexes, write rules, and read rules for the core memory tables plus feature-owned private extensions. This is the complete data layer of the user's private brain.
 
-All private tables live in one SQLite file per user, managed by Drizzle over `this.ctx.storage`. The schema is version-controlled in `backend/src/agents/brain/migrations/`. No table is shared across users. No Supabase.
+All private tables live in one SQLite file per user, managed by Drizzle over `this.ctx.storage`. The schema is version-controlled in `backend/src/agents/brain/migrations/`, and production rollout is governed by the Brain SQLite migration runtime in `build-guide/05-brain/08-brain-sqlite-migration-runtime.md`. No table is shared across users. No Supabase.
+
+Migration safety is part of the schema contract. Drizzle tracks which SQL files applied through `__drizzle_migrations`; Brioela tracks whether the user's Brain is safe to serve through product migration readiness tables and smoke results. Both layers are required.
 
 ---
 

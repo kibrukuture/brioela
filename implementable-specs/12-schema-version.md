@@ -1,5 +1,7 @@
 # Table: schema_version (managed by Drizzle as __drizzle_migrations)
 
+> Product migration readiness is separate from this table. Drizzle's `__drizzle_migrations` proves that a SQL migration file was applied. Brioela's Brain SQLite migration runtime proves that the user's private Brain is safe to serve. See `build-guide/05-brain/08-brain-sqlite-migration-runtime.md`.
+
 ## Why This Table Exists
 
 A Cloudflare Durable Object can be evicted and restarted at any time. When a new code deployment arrives, the SQLite schema inside that user's DO might be at version 3 while the new code expects version 5. Without migration tracking, two things happen:
@@ -7,7 +9,9 @@ A Cloudflare Durable Object can be evicted and restarted at any time. When a new
 - Re-running all migrations on a schema that already has them applied corrupts data — tables get created twice, columns get added twice, data gets duplicated or lost.
 - Skipping migrations entirely means the DO runs against a stale schema and crashes when it tries to access a column that does not exist yet.
 
-`schema_version` is the solution. One row per applied migration. At every DO startup, the Drizzle migrator reads this table, compares the applied migrations against the migration files bundled with the current code deployment, and runs only the unapplied ones. Safe, idempotent, automatic.
+`schema_version` is the SQL application tracker. One row per applied migration. At every DO startup, the Drizzle migrator reads this table, compares the applied migrations against the migration files bundled with the current code deployment, and runs only the unapplied ones.
+
+This is necessary but not sufficient for Brioela production safety. A migration can apply successfully and still leave a Brain unsafe for product code if an expected index, trigger, FTS table, context query, memory write, or active-session check fails. The Brain migration runtime wraps Drizzle with manifest checks, control-plane rollout, per-Brain locking, smoke tests, readiness states, and retry/backoff.
 
 ## Decision: Drizzle Manages This Table, Not Application Code
 
@@ -23,22 +27,26 @@ This is documented here because:
 Every DO restart runs this sequence in order before handling any request:
 
 ```
-1. Run Drizzle migrator
-   → reads __drizzle_migrations
-   → compares against migration files bundled in current deployment
-   → applies any unapplied migrations in order
-   → idempotent — safe to run on every startup
+1. Enter Brain startup critical section.
 
-2. Set PRAGMA journal_mode=WAL
-   → must be set after migrations, not before
-   → persists for the lifetime of this DO instance
+2. Run Brain SQLite migration runtime
+   → acquires per-Brain migration lock
+   → checks rollout control plane
+   → calls Drizzle migrator for allowed pending SQL files
+   → validates manifest expectations
+   → runs required smoke tests
+   → writes Brain readiness state
 
-3. Read agent_state: do.initialized
+3. Set PRAGMA journal_mode=WAL and PRAGMA wal_autocheckpoint=1000
+   → must happen before normal reads/writes
+   → WAL mode supports concurrent reads during writes
+
+4. Read agent_state: do.initialized
    → "0" or missing → run initialization (seed system skills, set default state keys)
    → "1" → DO is ready, handle the incoming request
 ```
 
-Steps 1, 2, 3 run on every cold start. If the DO was evicted mid-session and restarts, this sequence runs first, then the interrupted request is handled.
+Steps 1-4 run on every cold start. If the DO was evicted mid-session and restarts, this sequence runs first, then the interrupted request is handled only if readiness allows it.
 
 ## What the Table Looks Like
 
@@ -59,6 +67,28 @@ One row per applied migration. `hash` is derived from the migration file content
 Once a migration has been applied to any live DO (any real user's data), that migration file is frozen. Editing it changes its hash. Drizzle will see a hash mismatch and refuse to run — or worse, treat the edited file as a new unapplied migration and re-apply it, corrupting data.
 
 The rule: migrations are append-only. If a mistake was made in migration 003, write migration 004 to fix it. Never edit 003.
+
+## Decision: Every SQL Migration Requires A Manifest Entry And Smoke Tests
+
+Every SQL file must have a matching entry in `brain.migration.manifest.ts`. The manifest declares id, file, version transition, phase, risk, destructive flag, expected objects, and smoke tests.
+
+Hard rule: no migration runs in production without a non-empty smoke list. Empty smoke lists are illegal.
+
+## Decision: Destructive Changes Use Expand/Dual-Write/Backfill/Verify/Contract
+
+Never drop or rewrite user-private data in the same migration that introduces a new shape.
+
+Use this sequence:
+
+```text
+Expand      add nullable column/table/index
+Dual-write  write old and new shape
+Backfill    fill new shape lazily and retryably
+Verify      smoke and consistency checks prove completeness
+Contract    remove old shape only after rollout evidence and explicit approval
+```
+
+SQLite migrations are forward-fix by default. Rollback is not a normal production operation because different Brains will be at different versions.
 
 ## Decision: Migration Files Are Bundled With the Worker Deployment
 

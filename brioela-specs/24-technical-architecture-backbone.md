@@ -90,6 +90,24 @@ DO capabilities used by Brioela:
 - **Data Studio**: SQLite-backed DOs are viewable and editable in the Cloudflare dashboard. Critical for debugging individual user memory state.
 - **Storage limit**: 10GB per DO, unlimited rows. A heavy user's complete lifetime data realistically stays under 50MB.
 
+### Per-User SQLite Migration Runtime
+
+Brain SQLite migrations are distributed runtime events, not a single central deploy event. Every user has a physically isolated SQLite database, so a schema rollout can touch millions of Brains over time as each Durable Object wakes.
+
+Hard rule: Drizzle's `__drizzle_migrations` proves SQL files were applied, but Brioela readiness proves the user's Brain is safe to serve.
+
+The Brain startup path must use the migration runtime described in `build-guide/05-brain/08-brain-sqlite-migration-runtime.md`:
+
+- typed migration manifest bundled with the Worker
+- per-Brain migration lock
+- rollout control plane with canaries, percentages, and kill switch
+- lazy migration on safe wake-up moments
+- smoke tests against the user's actual SQLite
+- readiness states such as `ready`, `migrating`, `migration_failed`, and `blocked_by_control_plane`
+- expand/dual-write/backfill/verify/contract for dangerous changes
+
+No Brain serves normal reads, writes, Mira context, callable RPC, alarm work, or child-agent dispatch while readiness is unsafe. This is especially important at scale: a migration must be safe when it runs for the first internal canary Brain and when it runs months later for a rarely active user's Brain.
+
 ### AI Model: Gemini Live (Mira Voice + Vision Runtime)
 
 Model: `gemini-3.1-flash-live-preview`

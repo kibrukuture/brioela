@@ -2,7 +2,7 @@
 
 ## What This File Covers
 
-`BrioelaBrain` class structure, `wrangler.jsonc` entries, SQLite initialization, WAL mode, Drizzle wiring, typed Agent RPC surface, schedule callbacks, and long-running Agent SDK primitives.
+`BrioelaBrain` class structure, `wrangler.jsonc` entries, SQLite initialization, WAL mode, Drizzle wiring, typed Agent RPC surface, schedule callbacks, long-running Agent SDK primitives, and the startup handoff into the Brain SQLite migration runtime.
 
 ---
 
@@ -75,6 +75,29 @@ backend/src/agents/brain/
 │   ├── schedule.brain.maintenance.handler.ts
 │   ├── schedule.behavior.pattern.handler.ts
 │   └── index.ts
+├── _migrations/
+│   ├── brain.migration.manifest.ts
+│   ├── index.ts
+│   ├── _handlers/
+│   │   ├── run.brain.migrations.handler.ts
+│   │   ├── run.brain.migration.smoke.handler.ts
+│   │   └── index.ts
+│   ├── _helpers/
+│   │   ├── acquire.brain.migration.lock.helper.ts
+│   │   ├── read.brain.schema.readiness.helper.ts
+│   │   ├── write.brain.schema.readiness.helper.ts
+│   │   └── index.ts
+│   ├── _policies/
+│   │   ├── assert.brain.migration.allowed.policy.ts
+│   │   └── index.ts
+│   ├── _smoke/
+│   │   ├── _handlers/
+│   │   │   ├── smoke.brain.core.context.handler.ts
+│   │   │   ├── smoke.brain.memory.write.handler.ts
+│   │   │   ├── smoke.brain.active.session.handler.ts
+│   │   │   └── index.ts
+│   │   └── index.ts
+│   └── index.ts
 ├── _subagents/
 │   ├── brain-maintenance/
 │   │   ├── brain.maintenance.agent.ts
@@ -89,7 +112,8 @@ backend/src/agents/brain/
 │       ├── compress.session.context.handler.ts
 │       └── index.ts
 └── migrations/
-    └── 0001_initial.sql
+    ├── 0001.initial.sql
+    └── 0002.add.memory.event.indexes.sql
 ```
 
 The Brain folder is deliberately dense because it is the permanent truth-owner. Every file has one responsibility. Brain-owned child agents live under `_subagents/` so they are visibly subordinate to Brain, not peer brains.
@@ -119,11 +143,12 @@ export class BrioelaBrain extends Agent<Env> {
     // Wire Drizzle to DO storage. Each user's DO gets its own SQLite.
     this.db = drizzle(ctx.storage, { schema })
 
-    // WAL mode must be set before any reads or writes.
-    // Allows concurrent reads during a write — without it any write locks the entire DB.
+    // Startup is a gate, not a convenience hook. No request/RPC/alarm runs until
+    // migrations and smoke tests mark this Brain ready.
     ctx.blockConcurrencyWhile(async () => {
+      await runBrainMigrations({ db: this.db, storage: ctx.storage, env })
       await ctx.storage.sql.exec('PRAGMA journal_mode=WAL;')
-      await migrate(this.db, { migrationsFolder: './migrations' })
+      await ctx.storage.sql.exec('PRAGMA wal_autocheckpoint=1000;')
     })
   }
 
@@ -157,6 +182,16 @@ export class BrioelaBrain extends Agent<Env> {
     await dispatchBrainSchedule(this, this.db, input)
   }
 }
+```
+
+The sample uses `runBrainMigrations(...)` instead of calling Drizzle directly from the class. That runtime still calls the Drizzle migrator internally, but it also owns the Brioela product safety layer: manifest checks, rollout policy, migration lock, smoke tests, readiness state, retry/backoff, and telemetry. The DO class must not inline that logic.
+
+Hard startup rule:
+
+```text
+Drizzle migration tracking proves SQL file application.
+Brain migration readiness proves the user's private Brain is safe to serve.
+Both are required.
 ```
 
 The class exposes the stable typed boundary. It does not contain business logic. The business logic lives in `_rpc/`, `_handlers/`, `_context/`, `_policies/`, `_schedules/`, and Brain-owned `_subagents/`.

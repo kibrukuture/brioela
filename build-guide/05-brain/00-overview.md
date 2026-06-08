@@ -4,7 +4,7 @@
 The per-user agent brain. One `BrioelaBrain` Durable Object per user, forever. This is the critical path — every other feature depends on it. It holds the user's private SQLite database via Drizzle ORM, the complete memory system (user_memory, user_personality, skills, constraints, scan history, recipes, sessions), the tool protocol (every AI-callable tool), the alarm system for ambient intelligence, and the Brain maintenance for background maintenance.
 
 ## Status
-[x] complete — seven files written; `07` hardens the older manual runtime patterns against current Cloudflare Agents SDK capabilities
+[x] complete — eight files written; `07` hardens the older manual runtime patterns against current Cloudflare Agents SDK capabilities, and `08` defines the production-safe per-user SQLite migration runtime
 
 ## Files In This Folder
 
@@ -17,6 +17,7 @@ The per-user agent brain. One `BrioelaBrain` Durable Object per user, forever. T
 | `05-alarm-system.md` | scheduled_alarms product ledger, Agents SDK schedule wake/callback model, ambient intelligence loop, first-boot initialization |
 | `06-agent-identity.md` | BrioelaIdentity document, 800 token cap, system prompt block order, prefix cache contract, update rules |
 | `07-agent-framework-hardening.md` | Brioela-first update: Cloudflare Agents SDK runtime primitives, AI SDK tool layer, replacing custom plumbing without making Brioela chat-first |
+| `08-brain-sqlite-migration-runtime.md` | Per-user SQLite migration runtime: manifest, locks, readiness states, control-plane rollout, smoke tests, retry, destructive-change bans |
 
 ## Specs This Folder Draws From
 - `brioela-specs/09-per-user-brain.md` — full brain spec: DO architecture, memory system, skills, tools, context injection, sub-agent delegation, keepAlive pattern
@@ -28,6 +29,7 @@ The per-user agent brain. One `BrioelaBrain` Durable Object per user, forever. T
 - `implementable-specs/16-agent-identity.md` — BrioelaIdentity document, system prompt order, 800 token cap
 - `implementable-specs/17-session-lifecycle.md` — compression triggers, SessionContextCompressor, abandoned detection, watchdog alarm
 - Current Cloudflare Agents SDK docs — sub-agents, agent tools, schedules, queues, fibers, workflows, sessions, skills
+- `implementable-specs/12-schema-version.md` — Drizzle migration tracking, WAL, startup sequencing, immutable migration files
 
 ## Key Decisions From Specs
 - `BrioelaBrain extends Agent` (Cloudflare Agent SDK) — not raw DurableObject
@@ -43,10 +45,12 @@ The per-user agent brain. One `BrioelaBrain` Durable Object per user, forever. T
 - BrioelaIdentity: 800 token cap, universal constant, block order is fixed for Anthropic prefix caching
 - Brioela is ambient, not chat-first; Cloudflare Agents SDK owns durable runtime, Vercel AI SDK owns model/tool calls, and Brioela owns food memory/safety/surfacing policy.
 - Prefer current Agents SDK primitives (`subAgent`, `agentTool`, `schedule`, `queue`, `runFiber`, `keepAliveWhile`, Workflows) over custom runtime plumbing where they express the same behavior.
+- Brain SQLite migrations are not a simple deploy step. Each user's private SQLite migrates lazily under a production runtime with a manifest, per-Brain lock, readiness gate, smoke tests, rollout control, and forward-fix policy.
+- No Brain entry point serves normal work until migration readiness is `ready` or an explicitly supported read-only degraded state.
 
 ## What This Folder Depends On
 - `03-foundation` — CF Workers, wrangler.jsonc, Drizzle setup
 - `04-auth-and-onboarding` — userId to address the DO
 
 ## What Depends On This Folder
-EVERYTHING. Scanner, cooking session, Ground, Bela, recall alerts, illness detective, meal plan, wearables — all read from and write to the Brain DO. Nothing builds before this.
+EVERYTHING. Scanner, cooking session, Ground, Bela, recall alerts, illness detective, meal plan, wearables — all read from and write to the Brain DO. Nothing builds before this, and no private feature ships before the Brain SQLite migration runtime in `08` is implemented and smoke-tested.

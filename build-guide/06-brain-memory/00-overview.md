@@ -2,7 +2,7 @@
 
 ## What This Folder Covers
 
-The Brain DO's data layer: core SQLite table definitions plus private feature extensions, the Brain maintenance maintenance passes, Cloudflare Vectorize semantic search integration, and the universal visual intake pipeline. This is the data side of the Brain. The agent behavior, tool protocol, and session lifecycle live in `05-brain/`.
+The Brain DO's data layer: core SQLite table definitions plus private feature extensions, the Brain maintenance maintenance passes, Cloudflare Vectorize semantic search integration, and the universal visual intake pipeline. This is the data side of the Brain. The agent behavior, tool protocol, session lifecycle, and production migration runtime live in `05-brain/`.
 
 ## Status
 [x] complete — Health Intelligence extends the private SQLite schema in `01-sqlite-schema.md`
@@ -30,6 +30,7 @@ The Brain DO's data layer: core SQLite table definitions plus private feature ex
 - `implementable-specs/10-scheduled-alarms.md` — scheduled_alarms table, Path A vs Path B distinction
 - `implementable-specs/11-agent-state.md` — agent_state table, all known keys
 - `implementable-specs/12-schema-version.md` — __drizzle_migrations, DO startup sequence
+- `build-guide/05-brain/08-brain-sqlite-migration-runtime.md` — product migration manifest, per-Brain readiness, smoke tests, rollout control, destructive-change bans
 - `implementable-specs/15-brain-maintenance-and-behavior-patterns.md` — BrainMaintenanceAgent + BehaviorPatternAgent passes, TOOL_PERMISSIONS
 - `implementable-specs/18-vectorize.md` — embedding model, shard structure, query implementation
 - `brioela-specs/34-universal-visual-intake.md` — visual intake pipeline, memory vs skills, Ground boundary
@@ -38,6 +39,7 @@ The Brain DO's data layer: core SQLite table definitions plus private feature ex
 ## Key Decisions From Specs
 
 - All 12 tables live in one SQLite file per user — no sharing across users, no Supabase
+- Per-user SQLite migrations are lazy and distributed. The Brain migration runtime gates every Brain with a manifest, migration lock, readiness state, smoke tests, and control-plane rollout before normal work is served.
 - `user_memory` id = `"${namespace}:${key}"` — human-readable composite, not UUID
 - Namespace cap: 40 distinct namespaces max, enforced in `write_user_memory` tool before insert
 - `user_memory` facts are never deleted — only deactivated (`active = 0`)
@@ -54,6 +56,7 @@ The Brain DO's data layer: core SQLite table definitions plus private feature ex
 ## What This Folder Depends On
 
 - `05-brain` — this IS the Brain's data layer. The DO class, tool protocol, session lifecycle, and sub-agent pattern all live there.
+- `05-brain/08-brain-sqlite-migration-runtime.md` — migration runtime contract. Drizzle's `__drizzle_migrations` proves SQL application; Brain readiness proves this user's private Brain is safe to serve.
 - `03-foundation` — Drizzle setup, wrangler.jsonc
 
 ## What Depends On This Folder
