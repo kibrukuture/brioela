@@ -14,6 +14,11 @@ import {
   banNonNullAssertionPolicy,
   banTypeAssertionPolicy,
   banUnsafeCommentPolicy,
+  enforceContractBoundaryPolicy,
+  enforceContractImportPolicy,
+  enforceMobileNetworkBoundaryPolicy,
+  enforceReactEffectPolicy,
+  enforceSideEffectPlacementPolicy,
   enforceTypeImportPolicy,
   type TypePolicy,
 } from '../_policies'
@@ -29,6 +34,11 @@ const policies: TypePolicy[] = [
   banInOperatorPolicy,
   banDuplicateImportPolicy,
   enforceTypeImportPolicy,
+  enforceContractImportPolicy,
+  enforceContractBoundaryPolicy,
+  enforceReactEffectPolicy,
+  enforceMobileNetworkBoundaryPolicy,
+  enforceSideEffectPlacementPolicy,
   banUnsafeCommentPolicy,
 ]
 

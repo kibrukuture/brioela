@@ -12,6 +12,7 @@
     "baseline:update": "bun run.brioela.type.guard.handler.ts --update-baseline",
     "daemon:start": "bun start.type.guard.daemon.handler.ts",
     "daemon:stop": "bun stop.type.guard.daemon.handler.ts",
+    "daemon:restart": "bun restart.type.guard.daemon.handler.ts",
     "daemon:status": "bun status.type.guard.daemon.handler.ts",
     "daemon:print": "bun print.type.guard.daemon.handler.ts",
     "logs": "bun tail.type.guard.logs.handler.ts",
