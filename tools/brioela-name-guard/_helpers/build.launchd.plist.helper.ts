@@ -1,4 +1,5 @@
 import { launchdLabel, launchdStderrPath, launchdStdoutPath } from './launchd.config.helper'
+import { join } from 'node:path'
 
 type BuildLaunchdPlistInput = {
   bunExecutablePath: string
@@ -6,6 +7,7 @@ type BuildLaunchdPlistInput = {
 }
 
 export function buildLaunchdPlist(input: BuildLaunchdPlistInput): string {
+  const guardHandlerPath = join(input.workspaceRoot, 'tools', 'brioela-name-guard', 'run.brioela.name.guard.handler.ts')
   const pathValue = [
     '/opt/homebrew/bin',
     '/usr/local/bin',
@@ -25,8 +27,8 @@ export function buildLaunchdPlist(input: BuildLaunchdPlistInput): string {
   <key>ProgramArguments</key>
   <array>
     <string>${escapeXml(input.bunExecutablePath)}</string>
-    <string>run</string>
-    <string>watch:names</string>
+    <string>${escapeXml(guardHandlerPath)}</string>
+    <string>--watch</string>
   </array>
 
   <key>WorkingDirectory</key>
@@ -36,6 +38,8 @@ export function buildLaunchdPlist(input: BuildLaunchdPlistInput): string {
   <dict>
     <key>PATH</key>
     <string>${escapeXml(pathValue)}</string>
+    <key>BRIOELA_WORKSPACE_ROOT</key>
+    <string>${escapeXml(input.workspaceRoot)}</string>
   </dict>
 
   <key>RunAtLoad</key>
