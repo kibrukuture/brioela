@@ -56,8 +56,11 @@ export const allowedTypeScriptSuffixes = [
 export const allowedUnderscoreFolders = new Set([
   '_handlers',
   '_helpers',
-  '_schema',
-  '_types',
+	'_schema',
+	'_database',
+	'_repositories',
+	'_migrations',
+	'_types',
   '_rpc',
   '_policies',
   '_mappers',
