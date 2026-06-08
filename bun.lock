@@ -249,6 +249,17 @@
         "typescript": "^5.9.3",
       },
     },
+    "tools/brioela-type-guard": {
+      "name": "@brioela/type-guard",
+      "version": "0.0.0",
+      "bin": {
+        "brioela-type-guard": "./run.brioela.type.guard.handler.ts",
+      },
+      "devDependencies": {
+        "@types/bun": "^1.3.14",
+        "typescript": "^5.9.3",
+      },
+    },
   },
   "trustedDependencies": [
     "@shopify/react-native-skia",
@@ -475,6 +486,8 @@
     "@brioela/name-guard": ["@brioela/name-guard@workspace:tools/brioela-name-guard"],
 
     "@brioela/shared": ["@brioela/shared@workspace:shared"],
+
+    "@brioela/type-guard": ["@brioela/type-guard@workspace:tools/brioela-type-guard"],
 
     "@callstack/react-theme-provider": ["@callstack/react-theme-provider@3.0.9", "", { "dependencies": { "deepmerge": "^3.2.0", "hoist-non-react-statics": "^3.3.0" }, "peerDependencies": { "react": ">=16.3.0" } }, "sha512-tTQ0uDSCL0ypeMa8T/E9wAZRGKWj8kXP7+6RYgPTfOPs9N07C9xM8P02GJ3feETap4Ux5S69D9nteq9mEj86NA=="],
 
