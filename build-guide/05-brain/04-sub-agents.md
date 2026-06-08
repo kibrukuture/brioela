@@ -2,11 +2,11 @@
 
 ## What This File Covers
 
-The ephemeral sub-agent DO pattern, BrainMaintenanceAgent, BehaviorPatternAgent, the HTTP forwarding protocol for tool calls, and caller-based authorization.
+The Brain-owned sub-agent pattern, BrainMaintenanceAgent, BehaviorPatternAgent, typed parent-child Agent RPC, retained child runs, and Brain-owned authorization boundaries.
 
 ---
 
-## The Pattern — Ephemeral DOs, Permanent Brain
+## The Pattern — Brain-Owned Child Agents, Permanent Brain
 
 All agents in Brioela are Cloudflare Durable Objects. What separates them is the ID they are keyed by:
 
@@ -17,21 +17,23 @@ BrioelaBrain
   never dies
   │
   ├── on brain_maintenance_run alarm:
-  │   spawns BrainMaintenanceAgent
-  │   key: idFromName(`brain_maintenance_${userId}_${runId}`)      ← EPHEMERAL — new ID each run
-  │   no SQLite — all writes forwarded to Brain
+│   spawns BrainMaintenanceAgent
+  │   key: subAgent(BrainMaintenanceAgent, `brain-maintenance-${userId}-${runId}`)
+  │   temporary work only — permanent writes go through typed Brain RPC
   │   dies when work is done
   │
   └── on behavior_pattern_detection alarm:
       spawns BehaviorPatternAgent
-      key: idFromName(`behavior_pattern_${userId}_${runId}`)      ← EPHEMERAL — new ID each run
-      no SQLite — all writes forwarded to Brain
+      key: subAgent(BehaviorPatternAgent, `behavior-pattern-${userId}-${runId}`)
+      temporary work only — permanent writes go through typed Brain RPC
       dies when work is done
 ```
 
-Sub-agents do not have SQLite. They cannot persist anything directly. Every read of structured data and every write must go through the Brain's `/internal/tool-call` endpoint. The Brain executes the tool against its SQLite and returns the result.
+Sub-agents may have isolated Agent storage for their own temporary run state, but they do not own user truth. Every read of user truth and every permanent write goes through typed Brain RPC methods such as `readBrainContext()`, `writeBrainMemory()`, `appendMemoryEvent()`, and `checkActiveSession()`.
 
 **Tools are defined once and executed once — always in the Brain.**
+
+Custom `/internal/tool-call` HTTP forwarding is not the default. It is a fallback for external boundaries only. Brain-owned child agents use `subAgent()` and `parentAgent()`.
 
 ---
 
@@ -64,9 +66,12 @@ case 'brain_maintenance_run': {
   }
 
   const runId = crypto.randomUUID()
-  const brainMaintenanceId = env.BRAIN.idFromName(`brain_maintenance_${userId}_${runId}`)
-  const brainMaintenanceStub = env.BRAIN.get(brainMaintenanceId)
-  await brainMaintenanceStub.fetch(new Request('https://internal/run', { method: 'POST' }))
+  const brainMaintenance = await this.subAgent(
+    BrainMaintenanceAgent,
+    `brain-maintenance-${userId}-${runId}`,
+  )
+
+  await brainMaintenance.runMaintenancePass({ userId, runId })
 
   // Reschedule next brain maintenance run — 7 days
   await scheduleUserAlarm({
@@ -81,7 +86,7 @@ case 'brain_maintenance_run': {
 
 ### Three Passes
 
-BrainMaintenanceAgent runs three passes in order, each using the HTTP tool-forwarding protocol:
+BrainMaintenanceAgent runs three passes in order. It calls typed Brain RPC for reads and proposed writes. The Brain remains the only owner of SQLite writes.
 
 **Pass 1 — Skill Maintenance**
 Reads all active skills. For each skill: if `use_count === 0` and `created_at` is older than 30 days, call `archive_user_skill`. If `use_count < 3` and `last_used_at` is older than 60 days, call `archive_user_skill` with reason `stale: low use`. System skills (`source = 'system'`) are never touched.
@@ -105,7 +110,7 @@ Fires via DO alarm on a 14-day interval. Unlike Brain maintenance, BehaviorPatte
 
 ### What It Does
 
-Reads `memory_event` rows from the last 14 days. Passes them to Claude with a structured analysis prompt. Claude returns detected patterns as structured JSON. BehaviorPatternAgent writes confirmed patterns to `user_memory` under the `patterns.*` namespace via the forwarding protocol.
+Reads `memory_event` rows from the last 14 days through Brain RPC. Passes them to Claude with a structured analysis prompt. Claude returns detected patterns as structured JSON. BehaviorPatternAgent asks Brain to write confirmed patterns to `user_memory` under the `patterns.*` namespace.
 
 ```typescript
 // BehaviorPatternAgent system prompt
@@ -141,73 +146,95 @@ Only return patterns with confidence >= 0.65 and evidence_count >= 3.
 
 ---
 
-## HTTP Tool Forwarding — Full Flow
+## Typed Brain RPC — Full Flow
 
 When BrainMaintenanceAgent or BehaviorPatternAgent calls a tool, the flow is:
 
 ```
 BrainMaintenanceAgent LLM decides to call archive_user_skill("stale-skill")
     ↓
-BrainMaintenanceAgent executes tool via HTTP:
-    POST https://{brain-do-url}/internal/tool-call
-    Authorization: Bearer {INTERNAL_SECRET}
-    {
-      "tool":    "archive_user_skill",
-      "caller":  "brain_maintenance",
-      "args":    { "name": "stale-skill", "reason": "stale: use_count=1, last_used 67 days ago" },
-      "run_id":  "brain_maintenance_abc123"
-    }
+BrainMaintenanceAgent gets typed parent stub:
+    const brain = await this.parentAgent<BrioelaBrain>()
+    await brain.archiveUserSkill({
+      name: 'stale-skill',
+      reason: 'stale: use_count=1, last_used 67 days ago',
+      archivedBy: 'BrainMaintenanceAgent',
+      runId,
+    })
     ↓
-Brain internal-tool.handler.ts:
-    1. Validates Authorization header
-    2. Checks 'brain_maintenance' has permission to call 'archive_user_skill' (TOOL_PERMISSIONS)
-    3. Validates args against archive_user_skill's Zod schema
-    4. Executes archiveUserSkill() against its SQLite
-    5. Returns { result: { name: "stale-skill", status: "archived" } }
+Brain RPC method:
+    1. Validates input with Zod
+    2. Checks BrainMaintenanceAgent has permission to archive user skills
+    3. Executes archiveUserSkill() against Brain SQLite
+    4. Returns { name: 'stale-skill', status: 'archived' }
     ↓
 BrainMaintenanceAgent receives result — continues to next skill
 ```
 
-The sub-agent is completely unaware that execution happened in a different DO. From its perspective: it called a tool, it got a result.
+The sub-agent does not import Brain schema or touch Brain SQLite. From its perspective: it called a typed parent method, it got a typed result.
 
 ---
 
 ## Sub-Agent DO Class
 
-All sub-agents use the same base pattern — they extend `Agent` but override `fetch()` to run their specific job synchronously and return when done. They never set alarms. They never hold WebSocket connections.
+All Brain-owned child agents use the same base pattern: they extend `Agent`, expose one or more typed callable methods, and keep permanent truth in Brain. They may use child-local state for run progress, but that state is not user truth.
 
 ```typescript
-// backend/src/agents/brain-maintenance/brain-maintenance.agent.ts
+// backend/src/agents/brain/_subagents/brain-maintenance/brain.maintenance.agent.ts
 
 import { Agent } from 'agents'
+import { callable } from 'agents'
 import { generateText } from 'ai'
 import { anthropic } from '@ai-sdk/anthropic'
+import type { BrioelaBrain } from '../../brioela.brain.agent'
 import type { Env } from '@/types/env'
 
 export class BrainMaintenanceAgent extends Agent<Env> {
-  override async fetch(request: Request): Promise<Response> {
-    if (new URL(request.url).pathname !== '/run') {
-      return new Response('Not found', { status: 404 })
-    }
-
-    // Extract userId from DO name (set by Brain when spawning)
-    const userId = await this.ctx.storage.get<string>('userId')
-    if (!userId) return new Response('Missing userId', { status: 400 })
-
-    const brainUrl = `https://brain-${userId}.internal`
+  @callable()
+  async runMaintenancePass(input: RunMaintenancePass): Promise<MaintenancePassSummary> {
+    const brain = await this.parentAgent<BrioelaBrain>()
+    const context = await brain.readBrainContext({
+      userId: input.userId,
+      purpose: 'brain_maintenance',
+    })
 
     await generateText({
       model: anthropic('claude-haiku-4-5-20251001'),
       system: BRAIN_MAINTENANCE_SYSTEM_PROMPT,
-      messages: [{ role: 'user', content: 'Run the three brain maintenance passes.' }],
-      tools: buildForwardingTools(brainUrl, this.env.INTERNAL_SECRET, 'brain_maintenance'),
+      messages: [{ role: 'user', content: buildMaintenancePrompt(context) }],
+      tools: buildBrainMaintenanceTools(brain, input.runId),
       maxSteps: 50,
     })
 
-    // DO will be evicted by Cloudflare after idle — no explicit shutdown needed
-    return new Response('ok')
+    return { runId: input.runId, status: 'completed' }
   }
 }
 ```
 
-`buildForwardingTools()` creates lightweight `tool()` wrappers that POST to `/internal/tool-call` instead of executing locally. The LLM sees the same tool schemas — it does not know or care that execution is remote.
+`buildBrainMaintenanceTools()` creates lightweight AI SDK `tool()` wrappers that call typed Brain RPC methods. The LLM sees normal tools. The code keeps a typed parent-child boundary.
+
+---
+
+## Retained Child Runs
+
+Use `runAgentTool()` when Brain wants the model to delegate work to a child agent and keep a retained run timeline:
+
+```typescript
+await this.runAgentTool(BehaviorPatternAgent, {
+  input: { userId: this.userId, windowDays: 14 },
+  runId: `behavior-pattern-${this.userId}-${weekId}`,
+})
+```
+
+Use retained child runs for work that benefits from replay, cancellation, progress inspection, or later drill-in. Use direct `subAgent()` RPC for ordinary scheduled work with a clear method call.
+
+---
+
+## Boundary Rules
+
+- Brain-owned child agents live under `backend/src/agents/brain/_subagents/`.
+- Child agents never import Brain `_schema/` directly.
+- Child agents never construct Brain SQLite connections.
+- Child agents call Brain through typed parent RPC.
+- Brain validates every permanent write through `_policies/`.
+- HTTP internal forwarding is a fallback only when a future boundary cannot use typed Agent RPC.

@@ -27,6 +27,7 @@ The complete rulebook for how every file in the Brioela codebase is written. Mon
 | `10-error-handling.md` | AppError class, Hono error middleware, Result<T,E> for internal functions, mobile error handling, React error boundaries |
 | `11-packages.md` | Definitive package list per workspace, explicitly banned packages with alternatives |
 | `12-testing-standards.md` | bun test, what to test vs what to skip, collocated test files, patterns for schemas / tools / routes |
+| `13-file-name-enforcement.md` | Brioela-scoped file/folder naming guard, watch mode, fail-fast checks, banned names, allowed suffixes and underscore folders |
 
 ## The Three Rules That Govern Everything
 

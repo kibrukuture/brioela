@@ -9,6 +9,11 @@ Every folder in this codebase uses the same pattern:
    - `.controller.ts` — thin HTTP layer: on{Action}() wrappers that call handlers and return c.json
    - `.handler.ts` — pure business logic — returns data, never c.json
    - `.helper.ts` — pure utility function
+   - `.rpc.ts` — typed Agent RPC method wrapper or RPC input/output contract
+   - `.policy.ts` — authorization, privacy, safety, or ownership rule
+   - `.mapper.ts` — pure shape conversion between two named structures
+   - `.prompt.ts` — model instruction text or prompt builder for one model task
+   - `.runtime.ts` — adapter around a long-lived provider/runtime connection
    - `.middleware.ts` — Hono middleware
    - `.agent.ts` — Durable Object class
    - `.tool.ts` — AI-callable tool function
@@ -34,6 +39,13 @@ Every folder in this codebase uses the same pattern:
    - `_helpers/` — all helper files for this scope + `index.ts`
    - `_schema/` — all Drizzle schema files for this scope (DO agents) + `index.ts`
    - `_types/` — local type files for this scope + `index.ts`
+   - `_rpc/` — all typed Agent RPC boundary files for this scope + `index.ts`
+   - `_policies/` — all authorization/privacy/safety rules for this scope + `index.ts`
+   - `_mappers/` — all pure shape conversion files for this scope + `index.ts`
+   - `_prompts/` — all prompt builders and model instruction files for this scope + `index.ts`
+   - `_runtime/` — all long-lived provider/runtime adapters for this scope + `index.ts`
+   - `_schedules/` — all Agent schedule callbacks and scheduling handlers for this scope + `index.ts`
+   - `_subagents/` — child Agent classes owned by this parent Agent + `index.ts`
    - `_hooks/` — UI state hook files for this scope (mobile features) + `index.ts`
    - `_components/` — components for this scope (mobile features) + `index.ts`
 
@@ -167,24 +179,58 @@ backend/
 │   │
 │   ├── agents/                         # Durable Object classes — one folder per DO
 │   │   ├── brain/
-│   │   │   ├── brain.agent.ts   # DO class — fetch(), alarm(), WebSocket lifecycle
+│   │   │   ├── brioela.brain.agent.ts   # Agent class — fetch(), callable RPC, schedules
 │   │   │   ├── _schema/
-│   │   │   │   ├── memory.schema.ts
-│   │   │   │   ├── constraints.schema.ts
-│   │   │   │   ├── recipes.schema.ts
-│   │   │   │   ├── sessions.schema.ts
-│   │   │   │   ├── skills.schema.ts
+│   │   │   │   ├── memory.event.schema.ts
+│   │   │   │   ├── user.memory.schema.ts
+│   │   │   │   ├── user.personality.schema.ts
+│   │   │   │   ├── skill.schema.ts
+│   │   │   │   ├── skill.version.schema.ts
+│   │   │   │   ├── constraint.schema.ts
+│   │   │   │   ├── session.schema.ts
+│   │   │   │   ├── session.turn.schema.ts
+│   │   │   │   ├── recipe.schema.ts
+│   │   │   │   ├── scheduled.alarm.schema.ts
+│   │   │   │   ├── agent.state.schema.ts
+│   │   │   │   └── index.ts
+│   │   │   ├── _rpc/                         # typed callable surface used by routes and child agents
+│   │   │   │   ├── read.brain.context.rpc.ts
+│   │   │   │   ├── write.brain.memory.rpc.ts
+│   │   │   │   ├── append.memory.event.rpc.ts
+│   │   │   │   ├── check.active.session.rpc.ts
 │   │   │   │   └── index.ts
 │   │   │   ├── _handlers/
-│   │   │   │   ├── read.memory.handler.ts
-│   │   │   │   ├── read.constraint.handler.ts
-│   │   │   │   ├── read.recipe.handler.ts
-│   │   │   │   ├── load.context.handler.ts
+│   │   │   │   ├── create.brain.session.handler.ts
+│   │   │   │   ├── finalize.brain.session.handler.ts
+│   │   │   │   ├── dispatch.brain.schedule.handler.ts
 │   │   │   │   └── index.ts
-│   │   │   ├── _helpers/
-│   │   │   │   ├── load.context.helper.ts
-│   │   │   │   ├── compress.context.helper.ts
-│   │   │   │   ├── extract.facts.helper.ts
+│   │   │   ├── _context/
+│   │   │   │   ├── build.mira.scene.context.handler.ts
+│   │   │   │   ├── load.session.context.handler.ts
+│   │   │   │   ├── compress.session.context.handler.ts
+│   │   │   │   └── index.ts
+│   │   │   ├── _policies/
+│   │   │   │   ├── authorize.brain.tool.policy.ts
+│   │   │   │   ├── enforce.memory.write.policy.ts
+│   │   │   │   ├── enforce.privacy.boundary.policy.ts
+│   │   │   │   └── index.ts
+│   │   │   ├── _schedules/
+│   │   │   │   ├── schedule.brain.maintenance.handler.ts
+│   │   │   │   ├── schedule.behavior.pattern.handler.ts
+│   │   │   │   └── index.ts
+│   │   │   ├── _subagents/
+│   │   │   │   ├── brain-maintenance/
+│   │   │   │   │   ├── brain.maintenance.agent.ts
+│   │   │   │   │   ├── run.maintenance.pass.handler.ts
+│   │   │   │   │   └── index.ts
+│   │   │   │   ├── behavior-pattern/
+│   │   │   │   │   ├── behavior.pattern.agent.ts
+│   │   │   │   │   ├── run.behavior.pattern.pass.handler.ts
+│   │   │   │   │   └── index.ts
+│   │   │   │   ├── session-context-compressor/
+│   │   │   │   │   ├── session.context.compressor.agent.ts
+│   │   │   │   │   ├── compress.session.context.handler.ts
+│   │   │   │   │   └── index.ts
 │   │   │   │   └── index.ts
 │   │   │   └── index.ts
 │   │   │
@@ -570,7 +616,7 @@ The `shared/routes/index.ts` is the single source of truth.
 | Controller wrapper for scan handlers | `backend/src/api/scan/scan.controller.ts` |
 | Handler that creates a scan | `backend/src/api/scan/_handlers/create.scan.handler.ts` |
 | Helper used by scan handlers | `backend/src/api/scan/_helpers/build.verdict.helper.ts` |
-| Brain DO class | `backend/src/agents/brain/brain.agent.ts` |
+| Brain Agent class | `backend/src/agents/brain/brioela.brain.agent.ts` |
 | Brain SQLite table schemas | `backend/src/agents/brain/_schema/*.schema.ts` |
 | AI tool for writing memory | `backend/src/tools/memory/write.user.memory.tool.ts` |
 | Supabase Postgres table schema | `shared/drizzle/schema/products.schema.ts` |

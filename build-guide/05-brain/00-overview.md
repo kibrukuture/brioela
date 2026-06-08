@@ -11,9 +11,9 @@ The per-user agent brain. One `BrioelaBrain` Durable Object per user, forever. T
 | File | Contents |
 |---|---|
 | `01-do-class-and-setup.md` | BrioelaBrain class, wrangler.jsonc entries, SQLite init, WAL mode, Drizzle wiring, current Agents SDK runtime primitives |
-| `02-tool-protocol.md` | All 17 AI-callable tools, tool definition pattern, tool registration, Zod validation at boundary, TOOL_PERMISSIONS, /internal/tool-call forwarding endpoint |
+| `02-tool-protocol.md` | All 17 AI-callable tools, tool definition pattern, tool registration, Zod validation at boundary, caller permissions, typed Brain RPC wrappers for child agents |
 | `03-session-lifecycle.md` | Session open, system prompt construction (BrioelaIdentity + order), compression triggers, SessionContextCompressor, abandoned session detection, watchdog alarm |
-| `04-sub-agents.md` | Ephemeral DO pattern, BrainMaintenanceAgent, BehaviorPatternAgent, HTTP tool forwarding protocol, caller-based authorization |
+| `04-sub-agents.md` | Brain-owned child Agent pattern, BrainMaintenanceAgent, BehaviorPatternAgent, typed parent-child RPC, retained child runs, caller-based authorization |
 | `05-alarm-system.md` | scheduled_alarms product ledger, Agents SDK schedule wake/callback model, ambient intelligence loop, first-boot initialization |
 | `06-agent-identity.md` | BrioelaIdentity document, 800 token cap, system prompt block order, prefix cache contract, update rules |
 | `07-agent-framework-hardening.md` | Brioela-first update: Cloudflare Agents SDK runtime primitives, AI SDK tool layer, replacing custom plumbing without making Brioela chat-first |
@@ -24,7 +24,7 @@ The per-user agent brain. One `BrioelaBrain` Durable Object per user, forever. T
 - `brioela-specs/24-technical-architecture-backbone.md` — context compression, skill selection, DO cold wake keepAlive
 - `brioela-specs/34-universal-visual-intake.md` — visual intake pipeline, memory vs skills distinction
 - `implementable-specs/00-overview.md` — stack overview, WAL mode, prefix cache contract, writers by table
-- `implementable-specs/15-brain-maintenance-and-behavior-patterns.md` — BrainMaintenanceAgent + BehaviorPatternAgent: three passes, tool forwarding, TOOL_PERMISSIONS, ephemeral DO pattern
+- `implementable-specs/15-brain-maintenance-and-behavior-patterns.md` — BrainMaintenanceAgent + BehaviorPatternAgent: three passes, Brain-owned writes, caller permissions, child Agent pattern
 - `implementable-specs/16-agent-identity.md` — BrioelaIdentity document, system prompt order, 800 token cap
 - `implementable-specs/17-session-lifecycle.md` — compression triggers, SessionContextCompressor, abandoned detection, watchdog alarm
 - Current Cloudflare Agents SDK docs — sub-agents, agent tools, schedules, queues, fibers, workflows, sessions, skills
@@ -37,7 +37,7 @@ The per-user agent brain. One `BrioelaBrain` Durable Object per user, forever. T
 - Skills: index-then-load pattern — AI reads compact index in system prompt, calls `view_user_skill(name)` on demand
 - Alarms: `scheduled_alarms` stores product meaning/outcomes; Agents SDK `schedule()` wakes/calls execution when possible
 - keepAlive: use `keepAliveWhile()` / fibers for long provider interactions; do not use manual heartbeat alarms as default
-- Sub-agents: ephemeral DOs keyed by `brain_maintenance_${userId}_${runId}`, `behavior_pattern_${userId}_${runId}` — no SQLite, all writes forwarded
+- Sub-agents: Brain-owned child Agents created through `subAgent()` or retained through `runAgentTool()`; child agents call typed Brain RPC and never write Brain SQLite directly
 - Context compression: chat sessions at 40 turns/60k tokens, cooking at 80 turns/100k tokens — SessionContextCompressor produces four-field summary
 - Abandoned detection: watchdog alarm set at session open, marks sessions abandoned if still active when fired
 - BrioelaIdentity: 800 token cap, universal constant, block order is fixed for Anthropic prefix caching

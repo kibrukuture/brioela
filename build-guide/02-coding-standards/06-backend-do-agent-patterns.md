@@ -2,43 +2,31 @@
 
 ## Class Structure
 
-Every Agent-backed DO extends `Agent` from `agents`. The class is the single source of behavior for that DO. The class file (`index.ts`) only contains the class definition, request routing, scheduling callbacks, and WebSocket lifecycle methods. Business logic lives in sibling files imported by the class.
+Every Agent-backed DO extends `Agent` from `agents`. The class is the typed runtime boundary for that DO. The `.agent.ts` file contains the class definition, request routing, callable RPC methods, scheduling callbacks, and WebSocket lifecycle methods. Business logic lives in sibling files imported by the class.
 
 ```ts
-// backend/src/agents/brain/brain.agent.ts
-import { Agent } from 'agents'
+// backend/src/agents/brain/brioela.brain.agent.ts
+import { Agent, callable } from 'agents'
 import { drizzle } from 'drizzle-orm/durable-sqlite'
 import * as schema from './_schema'
-import { handleAlarm } from './_handlers'
-import { loadContext, runCompress } from './_helpers'
+import { readBrainContext, writeBrainMemory } from './_rpc'
+import { dispatchBrainSchedule } from './_handlers'
 
 export class BrioelaBrain extends Agent<Env> {
   db = drizzle(this.ctx.storage, { schema })
 
-  async fetch(request: Request): Promise<Response> {
-    // Route incoming requests to the correct method
-    const url = new URL(request.url)
-
-    if (url.pathname === '/context') return this.getContext(request)
-    if (url.pathname === '/memory/write') return this.writeMemory(request)
-    if (url.pathname === '/memory/read') return this.readMemory(request)
-    if (url.pathname === '/constraint/propose') return this.proposeConstraint(request)
-
-    return new Response('Not found', { status: 404 })
+  @callable()
+  async readBrainContext(input: ReadBrainContext): Promise<BrainContext> {
+    return readBrainContext(this.db, input)
   }
 
-  async alarm(): Promise<void> {
-    await handleAlarm(this.db, this.ctx, this.env)
+  @callable()
+  async writeBrainMemory(input: WriteBrainMemory): Promise<BrainMemoryWrite> {
+    return writeBrainMemory(this.db, input)
   }
 
-  // Public methods called by route handlers via DO RPC
-  async getContext(request: Request): Promise<Response> {
-    const context = await loadContext(this.db)
-    return Response.json(context)
-  }
-
-  async writeMemory(request: Request): Promise<Response> {
-    // ... delegates to lib
+  async dispatchBrainSchedule(input: BrainSchedule): Promise<void> {
+    await dispatchBrainSchedule(this, this.db, input)
   }
 }
 ```

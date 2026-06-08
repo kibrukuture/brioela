@@ -8,7 +8,7 @@ Neither agent is user-facing. Neither talks to the user. Both produce outcomes t
 
 ---
 
-## Architecture — Ephemeral DOs, Persistent Brain
+## Architecture — Brain-Owned Child Agents, Persistent Brain
 
 Every agent in Brioela is a Cloudflare Durable Object. What separates them is the ID they are keyed by:
 
@@ -20,53 +20,50 @@ CF Worker receives request
     never dies
     │
     ├── on brain_maintenance_run alarm:
-    │   spawns BrainMaintenanceAgent DO
-    │   key: idFromName(`brain_maintenance_${userId}_${runId}`)   ← EPHEMERAL — new ID each run
-    │   no SQLite
+    │   spawns BrainMaintenanceAgent child Agent
+    │   key: subAgent(BrainMaintenanceAgent, `brain-maintenance-${userId}-${runId}`)
+    │   temporary run state only; permanent writes go through typed Brain RPC
     │   dies when work is done (CF evicts on idle)
     │
     └── on behavior_pattern_detection alarm:
-        spawns BehaviorPatternAgent DO
-        key: idFromName(`behavior_pattern_${userId}_${runId}`)  ← EPHEMERAL — new ID each run
-        no SQLite
+        spawns BehaviorPatternAgent child Agent
+        key: subAgent(BehaviorPatternAgent, `behavior-pattern-${userId}-${runId}`)
+        temporary run state only; permanent writes go through typed Brain RPC
         dies when work is done
 ```
 
-All agents — Brain, BrainMaintenanceAgent, BehaviorPatternAgent, MiraSession, ProductScanAgent — are the same kind of entity. They all use LLMs. They all use tools. The only difference is the ID. Ephemeral IDs mean ephemeral DOs. The Brain's `userId` key is what makes it permanent.
+All agents — Brain, BrainMaintenanceAgent, BehaviorPatternAgent, MiraSession, ProductScanAgent — are the same kind of entity. They all use LLMs. They all use tools. The difference is ownership. The Brain's `userId` key makes it permanent. Brain-owned child agents do temporary work and call typed Brain RPC for user truth.
 
 ---
 
-## Tool Forwarding Protocol — Tools Defined and Executed Once
+## Typed Brain RPC — Tools Defined and Executed Once
 
-Sub-agents (BrainMaintenanceAgent, BehaviorPatternAgent, and all others) have no SQLite. They cannot execute tools against a database. Every tool call a sub-agent makes is forwarded to the Brain, which executes it against its SQLite and returns the result.
+Sub-agents (BrainMaintenanceAgent, BehaviorPatternAgent, and all others) do not own user truth. Every permanent read/write goes through typed Brain RPC. The Brain validates input, enforces caller policy, executes the underlying tool or handler against its SQLite, and returns a typed result.
 
 **Tools are defined ONCE. Executed ONCE. In the Brain. Always.**
 
-Sub-agents call tools. The Brain runs them.
+Sub-agents call typed Brain methods or AI SDK tool wrappers that call typed Brain methods. The Brain runs the write.
 
-### HTTP Forwarding
+### Parent/Child RPC
 
-When a sub-agent calls a tool:
+When a sub-agent needs a permanent Brain write:
 
-```
-POST https://{brain-do-url}/internal/tool-call
-Authorization: Bearer {shared-internal-secret}
-Content-Type: application/json
+```typescript
+const brain = await this.parentAgent<BrioelaBrain>()
 
-{
-  "tool":      "archive_user_skill",
-  "caller":    "brain_maintenance",
-  "args":      { "name": "stale-skill-name", "reason": "stale: use_count=1, last_used 67 days ago" },
-  "run_id":    "brain_maintenance_abc123"
-}
+await brain.archiveUserSkill({
+  name: 'stale-skill-name',
+  reason: 'stale: use_count=1, last_used 67 days ago',
+  archivedBy: 'BrainMaintenanceAgent',
+  runId,
+})
 ```
 
-Brain on receiving this:
-1. Validates `Authorization` header — rejects if not the internal secret
-2. Validates `caller` is in the allowed caller list for this tool
-3. Validates `args` with the tool's Zod schema
-4. Executes the tool against SQLite
-5. Returns result:
+Brain on receiving this typed call:
+1. Validates input with the RPC/tool Zod schema
+2. Validates the caller is allowed to perform the write
+3. Executes the tool or handler against SQLite
+4. Returns a typed result:
 
 ```json
 {
@@ -76,11 +73,11 @@ Brain on receiving this:
 }
 ```
 
-The sub-agent receives this as if the tool ran locally. It does not know or care that the execution happened in another DO. From its perspective: it called a tool, it got a result.
+The sub-agent receives this as a normal typed method result. It never imports Brain schema and never opens Brain SQLite.
 
 ### Authorization: Tool Subsets Per Caller
 
-Not every agent can call every tool. The Brain enforces caller-based authorization on every `/internal/tool-call` request:
+Not every agent can call every tool. The Brain enforces caller-based authorization inside `_policies/` before every permanent write:
 
 ```typescript
 const TOOL_PERMISSIONS: Record<string, string[]> = {

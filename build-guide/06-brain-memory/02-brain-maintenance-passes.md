@@ -2,7 +2,7 @@
 
 ## What This File Covers
 
-The three BrainMaintenanceAgent passes (skill maintenance, trait decay, trait inference) and the BehaviorPatternAgent pass. This file covers only the logic of the passes — the DO architecture and HTTP forwarding protocol that makes them run is documented in `05-brain/04-sub-agents.md`.
+The three BrainMaintenanceAgent passes (skill maintenance, trait decay, trait inference) and the BehaviorPatternAgent pass. This file covers only the logic of the passes — the Brain-owned child Agent architecture and typed Brain RPC boundary are documented in `05-brain/04-sub-agents.md`.
 
 ---
 
@@ -192,7 +192,7 @@ Return JSON array. Each item:
 `
 ```
 
-For each pattern returned, BehaviorPatternAgent calls `write_user_memory` via the forwarding protocol, writing to the `patterns.*` namespace. These entries look like any other `user_memory` entry to the agent — they are injected into session context the same way, available for the agent to reference.
+For each pattern returned, BehaviorPatternAgent asks Brain to write memory through typed Brain RPC, writing to the `patterns.*` namespace. These entries look like any other `user_memory` entry to Mira — they are injected into session context the same way, available for Mira to reference.
 
 The Brain maintenance's Pass 3 (trait inference) reads these `patterns.*` entries as potential trait evidence on its next run — a pattern that persists across multiple BehaviorPatternAgent passes can graduate to a `user_personality` trait.
 

@@ -213,7 +213,7 @@ export const skills = sqliteTable('skills', {
 - `use_count < 3` and `last_used_at` > 60 days ago → archive with reason `stale`
 - System skills (`source = 'system'`) are never touched by the Brain maintenance
 
-**Write:** `create_user_skill`, `update_user_skill`, `archive_user_skill`, `delete_user_skill` tools. Brain maintenance via forwarding protocol (update/archive only, user skills only).
+**Write:** `create_user_skill`, `update_user_skill`, `archive_user_skill`, `delete_user_skill` tools. Brain maintenance via typed Brain RPC (update/archive only, user skills only).
 
 **Read:** skill index (name + description only) injected into every session prompt. Full content loaded by `view_user_skill(name)`.
 

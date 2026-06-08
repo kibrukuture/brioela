@@ -2,7 +2,7 @@
 
 ## What This File Covers
 
-The complete tool protocol: all 17 AI-callable tools, the tool definition pattern, how tools are registered on the Brain, Zod validation at the tool boundary, TOOL_PERMISSIONS for sub-agent authorization, and the `/internal/tool-call` forwarding endpoint.
+The complete tool protocol: all 17 AI-callable tools, the tool definition pattern, how tools are registered on the Brain, Zod validation at the tool boundary, caller permissions, and typed Brain RPC wrappers for Brain-owned child agents.
 
 ---
 
@@ -227,62 +227,52 @@ function buildAllTools(db: DrizzleDB) {
 
 ---
 
-## `/internal/tool-call` — Sub-Agent Tool Forwarding Endpoint
+## Typed Brain RPC — Child Agent Tool Access
 
-Sub-agents (BrainMaintenanceAgent, BehaviorPatternAgent, SessionContextCompressor) have no SQLite. When they call a tool, the call is forwarded over HTTP to the Brain's `/internal/tool-call` endpoint, which executes it against the user's SQLite and returns the result.
+Brain-owned child agents (BrainMaintenanceAgent, BehaviorPatternAgent, SessionContextCompressor) do not call a custom HTTP forwarding endpoint by default. They call typed Brain RPC methods exposed by `BrioelaBrain`. The Brain RPC method validates input, enforces caller permission, executes the underlying tool or handler against Brain SQLite, and returns a typed result.
+
+The model still sees normal AI SDK tools. The wrapper around each tool calls Brain RPC instead of importing Brain schema or opening Brain SQLite.
 
 ```typescript
-// backend/src/agents/brain/_handlers/internal-tool.handler.ts
+// backend/src/agents/brain/_subagents/behavior-pattern/_helpers/build.behavior.pattern.tools.helper.ts
 
-import { getToolsForSessionType } from '../_tools'
-import type { DrizzleDB } from '@/types/db'
-import type { Env } from '@/types/env'
+import { tool } from 'ai'
+import { z } from 'zod'
+import type { BrioelaBrain } from '../../brioela.brain.agent'
 
-const InternalToolCallSchema = z.object({
-  tool:   z.string(),
-  caller: z.enum(['brain_maintenance', 'behavior_pattern_detection', 'compressor', 'cooking']),
-  args:   z.record(z.unknown()),
-  run_id: z.string(),
-})
-
-export async function handleInternalToolCall(
-  request: Request,
-  db: DrizzleDB,
-  env: Env,
-): Promise<Response> {
-  // Validate caller identity
-  const authHeader = request.headers.get('Authorization')
-  if (authHeader !== `Bearer ${env.INTERNAL_SECRET}`) {
-    return new Response('Unauthorized', { status: 401 })
+export function buildBehaviorPatternTools(brain: BrioelaBrain, runId: string) {
+  return {
+    write_user_memory: tool({
+      description: 'Write a confirmed behavior pattern into Brain memory.',
+      parameters: z.object({
+        key: z.string().min(1),
+        description: z.string().min(1),
+        eventIds: z.array(z.string()).min(3),
+        confidence: z.number().min(0).max(1),
+      }),
+      execute: async (input) => {
+        return brain.writeBrainMemory({
+          namespace: 'pattern',
+          key: input.key,
+          value: JSON.stringify(input),
+          confidence: input.confidence,
+          source: 'inferred',
+          writtenBy: 'BehaviorPatternAgent',
+          runId,
+        })
+      },
+    }),
   }
-
-  const body = await request.json()
-  const parsed = InternalToolCallSchema.safeParse(body)
-  if (!parsed.success) {
-    return Response.json({ error: parsed.error.flatten() }, { status: 400 })
-  }
-
-  const { tool: toolName, caller, args } = parsed.data
-
-  // Enforce TOOL_PERMISSIONS — caller cannot exceed its allowed set
-  const allowedTools = getToolsForSessionType(db, caller)
-  if (!(toolName in allowedTools)) {
-    return Response.json({ error: `caller '${caller}' is not permitted to call '${toolName}'` }, { status: 403 })
-  }
-
-  const toolDef = allowedTools[toolName as keyof typeof allowedTools]
-
-  // Validate args against the tool's Zod schema
-  const argsParsed = toolDef.parameters.safeParse(args)
-  if (!argsParsed.success) {
-    return Response.json({ error: argsParsed.error.flatten() }, { status: 422 })
-  }
-
-  // Execute against this DO's SQLite
-  const result = await toolDef.execute(argsParsed.data, { abortSignal: AbortSignal.timeout(10_000) })
-  return Response.json({ result })
 }
 ```
+
+Rules:
+
+- Child agents never import Brain `_schema/` directly.
+- Child agents never construct Brain SQLite connections.
+- Child agents get a typed Brain stub through `parentAgent<BrioelaBrain>()`.
+- Brain RPC methods validate Zod input and enforce caller permissions through `_policies/`.
+- Custom HTTP forwarding is a fallback only for external boundaries where Agents SDK typed RPC is unavailable.
 
 ---
 

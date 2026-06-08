@@ -2,7 +2,7 @@
 
 ## What This File Covers
 
-`BrioelaBrain` class structure, `wrangler.jsonc` entries, SQLite initialization, WAL mode, Drizzle wiring, keepAlive pattern, and the DO's `fetch()` + `alarm()` entry points.
+`BrioelaBrain` class structure, `wrangler.jsonc` entries, SQLite initialization, WAL mode, Drizzle wiring, typed Agent RPC surface, schedule callbacks, and long-running Agent SDK primitives.
 
 ---
 
@@ -34,30 +34,65 @@ Two additions needed in `backend/wrangler.jsonc`. Without the `migrations` entry
 
 ```
 backend/src/agents/brain/
-├── brioela.brain.agent.ts    ← the DO class (this file)
+├── brioela.brain.agent.ts           ← the Agent class (this file)
+├── index.ts                         ← barrel export only
 ├── _schema/
 │   ├── index.ts                     ← re-exports all tables
-│   ├── memory-event.schema.ts
-│   ├── user-memory.schema.ts
-│   ├── user-personality.schema.ts
-│   ├── skills.schema.ts
-│   ├── skill-versions.schema.ts
-│   ├── constraints.schema.ts
-│   ├── sessions.schema.ts
-│   ├── session-turns.schema.ts
-│   ├── recipes.schema.ts
-│   ├── scheduled-alarms.schema.ts
-│   ├── agent-state.schema.ts
-│   └── schema-version.schema.ts
-├── _tools/
-│   └── index.ts                     ← re-exports all 17 tools
+│   ├── memory.event.schema.ts
+│   ├── user.memory.schema.ts
+│   ├── user.personality.schema.ts
+│   ├── skill.schema.ts
+│   ├── skill.version.schema.ts
+│   ├── constraint.schema.ts
+│   ├── session.schema.ts
+│   ├── session.turn.schema.ts
+│   ├── recipe.schema.ts
+│   ├── scheduled.alarm.schema.ts
+│   ├── agent.state.schema.ts
+│   └── schema.version.schema.ts
+├── _rpc/
+│   ├── read.brain.context.rpc.ts     ← typed callable read surface
+│   ├── write.brain.memory.rpc.ts     ← typed callable write surface
+│   ├── append.memory.event.rpc.ts
+│   ├── check.active.session.rpc.ts
+│   └── index.ts
 ├── _handlers/
-│   ├── alarm.handler.ts             ← alarm() dispatch
-│   ├── session.handler.ts
-│   └── internal-tool.handler.ts     ← /internal/tool-call endpoint
+│   ├── create.brain.session.handler.ts
+│   ├── finalize.brain.session.handler.ts
+│   ├── dispatch.brain.schedule.handler.ts
+│   └── index.ts
+├── _context/
+│   ├── build.mira.scene.context.handler.ts
+│   ├── load.session.context.handler.ts
+│   ├── compress.session.context.handler.ts
+│   └── index.ts
+├── _policies/
+│   ├── authorize.brain.tool.policy.ts
+│   ├── enforce.memory.write.policy.ts
+│   ├── enforce.privacy.boundary.policy.ts
+│   └── index.ts
+├── _schedules/
+│   ├── schedule.brain.maintenance.handler.ts
+│   ├── schedule.behavior.pattern.handler.ts
+│   └── index.ts
+├── _subagents/
+│   ├── brain-maintenance/
+│   │   ├── brain.maintenance.agent.ts
+│   │   ├── run.maintenance.pass.handler.ts
+│   │   └── index.ts
+│   ├── behavior-pattern/
+│   │   ├── behavior.pattern.agent.ts
+│   │   ├── run.behavior.pattern.pass.handler.ts
+│   │   └── index.ts
+│   └── session-context-compressor/
+│       ├── session.context.compressor.agent.ts
+│       ├── compress.session.context.handler.ts
+│       └── index.ts
 └── migrations/
     └── 0001_initial.sql
 ```
+
+The Brain folder is deliberately dense because it is the permanent truth-owner. Every file has one responsibility. Brain-owned child agents live under `_subagents/` so they are visibly subordinate to Brain, not peer brains.
 
 ---
 
@@ -67,12 +102,12 @@ backend/src/agents/brain/
 // backend/src/agents/brain/brioela.brain.agent.ts
 
 import { Agent } from 'agents'
+import { callable } from 'agents'
 import { drizzle } from 'drizzle-orm/durable-sqlite'
 import { migrate } from 'drizzle-orm/durable-sqlite/migrator'
 import * as schema from './_schema'
-import { allTools } from './_tools'
-import { handleAlarm } from './_handlers/alarm.handler'
-import { handleInternalToolCall } from './_handlers/internal-tool.handler'
+import { readBrainContext, writeBrainMemory, appendMemoryEvent, checkActiveSession } from './_rpc'
+import { dispatchBrainSchedule } from './_handlers'
 import type { Env } from '@/types/env'
 
 export class BrioelaBrain extends Agent<Env> {
@@ -92,24 +127,88 @@ export class BrioelaBrain extends Agent<Env> {
     })
   }
 
-  // Main HTTP entry — routes to session handler or internal tool handler
+  // HTTP entry is for external Worker/client boundaries only.
+  // Child agents call typed RPC methods on this class instead of POSTing to /internal/tool-call.
   override async fetch(request: Request): Promise<Response> {
-    const url = new URL(request.url)
-
-    if (url.pathname === '/internal/tool-call') {
-      return handleInternalToolCall(request, this.db, this.env)
-    }
-
-    // Agent SDK handles WebSocket upgrade + session routing
     return super.fetch(request)
   }
 
-  // Fires when a DO alarm triggers.
-  // All alarm types are dispatched through alarm.handler.ts.
-  override async alarm(): Promise<void> {
-    await handleAlarm(this.db, this.env, this.ctx)
+  @callable()
+  async readBrainContext(input: ReadBrainContext): Promise<BrainContext> {
+    return readBrainContext(this.db, input)
+  }
+
+  @callable()
+  async writeBrainMemory(input: WriteBrainMemory): Promise<BrainMemoryWrite> {
+    return writeBrainMemory(this.db, input)
+  }
+
+  @callable()
+  async appendMemoryEvent(input: AppendMemoryEvent): Promise<MemoryEvent> {
+    return appendMemoryEvent(this.db, input)
+  }
+
+  @callable()
+  async checkActiveSession(input: CheckActiveSession): Promise<ActiveSessionCheck> {
+    return checkActiveSession(this.db, input)
+  }
+
+  async dispatchBrainSchedule(input: BrainSchedule): Promise<void> {
+    await dispatchBrainSchedule(this, this.db, input)
   }
 }
+```
+
+The class exposes the stable typed boundary. It does not contain business logic. The business logic lives in `_rpc/`, `_handlers/`, `_context/`, `_policies/`, `_schedules/`, and Brain-owned `_subagents/`.
+
+---
+
+## Typed RPC Boundary — Default Internal Transport
+
+The default internal transport between Brain and Brain-owned child agents is typed Agents SDK RPC, not custom internal HTTP.
+
+Use `subAgent()` when Brain starts a child:
+
+```typescript
+const runId = crypto.randomUUID()
+const behaviorPattern = await this.subAgent(
+  BehaviorPatternAgent,
+  `behavior-pattern-${this.userId}-${runId}`,
+)
+
+await behaviorPattern.runBehaviorPatternPass({
+  userId: this.userId,
+  windowDays: 14,
+})
+```
+
+Use `parentAgent()` when a child needs Brain-owned truth:
+
+```typescript
+const brain = await this.parentAgent<BrioelaBrain>()
+
+const context = await brain.readBrainContext({
+  userId,
+  purpose: 'behavior_pattern_detection',
+})
+
+await brain.writeBrainMemory({
+  userId,
+  namespace: 'pattern',
+  key: pattern.key,
+  value: pattern.value,
+  writtenBy: 'BehaviorPatternAgent',
+})
+```
+
+Hard rule:
+
+```text
+BrioelaBrain owns permanent truth.
+Brain-owned child agents do temporary work.
+Child agents call Brain through typed RPC.
+No child agent writes Brain SQLite directly.
+Custom HTTP is only for external boundaries or cases where typed Agent RPC cannot express the boundary.
 ```
 
 ---
@@ -168,8 +267,7 @@ export interface Env {
   UPSTASH_WORKFLOW_TOKEN: string
   ANTHROPIC_API_KEY:      string
   GEMINI_API_KEY:         string
-  INTERNAL_SECRET:        string   // shared between Worker and DO for /internal/ endpoints
 }
 ```
 
-`INTERNAL_SECRET` is a shared secret used to authenticate `/internal/tool-call` requests from sub-agents (BrainMaintenanceAgent, BehaviorPatternAgent) back to the Brain. Never exposed to clients.
+No `INTERNAL_SECRET` is needed for Brain-owned child agents talking to Brain through typed Agent RPC. If a future external HTTP boundary is introduced, that boundary gets its own explicit secret and its own `.policy.ts` file.

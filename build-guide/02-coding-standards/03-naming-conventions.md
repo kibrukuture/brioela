@@ -16,8 +16,13 @@ Every file has a suffix that declares its role. The suffix comes after the descr
 | `.controller.ts` | Thin HTTP layer — on{Action}() wraps handler + c.json | `scan.controller.ts` |
 | `.handler.ts` | Pure business logic — returns data, never c.json | `create.scan.handler.ts` |
 | `.helper.ts` | Pure utility function | `build.verdict.helper.ts` |
+| `.rpc.ts` | Typed Agent RPC method wrapper or RPC input/output contract | `write.brain.memory.rpc.ts` |
+| `.policy.ts` | Authorization, privacy, safety, or ownership rule | `authorize.brain.tool.policy.ts` |
+| `.mapper.ts` | Pure shape conversion between two named structures | `map.scan.to.memory.event.mapper.ts` |
+| `.prompt.ts` | Model instruction text or prompt builder for one model task | `build.behavior.pattern.prompt.ts` |
+| `.runtime.ts` | Adapter around a long-lived provider/runtime connection | `connect.gemini.live.runtime.ts` |
 | `.middleware.ts` | Hono middleware | `auth.middleware.ts` |
-| `.agent.ts` | Durable Object class | `brain.agent.ts` |
+| `.agent.ts` | Agent-backed Durable Object class | `brioela.brain.agent.ts` |
 | `.tool.ts` | AI-callable tool function | `write.user.memory.tool.ts` |
 | `.schema.ts` | Drizzle table definition (backend `db/` and `_schema/`) — or Zod entity/input schema (shared `validator/`) | `products.schema.ts`, `scan.schema.ts` |
 | `.type.ts` | Pure TypeScript type declarations — only when not derivable from a Zod schema | `user.id.type.ts` |
@@ -43,23 +48,59 @@ Every file has a suffix that declares its role. The suffix comes after the descr
 
 ### General Rule
 
-File names are `kebab-case`. The descriptive part comes first, the suffix last.
+File names are dot-case. Dots separate every structural part of the name. Hyphens are never used in TypeScript file names. The descriptive part comes first, the role suffix last.
 
 ```
 ✓ create.scan.handler.ts              — handler that creates a scan
 ✓ write.user.memory.tool.ts           — AI tool that writes user memory
 ✓ build.verdict.response.helper.ts    — pure helper that formats a verdict
-✓ brain.agent.ts               — the BrioelaBrain DO class
+✓ brioela.brain.agent.ts              — the BrioelaBrain DO class
+✓ write.brain.memory.rpc.ts           — typed RPC surface for one Brain write
+✓ authorize.brain.tool.policy.ts      — policy rule for Brain tool access
+✓ build.behavior.pattern.prompt.ts    — prompt builder for one model task
 ✓ use.scanner.hook.ts                 — custom React hook for the scanner
 ✓ ambient.glsl.ts                     — ambient SkSL shader source string
 
 ✗ post-scan.handler.ts           — uses HTTP method name, not action verb
 ✗ create-scan.handler.ts         — hyphens, not dots
+✗ brain-maintenance.agent.ts     — hyphens, not dots
 ✗ utils.ts                       — what utils? no suffix, no role
 ✗ helpers.ts                     — same problem
 ✗ handler.ts                     — handler for what?
 ✗ scan.ts                        — is this a route? a helper? a schema?
 ✗ index.ts alone (with logic)    — index.ts is barrel-only, never logic
+```
+
+### Banned Names
+
+These names are banned in files, folders, functions, types, and variables unless they are part of quoted external API text:
+
+- `utils`
+- `helpers` as a file or folder name; use `_helpers/` only as a scoped collection
+- `manager`
+- `service`
+- `common`
+- `misc`
+- `stuff`
+- `data`
+- `info`
+- `payload` as a type suffix
+- `result` as a type suffix
+- `handler` as a standalone file name
+- `agent` as a standalone file name
+- `v2`, `new`, `old`, `temp`, `backup`
+
+The replacement must name ownership. Examples:
+
+```
+✗ memory.manager.ts
+✓ write.brain.memory.rpc.ts
+
+✗ common/utils.ts
+✓ _helpers/normalize.ingredient.name.helper.ts
+
+✗ pattern.service.ts
+✓ run.behavior.pattern.pass.handler.ts
 ```
 
 ### Underscore-Scoped Folders
@@ -85,10 +126,63 @@ Valid underscore folder names:
 - `_helpers/` — pure utility functions
 - `_schema/` — Drizzle schema files (inside DO agents)
 - `_types/` — local TypeScript type files
+- `_rpc/` — typed Agent RPC surface for a parent/child agent boundary
+- `_policies/` — authorization, privacy, safety, and ownership rules
+- `_mappers/` — pure shape conversion functions
+- `_prompts/` — prompt builders and model instruction text
+- `_runtime/` — long-lived provider/runtime adapters
+- `_schedules/` — Agent schedule callbacks and scheduling handlers
+- `_subagents/` — child Agent classes owned by the parent agent folder
 - `_hooks/` — custom React hooks (mobile features)
 - `_components/` — feature-scoped UI components (mobile features)
 
 Every underscore folder has an `index.ts`. Consuming code imports from the folder (`from './_handlers'`), never from individual files inside it.
+
+An underscore folder is a scoped collection, not a feature. A child feature inside `_subagents/` may have its own folder, but the folder name must be a literal kebab-case domain noun such as `brain-maintenance/`, `behavior-pattern/`, or `session-context-compressor/`.
+
+### Folder Names
+
+Top-level and feature folders are kebab-case nouns. They name the owned domain, not the file role:
+
+```
+✓ backend/src/agents/brain/
+✓ backend/src/agents/mira-session/
+✓ backend/src/agents/brain/_subagents/behavior-pattern/
+✓ shared/validator/user-memory/
+
+✗ backend/src/agents/brainAgent/
+✗ backend/src/agents/brain-agent/
+✗ backend/src/agents/common/
+✗ backend/src/agents/temp/
+```
+
+Folders do not use dots. Files do use dots. That split is intentional: folders express ownership; files express responsibility.
+
+### Hard Enforcement
+
+Naming rules are not advice. The repo must include a Brioela-scoped file-name guard before implementation accelerates.
+
+The guard should support two modes:
+
+```bash
+bun run check:names
+bun run watch:names
+```
+
+`check:names` fails CI and local verification if a bad name exists. `watch:names` runs during development and fails immediately when a bad file or folder appears. The watch process is allowed to be loud and strict because naming drift is cheaper to stop at creation time than during review.
+
+The guard must reject:
+
+- TypeScript files without an approved role suffix, except `index.ts`
+- hyphens in TypeScript file names
+- banned file or folder names
+- unknown underscore folder names
+- underscore folders without `index.ts`
+- `index.ts` files containing business logic instead of barrel exports
+- test files whose base name does not match the tested file
+- agent class files that do not end in `.agent.ts`
+- policy files that do not end in `.policy.ts`
+- RPC files that do not end in `.rpc.ts`
 
 ### Component Files
 

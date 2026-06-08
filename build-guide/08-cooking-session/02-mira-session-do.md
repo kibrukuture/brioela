@@ -251,39 +251,32 @@ private async recover(): Promise<void> {
 
 ---
 
-## Brain Tool Forwarding
+## Brain RPC Boundary
 
-Every tool that touches persistent user memory/recipes/health SQLite is forwarded to the Brain. The MiraSession may use local Agent SQLite only for live-session recovery metadata, timers, adapter IDs, and connection bookkeeping.
+Every tool that touches persistent user memory, recipes, health, constraints, or Brain-owned SQLite goes through typed Brain RPC. The MiraSession may use local Agent SQLite only for live-session recovery metadata, timers, adapter IDs, and connection bookkeeping.
 
 ```typescript
-export async function forwardToolToBrain(
-  toolName: string,
-  toolArgs: unknown,
+export async function writeCookingMemoryToBrain(
+  input: WriteCookingMemory,
   state: MiraSessionState,
   env: Env,
-): Promise<unknown> {
+): Promise<BrainMemoryWrite> {
   const brainId = env.BRAIN.idFromName(state.userId)
   const brain   = env.BRAIN.get(brainId)
 
-  const resp = await brain.fetch(new Request('https://internal/tool-call', {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${env.INTERNAL_SECRET}`,
-      'Content-Type':  'application/json',
-    },
-    body: JSON.stringify({
-      caller:  'cooking',
-      tool:    toolName,
-      args:    toolArgs,
-      run_id:  state.sessionId,
-    }),
-  }))
-
-  if (!resp.ok) throw new Error(`Tool forward failed: ${resp.status}`)
-  const { result } = await resp.json() as { result: unknown }
-  return result
+  return brain.writeBrainMemory({
+    namespace: input.namespace,
+    key: input.key,
+    value: input.value,
+    confidence: input.confidence,
+    source: input.source,
+    writtenBy: 'MiraSession',
+    sessionId: state.sessionId,
+  })
 }
 ```
+
+MiraSession tools are still normal AI SDK tools from the model's perspective. Their `execute` functions call typed Brain RPC when permanent truth is involved. They never import Brain `_schema/` directly.
 
 ---
 
