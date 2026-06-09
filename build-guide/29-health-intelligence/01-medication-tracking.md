@@ -27,7 +27,7 @@ export const medications = sqliteTable('medications', {
   withFood:      integer('with_food'),           // 1 = must take with food, 0 = fasting, NULL = no rule
   notes:         text('notes'),                  // "take 30 min before meal"
   source:        text('source').notNull(),       // 'photo' | 'voice' | 'manual'
-  active:        integer('active').notNull().default(1),
+  isActive:      integer('is_active', { mode: 'boolean' }).notNull().default(true),
   startedAt:     integer('started_at'),          // unix ms
   endedAt:       integer('ended_at'),
   createdAt:     integer('created_at').notNull(),

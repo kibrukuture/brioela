@@ -44,7 +44,7 @@ Implementation status note: this status tracks build-guide coverage, not backend
 - Per-user SQLite migrations are lazy and distributed. Drizzle generates and applies the SQLite migrations; the Brain migration runtime gates every Brain with a manifest, migration lock, readiness state, smoke tests, and control-plane rollout before normal work is served.
 - `user_memory` id = `"${namespace}:${key}"` — human-readable composite, not UUID
 - Namespace cap: 40 distinct namespaces max, enforced in `write_user_memory` tool before insert
-- `user_memory` facts are never deleted — only deactivated (`active = 0`)
+- `user_memory` facts are never deleted — only deactivated (`is_active = 0` / `isActive = false`)
 - `user_personality` traits written by Brain maintenance only — not by agent mid-session
 - `constraints` table never touched by Brain maintenance — too safety-critical
 - `hard_allergy` requires `confirmation_source = 'user_explicit'` — behavioral threshold alone not enough

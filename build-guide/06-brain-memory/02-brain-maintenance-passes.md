@@ -72,7 +72,7 @@ const days_since_seen = (Date.now() - trait.lastSeenAt) / 86_400_000
 const evidence_ids: string[] = JSON.parse(trait.evidence)
 const live_evidence = evidence_ids.filter(id => {
   const entry = db.select().from(userMemory).where(eq(userMemory.id, id)).get()
-  return entry?.active === 1   // only count evidence that is still active
+  return entry?.isActive === true   // only count evidence that is still active
 })
 const dead_evidence = evidence_ids.length - live_evidence.length
 

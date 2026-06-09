@@ -176,7 +176,7 @@ export async function processVisualIntake(
       value:      JSON.stringify(mergedValue),
       confidence: update.confidence,
       source:     'image',
-      active:     1,
+      isActive:   true,
       importance: 6,   // visual intake defaults to slightly above baseline — image evidence is intentional
       readCount:  0,
       writeCount: 1,
@@ -255,7 +255,7 @@ The structured health write is primary. Prescription photos create `health_captu
 **If the agent creates a skill** (not always):
 Skill example: "When this user asks about any food or product, always check their active medication categories for interactions before responding." This is created when the medication implies a meaningful, reusable behavioral change that the agent cannot derive from the structured medication row alone — e.g., a medication with many known food interactions (Warfarin, MAOIs, statins). For most medications, the structured row plus summary mirror is sufficient.
 
-**Cumulative:** multiple medication photos → multiple entries. All checked on every scan. "I stopped taking X" → agent sets `active = 0` on that entry. Interaction checks for that drug stop immediately.
+**Cumulative:** multiple medication photos → multiple entries. All checked on every scan. "I stopped taking X" → agent sets `is_active = 0` (`isActive = false`) on that entry. Interaction checks for that drug stop immediately.
 
 ---
 

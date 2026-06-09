@@ -203,9 +203,9 @@ async function runCommunityContributionPass(
 }
 
 function buildAnonymousHealthGroupFingerprint(db: DrizzleDB, userId: string): AnonymousHealthGroupFingerprint {
-  const activeMeds        = db.select().from(medications).where(eq(medications.active, 1)).all()
+  const activeMeds        = db.select().from(medications).where(eq(medications.isActive, true)).all()
   const activeConstraints = db.select().from(constraints).where(eq(constraints.status, 'confirmed')).all()
-  const memories          = db.select().from(userMemory).where(and(eq(userMemory.namespace, 'health'), eq(userMemory.active, 1))).all()
+  const memories          = db.select().from(userMemory).where(and(eq(userMemory.namespace, 'health'), eq(userMemory.isActive, true))).all()
   const captures          = getApprovedDerivedHealthFeatures(db, userId)
   const scanHistory       = db.select().from(memoryEvent).where(eq(memoryEvent.eventType, 'scan')).all()
 
