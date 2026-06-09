@@ -43,8 +43,11 @@ export const sessions = sqliteTable(
 		check('sessions_started_at_check', sql`${table.startedAt} >= 0`),
 		check('sessions_ended_at_check', sql`${table.endedAt} is null or ${table.endedAt} >= ${table.startedAt}`),
 		index('sessions_user_status_started_at_index').on(table.userId, table.status, table.startedAt),
-		index('sessions_type_started_at_index').on(table.sessionType, table.startedAt),
-		index('sessions_recipe_id_index').on(table.recipeId),
+		index('sessions_type_status_started_at_index').on(table.sessionType, table.status, table.startedAt),
+		index('sessions_parent_index').on(table.parentSessionId).where(sql`parent_session_id IS NOT NULL`),
+		index('sessions_recipe_index').on(table.recipeId).where(sql`recipe_id IS NOT NULL`),
+		index('sessions_started_at_index').on(table.startedAt),
+		index('sessions_active_index').on(table.status).where(sql`status = 'active'`),
 	],
 )
 

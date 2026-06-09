@@ -29,6 +29,9 @@ export const recipes = sqliteTable(
 		check('recipes_updated_at_check', sql`${table.updatedAt} >= ${table.createdAt}`),
 		index('recipes_user_status_last_cooked_at_index').on(table.userId, table.status, table.lastCookedAt),
 		index('recipes_source_created_at_index').on(table.source, table.createdAt),
+		index('recipes_status_cook_count_index').on(table.status, table.cookCount),
+		index('recipes_last_cooked_index').on(table.lastCookedAt).where(sql`status = 'active'`),
+		index('recipes_source_session_index').on(table.sourceSession).where(sql`source_session IS NOT NULL`),
 	],
 )
 

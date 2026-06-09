@@ -35,3 +35,4 @@ _records/implementation-ledger/contracts/ts-rest-spine/0001.guard.rules.md
 | `brain/drizzle-spine/0001.initial-spine.md` | Brain / Drizzle spine | done | Added the first Brain Agent, Drizzle schema, repository boundary, migration bundle, smoke path, and Durable Object binding. |
 | `brain/drizzle-spine/0002.memory-event-cursor.md` | Brain / Drizzle spine | done | Reworked Brain memory listing to keyset cursor pagination with a Drizzle-owned composite index migration. |
 | `tooling/lexicon-guard/0001.granular-vocabulary.md` | Tooling / Lexicon guard | done | Split the lexicon guard vocabulary into granular owned slices while keeping stable aggregate exports. |
+| `brain/sqlite-migration-runtime/implementation/0001.schema-indexes-alignment.md` | Brain / SQLite migration runtime | done | Aligned Drizzle TS schemas (sessions, constraints, recipes) with spec indexes, generated standard SQLite migrations, and updated bundle. |

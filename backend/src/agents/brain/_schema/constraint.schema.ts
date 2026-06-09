@@ -45,8 +45,9 @@ export const constraints = sqliteTable(
 		check('constraints_proposed_at_check', sql`${table.proposedAt} >= 0`),
 		check('constraints_confirmed_at_check', sql`${table.confirmedAt} is null or ${table.confirmedAt} >= ${table.proposedAt}`),
 		check('constraints_updated_at_check', sql`${table.updatedAt} >= ${table.proposedAt}`),
-		index('constraints_status_type_index').on(table.status, table.constraintType),
+		index('constraints_type_status_index').on(table.constraintType, table.status),
 		index('constraints_entity_status_index').on(table.entityKind, table.entityValue, table.status),
+		index('constraints_surfaced_index').on(table.lastSurfacedAt).where(sql`status = 'proposed'`),
 	],
 )
 
