@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Locks all protected files with chflags uchg.
-# No password needed — locking is always safe.
+# Locks all protected files with sudo chflags schg (system immutable).
+# Requires sudo — macOS password or Touch ID.
 # To unlock a category: bun run unlock <category>
 set -euo pipefail
 
@@ -10,7 +10,7 @@ LOCKED=0
 lock_file() {
   local f="$1"
   if [ -f "$f" ]; then
-    chflags uchg "$f"
+    sudo chflags schg "$f"
     echo "  locked  ${f#"$WORKSPACE_ROOT/"}"
     LOCKED=$((LOCKED + 1))
   fi

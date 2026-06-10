@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
-# One-time setup: stores a password hash in .env.local.
-# Run this once. Never re-run unless you want to change the password.
+# One-time setup: stores a Brioela lock password hash in .env.local.
+# This is the second-layer password checked by unlock.sh BEFORE sudo runs.
+# The first layer is OS-level: files are locked with schg (system immutable).
+# Unlocking requires BOTH this password AND your macOS sudo password.
+# Run once. Re-run only to change the password.
 set -euo pipefail
 
 WORKSPACE_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"

@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Unlocks one category of protected files.
-# Requires interactive password — cannot be run non-interactively (AI cannot use this).
+# Requires sudo (macOS password or Touch ID) — cannot be run non-interactively (AI cannot use this).
+# The schg flag is OS-enforced: no script, no AI, no process can bypass it without sudo.
 #
 # Usage: bun run unlock <category>
 # Categories: baselines  policies  lexicon  schema  deploy
@@ -52,7 +53,7 @@ UNLOCKED=0
 unlock_file() {
   local f="$1"
   if [ -f "$f" ]; then
-    chflags nouchg "$f"
+    sudo chflags noschg "$f"
     echo "  unlocked  ${f#"$WORKSPACE_ROOT/"}"
     UNLOCKED=$((UNLOCKED + 1))
   fi
