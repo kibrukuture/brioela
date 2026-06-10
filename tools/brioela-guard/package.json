@@ -1,0 +1,20 @@
+{
+  "name": "brioela-guard",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "watch": "BRIOELA_WORKSPACE_ROOT=$PWD/../.. bun run watch.ts",
+    "check": "BRIOELA_WORKSPACE_ROOT=$PWD/../.. bun run check.ts",
+    "migrate": "BRIOELA_WORKSPACE_ROOT=$PWD/../.. bun run migrate.baselines.ts"
+  },
+  "dependencies": {
+    "@parcel/watcher": "^2.5.6"
+  },
+  "trustedDependencies": [
+    "@parcel/watcher"
+  ],
+  "devDependencies": {
+    "@types/bun": "^1.3.14",
+    "bun-types": "^1.3.14"
+  }
+}

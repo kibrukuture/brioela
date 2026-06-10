@@ -65,6 +65,12 @@
     "install:name-daemon": "bun run name:daemon:install",
     "uninstall:name-daemon": "bun run name:daemon:uninstall",
     "status:name-daemon": "bun run name:daemon:status",
+    "guard:watch": "BRIOELA_WORKSPACE_ROOT=$PWD bun --cwd tools/brioela-guard watch",
+    "guard:check": "BRIOELA_WORKSPACE_ROOT=$PWD bun --cwd tools/brioela-guard check",
+    "migrate:baselines": "BRIOELA_WORKSPACE_ROOT=$PWD bun --cwd tools/brioela-guard migrate",
+    "lock": "bash tools/scripts/lock.sh",
+    "unlock": "bash tools/scripts/unlock.sh",
+    "lock:setup": "bash tools/scripts/lock.setup.sh",
     "verify": "bun run check:names && bun run check:types && bun run check:lexicon",
     "deploy:backend": "fly deploy -c backend/fly.toml",
     "deploy:pdf-converter": "fly deploy -c pdf-converter/fly.toml",
@@ -76,9 +82,10 @@
     "backend",
     "shared",
     "mobile",
-    "tools/brioela-name-guard"
-    ,"tools/brioela-type-guard"
-    ,"tools/brioela-lexicon-guard"
+    "tools/brioela-name-guard",
+    "tools/brioela-type-guard",
+    "tools/brioela-lexicon-guard",
+    "tools/brioela-guard"
   ],
   "packageManager": "bun@1.2.21",
   "dependencies": {
