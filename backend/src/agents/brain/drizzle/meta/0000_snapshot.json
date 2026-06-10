@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "f04e2413-50b7-4396-a36d-e04319cdfb51",
+  "id": "7f0cccbc-bd65-4a99-9ddb-553c7a91e020",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "agent_state": {
@@ -1872,6 +1872,38 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "checkConstraints": {
+        "user_memory_namespace_starts_with_letter_check": {
+          "name": "user_memory_namespace_starts_with_letter_check",
+          "value": "\"user_memory\".\"namespace\" GLOB '[a-z]*'"
+        },
+        "user_memory_namespace_chars_check": {
+          "name": "user_memory_namespace_chars_check",
+          "value": "\"user_memory\".\"namespace\" NOT GLOB '*[^a-z0-9.]*'"
+        },
+        "user_memory_namespace_no_consecutive_dots_check": {
+          "name": "user_memory_namespace_no_consecutive_dots_check",
+          "value": "\"user_memory\".\"namespace\" NOT LIKE '%..%'"
+        },
+        "user_memory_namespace_no_trailing_dot_check": {
+          "name": "user_memory_namespace_no_trailing_dot_check",
+          "value": "\"user_memory\".\"namespace\" NOT LIKE '%.'"
+        },
+        "user_memory_namespace_max_depth_check": {
+          "name": "user_memory_namespace_max_depth_check",
+          "value": "(length(\"user_memory\".\"namespace\") - length(replace(\"user_memory\".\"namespace\", '.', ''))) <= 2"
+        },
+        "user_memory_namespace_segment_starts_with_letter_check": {
+          "name": "user_memory_namespace_segment_starts_with_letter_check",
+          "value": "\"user_memory\".\"namespace\" NOT GLOB '*.[0-9]*'"
+        },
+        "user_memory_key_starts_with_letter_check": {
+          "name": "user_memory_key_starts_with_letter_check",
+          "value": "\"user_memory\".\"key\" GLOB '[a-z]*'"
+        },
+        "user_memory_key_chars_check": {
+          "name": "user_memory_key_chars_check",
+          "value": "\"user_memory\".\"key\" NOT GLOB '*[^a-z0-9_]*'"
+        },
         "user_memory_value_json_object_check": {
           "name": "user_memory_value_json_object_check",
           "value": "json_valid(\"user_memory\".\"value\") and json_type(\"user_memory\".\"value\") = 'object'"

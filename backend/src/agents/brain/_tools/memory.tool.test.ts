@@ -111,7 +111,7 @@ describe('Brain Memory Tools', () => {
 			// Note: We already have 'health.diet' (1 namespace). Add 39 more.
 			for (let idx = 0; idx < 39; idx++) {
 				await writeUserMemoryExecute(database, userId, {
-					namespace: `test.ns.${idx}`,
+					namespace: `test.ns.n${idx}`,
 					key: 'dummy',
 					value: { val: idx },
 					confidence: 1.0,

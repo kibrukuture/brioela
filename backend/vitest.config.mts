@@ -9,7 +9,7 @@ export default defineConfig({
 	plugins: [
 		...agents(),
 		cloudflareTest({
-			main: './src/agents/brain/brain.test.worker.ts',
+			main: './src/agents/brain/test.worker.ts',
 			wrangler: { configPath: './wrangler.jsonc' },
 		}),
 	],
