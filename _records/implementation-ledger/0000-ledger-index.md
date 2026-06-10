@@ -21,22 +21,31 @@ _records/implementation-ledger/{domain}/{scope}/NNNN.short.name.md
 Examples:
 
 ```text
-_records/implementation-ledger/brain/sqlite-migration-runtime/0001.design.docs.md
-_records/implementation-ledger/brain/sqlite-migration-runtime/0002.runtime.foundation.md
-_records/implementation-ledger/contracts/ts-rest-spine/0001.guard.rules.md
+_records/implementation-ledger/brain/02-sqlite-migration-runtime/0001.design.docs.md
+_records/implementation-ledger/brain/02-sqlite-migration-runtime/0002.runtime.foundation.md
+_records/implementation-ledger/brain/05-session-lifecycle/0001.session-open.md
 ```
 
 ## Entries
 
 | Entry | Scope | Status | Summary |
 |---|---|---|---|
-| `brain/sqlite-migration-runtime/0001.design.docs.md` | Brain / SQLite migration runtime | done | Added the production migration doctrine to build guides/specs. |
-| `brain/sqlite-migration-runtime/0002.runtime-repositories.md` | Brain / SQLite migration runtime | done | Added repositories and startup lifecycle recording for migration runs, smoke results, readiness, and agent-state migration locks. |
-| `brain/drizzle-spine/0001.initial-spine.md` | Brain / Drizzle spine | done | Added the first Brain Agent, Drizzle schema, repository boundary, migration bundle, smoke path, and Durable Object binding. |
-| `brain/drizzle-spine/0002.memory-event-cursor.md` | Brain / Drizzle spine | done | Reworked Brain memory listing to keyset cursor pagination with a Drizzle-owned composite index migration. |
-| `tooling/lexicon-guard/0001.granular-vocabulary.md` | Tooling / Lexicon guard | done | Split the lexicon guard vocabulary into granular owned slices while keeping stable aggregate exports. |
-| `brain/sqlite-migration-runtime/implementation/0001.schema-indexes-alignment.md` | Brain / SQLite migration runtime | done | Aligned Drizzle TS schemas (sessions, constraints, recipes) with spec indexes, generated standard SQLite migrations, and updated bundle. |
-| `brain/sqlite-migration-runtime/implementation/0002.fts5-and-sync-triggers.md` | Brain / SQLite migration runtime | done | Created FTS5 virtual tables (unicode61 & trigram) and triggers for real-time synchronization on sessions and session_turns. |
-| `brain/tool-protocol/implementation/0001.first-memory-tools.md` | Brain / Tool protocol | done | Implemented user memory write, read, and event log AI tools, repositories, and permission checks with green DO tests. |
+| `brain/01-drizzle-spine/0001.initial-spine.md` | Brain / Drizzle spine | done | Added the first Brain Agent, Drizzle schema, repository boundary, migration bundle, smoke path, and Durable Object binding. |
+| `brain/01-drizzle-spine/0002.memory-event-cursor.md` | Brain / Drizzle spine | done | Reworked Brain memory listing to keyset cursor pagination with a Drizzle-owned composite index migration. |
+| `brain/02-sqlite-migration-runtime/0001.design.docs.md` | Brain / SQLite migration runtime | done | Added the production migration doctrine to build guides/specs. |
+| `brain/02-sqlite-migration-runtime/0002.runtime-repositories.md` | Brain / SQLite migration runtime | done | Added repositories and startup lifecycle recording for migration runs, smoke results, readiness, and agent-state migration locks. |
+| `brain/02-sqlite-migration-runtime/implementation/0001.schema-indexes-alignment.md` | Brain / SQLite migration runtime | done | Aligned Drizzle TS schemas (sessions, constraints, recipes) with spec indexes, generated standard SQLite migrations, and updated bundle. |
+| `brain/02-sqlite-migration-runtime/implementation/0002.fts5-and-sync-triggers.md` | Brain / SQLite migration runtime | done | Created FTS5 virtual tables (unicode61 & trigram) and triggers for real-time synchronization on sessions and session_turns. |
+| `brain/03-tool-protocol/implementation/0001.first-memory-tools.md` | Brain / Tool protocol | done | Implemented user memory write, read, and event log AI tools, repositories, and permission checks with green DO tests. |
+| `brain/04-agent-identity/0001.identity-prompt.md` | Brain / Agent identity | open | Create `identity-prompt.ts` — BrioelaIdentity constant, 800-token cap. |
+| `brain/05-session-lifecycle/0001.session-open.md` | Brain / Session lifecycle | open | `open.session.handler.ts` — creates session row, schedules watchdog alarm, calls system prompt builder. |
+| `brain/05-session-lifecycle/0002.system-prompt-builder.md` | Brain / Session lifecycle | open | `build.system.prompt.handler.ts` — assembles 6 blocks in strict prefix-cache order. |
+| `brain/05-session-lifecycle/0003.session-close.md` | Brain / Session lifecycle | open | `close.session.handler.ts` — marks session completed, writes outcomeSummary, cancels watchdog alarm. |
+| `brain/05-session-lifecycle/0004.session-compression.md` | Brain / Session lifecycle | open | `compress.session.handler.ts` — threshold check + Haiku-powered 4-field compression, child session creation. |
+| `brain/06-alarm-system/0001.alarm-dispatch.md` | Brain / Alarm system | open | `dispatch.alarm.handler.ts` — alarm router + session_watchdog case (abandoned session detection). |
+| `brain/07-sub-agents/0001.brain-maintenance-agent.md` | Brain / Sub-agents | open | `BrainMaintenanceAgent` DO + brain_maintenance alarm case. |
+| `brain/07-sub-agents/0002.behavior-pattern-agent.md` | Brain / Sub-agents | open | `BehaviorPatternAgent` DO + behavior_pattern_detection alarm case. |
+| `brain/08-framework-hardening/0001.chat-entrypoint.md` | Brain / Framework hardening | open | Wire `onMessage`/`chat()` onto BrioelaBrain — connects all prior scopes into a working agent. |
+| `tooling/01-lexicon-guard/0001.granular-vocabulary.md` | Tooling / Lexicon guard | done | Split the lexicon guard vocabulary into granular owned slices while keeping stable aggregate exports. |
 
 
