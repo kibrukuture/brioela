@@ -37,6 +37,7 @@
     "banned-folder-name::mobile/helpers::Folder name 'helpers' is banned because it is generic or temporary.",
     "banned-folder-name::mobile/lib/utils::Folder name 'utils' is banned because it is generic or temporary.",
     "banned-folder-name::shared/utils::Folder name 'utils' is banned because it is generic or temporary.",
+    "folder-kebab-case::_records/while-implementation-user-complaints/01::Folder names must be kebab-case nouns.",
     "folder-kebab-case::backend/.tmp::Folder names must be kebab-case nouns.",
     "folder-kebab-case::mobile/ios/Brioela.xcodeproj/project.xcworkspace::Folder names must be kebab-case nouns.",
     "folder-kebab-case::mobile/ios/Brioela.xcodeproj::Folder names must be kebab-case nouns.",
@@ -1441,6 +1442,8 @@
     "typescript-file-role-suffix::shared/validators/user-documents.validator.ts::TypeScript files must end with an approved role suffix, or be index.ts/index.tsx.",
     "typescript-file-role-suffix::shared/validators/user-search.validator.ts::TypeScript files must end with an approved role suffix, or be index.ts/index.tsx.",
     "typescript-file-role-suffix::shared/validators/user.validator.ts::TypeScript files must end with an approved role suffix, or be index.ts/index.tsx.",
-    "typescript-file-role-suffix::shared/validators/wallet-activation.validator.ts::TypeScript files must end with an approved role suffix, or be index.ts/index.tsx."
+    "typescript-file-role-suffix::shared/validators/wallet-activation.validator.ts::TypeScript files must end with an approved role suffix, or be index.ts/index.tsx.",
+    "unknown-underscore-folder::backend/src/database/sqlite/_schema::Unknown underscore folder '_schema'.",
+    "unknown-underscore-folder::tools/brioela-name-guard/_schema::Unknown underscore folder '_schema'."
   ]
 }

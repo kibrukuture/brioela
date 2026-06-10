@@ -3,9 +3,9 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "watch": "BRIOELA_WORKSPACE_ROOT=$PWD/../.. bun run watch.ts",
-    "check": "BRIOELA_WORKSPACE_ROOT=$PWD/../.. bun run check.ts",
-    "migrate": "BRIOELA_WORKSPACE_ROOT=$PWD/../.. bun run migrate.baselines.ts"
+    "watch": "BRIOELA_WORKSPACE_ROOT=$PWD/../.. bun watch.handler.ts",
+    "check": "BRIOELA_WORKSPACE_ROOT=$PWD/../.. bun check.handler.ts",
+    "migrate": "BRIOELA_WORKSPACE_ROOT=$PWD/../.. bun migrate.baselines.handler.ts"
   },
   "dependencies": {
     "@parcel/watcher": "^2.5.6"
