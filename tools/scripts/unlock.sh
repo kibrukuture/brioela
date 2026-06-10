@@ -78,6 +78,9 @@ case "$CATEGORY" in
     unlock_pattern "$WORKSPACE_ROOT/tools/brioela-type-guard/_policies"   "*.ts"
     unlock_pattern "$WORKSPACE_ROOT/tools/brioela-name-guard/_policies"   "*.ts"
     unlock_pattern "$WORKSPACE_ROOT/tools/brioela-lexicon-guard/_policies" "*.ts"
+    unlock_file "$WORKSPACE_ROOT/tools/brioela-name-guard/_helpers/name.guard.config.helper.ts"
+    unlock_file "$WORKSPACE_ROOT/tools/brioela-type-guard/_helpers/type.guard.config.helper.ts"
+    unlock_file "$WORKSPACE_ROOT/tools/brioela-lexicon-guard/_helpers/lexicon.guard.config.helper.ts"
     ;;
   lexicon)
     unlock_pattern "$WORKSPACE_ROOT/tools/brioela-lexicon-guard/_lexicon" "*.ts"

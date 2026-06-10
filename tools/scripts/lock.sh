@@ -35,6 +35,10 @@ lock_file "$WORKSPACE_ROOT/tools/brioela-lexicon-guard/lexicon.guard.baseline.js
 lock_pattern "$WORKSPACE_ROOT/tools/brioela-type-guard/_policies"  "*.ts"
 lock_pattern "$WORKSPACE_ROOT/tools/brioela-name-guard/_policies"  "*.ts"
 lock_pattern "$WORKSPACE_ROOT/tools/brioela-lexicon-guard/_policies" "*.ts"
+# guard config helpers — ignoredPathParts / checkedRoots are attack surface
+lock_file "$WORKSPACE_ROOT/tools/brioela-name-guard/_helpers/name.guard.config.helper.ts"
+lock_file "$WORKSPACE_ROOT/tools/brioela-type-guard/_helpers/type.guard.config.helper.ts"
+lock_file "$WORKSPACE_ROOT/tools/brioela-lexicon-guard/_helpers/lexicon.guard.config.helper.ts"
 
 # ── lexicon ────────────────────────────────────────────────────────────────────
 lock_pattern "$WORKSPACE_ROOT/tools/brioela-lexicon-guard/_lexicon" "*.ts"
