@@ -3,6 +3,7 @@ import type { BrainDatabase } from '@/agents/brain/_database'
 import { writeMemoryEvent } from '@/agents/brain/_repositories'
 import type { z } from '@brioela/shared/zod'
 import type { logMemoryEventSchema } from '@/agents/brain/_tools/_schemas/log.memory.event.schema'
+import { readCurrentEpochMs } from '@/time/_helpers'
 
 export async function logMemoryEventExecute(
 	db: BrainDatabase,
@@ -11,7 +12,7 @@ export async function logMemoryEventExecute(
 	eventParams: z.infer<typeof logMemoryEventSchema>,
 ) {
 	const id = createId()
-	const now = Date.now()
+	const now = readCurrentEpochMs()
 
 	writeMemoryEvent(db, {
 		id,

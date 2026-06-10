@@ -23,4 +23,4 @@ const now = Date.now()
 `Date.now()` is the same problem as `new Date()` — it reaches outside the time abstraction layer. The approved way is `readCurrentEpochMs()` from `@/time/_helpers`. The guard must catch both forms.
 
 ## Status
-Open — guard bug not yet fixed.
+**FIXED.** Guard already catches `Date.now()` via `isNativeDateNow()` — violations were suppressed in baseline. Replaced `Date.now()` with `readCurrentEpochMs()` from `@/time/_helpers` in all three brain executables (`log.memory.event.executable.ts`, `read.user.memory.executable.ts`, `write.user.memory.executable.ts`). Also fixed `unlock.sh` bug: was only removing `schg` flag, not `uchg` — now removes both. Type guard baseline updated. Guard clean.

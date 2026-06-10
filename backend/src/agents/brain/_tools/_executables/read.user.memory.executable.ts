@@ -7,6 +7,7 @@ import {
 import type { z } from '@brioela/shared/zod'
 import type { readUserMemorySchema } from '@/agents/brain/_tools/_schemas/read.user.memory.schema'
 import type { JsonValue } from '@/agents/brain/_tools/_schemas/json.value.schema'
+import { readCurrentEpochMs } from '@/time/_helpers'
 
 export async function readUserMemoryExecute(
 	db: BrainDatabase,
@@ -14,7 +15,7 @@ export async function readUserMemoryExecute(
 	{ namespace, key }: z.infer<typeof readUserMemorySchema>,
 	waitUntil?: (promise: Promise<void>) => void,
 ) {
-	const now = Date.now()
+	const now = readCurrentEpochMs()
 
 	if (key) {
 		const entry = readUserMemory(db, userId, namespace, key)

@@ -53,7 +53,7 @@ UNLOCKED=0
 unlock_file() {
   local f="$1"
   if [ -f "$f" ]; then
-    sudo chflags noschg "$f"
+    sudo chflags noschg,nouchg "$f"
     echo "  unlocked  ${f#"$WORKSPACE_ROOT/"}"
     UNLOCKED=$((UNLOCKED + 1))
   fi
