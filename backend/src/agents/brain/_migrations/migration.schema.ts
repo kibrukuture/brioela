@@ -16,7 +16,7 @@ export interface BrainMigrationBundle {
 	migrations: Record<string, string>
 }
 
-export const brainMigrationLockSchema = z
+export const migrationLockSchema = z
 	.object({
 		runId: z.string().trim().min(1),
 		deploymentId: z.string().trim().min(1),
@@ -31,4 +31,4 @@ export interface BrainMigrationReadiness {
 	verifiedEventCount: number
 }
 
-export type BrainMigrationLock = z.infer<typeof brainMigrationLockSchema>
+export type BrainMigrationLock = z.infer<typeof migrationLockSchema>

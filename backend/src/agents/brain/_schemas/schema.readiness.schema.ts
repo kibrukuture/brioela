@@ -12,7 +12,7 @@ const readinessStatus = [
 
 const smokeStatus = ['passed', 'failed'] as const
 
-export const brainSchemaReadiness = sqliteTable(
+export const schemaReadiness = sqliteTable(
 	'brain_schema_readiness',
 	{
 		id: text('id').primaryKey().default('brain'),
@@ -42,5 +42,5 @@ export const brainSchemaReadiness = sqliteTable(
 	],
 )
 
-export type BrainSchemaReadiness = typeof brainSchemaReadiness.$inferSelect
-export type NewBrainSchemaReadiness = typeof brainSchemaReadiness.$inferInsert
+export type BrainSchemaReadiness = typeof schemaReadiness.$inferSelect
+export type NewBrainSchemaReadiness = typeof schemaReadiness.$inferInsert

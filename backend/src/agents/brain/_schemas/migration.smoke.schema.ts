@@ -2,7 +2,7 @@ import { check, index, integer, sql, sqliteTable, text } from '@/database/sqlite
 
 const smokeStatus = ['passed', 'failed'] as const
 
-export const brainMigrationSmokeResults = sqliteTable(
+export const migrationSmokeResults = sqliteTable(
 	'brain_migration_smoke_results',
 	{
 		id: text('id').primaryKey(),
@@ -22,5 +22,5 @@ export const brainMigrationSmokeResults = sqliteTable(
 	],
 )
 
-export type BrainMigrationSmoke = typeof brainMigrationSmokeResults.$inferSelect
-export type NewBrainMigrationSmoke = typeof brainMigrationSmokeResults.$inferInsert
+export type BrainMigrationSmoke = typeof migrationSmokeResults.$inferSelect
+export type NewBrainMigrationSmoke = typeof migrationSmokeResults.$inferInsert

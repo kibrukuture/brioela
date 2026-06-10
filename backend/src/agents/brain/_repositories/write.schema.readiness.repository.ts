@@ -1,12 +1,12 @@
-import { brainSchemaReadiness, type NewBrainSchemaReadiness } from '@/agents/brain/_schemas'
+import { schemaReadiness, type NewBrainSchemaReadiness } from '@/agents/brain/_schemas'
 import type { BrainDatabase } from '@/agents/brain/_database'
 
 export function writeSchemaReadiness(db: BrainDatabase, readiness: NewBrainSchemaReadiness): void {
 	db
-		.insert(brainSchemaReadiness)
+		.insert(schemaReadiness)
 		.values(readiness)
 		.onConflictDoUpdate({
-			target: brainSchemaReadiness.id,
+			target: schemaReadiness.id,
 			set: {
 				schemaVersion: readiness.schemaVersion,
 				minReadableVersion: readiness.minReadableVersion,

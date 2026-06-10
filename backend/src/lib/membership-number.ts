@@ -12,7 +12,7 @@ const SAFE_CHARS = '23456789ADEFGHJKLMNPQRTUVWXY';
  * Generate a random 8-character ID using safe characters
  * Total combinations: 28^8 = ~377 billion
  */
-const generateId = customAlphabet(SAFE_CHARS, 8);
+const createId = customAlphabet(SAFE_CHARS, 8);
 
 /**
  * Generate a unique membership number
@@ -37,7 +37,7 @@ const generateId = customAlphabet(SAFE_CHARS, 8);
  */
 export function generateMembershipNumber(type: CustomerType): string {
 	const prefix = type === 'individual' ? 'I' : 'C';
-	const id = generateId();
+	const id = createId();
 	return `${prefix}-${id}`;
 }
 

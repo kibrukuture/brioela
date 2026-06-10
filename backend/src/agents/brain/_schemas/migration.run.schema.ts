@@ -4,7 +4,7 @@ const migrationPhase = ['expand', 'dual_write', 'backfill', 'verify', 'contract'
 const migrationRisk = ['low', 'medium', 'high', 'blocked'] as const
 const migrationStatus = ['started', 'applied', 'smoke_passed', 'failed', 'blocked'] as const
 
-export const brainMigrationRuns = sqliteTable(
+export const migrationRuns = sqliteTable(
 	'brain_migration_runs',
 	{
 		id: text('id').primaryKey(),
@@ -35,5 +35,5 @@ export const brainMigrationRuns = sqliteTable(
 	],
 )
 
-export type BrainMigrationRun = typeof brainMigrationRuns.$inferSelect
-export type NewBrainMigrationRun = typeof brainMigrationRuns.$inferInsert
+export type BrainMigrationRun = typeof migrationRuns.$inferSelect
+export type NewBrainMigrationRun = typeof migrationRuns.$inferInsert

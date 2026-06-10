@@ -1,6 +1,6 @@
 import { createId } from '@brioela/shared/_ids'
 import { applyDurableSqliteMigration } from '@/database/sqlite/_migrations'
-import { brainMigrationBundle } from '@/agents/brain/_migrations/brain.migration'
+import { migrationBundle } from '@/agents/brain/_migrations/brain.migration'
 import { readCurrentMigration } from '@/agents/brain/_migrations/read.current.migration.helper'
 import { runMigrationSmoke } from '@/agents/brain/_migrations/run.migration.smoke.handler'
 import { formatMigrationError } from '@/agents/brain/_migrations/format.migration.error.helper'
@@ -23,7 +23,7 @@ export async function runMigrations(
 	database: BrainDatabase,
 	checkedAtEpochMs: number,
 ): Promise<BrainMigrationReadiness> {
-	const migration = readCurrentMigration(brainMigrationBundle.journal)
+	const migration = readCurrentMigration(migrationBundle.journal)
 	const migrationRunId = createId()
 	const deploymentId = createMigrationDeploymentId(migration)
 
@@ -31,7 +31,7 @@ export async function runMigrations(
 	let hasMigrationRun = false
 
 	try {
-		await applyDurableSqliteMigration(database, brainMigrationBundle)
+		await applyDurableSqliteMigration(database, migrationBundle)
 
 		writeMigrationRun(database, {
 			id: migrationRunId,

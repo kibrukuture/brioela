@@ -1,30 +1,30 @@
 import { agentState } from '@/agents/brain/_schemas'
 import type { BrainDatabase } from '@/agents/brain/_database'
-import { brainMigrationLockSchema, type BrainMigrationLock } from '@/agents/brain/_migrations'
+import { migrationLockSchema, type BrainMigrationLock } from '@/agents/brain/_migrations'
 import { eq, getOne } from '@/database/drizzle/_database'
 
-const brainMigrationLockKey = 'brain_schema.migration_lock'
-const brainMigrationLockOwnerId = 'brain'
+const migrationLockKey = 'brain_schema.migration_lock'
+const migrationLockOwnerId = 'brain'
 
 export function readMigrationLock(database: BrainDatabase): BrainMigrationLock | null {
-	const lockRecord = getOne(database.select().from(agentState).where(eq(agentState.key, brainMigrationLockKey)))
+	const lockRecord = getOne(database.select().from(agentState).where(eq(agentState.key, migrationLockKey)))
 	if (lockRecord === null) return null
-	return brainMigrationLockSchema.parse(JSON.parse(lockRecord.value))
+	return migrationLockSchema.parse(JSON.parse(lockRecord.value))
 }
 
 export function writeMigrationLock(database: BrainDatabase, migrationLock: BrainMigrationLock, updatedAt: number): void {
 	database
 		.insert(agentState)
 		.values({
-			key: brainMigrationLockKey,
-			userId: brainMigrationLockOwnerId,
+			key: migrationLockKey,
+			userId: migrationLockOwnerId,
 			value: JSON.stringify(migrationLock),
 			updatedAt,
 		})
 		.onConflictDoUpdate({
 			target: agentState.key,
 			set: {
-				userId: brainMigrationLockOwnerId,
+				userId: migrationLockOwnerId,
 				value: JSON.stringify(migrationLock),
 				updatedAt,
 			},
@@ -33,5 +33,5 @@ export function writeMigrationLock(database: BrainDatabase, migrationLock: Brain
 }
 
 export function deleteMigrationLock(database: BrainDatabase): void {
-	database.delete(agentState).where(eq(agentState.key, brainMigrationLockKey)).run()
+	database.delete(agentState).where(eq(agentState.key, migrationLockKey)).run()
 }

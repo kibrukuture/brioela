@@ -2,14 +2,14 @@ import { runInDurableObject } from 'cloudflare:test'
 import { env } from 'cloudflare:workers'
 import { describe, expect, it } from 'vitest'
 import { createDatabase } from '@/agents/brain/_database'
-import { brainMigrationBundle } from '@/agents/brain/_migrations/brain.migration'
+import { migrationBundle } from '@/agents/brain/_migrations/brain.migration'
 import { readCurrentMigration } from '@/agents/brain/_migrations/read.current.migration.helper'
 import { runMigrations } from '@/agents/brain/_migrations'
 import { readMigrationLock, writeMigrationLock } from '@/agents/brain/_repositories'
 import {
-	brainMigrationRuns,
-	brainMigrationSmokeResults,
-	brainSchemaReadiness,
+	migrationRuns,
+	migrationSmokeResults,
+	schemaReadiness,
 	sessions,
 	sessionTurns,
 } from '@/agents/brain/_schemas'
@@ -27,22 +27,22 @@ describe('Brain migration runtime', () => {
 
 		await runInDurableObject(brain, (_, state) => {
 			const database = createDatabase(state.storage)
-			const migration = readCurrentMigration(brainMigrationBundle.journal)
+			const migration = readCurrentMigration(migrationBundle.journal)
 			const storedReadiness = database
 				.select()
-				.from(brainSchemaReadiness)
-				.where(eq(brainSchemaReadiness.id, 'brain'))
+				.from(schemaReadiness)
+				.where(eq(schemaReadiness.id, 'brain'))
 				.get()
 			const migrationRun = database
 				.select()
-				.from(brainMigrationRuns)
-				.orderBy(desc(brainMigrationRuns.startedAt))
+				.from(migrationRuns)
+				.orderBy(desc(migrationRuns.startedAt))
 				.limit(1)
 				.get()
 			const migrationSmoke = database
 				.select()
-				.from(brainMigrationSmokeResults)
-				.orderBy(desc(brainMigrationSmokeResults.startedAt))
+				.from(migrationSmokeResults)
+				.orderBy(desc(migrationSmokeResults.startedAt))
 				.limit(1)
 				.get()
 
@@ -64,15 +64,15 @@ describe('Brain migration runtime', () => {
 
 		await runInDurableObject(brain, async (_, state) => {
 			const database = createDatabase(state.storage)
-			const firstRunCount = database.select().from(brainMigrationRuns).all().length
+			const firstRunCount = database.select().from(migrationRuns).all().length
 			const checkedAtEpochMs = 2_000_000
 
 			const readiness = await runMigrations(database, checkedAtEpochMs)
-			const secondRunCount = database.select().from(brainMigrationRuns).all().length
+			const secondRunCount = database.select().from(migrationRuns).all().length
 			const latestRun = database
 				.select()
-				.from(brainMigrationRuns)
-				.where(eq(brainMigrationRuns.startedAt, checkedAtEpochMs))
+				.from(migrationRuns)
+				.where(eq(migrationRuns.startedAt, checkedAtEpochMs))
 				.get()
 
 			expect(readiness.status).toBe('ready')
@@ -107,9 +107,9 @@ describe('Brain migration runtime', () => {
 			const migrationLock = readMigrationLock(database)
 			const failedRun = database
 				.select()
-				.from(brainMigrationRuns)
-				.where(eq(brainMigrationRuns.status, 'failed'))
-				.orderBy(desc(brainMigrationRuns.startedAt))
+				.from(migrationRuns)
+				.where(eq(migrationRuns.status, 'failed'))
+				.orderBy(desc(migrationRuns.startedAt))
 				.limit(1)
 				.get()
 

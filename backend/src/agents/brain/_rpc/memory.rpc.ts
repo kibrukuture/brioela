@@ -15,7 +15,7 @@ export const appendMemoryEventSchema = z
 	})
 	.strict()
 
-export const brainMemoryEventCursorSchema = z
+export const memoryEventCursorSchema = z
 	.object({
 		capturedAt: z.number().int().positive(),
 		id: z.string().trim().min(1),
@@ -25,7 +25,7 @@ export const brainMemoryEventCursorSchema = z
 export const listMemoryEventsSchema = z
 	.object({
 		limit: z.number().int().min(1).max(100),
-		cursor: brainMemoryEventCursorSchema.nullable(),
+		cursor: memoryEventCursorSchema.nullable(),
 	})
 	.strict()
 
@@ -39,6 +39,6 @@ export interface BrainMemoryEvents {
 }
 
 export type AppendBrainMemoryEvent = z.infer<typeof appendMemoryEventSchema>
-export type BrainMemoryEventCursor = z.infer<typeof brainMemoryEventCursorSchema>
+export type BrainMemoryEventCursor = z.infer<typeof memoryEventCursorSchema>
 
 export type ListBrainMemoryEvents = z.infer<typeof listMemoryEventsSchema>
