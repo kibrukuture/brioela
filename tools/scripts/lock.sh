@@ -10,7 +10,7 @@ LOCKED=0
 lock_file() {
   local f="$1"
   if [ -f "$f" ]; then
-    sudo chflags schg "$f"
+    sudo chflags schg,uchg "$f"
     echo "  locked  ${f#"$WORKSPACE_ROOT/"}"
     LOCKED=$((LOCKED + 1))
   fi
