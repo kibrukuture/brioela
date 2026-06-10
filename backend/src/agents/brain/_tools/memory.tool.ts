@@ -3,9 +3,9 @@ import { readUserMemoryTool } from '@/agents/brain/_tools/read.user.memory.tool'
 import { logMemoryEventTool } from '@/agents/brain/_tools/log.memory.event.tool'
 import type { BrainDatabase } from '@/agents/brain/_database'
 
-export type SessionCallerType = 'chat' | 'cooking' | 'alarm' | 'brain_maintenance' | 'behavior_pattern_detection'
+export type SessionKind = 'chat' | 'cooking' | 'alarm' | 'brain_maintenance' | 'behavior_pattern_detection'
 
-const TOOL_PERMISSIONS: Record<SessionCallerType, string[]> = {
+const TOOL_PERMISSIONS: Record<SessionKind, string[]> = {
 	chat: [
 		'log_memory_event',
 		'write_user_memory',
@@ -29,14 +29,14 @@ const TOOL_PERMISSIONS: Record<SessionCallerType, string[]> = {
 	],
 }
 
-export function getToolsForSessionType(
+export function buildToolsForSession(
 	db: BrainDatabase,
 	userId: string,
-	caller: SessionCallerType,
+	kind: SessionKind,
 	activeSessionId: string | null = null,
 	waitUntil?: (promise: Promise<void>) => void,
 ) {
-	const allowed = new Set(TOOL_PERMISSIONS[caller])
+	const allowed = new Set(TOOL_PERMISSIONS[kind])
 
 	const all = {
 		log_memory_event: logMemoryEventTool(db, userId, activeSessionId),
