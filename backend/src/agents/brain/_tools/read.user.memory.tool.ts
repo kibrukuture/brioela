@@ -1,4 +1,4 @@
-import { tool, asSchema } from 'ai'
+import { tool } from 'ai'
 import type { BrainDatabase } from '@/agents/brain/_database'
 import { readUserMemorySchema } from '@/agents/brain/_tools/_schemas/read.user.memory.schema'
 import { readUserMemoryPrompt } from '@/agents/brain/_tools/_prompts/read.user.memory.prompt'
@@ -10,6 +10,6 @@ export const readUserMemoryTool = (
 	waitUntil?: (promise: Promise<void>) => void,
 ) => tool({
 	description: readUserMemoryPrompt,
-	inputSchema: asSchema(readUserMemorySchema),
+	inputSchema: readUserMemorySchema,
 	execute: async (params) => readUserMemoryExecute(db, userId, params, waitUntil),
 })

@@ -4,6 +4,10 @@
 # To unlock a category: bun run unlock <category>
 set -euo pipefail
 
+# invalidate any cached sudo session — password required every time, no exceptions
+sudo -k
+sudo -v
+
 WORKSPACE_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 LOCKED=0
 

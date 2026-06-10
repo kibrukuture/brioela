@@ -1,4 +1,4 @@
-import { tool, asSchema } from 'ai'
+import { tool } from 'ai'
 import type { BrainDatabase } from '@/agents/brain/_database'
 import { logMemoryEventSchema } from '@/agents/brain/_tools/_schemas/log.memory.event.schema'
 import { logMemoryEventPrompt } from '@/agents/brain/_tools/_prompts/log.memory.event.prompt'
@@ -10,6 +10,6 @@ export const logMemoryEventTool = (
 	activeSessionId: string | null = null,
 ) => tool({
 	description: logMemoryEventPrompt,
-	inputSchema: asSchema(logMemoryEventSchema),
+	inputSchema: logMemoryEventSchema,
 	execute: async (params) => logMemoryEventExecute(db, userId, activeSessionId, params),
 })

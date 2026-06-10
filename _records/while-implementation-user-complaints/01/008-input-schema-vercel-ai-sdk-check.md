@@ -21,4 +21,4 @@ Is `inputSchema` with `asSchema()` the current Vercel AI SDK pattern, or is this
 Using a stale API means the tools either silently don't work or work despite using deprecated internals that can break on any SDK update.
 
 ## Status
-Open — web check not yet done, fix not yet applied.
+**FIXED.** Verified against current AI SDK v6 docs (ai-sdk.dev/docs/reference/ai-sdk-core/tool): `inputSchema` is the correct property, and Zod schemas pass directly — no `asSchema()` wrapper needed. `asSchema` import removed from all three tool files (`log.memory.event.tool.ts`, `write.user.memory.tool.ts`, `read.user.memory.tool.ts`). Schemas passed directly. 7/7 tests pass, guards clean.
