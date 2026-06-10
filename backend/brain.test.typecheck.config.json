@@ -10,7 +10,7 @@
 		]
 	},
 	"include": [
-		"src/agents/brain/brain.test.env.d.ts",
+		"src/agents/brain/test.env.d.ts",
 		"src/agents/brain/**/*.ts",
 		"src/database/**/*.ts",
 		"brain.drizzle.config.ts"

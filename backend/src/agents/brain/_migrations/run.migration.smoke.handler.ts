@@ -1,7 +1,7 @@
-import { generateId } from '@brioela/shared/_ids'
+import { createId } from '@brioela/shared/_ids'
 import { listMemoryEvents, writeMemoryEventOnce, writeMigrationSmoke, writeSchemaReadiness } from '@/agents/brain/_repositories'
 import type { BrainDatabase } from '@/agents/brain/_database'
-import type { BrainMigrationJournalEntry, BrainMigrationReadiness } from '@/agents/brain/_migrations/brain.migration.schema'
+import type { BrainMigrationJournalEntry, BrainMigrationReadiness } from '@/agents/brain/_migrations/migration.schema'
 
 export function runMigrationSmoke(
 	database: BrainDatabase,
@@ -27,7 +27,7 @@ export function runMigrationSmoke(
 	const memoryEvents = listMemoryEvents(database, { limit: 1, cursor: null })
 
 	writeMigrationSmoke(database, {
-		id: generateId(),
+		id: createId(),
 		migrationRunId,
 		smoke: 'brain.memory.write',
 		status: 'passed',

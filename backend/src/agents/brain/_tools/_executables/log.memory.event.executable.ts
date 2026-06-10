@@ -1,4 +1,4 @@
-import { generateId } from '@brioela/shared/_ids'
+import { createId } from '@brioela/shared/_ids'
 import type { BrainDatabase } from '@/agents/brain/_database'
 import { writeMemoryEvent } from '@/agents/brain/_repositories'
 import type { z } from '@brioela/shared/zod'
@@ -10,7 +10,7 @@ export async function logMemoryEventExecute(
 	activeSessionId: string | null = null,
 	eventParams: z.infer<typeof logMemoryEventSchema>,
 ) {
-	const id = generateId()
+	const id = createId()
 	const now = Date.now()
 
 	writeMemoryEvent(db, {

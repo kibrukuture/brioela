@@ -1,9 +1,9 @@
-import { generateId } from '@brioela/shared/_ids'
+import { createId } from '@brioela/shared/_ids'
 import { applyDurableSqliteMigration } from '@/database/sqlite/_migrations'
 import { brainMigrationBundle } from '@/agents/brain/_migrations/brain.migration'
-import { readCurrentMigration } from '@/agents/brain/_migrations/read.current.brain.migration.helper'
-import { runMigrationSmoke } from '@/agents/brain/_migrations/run.brain.migration.smoke.handler'
-import { formatMigrationError } from '@/agents/brain/_migrations/format.brain.migration.error.helper'
+import { readCurrentMigration } from '@/agents/brain/_migrations/read.current.migration.helper'
+import { runMigrationSmoke } from '@/agents/brain/_migrations/run.migration.smoke.handler'
+import { formatMigrationError } from '@/agents/brain/_migrations/format.migration.error.helper'
 import {
 	deleteMigrationLock,
 	readMigrationLock,
@@ -15,7 +15,7 @@ import {
 } from '@/agents/brain/_repositories'
 import type { BrainDatabase } from '@/agents/brain/_database'
 import { BrainMigrationLockedError } from '@/agents/brain/_types'
-import type { BrainMigrationJournalEntry, BrainMigrationReadiness } from '@/agents/brain/_migrations/brain.migration.schema'
+import type { BrainMigrationJournalEntry, BrainMigrationReadiness } from '@/agents/brain/_migrations/migration.schema'
 
 const migrationLockTtlMs = 60_000
 
@@ -24,7 +24,7 @@ export async function runMigrations(
 	checkedAtEpochMs: number,
 ): Promise<BrainMigrationReadiness> {
 	const migration = readCurrentMigration(brainMigrationBundle.journal)
-	const migrationRunId = generateId()
+	const migrationRunId = createId()
 	const deploymentId = createMigrationDeploymentId(migration)
 
 	let hasMigrationLock = false
@@ -94,7 +94,7 @@ export async function runMigrations(
 				errorJson,
 			})
 			writeMigrationSmoke(database, {
-				id: generateId(),
+				id: createId(),
 				migrationRunId,
 				smoke: 'brain.migration.runtime',
 				status: 'failed',

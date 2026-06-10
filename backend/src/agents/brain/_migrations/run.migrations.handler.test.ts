@@ -3,7 +3,7 @@ import { env } from 'cloudflare:workers'
 import { describe, expect, it } from 'vitest'
 import { createDatabase } from '@/agents/brain/_database'
 import { brainMigrationBundle } from '@/agents/brain/_migrations/brain.migration'
-import { readCurrentMigration } from '@/agents/brain/_migrations/read.current.brain.migration.helper'
+import { readCurrentMigration } from '@/agents/brain/_migrations/read.current.migration.helper'
 import { runMigrations } from '@/agents/brain/_migrations'
 import { readMigrationLock, writeMigrationLock } from '@/agents/brain/_repositories'
 import {

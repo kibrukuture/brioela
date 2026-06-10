@@ -1,2 +1,2 @@
-export * from '@/agents/brain/_migrations/brain.migration.schema'
-export * from '@/agents/brain/_migrations/run.brain.migrations.handler'
+export * from '@/agents/brain/_migrations/migration.schema'
+export * from '@/agents/brain/_migrations/run.migrations.handler'

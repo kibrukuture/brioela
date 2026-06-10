@@ -1,1 +1,1 @@
-export * from './generate.id.helper'
+export * from '@brioela/shared/_ids/create.id.helper'

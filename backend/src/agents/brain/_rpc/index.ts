@@ -1,2 +1,2 @@
-export * from '@/agents/brain/_rpc/brain.memory.rpc'
-export * from '@/agents/brain/_rpc/brain.readiness.rpc'
+export * from '@/agents/brain/_rpc/memory.rpc'
+export * from '@/agents/brain/_rpc/readiness.rpc'

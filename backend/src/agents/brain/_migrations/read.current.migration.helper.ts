@@ -1,4 +1,4 @@
-import type { BrainMigrationJournal, BrainMigrationJournalEntry } from '@/agents/brain/_migrations/brain.migration.schema'
+import type { BrainMigrationJournal, BrainMigrationJournalEntry } from '@/agents/brain/_migrations/migration.schema'
 import { EmptyBrainMigrationJournalError } from '@/agents/brain/_types'
 
 export function readCurrentMigration(journal: BrainMigrationJournal): BrainMigrationJournalEntry {
