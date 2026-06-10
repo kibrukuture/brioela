@@ -53,7 +53,7 @@ export async function runMigrations(
 		hasMigrationLock = true
 
 		writeSchemaReadiness(database, {
-			id: 'brain',
+			id: 'singleton',
 			schemaVersion: migration.idx,
 			minReadableVersion: migration.idx,
 			targetVersion: migration.idx,
@@ -96,14 +96,14 @@ export async function runMigrations(
 			writeMigrationSmoke(database, {
 				id: createId(),
 				migrationRunId,
-				smoke: 'brain.migration.runtime',
+				smoke: 'migration.runtime',
 				status: 'failed',
 				startedAt: checkedAtEpochMs,
 				finishedAt: checkedAtEpochMs,
 				errorJson,
 			})
 			writeSchemaReadiness(database, {
-				id: 'brain',
+				id: 'singleton',
 				schemaVersion: migration.idx,
 				minReadableVersion: migration.idx,
 				targetVersion: migration.idx,
@@ -146,5 +146,5 @@ function acquireMigrationLock(database: BrainDatabase, runId: string, deployment
 }
 
 function createMigrationDeploymentId(migration: BrainMigrationJournalEntry): string {
-	return `brain-drizzle-${migration.tag}`
+	return `drizzle-${migration.tag}`
 }

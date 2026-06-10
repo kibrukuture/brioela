@@ -36,8 +36,9 @@ CREATE TABLE `constraints` (
 	CONSTRAINT "constraints_updated_at_check" CHECK("constraints"."updated_at" >= "constraints"."proposed_at")
 );
 --> statement-breakpoint
-CREATE INDEX `constraints_status_type_index` ON `constraints` (`status`,`constraint_type`);--> statement-breakpoint
+CREATE INDEX `constraints_type_status_index` ON `constraints` (`constraint_type`,`status`);--> statement-breakpoint
 CREATE INDEX `constraints_entity_status_index` ON `constraints` (`entity_kind`,`entity_value`,`status`);--> statement-breakpoint
+CREATE INDEX `constraints_surfaced_index` ON `constraints` (`last_surfaced_at`) WHERE status = 'proposed';--> statement-breakpoint
 CREATE TABLE `memory_event` (
 	`id` text PRIMARY KEY NOT NULL,
 	`user_id` text NOT NULL,
@@ -59,7 +60,7 @@ CREATE INDEX `memory_event_kind_captured_at_index` ON `memory_event` (`kind`,`ca
 CREATE INDEX `memory_event_entity_captured_at_index` ON `memory_event` (`entity_kind`,`entity_id`,`captured_at`);--> statement-breakpoint
 CREATE INDEX `memory_event_captured_at_id_index` ON `memory_event` (`captured_at`,`id`);--> statement-breakpoint
 CREATE INDEX `memory_event_session_id_index` ON `memory_event` (`session_id`);--> statement-breakpoint
-CREATE TABLE `brain_migration_runs` (
+CREATE TABLE `migration_runs` (
 	`id` text PRIMARY KEY NOT NULL,
 	`migration_id` text NOT NULL,
 	`from_version` integer NOT NULL,
@@ -72,20 +73,20 @@ CREATE TABLE `brain_migration_runs` (
 	`attempt` integer NOT NULL,
 	`error_json` text,
 	`deployment_id` text NOT NULL,
-	CONSTRAINT "brain_migration_runs_phase_check" CHECK("brain_migration_runs"."phase" in ('expand', 'dual_write', 'backfill', 'verify', 'contract')),
-	CONSTRAINT "brain_migration_runs_risk_check" CHECK("brain_migration_runs"."risk" in ('low', 'medium', 'high', 'blocked')),
-	CONSTRAINT "brain_migration_runs_status_check" CHECK("brain_migration_runs"."status" in ('started', 'applied', 'smoke_passed', 'failed', 'blocked')),
-	CONSTRAINT "brain_migration_runs_from_version_check" CHECK("brain_migration_runs"."from_version" >= 0),
-	CONSTRAINT "brain_migration_runs_to_version_check" CHECK("brain_migration_runs"."to_version" >= "brain_migration_runs"."from_version"),
-	CONSTRAINT "brain_migration_runs_started_at_check" CHECK("brain_migration_runs"."started_at" >= 0),
-	CONSTRAINT "brain_migration_runs_finished_at_check" CHECK("brain_migration_runs"."finished_at" is null or "brain_migration_runs"."finished_at" >= "brain_migration_runs"."started_at"),
-	CONSTRAINT "brain_migration_runs_attempt_check" CHECK("brain_migration_runs"."attempt" >= 1),
-	CONSTRAINT "brain_migration_runs_error_json_check" CHECK("brain_migration_runs"."error_json" is null or json_valid("brain_migration_runs"."error_json"))
+	CONSTRAINT "migration_runs_phase_check" CHECK("migration_runs"."phase" in ('expand', 'dual_write', 'backfill', 'verify', 'contract')),
+	CONSTRAINT "migration_runs_risk_check" CHECK("migration_runs"."risk" in ('low', 'medium', 'high', 'blocked')),
+	CONSTRAINT "migration_runs_status_check" CHECK("migration_runs"."status" in ('started', 'applied', 'smoke_passed', 'failed', 'blocked')),
+	CONSTRAINT "migration_runs_from_version_check" CHECK("migration_runs"."from_version" >= 0),
+	CONSTRAINT "migration_runs_to_version_check" CHECK("migration_runs"."to_version" >= "migration_runs"."from_version"),
+	CONSTRAINT "migration_runs_started_at_check" CHECK("migration_runs"."started_at" >= 0),
+	CONSTRAINT "migration_runs_finished_at_check" CHECK("migration_runs"."finished_at" is null or "migration_runs"."finished_at" >= "migration_runs"."started_at"),
+	CONSTRAINT "migration_runs_attempt_check" CHECK("migration_runs"."attempt" >= 1),
+	CONSTRAINT "migration_runs_error_json_check" CHECK("migration_runs"."error_json" is null or json_valid("migration_runs"."error_json"))
 );
 --> statement-breakpoint
-CREATE INDEX `brain_migration_runs_migration_started_at_index` ON `brain_migration_runs` (`migration_id`,`started_at`);--> statement-breakpoint
-CREATE INDEX `brain_migration_runs_status_started_at_index` ON `brain_migration_runs` (`status`,`started_at`);--> statement-breakpoint
-CREATE TABLE `brain_migration_smoke_results` (
+CREATE INDEX `migration_runs_migration_started_at_index` ON `migration_runs` (`migration_id`,`started_at`);--> statement-breakpoint
+CREATE INDEX `migration_runs_status_started_at_index` ON `migration_runs` (`status`,`started_at`);--> statement-breakpoint
+CREATE TABLE `migration_smoke_results` (
 	`id` text PRIMARY KEY NOT NULL,
 	`migration_run_id` text NOT NULL,
 	`smoke` text NOT NULL,
@@ -93,13 +94,13 @@ CREATE TABLE `brain_migration_smoke_results` (
 	`started_at` integer NOT NULL,
 	`finished_at` integer,
 	`error_json` text,
-	CONSTRAINT "brain_migration_smoke_results_status_check" CHECK("brain_migration_smoke_results"."status" in ('passed', 'failed')),
-	CONSTRAINT "brain_migration_smoke_results_started_at_check" CHECK("brain_migration_smoke_results"."started_at" >= 0),
-	CONSTRAINT "brain_migration_smoke_results_finished_at_check" CHECK("brain_migration_smoke_results"."finished_at" is null or "brain_migration_smoke_results"."finished_at" >= "brain_migration_smoke_results"."started_at"),
-	CONSTRAINT "brain_migration_smoke_results_error_json_check" CHECK("brain_migration_smoke_results"."error_json" is null or json_valid("brain_migration_smoke_results"."error_json"))
+	CONSTRAINT "migration_smoke_results_status_check" CHECK("migration_smoke_results"."status" in ('passed', 'failed')),
+	CONSTRAINT "migration_smoke_results_started_at_check" CHECK("migration_smoke_results"."started_at" >= 0),
+	CONSTRAINT "migration_smoke_results_finished_at_check" CHECK("migration_smoke_results"."finished_at" is null or "migration_smoke_results"."finished_at" >= "migration_smoke_results"."started_at"),
+	CONSTRAINT "migration_smoke_results_error_json_check" CHECK("migration_smoke_results"."error_json" is null or json_valid("migration_smoke_results"."error_json"))
 );
 --> statement-breakpoint
-CREATE INDEX `brain_migration_smoke_results_migration_run_id_index` ON `brain_migration_smoke_results` (`migration_run_id`);--> statement-breakpoint
+CREATE INDEX `migration_smoke_results_migration_run_id_index` ON `migration_smoke_results` (`migration_run_id`);--> statement-breakpoint
 CREATE TABLE `recipes` (
 	`id` text PRIMARY KEY NOT NULL,
 	`user_id` text NOT NULL,
@@ -125,6 +126,9 @@ CREATE TABLE `recipes` (
 --> statement-breakpoint
 CREATE INDEX `recipes_user_status_last_cooked_at_index` ON `recipes` (`user_id`,`status`,`last_cooked_at`);--> statement-breakpoint
 CREATE INDEX `recipes_source_created_at_index` ON `recipes` (`source`,`created_at`);--> statement-breakpoint
+CREATE INDEX `recipes_status_cook_count_index` ON `recipes` (`status`,`cook_count`);--> statement-breakpoint
+CREATE INDEX `recipes_last_cooked_index` ON `recipes` (`last_cooked_at`) WHERE status = 'active';--> statement-breakpoint
+CREATE INDEX `recipes_source_session_index` ON `recipes` (`source_session`) WHERE source_session IS NOT NULL;--> statement-breakpoint
 CREATE TABLE `scheduled_alarms` (
 	`id` text PRIMARY KEY NOT NULL,
 	`user_id` text NOT NULL,
@@ -160,8 +164,8 @@ CREATE TABLE `scheduled_alarms` (
 --> statement-breakpoint
 CREATE INDEX `scheduled_alarms_status_scheduled_at_index` ON `scheduled_alarms` (`status`,`scheduled_at`);--> statement-breakpoint
 CREATE INDEX `scheduled_alarms_type_status_index` ON `scheduled_alarms` (`alarm_type`,`status`);--> statement-breakpoint
-CREATE TABLE `brain_schema_readiness` (
-	`id` text PRIMARY KEY DEFAULT 'brain' NOT NULL,
+CREATE TABLE `schema_readiness` (
+	`id` text PRIMARY KEY DEFAULT 'singleton' NOT NULL,
 	`schema_version` integer NOT NULL,
 	`min_readable_version` integer NOT NULL,
 	`target_version` integer NOT NULL,
@@ -170,13 +174,13 @@ CREATE TABLE `brain_schema_readiness` (
 	`last_smoke_status` text,
 	`last_error_json` text,
 	`updated_at` integer NOT NULL,
-	CONSTRAINT "brain_schema_readiness_schema_version_check" CHECK("brain_schema_readiness"."schema_version" >= 0),
-	CONSTRAINT "brain_schema_readiness_min_readable_version_check" CHECK("brain_schema_readiness"."min_readable_version" >= 0),
-	CONSTRAINT "brain_schema_readiness_target_version_check" CHECK("brain_schema_readiness"."target_version" >= "brain_schema_readiness"."min_readable_version"),
-	CONSTRAINT "brain_schema_readiness_status_check" CHECK("brain_schema_readiness"."status" in ('ready', 'migrating', 'blocked_by_control_plane', 'needs_retry', 'migration_failed', 'read_only_degraded', 'incompatible_code')),
-	CONSTRAINT "brain_schema_readiness_last_smoke_status_check" CHECK("brain_schema_readiness"."last_smoke_status" is null or "brain_schema_readiness"."last_smoke_status" in ('passed', 'failed')),
-	CONSTRAINT "brain_schema_readiness_last_error_json_check" CHECK("brain_schema_readiness"."last_error_json" is null or json_valid("brain_schema_readiness"."last_error_json")),
-	CONSTRAINT "brain_schema_readiness_updated_at_check" CHECK("brain_schema_readiness"."updated_at" >= 0)
+	CONSTRAINT "schema_readiness_schema_version_check" CHECK("schema_readiness"."schema_version" >= 0),
+	CONSTRAINT "schema_readiness_min_readable_version_check" CHECK("schema_readiness"."min_readable_version" >= 0),
+	CONSTRAINT "schema_readiness_target_version_check" CHECK("schema_readiness"."target_version" >= "schema_readiness"."min_readable_version"),
+	CONSTRAINT "schema_readiness_status_check" CHECK("schema_readiness"."status" in ('ready', 'migrating', 'blocked_by_control_plane', 'needs_retry', 'migration_failed', 'read_only_degraded', 'incompatible_code')),
+	CONSTRAINT "schema_readiness_last_smoke_status_check" CHECK("schema_readiness"."last_smoke_status" is null or "schema_readiness"."last_smoke_status" in ('passed', 'failed')),
+	CONSTRAINT "schema_readiness_last_error_json_check" CHECK("schema_readiness"."last_error_json" is null or json_valid("schema_readiness"."last_error_json")),
+	CONSTRAINT "schema_readiness_updated_at_check" CHECK("schema_readiness"."updated_at" >= 0)
 );
 --> statement-breakpoint
 CREATE TABLE `sessions` (
@@ -217,8 +221,11 @@ CREATE TABLE `sessions` (
 );
 --> statement-breakpoint
 CREATE INDEX `sessions_user_status_started_at_index` ON `sessions` (`user_id`,`status`,`started_at`);--> statement-breakpoint
-CREATE INDEX `sessions_type_started_at_index` ON `sessions` (`session_type`,`started_at`);--> statement-breakpoint
-CREATE INDEX `sessions_recipe_id_index` ON `sessions` (`recipe_id`);--> statement-breakpoint
+CREATE INDEX `sessions_type_status_started_at_index` ON `sessions` (`session_type`,`status`,`started_at`);--> statement-breakpoint
+CREATE INDEX `sessions_parent_index` ON `sessions` (`parent_session_id`) WHERE parent_session_id IS NOT NULL;--> statement-breakpoint
+CREATE INDEX `sessions_recipe_index` ON `sessions` (`recipe_id`) WHERE recipe_id IS NOT NULL;--> statement-breakpoint
+CREATE INDEX `sessions_started_at_index` ON `sessions` (`started_at`);--> statement-breakpoint
+CREATE INDEX `sessions_active_index` ON `sessions` (`status`) WHERE status = 'active';--> statement-breakpoint
 CREATE TABLE `session_turns` (
 	`id` text PRIMARY KEY NOT NULL,
 	`session_id` text NOT NULL,

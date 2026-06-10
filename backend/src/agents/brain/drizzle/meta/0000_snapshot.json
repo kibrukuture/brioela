@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "5d6cfec2-e538-4bd5-825c-73c6d9d7530f",
+  "id": "f04e2413-50b7-4396-a36d-e04319cdfb51",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "agent_state": {
@@ -165,11 +165,11 @@
         }
       },
       "indexes": {
-        "constraints_status_type_index": {
-          "name": "constraints_status_type_index",
+        "constraints_type_status_index": {
+          "name": "constraints_type_status_index",
           "columns": [
-            "status",
-            "constraint_type"
+            "constraint_type",
+            "status"
           ],
           "isUnique": false
         },
@@ -181,6 +181,14 @@
             "status"
           ],
           "isUnique": false
+        },
+        "constraints_surfaced_index": {
+          "name": "constraints_surfaced_index",
+          "columns": [
+            "last_surfaced_at"
+          ],
+          "isUnique": false,
+          "where": "status = 'proposed'"
         }
       },
       "foreignKeys": {},
@@ -366,8 +374,8 @@
         }
       }
     },
-    "brain_migration_runs": {
-      "name": "brain_migration_runs",
+    "migration_runs": {
+      "name": "migration_runs",
       "columns": {
         "id": {
           "name": "id",
@@ -455,16 +463,16 @@
         }
       },
       "indexes": {
-        "brain_migration_runs_migration_started_at_index": {
-          "name": "brain_migration_runs_migration_started_at_index",
+        "migration_runs_migration_started_at_index": {
+          "name": "migration_runs_migration_started_at_index",
           "columns": [
             "migration_id",
             "started_at"
           ],
           "isUnique": false
         },
-        "brain_migration_runs_status_started_at_index": {
-          "name": "brain_migration_runs_status_started_at_index",
+        "migration_runs_status_started_at_index": {
+          "name": "migration_runs_status_started_at_index",
           "columns": [
             "status",
             "started_at"
@@ -476,46 +484,46 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "checkConstraints": {
-        "brain_migration_runs_phase_check": {
-          "name": "brain_migration_runs_phase_check",
-          "value": "\"brain_migration_runs\".\"phase\" in ('expand', 'dual_write', 'backfill', 'verify', 'contract')"
+        "migration_runs_phase_check": {
+          "name": "migration_runs_phase_check",
+          "value": "\"migration_runs\".\"phase\" in ('expand', 'dual_write', 'backfill', 'verify', 'contract')"
         },
-        "brain_migration_runs_risk_check": {
-          "name": "brain_migration_runs_risk_check",
-          "value": "\"brain_migration_runs\".\"risk\" in ('low', 'medium', 'high', 'blocked')"
+        "migration_runs_risk_check": {
+          "name": "migration_runs_risk_check",
+          "value": "\"migration_runs\".\"risk\" in ('low', 'medium', 'high', 'blocked')"
         },
-        "brain_migration_runs_status_check": {
-          "name": "brain_migration_runs_status_check",
-          "value": "\"brain_migration_runs\".\"status\" in ('started', 'applied', 'smoke_passed', 'failed', 'blocked')"
+        "migration_runs_status_check": {
+          "name": "migration_runs_status_check",
+          "value": "\"migration_runs\".\"status\" in ('started', 'applied', 'smoke_passed', 'failed', 'blocked')"
         },
-        "brain_migration_runs_from_version_check": {
-          "name": "brain_migration_runs_from_version_check",
-          "value": "\"brain_migration_runs\".\"from_version\" >= 0"
+        "migration_runs_from_version_check": {
+          "name": "migration_runs_from_version_check",
+          "value": "\"migration_runs\".\"from_version\" >= 0"
         },
-        "brain_migration_runs_to_version_check": {
-          "name": "brain_migration_runs_to_version_check",
-          "value": "\"brain_migration_runs\".\"to_version\" >= \"brain_migration_runs\".\"from_version\""
+        "migration_runs_to_version_check": {
+          "name": "migration_runs_to_version_check",
+          "value": "\"migration_runs\".\"to_version\" >= \"migration_runs\".\"from_version\""
         },
-        "brain_migration_runs_started_at_check": {
-          "name": "brain_migration_runs_started_at_check",
-          "value": "\"brain_migration_runs\".\"started_at\" >= 0"
+        "migration_runs_started_at_check": {
+          "name": "migration_runs_started_at_check",
+          "value": "\"migration_runs\".\"started_at\" >= 0"
         },
-        "brain_migration_runs_finished_at_check": {
-          "name": "brain_migration_runs_finished_at_check",
-          "value": "\"brain_migration_runs\".\"finished_at\" is null or \"brain_migration_runs\".\"finished_at\" >= \"brain_migration_runs\".\"started_at\""
+        "migration_runs_finished_at_check": {
+          "name": "migration_runs_finished_at_check",
+          "value": "\"migration_runs\".\"finished_at\" is null or \"migration_runs\".\"finished_at\" >= \"migration_runs\".\"started_at\""
         },
-        "brain_migration_runs_attempt_check": {
-          "name": "brain_migration_runs_attempt_check",
-          "value": "\"brain_migration_runs\".\"attempt\" >= 1"
+        "migration_runs_attempt_check": {
+          "name": "migration_runs_attempt_check",
+          "value": "\"migration_runs\".\"attempt\" >= 1"
         },
-        "brain_migration_runs_error_json_check": {
-          "name": "brain_migration_runs_error_json_check",
-          "value": "\"brain_migration_runs\".\"error_json\" is null or json_valid(\"brain_migration_runs\".\"error_json\")"
+        "migration_runs_error_json_check": {
+          "name": "migration_runs_error_json_check",
+          "value": "\"migration_runs\".\"error_json\" is null or json_valid(\"migration_runs\".\"error_json\")"
         }
       }
     },
-    "brain_migration_smoke_results": {
-      "name": "brain_migration_smoke_results",
+    "migration_smoke_results": {
+      "name": "migration_smoke_results",
       "columns": {
         "id": {
           "name": "id",
@@ -568,8 +576,8 @@
         }
       },
       "indexes": {
-        "brain_migration_smoke_results_migration_run_id_index": {
-          "name": "brain_migration_smoke_results_migration_run_id_index",
+        "migration_smoke_results_migration_run_id_index": {
+          "name": "migration_smoke_results_migration_run_id_index",
           "columns": [
             "migration_run_id"
           ],
@@ -580,21 +588,21 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "checkConstraints": {
-        "brain_migration_smoke_results_status_check": {
-          "name": "brain_migration_smoke_results_status_check",
-          "value": "\"brain_migration_smoke_results\".\"status\" in ('passed', 'failed')"
+        "migration_smoke_results_status_check": {
+          "name": "migration_smoke_results_status_check",
+          "value": "\"migration_smoke_results\".\"status\" in ('passed', 'failed')"
         },
-        "brain_migration_smoke_results_started_at_check": {
-          "name": "brain_migration_smoke_results_started_at_check",
-          "value": "\"brain_migration_smoke_results\".\"started_at\" >= 0"
+        "migration_smoke_results_started_at_check": {
+          "name": "migration_smoke_results_started_at_check",
+          "value": "\"migration_smoke_results\".\"started_at\" >= 0"
         },
-        "brain_migration_smoke_results_finished_at_check": {
-          "name": "brain_migration_smoke_results_finished_at_check",
-          "value": "\"brain_migration_smoke_results\".\"finished_at\" is null or \"brain_migration_smoke_results\".\"finished_at\" >= \"brain_migration_smoke_results\".\"started_at\""
+        "migration_smoke_results_finished_at_check": {
+          "name": "migration_smoke_results_finished_at_check",
+          "value": "\"migration_smoke_results\".\"finished_at\" is null or \"migration_smoke_results\".\"finished_at\" >= \"migration_smoke_results\".\"started_at\""
         },
-        "brain_migration_smoke_results_error_json_check": {
-          "name": "brain_migration_smoke_results_error_json_check",
-          "value": "\"brain_migration_smoke_results\".\"error_json\" is null or json_valid(\"brain_migration_smoke_results\".\"error_json\")"
+        "migration_smoke_results_error_json_check": {
+          "name": "migration_smoke_results_error_json_check",
+          "value": "\"migration_smoke_results\".\"error_json\" is null or json_valid(\"migration_smoke_results\".\"error_json\")"
         }
       }
     },
@@ -713,6 +721,30 @@
             "created_at"
           ],
           "isUnique": false
+        },
+        "recipes_status_cook_count_index": {
+          "name": "recipes_status_cook_count_index",
+          "columns": [
+            "status",
+            "cook_count"
+          ],
+          "isUnique": false
+        },
+        "recipes_last_cooked_index": {
+          "name": "recipes_last_cooked_index",
+          "columns": [
+            "last_cooked_at"
+          ],
+          "isUnique": false,
+          "where": "status = 'active'"
+        },
+        "recipes_source_session_index": {
+          "name": "recipes_source_session_index",
+          "columns": [
+            "source_session"
+          ],
+          "isUnique": false,
+          "where": "source_session IS NOT NULL"
         }
       },
       "foreignKeys": {},
@@ -959,8 +991,8 @@
         }
       }
     },
-    "brain_schema_readiness": {
-      "name": "brain_schema_readiness",
+    "schema_readiness": {
+      "name": "schema_readiness",
       "columns": {
         "id": {
           "name": "id",
@@ -968,7 +1000,7 @@
           "primaryKey": true,
           "notNull": true,
           "autoincrement": false,
-          "default": "'brain'"
+          "default": "'singleton'"
         },
         "schema_version": {
           "name": "schema_version",
@@ -1032,33 +1064,33 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "checkConstraints": {
-        "brain_schema_readiness_schema_version_check": {
-          "name": "brain_schema_readiness_schema_version_check",
-          "value": "\"brain_schema_readiness\".\"schema_version\" >= 0"
+        "schema_readiness_schema_version_check": {
+          "name": "schema_readiness_schema_version_check",
+          "value": "\"schema_readiness\".\"schema_version\" >= 0"
         },
-        "brain_schema_readiness_min_readable_version_check": {
-          "name": "brain_schema_readiness_min_readable_version_check",
-          "value": "\"brain_schema_readiness\".\"min_readable_version\" >= 0"
+        "schema_readiness_min_readable_version_check": {
+          "name": "schema_readiness_min_readable_version_check",
+          "value": "\"schema_readiness\".\"min_readable_version\" >= 0"
         },
-        "brain_schema_readiness_target_version_check": {
-          "name": "brain_schema_readiness_target_version_check",
-          "value": "\"brain_schema_readiness\".\"target_version\" >= \"brain_schema_readiness\".\"min_readable_version\""
+        "schema_readiness_target_version_check": {
+          "name": "schema_readiness_target_version_check",
+          "value": "\"schema_readiness\".\"target_version\" >= \"schema_readiness\".\"min_readable_version\""
         },
-        "brain_schema_readiness_status_check": {
-          "name": "brain_schema_readiness_status_check",
-          "value": "\"brain_schema_readiness\".\"status\" in ('ready', 'migrating', 'blocked_by_control_plane', 'needs_retry', 'migration_failed', 'read_only_degraded', 'incompatible_code')"
+        "schema_readiness_status_check": {
+          "name": "schema_readiness_status_check",
+          "value": "\"schema_readiness\".\"status\" in ('ready', 'migrating', 'blocked_by_control_plane', 'needs_retry', 'migration_failed', 'read_only_degraded', 'incompatible_code')"
         },
-        "brain_schema_readiness_last_smoke_status_check": {
-          "name": "brain_schema_readiness_last_smoke_status_check",
-          "value": "\"brain_schema_readiness\".\"last_smoke_status\" is null or \"brain_schema_readiness\".\"last_smoke_status\" in ('passed', 'failed')"
+        "schema_readiness_last_smoke_status_check": {
+          "name": "schema_readiness_last_smoke_status_check",
+          "value": "\"schema_readiness\".\"last_smoke_status\" is null or \"schema_readiness\".\"last_smoke_status\" in ('passed', 'failed')"
         },
-        "brain_schema_readiness_last_error_json_check": {
-          "name": "brain_schema_readiness_last_error_json_check",
-          "value": "\"brain_schema_readiness\".\"last_error_json\" is null or json_valid(\"brain_schema_readiness\".\"last_error_json\")"
+        "schema_readiness_last_error_json_check": {
+          "name": "schema_readiness_last_error_json_check",
+          "value": "\"schema_readiness\".\"last_error_json\" is null or json_valid(\"schema_readiness\".\"last_error_json\")"
         },
-        "brain_schema_readiness_updated_at_check": {
-          "name": "brain_schema_readiness_updated_at_check",
-          "value": "\"brain_schema_readiness\".\"updated_at\" >= 0"
+        "schema_readiness_updated_at_check": {
+          "name": "schema_readiness_updated_at_check",
+          "value": "\"schema_readiness\".\"updated_at\" >= 0"
         }
       }
     },
@@ -1232,20 +1264,45 @@
           ],
           "isUnique": false
         },
-        "sessions_type_started_at_index": {
-          "name": "sessions_type_started_at_index",
+        "sessions_type_status_started_at_index": {
+          "name": "sessions_type_status_started_at_index",
           "columns": [
             "session_type",
+            "status",
             "started_at"
           ],
           "isUnique": false
         },
-        "sessions_recipe_id_index": {
-          "name": "sessions_recipe_id_index",
+        "sessions_parent_index": {
+          "name": "sessions_parent_index",
+          "columns": [
+            "parent_session_id"
+          ],
+          "isUnique": false,
+          "where": "parent_session_id IS NOT NULL"
+        },
+        "sessions_recipe_index": {
+          "name": "sessions_recipe_index",
           "columns": [
             "recipe_id"
           ],
+          "isUnique": false,
+          "where": "recipe_id IS NOT NULL"
+        },
+        "sessions_started_at_index": {
+          "name": "sessions_started_at_index",
+          "columns": [
+            "started_at"
+          ],
           "isUnique": false
+        },
+        "sessions_active_index": {
+          "name": "sessions_active_index",
+          "columns": [
+            "status"
+          ],
+          "isUnique": false,
+          "where": "status = 'active'"
         }
       },
       "foreignKeys": {},

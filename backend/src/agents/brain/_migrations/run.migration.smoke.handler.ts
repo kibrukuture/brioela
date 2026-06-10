@@ -11,13 +11,13 @@ export function runMigrationSmoke(
 	finishedAtEpochMs: number,
 ): BrainMigrationReadiness {
 	writeMemoryEventOnce(database, {
-		id: `brain-migration-smoke-${migration.idx.toString().padStart(4, '0')}`,
-		userId: 'brain-migration-smoke',
+		id: `migration-smoke-${migration.idx.toString().padStart(4, '0')}`,
+		userId: 'migration-smoke',
 		kind: 'schema-readiness-smoke',
 		payloadJson: JSON.stringify({ migration: migration.tag, migrationRunId }),
 		capturedAt: finishedAtEpochMs,
 		ingestedAt: finishedAtEpochMs,
-		source: 'brain-migration',
+		source: 'migration',
 		sessionId: null,
 		entityKind: null,
 		entityId: null,
@@ -29,7 +29,7 @@ export function runMigrationSmoke(
 	writeMigrationSmoke(database, {
 		id: createId(),
 		migrationRunId,
-		smoke: 'brain.memory.write',
+		smoke: 'memory.write',
 		status: 'passed',
 		startedAt: startedAtEpochMs,
 		finishedAt: finishedAtEpochMs,
@@ -37,7 +37,7 @@ export function runMigrationSmoke(
 	})
 
 	writeSchemaReadiness(database, {
-		id: 'brain',
+		id: 'singleton',
 		schemaVersion: migration.idx,
 		minReadableVersion: migration.idx,
 		targetVersion: migration.idx,

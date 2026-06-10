@@ -3,7 +3,7 @@ import { check, index, integer, sql, sqliteTable, text } from '@/database/sqlite
 const smokeStatus = ['passed', 'failed'] as const
 
 export const migrationSmokeResults = sqliteTable(
-	'brain_migration_smoke_results',
+	'migration_smoke_results',
 	{
 		id: text('id').primaryKey(),
 		migrationRunId: text('migration_run_id').notNull(),
@@ -14,11 +14,11 @@ export const migrationSmokeResults = sqliteTable(
 		errorJson: text('error_json'),
 	},
 	(table) => [
-		check('brain_migration_smoke_results_status_check', sql`${table.status} in ('passed', 'failed')`),
-		check('brain_migration_smoke_results_started_at_check', sql`${table.startedAt} >= 0`),
-		check('brain_migration_smoke_results_finished_at_check', sql`${table.finishedAt} is null or ${table.finishedAt} >= ${table.startedAt}`),
-		check('brain_migration_smoke_results_error_json_check', sql`${table.errorJson} is null or json_valid(${table.errorJson})`),
-		index('brain_migration_smoke_results_migration_run_id_index').on(table.migrationRunId),
+		check('migration_smoke_results_status_check', sql`${table.status} in ('passed', 'failed')`),
+		check('migration_smoke_results_started_at_check', sql`${table.startedAt} >= 0`),
+		check('migration_smoke_results_finished_at_check', sql`${table.finishedAt} is null or ${table.finishedAt} >= ${table.startedAt}`),
+		check('migration_smoke_results_error_json_check', sql`${table.errorJson} is null or json_valid(${table.errorJson})`),
+		index('migration_smoke_results_migration_run_id_index').on(table.migrationRunId),
 	],
 )
 

@@ -5,7 +5,7 @@ const migrationRisk = ['low', 'medium', 'high', 'blocked'] as const
 const migrationStatus = ['started', 'applied', 'smoke_passed', 'failed', 'blocked'] as const
 
 export const migrationRuns = sqliteTable(
-	'brain_migration_runs',
+	'migration_runs',
 	{
 		id: text('id').primaryKey(),
 		migrationId: text('migration_id').notNull(),
@@ -21,17 +21,17 @@ export const migrationRuns = sqliteTable(
 		deploymentId: text('deployment_id').notNull(),
 	},
 	(table) => [
-		check('brain_migration_runs_phase_check', sql`${table.phase} in ('expand', 'dual_write', 'backfill', 'verify', 'contract')`),
-		check('brain_migration_runs_risk_check', sql`${table.risk} in ('low', 'medium', 'high', 'blocked')`),
-		check('brain_migration_runs_status_check', sql`${table.status} in ('started', 'applied', 'smoke_passed', 'failed', 'blocked')`),
-		check('brain_migration_runs_from_version_check', sql`${table.fromVersion} >= 0`),
-		check('brain_migration_runs_to_version_check', sql`${table.toVersion} >= ${table.fromVersion}`),
-		check('brain_migration_runs_started_at_check', sql`${table.startedAt} >= 0`),
-		check('brain_migration_runs_finished_at_check', sql`${table.finishedAt} is null or ${table.finishedAt} >= ${table.startedAt}`),
-		check('brain_migration_runs_attempt_check', sql`${table.attempt} >= 1`),
-		check('brain_migration_runs_error_json_check', sql`${table.errorJson} is null or json_valid(${table.errorJson})`),
-		index('brain_migration_runs_migration_started_at_index').on(table.migrationId, table.startedAt),
-		index('brain_migration_runs_status_started_at_index').on(table.status, table.startedAt),
+		check('migration_runs_phase_check', sql`${table.phase} in ('expand', 'dual_write', 'backfill', 'verify', 'contract')`),
+		check('migration_runs_risk_check', sql`${table.risk} in ('low', 'medium', 'high', 'blocked')`),
+		check('migration_runs_status_check', sql`${table.status} in ('started', 'applied', 'smoke_passed', 'failed', 'blocked')`),
+		check('migration_runs_from_version_check', sql`${table.fromVersion} >= 0`),
+		check('migration_runs_to_version_check', sql`${table.toVersion} >= ${table.fromVersion}`),
+		check('migration_runs_started_at_check', sql`${table.startedAt} >= 0`),
+		check('migration_runs_finished_at_check', sql`${table.finishedAt} is null or ${table.finishedAt} >= ${table.startedAt}`),
+		check('migration_runs_attempt_check', sql`${table.attempt} >= 1`),
+		check('migration_runs_error_json_check', sql`${table.errorJson} is null or json_valid(${table.errorJson})`),
+		index('migration_runs_migration_started_at_index').on(table.migrationId, table.startedAt),
+		index('migration_runs_status_started_at_index').on(table.status, table.startedAt),
 	],
 )
 

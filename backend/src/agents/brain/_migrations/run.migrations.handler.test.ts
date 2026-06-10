@@ -31,7 +31,7 @@ describe('Brain migration runtime', () => {
 			const storedReadiness = database
 				.select()
 				.from(schemaReadiness)
-				.where(eq(schemaReadiness.id, 'brain'))
+				.where(eq(schemaReadiness.id, 'singleton'))
 				.get()
 			const migrationRun = database
 				.select()
@@ -52,7 +52,7 @@ describe('Brain migration runtime', () => {
 			expect(migrationRun?.status).toBe('smoke_passed')
 			expect(migrationRun?.migrationId).toBe(migration.tag)
 			expect(migrationSmoke?.status).toBe('passed')
-			expect(migrationSmoke?.smoke).toBe('brain.memory.write')
+			expect(migrationSmoke?.smoke).toBe('memory.write')
 			expect(readMigrationLock(database)).toBeNull()
 		})
 	})

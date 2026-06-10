@@ -3,8 +3,8 @@ import type { BrainDatabase } from '@/agents/brain/_database'
 import { migrationLockSchema, type BrainMigrationLock } from '@/agents/brain/_migrations'
 import { eq, getOne } from '@/database/drizzle/_database'
 
-const migrationLockKey = 'brain_schema.migration_lock'
-const migrationLockOwnerId = 'brain'
+const migrationLockKey = 'schema.migration_lock'
+const migrationLockOwnerId = 'migration'
 
 export function readMigrationLock(database: BrainDatabase): BrainMigrationLock | null {
 	const lockRecord = getOne(database.select().from(agentState).where(eq(agentState.key, migrationLockKey)))
