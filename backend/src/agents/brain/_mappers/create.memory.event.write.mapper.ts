@@ -1,4 +1,4 @@
-import { nanoid } from 'nanoid'
+import { generateId } from '@brioela/shared/_ids'
 import type { AppendBrainMemoryEvent } from '@/agents/brain/_rpc'
 import type { BrainMemoryEventWrite } from '@/agents/brain/_types'
 
@@ -7,7 +7,7 @@ export function createMemoryEventWrite(
 	ingestedAt: number,
 ): BrainMemoryEventWrite {
 	return {
-		id: nanoid(24),
+		id: generateId(),
 		userId: memoryEventAppend.userId,
 		kind: memoryEventAppend.kind,
 		payloadJson: JSON.stringify(memoryEventAppend.payload),

@@ -1,4 +1,4 @@
-import { nanoid } from 'nanoid'
+import { generateId } from '@brioela/shared/_ids'
 import { applyDurableSqliteMigration } from '@/database/sqlite/_migrations'
 import { brainMigrationBundle } from '@/agents/brain/_migrations/brain.migration'
 import { readCurrentMigration } from '@/agents/brain/_migrations/read.current.brain.migration.helper'
@@ -24,7 +24,7 @@ export async function runMigrations(
 	checkedAtEpochMs: number,
 ): Promise<BrainMigrationReadiness> {
 	const migration = readCurrentMigration(brainMigrationBundle.journal)
-	const migrationRunId = nanoid(24)
+	const migrationRunId = generateId()
 	const deploymentId = createMigrationDeploymentId(migration)
 
 	let hasMigrationLock = false
@@ -94,7 +94,7 @@ export async function runMigrations(
 				errorJson,
 			})
 			writeMigrationSmoke(database, {
-				id: nanoid(24),
+				id: generateId(),
 				migrationRunId,
 				smoke: 'brain.migration.runtime',
 				status: 'failed',
