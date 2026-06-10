@@ -1,18 +1,18 @@
 import { runInDurableObject } from 'cloudflare:test'
 import { env } from 'cloudflare:workers'
 import { describe, expect, it } from 'vitest'
-import { createBrainDatabase } from '@/agents/brain/_database'
+import { createDatabase } from '@/agents/brain/_database'
 import { brainMigrationBundle } from '@/agents/brain/_migrations/brain.migration'
-import { readCurrentBrainMigration } from '@/agents/brain/_migrations/read.current.brain.migration.helper'
-import { runBrainMigrations } from '@/agents/brain/_migrations'
-import { readBrainMigrationLock, writeBrainMigrationLock } from '@/agents/brain/_repositories'
+import { readCurrentMigration } from '@/agents/brain/_migrations/read.current.brain.migration.helper'
+import { runMigrations } from '@/agents/brain/_migrations'
+import { readMigrationLock, writeMigrationLock } from '@/agents/brain/_repositories'
 import {
 	brainMigrationRuns,
 	brainMigrationSmokeResults,
 	brainSchemaReadiness,
 	sessions,
 	sessionTurns,
-} from '@/agents/brain/_schema'
+} from '@/agents/brain/_schemas'
 import { desc, eq, sql } from 'drizzle-orm'
 import { nanoid } from 'nanoid'
 
@@ -20,14 +20,14 @@ describe('Brain migration runtime', () => {
 	it('boots a Brain object into ready schema state with persisted run and smoke records', async () => {
 		const brain = env.BRIOELA_BRAIN.get(env.BRIOELA_BRAIN.newUniqueId())
 
-		const readiness = await brain.checkBrainReadiness()
+		const readiness = await brain.checkReadiness()
 
 		expect(readiness.readiness.status).toBe('ready')
 		expect(readiness.readiness.verifiedEventCount).toBe(1)
 
 		await runInDurableObject(brain, (_, state) => {
-			const database = createBrainDatabase(state.storage)
-			const migration = readCurrentBrainMigration(brainMigrationBundle.journal)
+			const database = createDatabase(state.storage)
+			const migration = readCurrentMigration(brainMigrationBundle.journal)
 			const storedReadiness = database
 				.select()
 				.from(brainSchemaReadiness)
@@ -53,21 +53,21 @@ describe('Brain migration runtime', () => {
 			expect(migrationRun?.migrationId).toBe(migration.tag)
 			expect(migrationSmoke?.status).toBe('passed')
 			expect(migrationSmoke?.smoke).toBe('brain.memory.write')
-			expect(readBrainMigrationLock(database)).toBeNull()
+			expect(readMigrationLock(database)).toBeNull()
 		})
 	})
 
 	it('keeps migration reruns idempotent for an existing Brain object database', async () => {
 		const brain = env.BRIOELA_BRAIN.get(env.BRIOELA_BRAIN.newUniqueId())
 
-		await brain.checkBrainReadiness()
+		await brain.checkReadiness()
 
 		await runInDurableObject(brain, async (_, state) => {
-			const database = createBrainDatabase(state.storage)
+			const database = createDatabase(state.storage)
 			const firstRunCount = database.select().from(brainMigrationRuns).all().length
 			const checkedAtEpochMs = 2_000_000
 
-			const readiness = await runBrainMigrations(database, checkedAtEpochMs)
+			const readiness = await runMigrations(database, checkedAtEpochMs)
 			const secondRunCount = database.select().from(brainMigrationRuns).all().length
 			const latestRun = database
 				.select()
@@ -78,21 +78,21 @@ describe('Brain migration runtime', () => {
 			expect(readiness.status).toBe('ready')
 			expect(secondRunCount).toBe(firstRunCount + 1)
 			expect(latestRun?.status).toBe('smoke_passed')
-			expect(readBrainMigrationLock(database)).toBeNull()
+			expect(readMigrationLock(database)).toBeNull()
 		})
 	})
 
 	it('returns needs_retry while another migration lock is still live', async () => {
 		const brain = env.BRIOELA_BRAIN.get(env.BRIOELA_BRAIN.newUniqueId())
 
-		await brain.checkBrainReadiness()
+		await brain.checkReadiness()
 
 		await runInDurableObject(brain, async (_, state) => {
-			const database = createBrainDatabase(state.storage)
+			const database = createDatabase(state.storage)
 			const startedAt = 3_000_000
 			const expiresAt = startedAt + 60_000
 
-			writeBrainMigrationLock(
+			writeMigrationLock(
 				database,
 				{
 					runId: 'migration-run-held-by-another-worker',
@@ -103,8 +103,8 @@ describe('Brain migration runtime', () => {
 				startedAt,
 			)
 
-			const readiness = await runBrainMigrations(database, startedAt + 1)
-			const migrationLock = readBrainMigrationLock(database)
+			const readiness = await runMigrations(database, startedAt + 1)
+			const migrationLock = readMigrationLock(database)
 			const failedRun = database
 				.select()
 				.from(brainMigrationRuns)
@@ -124,10 +124,10 @@ describe('Brain migration runtime', () => {
 		const brain = env.BRIOELA_BRAIN.get(env.BRIOELA_BRAIN.newUniqueId())
 
 		// Bootstrap migrations and readiness
-		await brain.checkBrainReadiness()
+		await brain.checkReadiness()
 
 		await runInDurableObject(brain, async (_, state) => {
-			const database = createBrainDatabase(state.storage)
+			const database = createDatabase(state.storage)
 			const userId = 'user-123'
 			const sessionId = nanoid(24)
 

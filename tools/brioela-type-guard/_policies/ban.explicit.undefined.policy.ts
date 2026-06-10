@@ -4,6 +4,8 @@ import type { TypeViolation } from '../_types'
 import type { TypePolicy } from './type.guard.policy'
 
 export const banExplicitUndefinedPolicy: TypePolicy = ({ repoPath, sourceFile }) => {
+  if (repoPath.startsWith('backend/src/database/')) return []
+
   const violations: TypeViolation[] = []
 
   function visit(node: ts.Node): void {

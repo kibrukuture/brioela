@@ -37,4 +37,6 @@ _records/implementation-ledger/contracts/ts-rest-spine/0001.guard.rules.md
 | `tooling/lexicon-guard/0001.granular-vocabulary.md` | Tooling / Lexicon guard | done | Split the lexicon guard vocabulary into granular owned slices while keeping stable aggregate exports. |
 | `brain/sqlite-migration-runtime/implementation/0001.schema-indexes-alignment.md` | Brain / SQLite migration runtime | done | Aligned Drizzle TS schemas (sessions, constraints, recipes) with spec indexes, generated standard SQLite migrations, and updated bundle. |
 | `brain/sqlite-migration-runtime/implementation/0002.fts5-and-sync-triggers.md` | Brain / SQLite migration runtime | done | Created FTS5 virtual tables (unicode61 & trigram) and triggers for real-time synchronization on sessions and session_turns. |
+| `brain/tool-protocol/implementation/0001.first-memory-tools.md` | Brain / Tool protocol | done | Implemented user memory write, read, and event log AI tools, repositories, and permission checks with green DO tests. |
+
 

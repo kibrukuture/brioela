@@ -8,6 +8,7 @@ import {
 } from './index'
 import {
   banAnyPolicy,
+  banDrizzleSelectGetPolicy,
   banDuplicateImportPolicy,
   banExplicitUndefinedPolicy,
   banInOperatorPolicy,
@@ -40,6 +41,7 @@ export type TypeGuardMode = 'check' | 'update-baseline'
 
 const policies: TypePolicy[] = [
   banAnyPolicy,
+  banDrizzleSelectGetPolicy,
   banTypeAssertionPolicy,
   banExplicitUndefinedPolicy,
   banPaddedIdentifierPolicy,

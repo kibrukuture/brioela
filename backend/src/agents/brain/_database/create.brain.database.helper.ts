@@ -1,6 +1,6 @@
 import { drizzle } from '@/database/sqlite/_database'
-import * as brainSchema from '@/agents/brain/_schema'
+import * as brainSchema from '@/agents/brain/_schemas'
 
-export function createBrainDatabase(storage: DurableObjectStorage) {
+export function createDatabase(storage: DurableObjectStorage) {
 	return drizzle(storage, { schema: brainSchema })
 }

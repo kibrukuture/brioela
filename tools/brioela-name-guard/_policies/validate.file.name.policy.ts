@@ -23,6 +23,7 @@ const approvedRoleParts = new Set([
   'agent',
   'tool',
   'schema',
+  'executable',
   'type',
   'event',
   'job',
@@ -155,14 +156,32 @@ export function validateFileName(entry: WorkspaceEntry): NamingViolation[] {
     })
   }
 
-  if (directory.endsWith('/_schema') && !fileName.endsWith('.schema.ts') && !allowedStandaloneFiles.has(fileName)) {
-    violations.push({
-      rule: 'schema-folder-role-match',
-      path: entry.repoPath,
-      message: 'Files in _schema must use the .schema.ts suffix.',
-      suggestion: 'Rename this file to {subject}.schema.ts.',
-    })
-  }
+  if (directory.endsWith('/_schemas') && !fileName.endsWith('.schema.ts') && !allowedStandaloneFiles.has(fileName)) {
+		violations.push({
+			rule: 'schemas-folder-role-match',
+			path: entry.repoPath,
+			message: 'Files in _schemas must use the .schema.ts suffix.',
+			suggestion: 'Rename this file to {subject}.schema.ts or {verb}.{subject}.schema.ts.',
+		})
+	}
+
+	if (directory.endsWith('/_prompts') && !fileName.endsWith('.prompt.ts') && !allowedStandaloneFiles.has(fileName)) {
+		violations.push({
+			rule: 'prompts-folder-role-match',
+			path: entry.repoPath,
+			message: 'Files in _prompts must use the .prompt.ts suffix.',
+			suggestion: 'Rename this file to {verb}.{subject}.prompt.ts.',
+		})
+	}
+
+	if (directory.endsWith('/_executables') && !fileName.endsWith('.executable.ts') && !allowedStandaloneFiles.has(fileName)) {
+		violations.push({
+			rule: 'executables-folder-role-match',
+			path: entry.repoPath,
+			message: 'Files in _executables must use the .executable.ts suffix.',
+			suggestion: 'Rename this file to {verb}.{subject}.executable.ts.',
+		})
+	}
 
   return violations
 }

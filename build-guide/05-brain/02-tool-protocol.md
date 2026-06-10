@@ -16,67 +16,85 @@ Adding a new capability = write one `tool({})` definition. The AI starts using i
 
 ## Tool Definition Pattern
 
-Every tool is a standalone file in `backend/src/agents/brain/_tools/`. It exports one async function and one Vercel AI SDK `tool()` call that wraps it.
+Every tool is organized into granular subdirectories under `backend/src/agents/brain/_tools/`:
+- `_prompts/`: Contains the tool description/prompt string. Files must use the `.prompt.ts` suffix (e.g., `write.user.memory.prompt.ts`).
+- `_executable/`: Contains the async execution logic function. Files must use the `.executable.ts` suffix (e.g., `write.user.memory.executable.ts`).
+- `_schemas/`: Contains the Zod parameters schema. Files must use the `.schema.ts` suffix (e.g., `write.user.memory.schema.ts`).
+
+### Strict Rules:
+1. **Barrel index.ts files**: Every underscore-scoped folder (`_prompts`, `_executable`, `_schemas`) must contain an `index.ts` file that exports all elements from its respective subdirectory.
+2. **Zod imports**: Zod schemas must only import `z` from `@brioela/shared/zod`. Do not use `zod` directly.
+3. **No banned Lexicon variables**: Banned words such as `input`, `output`, `result`, or `payload` must not be used as variable/parameter names in tool files.
+
+### Code Organization Example:
 
 ```typescript
-// backend/src/agents/brain/_tools/write-user-memory.tool.ts
+// backend/src/agents/brain/_tools/_prompts/write.user.memory.prompt.ts
+export const writeUserMemoryPrompt = 'Write or merge a structured fact into user_memory. Use namespace:key addressing. Merges intelligently — do not write the same fact twice.'
+```
 
-import { tool } from 'ai'
-import { z } from 'zod'
-import { eq, and } from 'drizzle-orm'
-import { userMemory } from '../_schema'
-import type { DrizzleDB } from '@/types/db'
+```typescript
+// backend/src/agents/brain/_tools/_schemas/write.user.memory.schema.ts
+import { z } from '@brioela/shared/zod'
 
-const WriteUserMemoryInputSchema = z.object({
+export const writeUserMemorySchema = z.object({
   namespace: z.string()
     .regex(/^[a-z][a-z0-9]*(\.[a-z][a-z0-9]*){0,2}$/, 'namespace must be dot-separated lowercase, max 3 levels')
     .describe('dot-separated namespace: e.g. health.medications or cooking.preferences'),
   key: z.string()
     .regex(/^[a-z][a-z0-9_]*$/, 'key must be lowercase with underscores only')
     .describe('the fact key within this namespace'),
-  value: z.string().min(1).max(2000).describe('the fact value to store'),
+  value: z.record(z.string(), z.json()).describe('the fact value to store — always a JSON object'),
   confidence: z.number().min(0).max(1).describe('0.0–1.0 confidence in this fact'),
   source: z.enum(['observed', 'stated', 'inferred']).describe('how this fact was determined'),
 })
+```
 
-export const writeUserMemoryTool = (db: DrizzleDB) => tool({
-  description: 'Write or merge a structured fact into user_memory. Use namespace:key addressing. Merges intelligently — do not write the same fact twice.',
-  parameters: WriteUserMemoryInputSchema,
-  execute: async ({ namespace, key, value, confidence, source }) => {
-    const existing = db
-      .select()
-      .from(userMemory)
-      .where(and(
-        eq(userMemory.namespace, namespace),
-        eq(userMemory.key, key),
-      ))
-      .get()
+```typescript
+// backend/src/agents/brain/_tools/_executable/write.user.memory.executable.ts
+import type { BrainDatabase } from '@/agents/brain/_database'
+import { writeBrainUserMemory } from '@/agents/brain/_repositories'
+import type { z } from '@brioela/shared/zod'
+import type { writeUserMemorySchema } from '../_schemas/write.user.memory.schema'
 
-    if (existing) {
-      // Only overwrite if incoming confidence is higher, or source is 'stated'
-      if (confidence <= existing.confidence && source !== 'stated') {
-        return { action: 'skipped', reason: 'existing confidence is equal or higher' }
-      }
-      db.update(userMemory)
-        .set({ value, confidence, source, updatedAt: Date.now() })
-        .where(and(eq(userMemory.namespace, namespace), eq(userMemory.key, key)))
-        .run()
-      return { action: 'updated', namespace, key }
-    }
+export async function writeUserMemoryExecute(
+  db: BrainDatabase,
+  userId: string,
+  { namespace, key, value, confidence, source }: z.infer<typeof writeUserMemorySchema>
+) {
+  // Intelligent merge and write logic here...
+}
+```
 
-    db.insert(userMemory).values({
-      id: crypto.randomUUID(),
-      namespace,
-      key,
-      value,
-      confidence,
-      source,
-      createdAt: Date.now(),
-      updatedAt: Date.now(),
-    }).run()
+```typescript
+// backend/src/agents/brain/_tools/_prompts/index.ts
+export * from './write.user.memory.prompt'
+export * from './read.user.memory.prompt'
+export * from './log.memory.event.prompt'
 
-    return { action: 'created', namespace, key }
-  },
+// backend/src/agents/brain/_tools/_schemas/index.ts
+export * from './write.user.memory.schema'
+export * from './read.user.memory.schema'
+export * from './log.memory.event.schema'
+
+// backend/src/agents/brain/_tools/_executable/index.ts
+export * from './write.user.memory.executable'
+export * from './read.user.memory.executable'
+export * from './log.memory.event.executable'
+```
+
+```typescript
+// backend/src/agents/brain/_tools/write.user.memory.tool.ts
+import { tool } from 'ai'
+import { writeUserMemorySchema } from './_schemas/write.user.memory.schema'
+import { writeUserMemoryPrompt } from './_prompts/write.user.memory.prompt'
+import { writeUserMemoryExecute } from './_executable/write.user.memory.executable'
+import type { BrainDatabase } from '@/agents/brain/_database'
+
+export const writeUserMemoryTool = (db: BrainDatabase, userId: string) => (tool as any)({
+  description: writeUserMemoryPrompt,
+  parameters: writeUserMemorySchema,
+  execute: async (params: any) => writeUserMemoryExecute(db, userId, params),
 })
 ```
 

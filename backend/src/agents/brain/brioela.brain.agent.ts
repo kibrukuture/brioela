@@ -1,15 +1,15 @@
 import { Agent, callable } from 'agents'
-import { createBrainDatabase, type BrainDatabase } from '@/agents/brain/_database'
-import { createBrainMemoryEventWrite } from '@/agents/brain/_mappers'
-import { runBrainMigrations, type BrainMigrationReadiness } from '@/agents/brain/_migrations'
-import { listBrainMemoryEvents, writeBrainMemoryEvent } from '@/agents/brain/_repositories'
+import { createDatabase, type BrainDatabase } from '@/agents/brain/_database'
+import { createMemoryEventWrite } from '@/agents/brain/_mappers'
+import { runMigrations, type BrainMigrationReadiness } from '@/agents/brain/_migrations'
+import { listMemoryEvents, writeMemoryEvent } from '@/agents/brain/_repositories'
 import {
-	appendBrainMemoryEventSchema,
+	appendMemoryEventSchema,
 	type AppendBrainMemoryEvent,
 	type BrainMemoryEventAppend,
 	type BrainMemoryEvents,
 	type CheckedBrainReadiness,
-	listBrainMemoryEventsSchema,
+	listMemoryEventsSchema,
 	type ListBrainMemoryEvents,
 } from '@/agents/brain/_rpc'
 import { BrainReadinessUnavailableError } from '@/agents/brain/_types'
@@ -29,10 +29,10 @@ export class BrioelaBrain extends Agent<BrioelaBrainEnv, BrioelaBrainState> {
 
 	constructor(ctx: DurableObjectState, env: BrioelaBrainEnv) {
 		super(ctx, env)
-		this.database = createBrainDatabase(ctx.storage)
+		this.database = createDatabase(ctx.storage)
 
 		ctx.blockConcurrencyWhile(async () => {
-			const readiness = await runBrainMigrations(this.database, readCurrentEpochMs())
+			const readiness = await runMigrations(this.database, readCurrentEpochMs())
 			this.readiness = readiness
 			this.setState({ ready: readiness.status === 'ready' })
 		})
@@ -41,21 +41,21 @@ export class BrioelaBrain extends Agent<BrioelaBrainEnv, BrioelaBrainState> {
 	@callable()
 	appendMemoryEvent(memoryEventAppend: AppendBrainMemoryEvent): BrainMemoryEventAppend {
 		// Callable input is runtime data; parse the command before Brain maps it to storage.
-		const memoryEvent = appendBrainMemoryEventSchema.parse(memoryEventAppend)
-		const event = writeBrainMemoryEvent(this.database, createBrainMemoryEventWrite(memoryEvent, readCurrentEpochMs()))
+		const memoryEvent = appendMemoryEventSchema.parse(memoryEventAppend)
+		const event = writeMemoryEvent(this.database, createMemoryEventWrite(memoryEvent, readCurrentEpochMs()))
 
 		return { event }
 	}
 
 	@callable()
 	listMemoryEvents(memoryEventFilter: ListBrainMemoryEvents): BrainMemoryEvents {
-		const filter = listBrainMemoryEventsSchema.parse(memoryEventFilter)
+		const filter = listMemoryEventsSchema.parse(memoryEventFilter)
 
-		return listBrainMemoryEvents(this.database, filter)
+		return listMemoryEvents(this.database, filter)
 	}
 
 	@callable()
-	checkBrainReadiness(): CheckedBrainReadiness {
+	checkReadiness(): CheckedBrainReadiness {
 		if (this.readiness === null) {
 			throw new BrainReadinessUnavailableError()
 		}

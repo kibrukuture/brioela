@@ -5,6 +5,7 @@ import type { TypePolicy } from './type.guard.policy'
 
 const approvedDatabaseDrizzleSurfaceFiles = new Set([
   'backend/src/database/drizzle/_database/drizzle.query.database.ts',
+  'backend/src/database/drizzle/_database/get.one.database.helper.ts',
   'backend/src/database/sqlite/_database/durable.sqlite.database.ts',
   'backend/src/database/sqlite/_migrations/apply.durable.sqlite.migration.helper.ts',
   'backend/src/database/sqlite/_schema/sqlite.schema.ts',

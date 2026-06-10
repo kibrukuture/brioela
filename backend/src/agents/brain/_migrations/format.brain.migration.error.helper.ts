@@ -1,4 +1,4 @@
-export function formatBrainMigrationError(error: unknown): string {
+export function formatMigrationError(error: unknown): string {
 	if (error instanceof Error) {
 		return JSON.stringify({
 			name: error.name,

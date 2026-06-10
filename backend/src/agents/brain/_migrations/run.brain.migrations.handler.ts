@@ -1,17 +1,17 @@
 import { nanoid } from 'nanoid'
 import { applyDurableSqliteMigration } from '@/database/sqlite/_migrations'
 import { brainMigrationBundle } from '@/agents/brain/_migrations/brain.migration'
-import { readCurrentBrainMigration } from '@/agents/brain/_migrations/read.current.brain.migration.helper'
-import { runBrainMigrationSmoke } from '@/agents/brain/_migrations/run.brain.migration.smoke.handler'
-import { formatBrainMigrationError } from '@/agents/brain/_migrations/format.brain.migration.error.helper'
+import { readCurrentMigration } from '@/agents/brain/_migrations/read.current.brain.migration.helper'
+import { runMigrationSmoke } from '@/agents/brain/_migrations/run.brain.migration.smoke.handler'
+import { formatMigrationError } from '@/agents/brain/_migrations/format.brain.migration.error.helper'
 import {
-	deleteBrainMigrationLock,
-	readBrainMigrationLock,
-	writeBrainMigrationLock,
-	writeBrainMigrationRun,
-	writeBrainMigrationRunStatus,
-	writeBrainMigrationSmoke,
-	writeBrainSchemaReadiness,
+	deleteMigrationLock,
+	readMigrationLock,
+	writeMigrationLock,
+	writeMigrationRun,
+	writeMigrationRunStatus,
+	writeMigrationSmoke,
+	writeSchemaReadiness,
 } from '@/agents/brain/_repositories'
 import type { BrainDatabase } from '@/agents/brain/_database'
 import { BrainMigrationLockedError } from '@/agents/brain/_types'
@@ -19,21 +19,21 @@ import type { BrainMigrationJournalEntry, BrainMigrationReadiness } from '@/agen
 
 const migrationLockTtlMs = 60_000
 
-export async function runBrainMigrations(
+export async function runMigrations(
 	database: BrainDatabase,
 	checkedAtEpochMs: number,
 ): Promise<BrainMigrationReadiness> {
-	const migration = readCurrentBrainMigration(brainMigrationBundle.journal)
+	const migration = readCurrentMigration(brainMigrationBundle.journal)
 	const migrationRunId = nanoid(24)
-	const deploymentId = createBrainMigrationDeploymentId(migration)
+	const deploymentId = createMigrationDeploymentId(migration)
 
-	let hasBrainMigrationLock = false
-	let hasBrainMigrationRun = false
+	let hasMigrationLock = false
+	let hasMigrationRun = false
 
 	try {
 		await applyDurableSqliteMigration(database, brainMigrationBundle)
 
-		writeBrainMigrationRun(database, {
+		writeMigrationRun(database, {
 			id: migrationRunId,
 			migrationId: migration.tag,
 			fromVersion: migration.idx,
@@ -47,12 +47,12 @@ export async function runBrainMigrations(
 			errorJson: null,
 			deploymentId,
 		})
-		hasBrainMigrationRun = true
+		hasMigrationRun = true
 
-		acquireBrainMigrationLock(database, migrationRunId, deploymentId, checkedAtEpochMs)
-		hasBrainMigrationLock = true
+		acquireMigrationLock(database, migrationRunId, deploymentId, checkedAtEpochMs)
+		hasMigrationLock = true
 
-		writeBrainSchemaReadiness(database, {
+		writeSchemaReadiness(database, {
 			id: 'brain',
 			schemaVersion: migration.idx,
 			minReadableVersion: migration.idx,
@@ -64,36 +64,36 @@ export async function runBrainMigrations(
 			updatedAt: checkedAtEpochMs,
 		})
 
-		writeBrainMigrationRunStatus(database, {
+		writeMigrationRunStatus(database, {
 			id: migrationRunId,
 			status: 'applied',
 			finishedAt: checkedAtEpochMs,
 			errorJson: null,
 		})
 
-		const readiness = runBrainMigrationSmoke(database, migration, migrationRunId, checkedAtEpochMs, checkedAtEpochMs)
+		const readiness = runMigrationSmoke(database, migration, migrationRunId, checkedAtEpochMs, checkedAtEpochMs)
 
-		writeBrainMigrationRunStatus(database, {
+		writeMigrationRunStatus(database, {
 			id: migrationRunId,
 			status: 'smoke_passed',
 			finishedAt: checkedAtEpochMs,
 			errorJson: null,
 		})
 
-		deleteBrainMigrationLock(database)
+		deleteMigrationLock(database)
 
 		return readiness
 	} catch (error) {
-		const errorJson = formatBrainMigrationError(error)
+		const errorJson = formatMigrationError(error)
 
-		if (hasBrainMigrationRun) {
-			writeBrainMigrationRunStatus(database, {
+		if (hasMigrationRun) {
+			writeMigrationRunStatus(database, {
 				id: migrationRunId,
 				status: 'failed',
 				finishedAt: checkedAtEpochMs,
 				errorJson,
 			})
-			writeBrainMigrationSmoke(database, {
+			writeMigrationSmoke(database, {
 				id: nanoid(24),
 				migrationRunId,
 				smoke: 'brain.migration.runtime',
@@ -102,7 +102,7 @@ export async function runBrainMigrations(
 				finishedAt: checkedAtEpochMs,
 				errorJson,
 			})
-			writeBrainSchemaReadiness(database, {
+			writeSchemaReadiness(database, {
 				id: 'brain',
 				schemaVersion: migration.idx,
 				minReadableVersion: migration.idx,
@@ -114,8 +114,8 @@ export async function runBrainMigrations(
 				updatedAt: checkedAtEpochMs,
 			})
 		}
-		if (hasBrainMigrationLock) {
-			deleteBrainMigrationLock(database)
+		if (hasMigrationLock) {
+			deleteMigrationLock(database)
 		}
 
 		return {
@@ -126,14 +126,14 @@ export async function runBrainMigrations(
 	}
 }
 
-function acquireBrainMigrationLock(database: BrainDatabase, runId: string, deploymentId: string, startedAt: number): void {
-	const migrationLock = readBrainMigrationLock(database)
+function acquireMigrationLock(database: BrainDatabase, runId: string, deploymentId: string, startedAt: number): void {
+	const migrationLock = readMigrationLock(database)
 
 	if (migrationLock !== null && migrationLock.expiresAt > startedAt) {
 		throw new BrainMigrationLockedError()
 	}
 
-	writeBrainMigrationLock(
+	writeMigrationLock(
 		database,
 		{
 			runId,
@@ -145,6 +145,6 @@ function acquireBrainMigrationLock(database: BrainDatabase, runId: string, deplo
 	)
 }
 
-function createBrainMigrationDeploymentId(migration: BrainMigrationJournalEntry): string {
+function createMigrationDeploymentId(migration: BrainMigrationJournalEntry): string {
 	return `brain-drizzle-${migration.tag}`
 }

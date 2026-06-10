@@ -1,7 +1,7 @@
-import type { BrainMemoryEvent } from '@/agents/brain/_schema'
+import type { BrainMemoryEvent } from '@/agents/brain/_schemas'
 import { z } from '@brioela/shared/zod'
 
-export const appendBrainMemoryEventSchema = z
+export const appendMemoryEventSchema = z
 	.object({
 		userId: z.string().trim().min(1),
 		source: z.string().trim().min(1),
@@ -22,7 +22,7 @@ export const brainMemoryEventCursorSchema = z
 	})
 	.strict()
 
-export const listBrainMemoryEventsSchema = z
+export const listMemoryEventsSchema = z
 	.object({
 		limit: z.number().int().min(1).max(100),
 		cursor: brainMemoryEventCursorSchema.nullable(),
@@ -38,7 +38,7 @@ export interface BrainMemoryEvents {
 	nextCursor: BrainMemoryEventCursor | null
 }
 
-export type AppendBrainMemoryEvent = z.infer<typeof appendBrainMemoryEventSchema>
+export type AppendBrainMemoryEvent = z.infer<typeof appendMemoryEventSchema>
 export type BrainMemoryEventCursor = z.infer<typeof brainMemoryEventCursorSchema>
 
-export type ListBrainMemoryEvents = z.infer<typeof listBrainMemoryEventsSchema>
+export type ListBrainMemoryEvents = z.infer<typeof listMemoryEventsSchema>

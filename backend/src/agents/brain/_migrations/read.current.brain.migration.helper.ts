@@ -1,7 +1,7 @@
 import type { BrainMigrationJournal, BrainMigrationJournalEntry } from '@/agents/brain/_migrations/brain.migration.schema'
 import { EmptyBrainMigrationJournalError } from '@/agents/brain/_types'
 
-export function readCurrentBrainMigration(journal: BrainMigrationJournal): BrainMigrationJournalEntry {
+export function readCurrentMigration(journal: BrainMigrationJournal): BrainMigrationJournalEntry {
 	let currentMigration: BrainMigrationJournalEntry | null = null
 
 	for (const migration of journal.entries) {

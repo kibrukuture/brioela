@@ -1,0 +1,7 @@
+import { brainMigrationSmokeResults, type BrainMigrationSmoke, type NewBrainMigrationSmoke } from '@/agents/brain/_schemas'
+import type { BrainDatabase } from '@/agents/brain/_database'
+import { getReturned } from '@/database/drizzle/_database'
+
+export function writeMigrationSmoke(database: BrainDatabase, migrationSmoke: NewBrainMigrationSmoke): BrainMigrationSmoke {
+	return getReturned(database.insert(brainMigrationSmokeResults).values(migrationSmoke).returning())
+}

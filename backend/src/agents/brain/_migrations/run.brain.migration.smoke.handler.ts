@@ -1,16 +1,16 @@
 import { nanoid } from 'nanoid'
-import { listBrainMemoryEvents, writeBrainMemoryEventOnce, writeBrainMigrationSmoke, writeBrainSchemaReadiness } from '@/agents/brain/_repositories'
+import { listMemoryEvents, writeMemoryEventOnce, writeMigrationSmoke, writeSchemaReadiness } from '@/agents/brain/_repositories'
 import type { BrainDatabase } from '@/agents/brain/_database'
 import type { BrainMigrationJournalEntry, BrainMigrationReadiness } from '@/agents/brain/_migrations/brain.migration.schema'
 
-export function runBrainMigrationSmoke(
+export function runMigrationSmoke(
 	database: BrainDatabase,
 	migration: BrainMigrationJournalEntry,
 	migrationRunId: string,
 	startedAtEpochMs: number,
 	finishedAtEpochMs: number,
 ): BrainMigrationReadiness {
-	writeBrainMemoryEventOnce(database, {
+	writeMemoryEventOnce(database, {
 		id: `brain-migration-smoke-${migration.idx.toString().padStart(4, '0')}`,
 		userId: 'brain-migration-smoke',
 		kind: 'schema-readiness-smoke',
@@ -24,9 +24,9 @@ export function runBrainMigrationSmoke(
 		geoHash: null,
 	})
 
-	const memoryEvents = listBrainMemoryEvents(database, { limit: 1, cursor: null })
+	const memoryEvents = listMemoryEvents(database, { limit: 1, cursor: null })
 
-	writeBrainMigrationSmoke(database, {
+	writeMigrationSmoke(database, {
 		id: nanoid(24),
 		migrationRunId,
 		smoke: 'brain.memory.write',
@@ -36,7 +36,7 @@ export function runBrainMigrationSmoke(
 		errorJson: null,
 	})
 
-	writeBrainSchemaReadiness(database, {
+	writeSchemaReadiness(database, {
 		id: 'brain',
 		schemaVersion: migration.idx,
 		minReadableVersion: migration.idx,

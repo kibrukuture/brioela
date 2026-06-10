@@ -1,4 +1,4 @@
-import type { BrainMemoryEvent } from '@/agents/brain/_schema'
+import type { BrainMemoryEvent } from '@/agents/brain/_schemas'
 
 export interface BrainMemoryEventCursor {
 	capturedAt: number
