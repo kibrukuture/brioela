@@ -28,5 +28,23 @@ kind: z.string().regex(/^[a-z][a-z0-9]*(_[a-z][a-z0-9]*)*$/)
 ## Why
 Zod's `.regex()` turns string inputs into domain-typed inputs. A bad `kind` value is caught at the Zod boundary — not at query time, not at render time, not in a bug report.
 
+## Audit Findings
+
+### `memory_event` — `kind`, `source`, `entity_kind`
+Intentionally free text. `implementable-specs/01-memory-event.md` explicitly decided: no enum, no regex. AI via `log_memory_event` can write any kind or entity_kind it judges correct. System code uses constants internally. No change needed.
+
+### `user_memory.source`
+Spec (`implementable-specs/02-user-memory.md`) originally said `image | conversation | inferred | cron`. Code correctly uses `observed | stated | inferred` — an epistemological taxonomy that drives merge logic (line 36 of `write.user.memory.executable.ts`: `stated` bypasses confidence check). Spec updated to match code. No DB CHECK needed — spec says Zod-enforced only.
+
+### `alarm_type`, `recipes.source`
+No values exist in code yet, spec doesn't enumerate them. No action until implemented.
+
+### Fields confirmed already correct
+- `user_memory.namespace` / `key` — fixed in 004
+- `user_memory.source` — `z.enum(['observed', 'stated', 'inferred'])` at tool boundary ✓
+- `sessions.session_type`, `status` — Drizzle enum + DB CHECK ✓
+- `scheduled_alarms.status` — Drizzle enum + DB CHECK ✓
+- `constraints.*` — all constrained ✓
+
 ## Status
-Open — full audit not yet done.
+**FIXED.** Audit complete. `user_memory.source` enum values corrected in spec to match code. No code changes required — the code was already right; the spec was stale.

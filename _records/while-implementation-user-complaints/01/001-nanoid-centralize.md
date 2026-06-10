@@ -12,4 +12,4 @@
 Hardcoding `nanoid(24)` at every call site is the same anti-pattern as hardcoding a magic number. The ID length is a domain decision, not a per-file implementation detail.
 
 ## Status
-Open — not yet fixed.
+**FIXED.** `createId()` exported from `shared/_ids/create.id.helper.ts` via `shared/_ids/index.ts`. All brain call sites (`log.memory.event.executable.ts`, `create.memory.event.write.mapper.ts`) import `createId` from `@brioela/shared/_ids`. No bare `nanoid(24)` remains in brain code.

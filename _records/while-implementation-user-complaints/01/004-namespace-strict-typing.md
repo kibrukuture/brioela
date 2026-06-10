@@ -23,4 +23,4 @@
 "Any string" types create runtime garbage. A namespace like `Hello World!!` or an empty string should be structurally impossible, not just "hope nobody passes it."
 
 ## Status
-Open — not yet fixed.
+**FIXED.** Zod regex added to both `writeUserMemorySchema` and `readUserMemorySchema`: `^[a-z][a-z0-9]*(\.[a-z][a-z0-9]*){0,2}$` (max 3 levels, lowercase, no digits at start of segment). Key also regex-enforced: `^[a-z][a-z0-9_]*$`. Eight SQLite CHECK constraints added to `user_memory` table covering namespace format, key format, consecutive dots, trailing dot, max depth, segment-start digit, and char allowlist. Migrations regenerated.

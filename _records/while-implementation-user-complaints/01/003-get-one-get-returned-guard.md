@@ -14,4 +14,4 @@
 If the guard doesn't enforce it, the wrappers are suggestions, not constraints. `undefined` will leak the moment someone writes `.get()` directly without thinking.
 
 ## Status
-`ban-drizzle-raw-get` policy created and registered. Needs verification that it runs clean and catches violations in the brain repo and elsewhere.
+**FIXED.** `ban-drizzle-raw-get` policy created at `tools/brioela-type-guard/_policies/ban.drizzle.select.get.policy.ts`, registered in `run.type.guard.helper.ts`. Scoped to `/_repositories/` and `/_executables/` only. Catches `.get()` with zero arguments. All production code verified clean — only `getOne()` and `getReturned()` used. Guard confirmed it fires on violations.

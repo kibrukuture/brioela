@@ -38,7 +38,7 @@ CREATE TABLE user_memory (
   key         TEXT NOT NULL,        -- specific item within namespace: "metformin", "lactose"
   value       TEXT NOT NULL,        -- JSON object — never a bare string
   confidence  REAL NOT NULL DEFAULT 1.0,  -- 0.0 to 1.0 — how certain this fact is
-  source      TEXT NOT NULL,        -- 'image' | 'conversation' | 'inferred' | 'cron'
+  source      TEXT NOT NULL,        -- 'observed' | 'stated' | 'inferred'
   is_active   INTEGER NOT NULL DEFAULT 1, -- true = active, false = deactivated (soft delete only)
   importance  INTEGER NOT NULL DEFAULT 5,  -- 1–10, LLM-assessed at write time — how much this fact matters
   read_count  INTEGER NOT NULL DEFAULT 0, -- times this entry was injected into a prompt
@@ -61,7 +61,7 @@ export const userMemory = sqliteTable('user_memory', {
   key:        text('key').notNull(),
   value:      text('value').notNull(),           // JSON object stringified
   confidence: real('confidence').notNull().default(1.0),
-  source:     text('source').notNull(),          // free text — Zod enforces known values at tool boundary
+  source:     text('source').notNull(),          // 'observed' | 'stated' | 'inferred' — Zod enum at tool boundary
   isActive:   integer('is_active', { mode: 'boolean' }).notNull().default(true),
   importance: integer('importance').notNull().default(5),
   readCount:  integer('read_count').notNull().default(0),
@@ -92,8 +92,8 @@ The AI writes structured observations, not flat strings. `{ "dose": "500mg", "fr
 **`confidence` — 0.0 to 1.0**
 Inferred facts carry lower confidence than explicitly declared ones. A user saying "I'm allergic to nuts" → `confidence: 1.0`. The agent inferring a dislike from 3 scans where the user always put the product back → `confidence: 0.6`. The Brain maintenance uses this when deciding what to clean up. Low confidence + low read + old last_write = candidate for deactivation.
 
-**`source` — free text, Zod-enforced known values**
-Known values: `'image' | 'conversation' | 'inferred' | 'cron'`. New sources can be added without migration. Zod enforces at tool boundary — the AI cannot write an unknown source.
+**`source` — closed enum, Zod-enforced at tool boundary**
+Known values: `'observed' | 'stated' | 'inferred'`. These are epistemological categories, not channels. `stated` has special merge authority — it bypasses the confidence check and can overwrite an existing fact even at lower confidence (user explicitly declared something). `observed` cannot do this. `inferred` is lowest authority. No DB CHECK — Zod at the tool boundary is the single enforcement point. Brain maintenance cron writes are `inferred`.
 
 **`is_active` — boolean soft-delete flag, not a lifecycle enum**
 Facts are never deleted. A user says "I'm not lactose intolerant anymore" — the fact is deactivated (`isActive = false`), not removed. Deactivated facts are excluded from prompts but preserved in the table. Reason: if the user comes back and says "actually I was wrong, it does affect me" — the history is still there, confidence can be updated, no data is lost.
@@ -133,7 +133,7 @@ const MemoryEntrySchema = z.object({
   value: z.record(z.string(), z.unknown()), // JSON object — AI writes the content, we enforce the shape
   confidence: z.number().min(0).max(1).default(1.0),
   importance: z.number().int().min(1).max(10).default(5),
-  source: z.enum(['image', 'conversation', 'inferred', 'cron']),
+  source: z.enum(['observed', 'stated', 'inferred']),
 })
 ```
 

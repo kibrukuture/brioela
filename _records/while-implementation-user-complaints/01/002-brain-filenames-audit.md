@@ -20,4 +20,4 @@ Repository files: `brain.migration.lock.repository.ts` → `migration.lock.repos
 Redundant path segments in names make the codebase harder to grep, harder to read, and violate the principle that context is provided by folder structure, not repeated in every file name.
 
 ## Status
-Open — partial fix done (repositories), full audit not yet complete.
+**FIXED.** Full audit complete across all brain subtree folders (`_migrations/`, `_rpc/`, `_database/`, `_mappers/`, `_schemas/`, `_repositories/`, `_tools/`). All redundant `brain.` prefixes removed from filenames and imports. String literals inside the brain DO (table names, constraint names, runtime constants) also purged — `'brain_maintenance'` kept as the one legitimate discriminator (Brain DO's own maintenance pass, distinct from other agents). `const brain` test variable kept where it refers to the Brain DO instance.
