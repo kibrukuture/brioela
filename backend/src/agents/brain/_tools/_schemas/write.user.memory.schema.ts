@@ -1,5 +1,5 @@
 import { z } from '@brioela/shared/zod'
-import { jsonValueSchema } from '@/agents/brain/_tools/_schemas/json.value.schema'
+import { jsonValueSchema } from '@brioela/shared/zod'
 
 export const writeUserMemorySchema = z.object({
 	namespace: z.string()

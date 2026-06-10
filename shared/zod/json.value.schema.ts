@@ -1,4 +1,4 @@
-import { z } from '@brioela/shared/zod'
+import { z } from 'zod/v4'
 
 const jsonLiteralSchema = z.union([z.string(), z.number(), z.boolean(), z.null()])
 

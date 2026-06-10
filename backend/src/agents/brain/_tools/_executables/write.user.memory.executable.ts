@@ -4,9 +4,8 @@ import {
 	readUserMemory,
 	writeUserMemory,
 } from '@/agents/brain/_repositories'
-import type { z } from '@brioela/shared/zod'
+import { z, jsonValueSchema, type JsonValue } from '@brioela/shared/zod'
 import type { writeUserMemorySchema } from '@/agents/brain/_tools/_schemas/write.user.memory.schema'
-import type { JsonValue } from '@/agents/brain/_tools/_schemas/json.value.schema'
 import { readCurrentEpochMs } from '@/time/_helpers'
 
 export async function writeUserMemoryExecute(
@@ -42,7 +41,7 @@ export async function writeUserMemoryExecute(
 		}
 
 		try {
-			const oldObj = JSON.parse(existing.value) as Record<string, JsonValue>
+			const oldObj = z.record(z.string(), jsonValueSchema).parse(JSON.parse(existing.value))
 			mergedValue = { ...oldObj, ...value }
 		} catch (_) {
 			mergedValue = value

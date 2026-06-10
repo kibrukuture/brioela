@@ -27,4 +27,4 @@ This is a generic Zod utility type — it is not brain-specific. Any part of the
 Generic primitives (JSON value types, common Zod utilities) belong in shared infrastructure, not inside a domain agent's implementation folder.
 
 ## Status
-Open — not yet moved.
+**FIXED.** Created `shared/zod/json.value.schema.ts`, exported `jsonValueSchema` and `JsonValue` from `@brioela/shared/zod`. Updated all 5 importers (`write.user.memory.schema.ts`, `log.memory.event.schema.ts`, `write.user.memory.executable.ts`, `read.user.memory.executable.ts`, `_schemas/index.ts`). Deleted old file from brain tools. Type guard clean.

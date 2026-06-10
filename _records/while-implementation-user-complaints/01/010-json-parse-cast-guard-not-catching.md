@@ -24,4 +24,4 @@ The guard is NOT catching either of these. This means the guard is either not ru
 `as X` is a lie to the type system — TypeScript believes you but `JSON.parse` still returns `any` at runtime. A Zod parse actually validates the shape. Using `jsonValueSchema.parse()` turns the unsafe cast into a real check.
 
 ## Status
-Open — guard bug not confirmed, violations not yet fixed.
+**FIXED.** Guard was already catching both violations — they were suppressed in baseline. Replaced all `JSON.parse(x) as JsonValue` casts with `jsonValueSchema.parse(JSON.parse(x))` in `read.user.memory.executable.ts` (3 occurrences) and `write.user.memory.executable.ts` (1 occurrence, using `z.record(z.string(), jsonValueSchema).parse(...)`). Type guard clean.

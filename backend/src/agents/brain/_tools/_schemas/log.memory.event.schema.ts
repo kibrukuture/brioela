@@ -1,5 +1,5 @@
 import { z } from '@brioela/shared/zod'
-import { jsonValueSchema } from '@/agents/brain/_tools/_schemas/json.value.schema'
+import { jsonValueSchema } from '@brioela/shared/zod'
 
 export const logMemoryEventSchema = z.object({
 	kind: z.string().min(1).describe('What kind of event this is: e.g. food_intake, symptom_reported.'),

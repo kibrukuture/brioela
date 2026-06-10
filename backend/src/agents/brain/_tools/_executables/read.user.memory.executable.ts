@@ -4,9 +4,8 @@ import {
 	listUserMemories,
 	readUserMemory,
 } from '@/agents/brain/_repositories'
-import type { z } from '@brioela/shared/zod'
+import { type z, jsonValueSchema, type JsonValue } from '@brioela/shared/zod'
 import type { readUserMemorySchema } from '@/agents/brain/_tools/_schemas/read.user.memory.schema'
-import type { JsonValue } from '@/agents/brain/_tools/_schemas/json.value.schema'
 import { readCurrentEpochMs } from '@/time/_helpers'
 
 export async function readUserMemoryExecute(
@@ -36,7 +35,7 @@ export async function readUserMemoryExecute(
 				id: entry.id,
 				namespace: entry.namespace,
 				key: entry.key,
-				value: JSON.parse(entry.value) as JsonValue,
+				value: jsonValueSchema.parse(JSON.parse(entry.value)),
 				confidence: entry.confidence,
 				last_write: entry.lastWrite,
 			}
@@ -46,7 +45,7 @@ export async function readUserMemoryExecute(
 				id: entry.id,
 				namespace: entry.namespace,
 				key: entry.key,
-				value: entry.value as JsonValue,
+				value: jsonValueSchema.parse(entry.value),
 				confidence: entry.confidence,
 				last_write: entry.lastWrite,
 			}
@@ -56,7 +55,7 @@ export async function readUserMemoryExecute(
 		const parsedEntries = entries.map((entry) => {
 			let parsedValue: JsonValue = entry.value
 			try {
-				parsedValue = JSON.parse(entry.value) as JsonValue
+				parsedValue = jsonValueSchema.parse(JSON.parse(entry.value))
 			} catch (_) {}
 
 			return {
