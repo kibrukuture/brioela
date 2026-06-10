@@ -1,0 +1,16 @@
+{
+  "files.exclude": {
+    "tools/brioela-type-guard/type.guard.baseline.json": true,
+    "tools/brioela-name-guard/name.guard.baseline.json": true,
+    "tools/brioela-lexicon-guard/lexicon.guard.baseline.json": true
+  },
+  "search.exclude": {
+    "tools/brioela-type-guard/type.guard.baseline.json": true,
+    "tools/brioela-name-guard/name.guard.baseline.json": true,
+    "tools/brioela-lexicon-guard/lexicon.guard.baseline.json": true,
+    "**/node_modules": true,
+    "**/bun.lock": true
+  },
+  "editor.diffAlgorithm": "advanced",
+  "scm.diffAlgorithm": "histogram"
+}

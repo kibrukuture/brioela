@@ -1,0 +1,8 @@
+# Baseline files are machine-generated and must never be line-diffed.
+# Git treats them as opaque blobs. VS Code will not run its diff algorithm on them.
+tools/brioela-type-guard/type.guard.baseline.json     -diff linguist-generated=true
+tools/brioela-name-guard/name.guard.baseline.json     -diff linguist-generated=true
+tools/brioela-lexicon-guard/lexicon.guard.baseline.json  -diff linguist-generated=true
+
+# Lock files — same treatment
+bun.lock   -diff linguist-generated=true
