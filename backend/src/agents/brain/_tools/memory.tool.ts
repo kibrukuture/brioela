@@ -2,8 +2,10 @@ import { writeUserMemoryTool } from '@/agents/brain/_tools/write.user.memory.too
 import { readUserMemoryTool } from '@/agents/brain/_tools/read.user.memory.tool'
 import { logMemoryEventTool } from '@/agents/brain/_tools/log.memory.event.tool'
 import type { BrainDatabase } from '@/agents/brain/_database'
+import { z } from '@brioela/shared/zod'
 
-export type SessionKind = 'chat' | 'cooking' | 'alarm' | 'brain_maintenance' | 'behavior_pattern_detection'
+export const sessionKindSchema = z.enum(['chat', 'cooking', 'alarm', 'brain_maintenance', 'behavior_pattern_detection'])
+export type SessionKind = z.infer<typeof sessionKindSchema>
 
 const TOOL_PERMISSIONS: Record<SessionKind, string[]> = {
 	chat: [
