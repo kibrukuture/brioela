@@ -35,7 +35,7 @@ Brioela already knows everything about the user: their allergies (confirmed or i
 3. Each dish is evaluated against the user's full constraint profile pulled from their Brain DO.
 4. Dishes missing ingredient detail are flagged yellow by default (unknown = ask, not assume safe).
 5. Results returned as a structured list with per-dish verdict, reason, and suggested waiter question.
-6. If needed, Language Bridge turns the waiter question into a two-way food conversation between user and staff.
+6. If needed, Mira bridges the language gap — turning the waiter question into a two-way food conversation between user and staff. (The docs call this capability the language bridge; it is a description of Mira at work, not a separate product name. The speaking presence is always Mira.)
 
 The processing model is a standard text call (not Gemini Live) — this is a one-shot structured extraction, not a conversation. Latency target: under 3 seconds from photo to results.
 

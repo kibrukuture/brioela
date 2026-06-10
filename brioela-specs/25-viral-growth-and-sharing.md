@@ -106,6 +106,13 @@ By launch day there is an audience waiting. The first viral moment lands on a pr
 - No promotional push notifications. Not ever.
 - No paid influencer campaigns at launch — organic influencers who genuinely use the app are worth more and cost less.
 
+## Second-Wave Shareable Moments
+
+Two later features add shareable moments that follow every rule in this spec (the card looks like information or a personal moment, never an ad; sharing is always explicit):
+
+- **Encore (spec 44)**: after the first successful cook of a recreated dish — the original plate photo beside the home-cooked result, "tasted in [city], cooked at home with Brioela." Very high viral potential: it is a story card, same emotional class as generational recipe capture.
+- **Harvest (spec 49)**: the annual artifact, anniversary-timed so share moments drip across the whole calendar instead of spiking in one saturated recap week. Each chapter pre-renders one static share card. This is the single highest-volume share surface in the product and it is free for every user by design.
+
 ## Success Metrics
 
 - Organic install rate (installs from search, share, and word-of-mouth vs. direct).

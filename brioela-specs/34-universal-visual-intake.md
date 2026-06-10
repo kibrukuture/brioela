@@ -170,6 +170,10 @@ This is the only time the agent surfaces what it learned. It is a one-time discl
 
 The user can access a "what Brioela knows about me" screen in settings that shows all active memory domains — medication, health signals, lifestyle notes, medical conditions. Everything is deletable individually.
 
+### Encore (spec 44) — a third explicit path
+
+Like the Ground boundary above, Encore is separated by user intent, not by content. A meal photo submitted through universal visual intake is passive memory — classified, logged, private, done. A plate photo submitted through the recreate action (spec 44) is an explicit request: reconstruct this dish into a cookable recipe. Two separate actions in the UI, two separate code paths. A passive meal log never triggers a reconstruction, and a recreation capture also writes the normal meal-log memory as a side effect.
+
 ## Integration With Existing Specs
 
 - Medication profile feeds into spec 28 (medical condition food profile) — medications are treated like a medical condition modifier on top of any declared condition.

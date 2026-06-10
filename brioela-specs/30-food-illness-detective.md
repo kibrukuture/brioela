@@ -1,8 +1,21 @@
-# 30. Food Illness Detective
+# 30. Sift — Food Illness Detective
 
 ## Goal
 
 When the user says they feel sick, Brioela looks at the last 24–72 hours of their food history and surfaces the most probable culprit — cross-referencing against active recalls, community illness reports, and known high-risk product patterns.
+
+## Naming
+
+**Sift** is the product name for this feature. "Food illness detective" remains as the description (and in this file's name and existing doc references, which are stable).
+
+- **What it names**: the user-facing investigation moment and its result. "Brioela sifted through your last 72 hours" is the product sentence; the result screen is the Sift result.
+- **Why this word**: sift is a kitchen word and an investigation word in the same syllable — sifting flour, sifting evidence. It is calm and respectful, which matters because the user invoking it feels terrible. Reclaimed-word family (Ground, Find, Passport, Tonight).
+- **Why not "Trace"**: rejected for a real collision — "trace" is load-bearing safety vocabulary elsewhere in these specs (trace ingredients, trace allergens, spec 07). One word cannot mean both an investigation and a contamination quantity.
+- **Where it is used**:
+  - UI surfaces: the investigation entry ("I feel sick..."), the ranked-suspects result screen, the follow-up.
+  - Code namespace going forward: `sift` — the Brain tool is `run_sift` (renamed from `run_illness_detective`); future tool code under `tools/sift/`.
+  - What does not change: this file's name, the `build-guide/16-illness-detective/` folder, and the existing table names (`illness_report`, `illness_suspect`, `community_illness_signal`) — these predate the name, are referenced across many records, and `community_illness_signal` is shared infrastructure. They remain valid; new code and all user-facing language use Sift.
+  - The boundary is unchanged by the name: Sift never diagnoses. It narrows and advises.
 
 ## Why This Exists
 

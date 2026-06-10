@@ -18,6 +18,20 @@ then A must be in a lower-numbered layer than B. No exceptions.
 - `08-layer-map.md`
 - `09-layer-bela.md`
 - `27-layer-health-intelligence.md`
+- `28-layer-encore.md`
+- `29-layer-in-store-copilot.md`
+- `30-layer-acoustic-cooking.md`
+- `31-layer-kin.md`
+- `32-layer-heirloom.md`
+- `33-layer-harvest.md`
+- `34-layer-negative-space-nutrition.md`
+- `35-layer-tonight.md`
+- `36-layer-craving-decoder.md`
+- `37-layer-growth-mirror.md`
+
+Cross-layer note: layer 33 (Harvest) consumes layer 37 (Growth Mirror) as an
+OPTIONAL input — the `craft` chapter. The edition ships without it, so the ordering
+holds for required dependencies. Recorded per the exception rule below.
 
 ## When to update
 When a new dependency is discovered during building, update the relevant layer file.

@@ -91,6 +91,12 @@ behavior_pattern_intervention (
 - Sensitive patterns (health correlations) require higher confidence thresholds than behavioral patterns (brand aversion).
 - Pattern correlation runs as part of the weekly DO alarm cycle — not on every session end.
 
+## Related Specs (Shared Budget and Shared Signals)
+
+- **Spec 50 (Negative Space Nutrition)** detects what is consistently *absent* from the user's food stream — the complement of this spec's presence-based patterns. Gap insights share this spec's intervention budget: a user never receives a pattern insight and a gap insight in the same week.
+- **Spec 52 (Craving Decoder)** answers user-initiated craving questions and writes `craving_decoded` events that this spec's weekly pass consumes like any other signal — recurring cause-pairs harden into `behavior_pattern` rows (`behavior_pattern_type = 'craving_correlation'`). The decoder and this engine form one loop, not two systems.
+- **Spec 53 (Growth Mirror)** recognitions also draw from the conversational-insight family budget — at most one volunteered insight of any kind per week.
+
 ## Success Metrics
 - Intervention acceptance rate (user responds positively or with "tell me more" to a surfaced pattern).
 - Dismissal rate.

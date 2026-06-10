@@ -15,6 +15,13 @@
       "when": 1781040432597,
       "tag": "0001_low_jack_flag",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1781041814797,
+      "tag": "0002_add_fts_and_triggers",
+      "breakpoints": true
     }
   ]
 }

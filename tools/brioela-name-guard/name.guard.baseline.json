@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-06-08T08:32:16.698Z",
+  "generatedAt": "2026-06-09T21:51:18.291Z",
   "violations": [
     {
       "rule": "banned-file-name-part",
@@ -298,12 +298,6 @@
     },
     {
       "rule": "index-barrel-only",
-      "path": "backend/src/index.ts",
-      "message": "index.ts must be barrel-only; line 3 contains logic or unsupported syntax.",
-      "suggestion": "Move logic to a role-suffixed file and export it from index.ts."
-    },
-    {
-      "rule": "index-barrel-only",
       "path": "mobile/constants/index.ts",
       "message": "index.ts must be barrel-only; line 2 contains logic or unsupported syntax.",
       "suggestion": "Move logic to a role-suffixed file and export it from index.ts."
@@ -343,6 +337,18 @@
       "path": "shared/drizzle/schema/index.ts",
       "message": "index.ts must be barrel-only; line 1 contains logic or unsupported syntax.",
       "suggestion": "Move logic to a role-suffixed file and export it from index.ts."
+    },
+    {
+      "rule": "migration-folder-role-match",
+      "path": "backend/src/agents/brain/_migrations/run.brain.migrations.handler.test.ts",
+      "message": "Files in _migrations must use migration, handler, helper, or schema role suffixes.",
+      "suggestion": "Rename this file to {action}.{subject}.migration.ts, .handler.ts, .helper.ts, or .schema.ts."
+    },
+    {
+      "rule": "no-os-junk-files",
+      "path": "backend/src/agents/.DS_Store",
+      "message": "macOS metadata files are not allowed in the Brioela repo.",
+      "suggestion": "Delete this file."
     },
     {
       "rule": "no-os-junk-files",
@@ -4534,6 +4540,18 @@
     },
     {
       "rule": "typescript-file-role-suffix",
+      "path": "backend/src/agents/brain/brain.test.env.d.ts",
+      "message": "TypeScript files must end with an approved role suffix, or be index.ts/index.tsx.",
+      "suggestion": "Use a suffix such as .handler.ts, .helper.ts, .rpc.ts, .policy.ts, .schema.ts, or .agent.ts."
+    },
+    {
+      "rule": "typescript-file-role-suffix",
+      "path": "backend/src/agents/brain/brain.test.worker.ts",
+      "message": "TypeScript files must end with an approved role suffix, or be index.ts/index.tsx.",
+      "suggestion": "Use a suffix such as .handler.ts, .helper.ts, .rpc.ts, .policy.ts, .schema.ts, or .agent.ts."
+    },
+    {
+      "rule": "typescript-file-role-suffix",
       "path": "backend/src/api/banking/handlers/statements/templates/statement-document-copy.tsx",
       "message": "TypeScript files must end with an approved role suffix, or be index.ts/index.tsx.",
       "suggestion": "Use a suffix such as .handler.ts, .helper.ts, .rpc.ts, .policy.ts, .schema.ts, or .agent.ts."
@@ -4913,12 +4931,6 @@
     {
       "rule": "typescript-file-role-suffix",
       "path": "backend/src/core/ai/clients/openai-client.ts",
-      "message": "TypeScript files must end with an approved role suffix, or be index.ts/index.tsx.",
-      "suggestion": "Use a suffix such as .handler.ts, .helper.ts, .rpc.ts, .policy.ts, .schema.ts, or .agent.ts."
-    },
-    {
-      "rule": "typescript-file-role-suffix",
-      "path": "backend/src/core/ai/config/ai-models.config.ts",
       "message": "TypeScript files must end with an approved role suffix, or be index.ts/index.tsx.",
       "suggestion": "Use a suffix such as .handler.ts, .helper.ts, .rpc.ts, .policy.ts, .schema.ts, or .agent.ts."
     },
@@ -5459,12 +5471,6 @@
     {
       "rule": "typescript-file-role-suffix",
       "path": "backend/src/lib/response.ts",
-      "message": "TypeScript files must end with an approved role suffix, or be index.ts/index.tsx.",
-      "suggestion": "Use a suffix such as .handler.ts, .helper.ts, .rpc.ts, .policy.ts, .schema.ts, or .agent.ts."
-    },
-    {
-      "rule": "typescript-file-role-suffix",
-      "path": "backend/src/lib/sentry.config.ts",
       "message": "TypeScript files must end with an approved role suffix, or be index.ts/index.tsx.",
       "suggestion": "Use a suffix such as .handler.ts, .helper.ts, .rpc.ts, .policy.ts, .schema.ts, or .agent.ts."
     },
@@ -8309,12 +8315,6 @@
     {
       "rule": "typescript-file-role-suffix",
       "path": "shared/constants/wallets.ts",
-      "message": "TypeScript files must end with an approved role suffix, or be index.ts/index.tsx.",
-      "suggestion": "Use a suffix such as .handler.ts, .helper.ts, .rpc.ts, .policy.ts, .schema.ts, or .agent.ts."
-    },
-    {
-      "rule": "typescript-file-role-suffix",
-      "path": "shared/drizzle.config.ts",
       "message": "TypeScript files must end with an approved role suffix, or be index.ts/index.tsx.",
       "suggestion": "Use a suffix such as .handler.ts, .helper.ts, .rpc.ts, .policy.ts, .schema.ts, or .agent.ts."
     },

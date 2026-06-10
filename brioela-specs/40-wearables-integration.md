@@ -192,6 +192,12 @@ This is the most sensitive data in the entire app. More sensitive than medicatio
 - Does not access health data without explicit per-data-type permission.
 - Does not share any health data with insurers, employers, or any third party under any circumstances.
 
+## Downstream Consumers (Specs 47, 51, 52)
+
+- **Spec 47 (Kin)** pools the *derived* meal-window values from this spec's CGM correlation (peak delta, time-to-peak, AUC — never raw curves) into anonymized response clusters, opt-in and reciprocal, with hard k-anonymity floors. It solves this spec's cold-start problem: a new CGM user sees their cluster's tendency on a product before they have personal data for it. Personal data always outranks Kin data. Disconnecting the CGM implies Kin opt-out automatically.
+- **Spec 51 (Tonight)** consumes the readiness/sleep memory facts exactly as the meal-plan modulation described in this spec — low readiness biases the daily dinner answer toward simple, nourishing meals.
+- **Spec 52 (Craving Decoder)** uses sleep, HRV, and glucose dynamics as physiological evidence when explaining a craving the user asked about.
+
 ## Success Metrics
 
 - Wearable connection rate among active users.

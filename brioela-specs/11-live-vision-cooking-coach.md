@@ -79,6 +79,10 @@ Vision mode is an extension of the voice session, not a separate session. The sa
 - Session cost must be visible to the user before enabling vision mode (show estimated cost for session length).
 - Vision is disabled for free and basic tiers.
 
+## Acoustic Evidence Fusion (Spec 46)
+
+Spec 46 (Acoustic Cooking Intelligence) adds kitchen sound as a second evidence stream in the same Gemini Live session. In audio+vision sessions the two fuse in one reasoning pass — sound often leads vision (a boil-over is audible seconds before it is visible at 1 frame every 2–4 seconds). The `vision_event` table gains an `evidence_source` column (`visual | acoustic | fused`); the intervention rules in this spec apply unchanged regardless of which sense produced the evidence.
+
 ## Success Metrics
 
 - Useful intervention rate (interventions the user did not dismiss immediately).

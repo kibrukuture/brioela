@@ -79,6 +79,12 @@ This is the feature that gets written about in obituaries and shared at family d
 - The "cook in her style" adaptation call is a standard LLM structured call, not a streaming session. Target latency: under 3 seconds.
 - Style profiles survive account deletion requests for a grace period (30 days) with explicit user warning: "This will permanently delete [name]'s cooking style. This cannot be undone."
 
+## Heirloom (Spec 48)
+
+This feature is the style half of **Heirloom**, the umbrella name for Brioela's heritage family (spec 13 captures, this spec extracts the style, spec 48 passes it on). User-facing language calls the style profile "her Heirloom profile"; the internal table names in this spec predate the name and remain valid.
+
+Style profiles are inheritable. Spec 48 (Heirloom) lets the owner bundle a cook's style profile, heritage recipes, and session moments into an Heirloom delivered as independent copies to family members — so "cook in her style" works in every recipient's sessions, and the legacy survives the original account. The 30-day deletion grace period in this spec is the seed of that protection; inheritance completes it.
+
 ## Success Metrics
 
 - Style profile generation rate per generational recipe session.

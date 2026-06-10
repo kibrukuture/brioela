@@ -44,6 +44,16 @@ spec: brioela-specs/35-ground-community-intelligence.md
 - `24-generative-grammar-connections.md`
 - `25-passport-connections.md`
 - `26-health-intelligence-connections.md`
+- `27-encore-connections.md`
+- `28-in-store-copilot-connections.md`
+- `29-acoustic-cooking-connections.md`
+- `30-kin-connections.md`
+- `31-heirloom-connections.md`
+- `32-harvest-connections.md`
+- `33-negative-space-nutrition-connections.md`
+- `34-tonight-connections.md`
+- `35-craving-decoder-connections.md`
+- `36-growth-mirror-connections.md`
 
 ## When to update
 Every time a build-guide file is written: add the connection here immediately.

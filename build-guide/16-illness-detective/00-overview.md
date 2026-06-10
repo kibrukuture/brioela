@@ -39,6 +39,10 @@ When the user says they feel sick, Brioela looks at the last 24-72 hours of thei
 ## What Depends On This Folder
 Nothing — terminal feature.
 
+## Naming
+
+The product name for this feature is **Sift** (see the Naming section in `brioela-specs/30-food-illness-detective.md`). User-facing surfaces and new code use Sift (`run_sift` tool, `tools/sift/`); this folder's name, the spec filename, and existing table names predate the name and remain stable.
+
 ## Boundary
 
 The app never diagnoses. It narrows likely food suspects and recommends safe next actions.

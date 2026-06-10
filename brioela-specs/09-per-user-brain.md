@@ -169,7 +169,7 @@ Tools registered on the Brain DO:
 
 **Domain-specific tools:**
 - `fetch_recipes(query, filters)` — semantic search over the user's saved recipe history.
-- `run_illness_detective(symptom_onset_hours)` — rank probable food culprits from recent history cross-referenced with active recalls.
+- `run_sift(symptom_onset_hours)` — Sift (spec 30): rank probable food culprits from recent history cross-referenced with active recalls. (Renamed from `run_illness_detective` in the naming pass.)
 - `generate_meal_plan(days, use_inventory)` — build a minimum-spend meal plan from current inventory.
 - `check_medication_interactions(ingredients)` — check a list of ingredients against `user_memory` `health.medications` entries.
 

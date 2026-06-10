@@ -101,6 +101,10 @@ When the session ends, the Mira session runtime fires a summarization job to Ups
 - If the user says nothing for the duration of a step, the agent does not narrate. It waits to be asked.
 - Critical safety or allergy warnings override the silence rule — these interrupt immediately.
 
+## Acoustic Awareness (Spec 46)
+
+The same audio stream that carries the user's voice carries the kitchen's sounds. Spec 46 (Acoustic Cooking Intelligence) extends every Mira audio session with acoustic cooking-state awareness — sizzle pitch, boil-over signatures, whistle counts, abnormal silence — as intervention evidence and step confirmation. It is a system-instruction and recipe-schema extension of this session, not a separate session or pipeline. The silence rules in this spec govern acoustic interventions too.
+
 ## Success Metrics
 
 - Session completion rate (recipe cooked to last step).

@@ -87,6 +87,10 @@ Both share the same inventory model and constraint pipeline. They are different 
 - The plan is stored per-user in the Brain DO, not in Supabase (it is personal, not shared data).
 - Plan generation is available in Core tier and above. Free users can see a single-day plan as a preview with an upgrade prompt for the full week.
 
+## The Daily Ambient Surface (Spec 51)
+
+This spec is user-initiated and weekly. Spec 51 (Tonight) is its daily ambient counterpart: one unasked card, one dish, at the user's learned dinner-decision time. The convergence rule is strict — when a plan from this spec is active, Tonight is simply today's plan slot re-validated against current inventory and readiness; it never competes with the plan. Both features share the same inventory model, recipe pool ordering, and constraint pipeline.
+
 ## Success Metrics
 
 - Plan generation rate per week per active user.

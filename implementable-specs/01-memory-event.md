@@ -134,7 +134,7 @@ CREATE INDEX idx_memory_event_session     ON memory_event (session_id) WHERE ses
 
 ## Read Rules
 
-- Read by the illness detective (`run_illness_detective` tool): last 72h of events, all kinds.
+- Read by the illness detective (`run_sift` tool): last 72h of events, all kinds.
 - Read by recall alert infrastructure: all `product_scanned` events for a given entity_id.
 - Read by behavioral behavior pattern detection (DO alarm): full chronological scan.
 - Read by travel pre-load (DO alarm): the specific `travel_intent` event that triggered the alarm.

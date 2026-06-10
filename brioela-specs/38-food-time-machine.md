@@ -94,6 +94,11 @@ The AI scores moment salience with a simple heuristic:
 - Round numbers (10th recipe with an ingredient, 1-year mark): medium salience
 - Frequency counts on staples: low salience, surfaced rarely
 
+## Annual Composition (Spec 49) and the Growth Distinction (Spec 53)
+
+- **Spec 49 (Harvest)** is the annual composition of this feature's raw material: once a year, on the user's account anniversary, the year's moments and the archived candidate queue are composed into a single generative-grammar artifact with per-chapter share cards. This spec stays inline and quiet; spec 49 is the one moment per year where the accumulated history is shown all at once.
+- **Spec 53 (Growth Mirror)** covers a different axis: this spec surfaces what the user *ate and did*; spec 53 surfaces who the user is *becoming* as a cook, from session-derived skill evidence. Both follow this spec's milestone-not-gamification doctrine — observation, never incentive.
+
 ## Privacy Note
 
 Time Machine moments are read from private user data and displayed only to the user. They are never shared to Ground, never included in any community surface, and are not included in any export by default (they are derived, not raw data).

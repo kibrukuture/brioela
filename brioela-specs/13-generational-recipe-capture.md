@@ -37,6 +37,10 @@ Turn live family cooking sessions into reusable, structured recipes even when th
 - Session artifacts should be summarized quickly while context is fresh.
 - Draft generation should preserve source traceability for later editing.
 
+## Naming — Part of the Heirloom Family
+
+This feature is the capture half of **Heirloom** (spec 48), the umbrella name for Brioela's heritage family: this spec captures an Heirloom recipe, spec 32 extracts the cook's Heirloom style profile, and spec 48 bundles and passes the Heirloom on to family. User-facing language across all three uses Heirloom ("Heirloom recipes", "her Heirloom"). The internal table names in this spec (`heritage_recipe_capture`, `heritage_recipe_draft`) predate the name and remain valid.
+
 ## Success Metrics
 - Number of captured recipes finalized.
 - Number of uncertain fields per finalized recipe.
