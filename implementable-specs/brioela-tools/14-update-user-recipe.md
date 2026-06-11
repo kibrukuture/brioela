@@ -15,7 +15,7 @@ Call `update_user_recipe` when:
 
 Do NOT call `update_user_recipe` when:
 - This session produced a genuinely different dish → create a new recipe row (via recipe-reconstruction skill, no tool)
-- The recipe is archived (`active = 0`) — unarchive first if the user wants to restore and update
+- The recipe is archived (`status = 'archived'`) — unarchive first if the user wants to restore and update
 - The update is trivial and not worth overwriting (agent judgment: minor variation vs meaningful refinement)
 
 ## Input Schema
@@ -25,7 +25,7 @@ import { z } from 'zod'
 
 export const UpdateUserRecipeSchema = z.object({
   id: z.string().uuid(),
-  // The recipe UUID to update. Must be active (active = 1).
+  // The recipe UUID to update. Must be active (status = 'active').
 
   content: z.string().min(1),
   // The full new markdown content. Replaces the current content entirely.
@@ -67,7 +67,7 @@ const recipe = db.select()
   .where(
     and(
       eq(recipes.id, input.id),
-      eq(recipes.active, 1)
+      eq(recipes.status, 'active')
     )
   )
   .get()

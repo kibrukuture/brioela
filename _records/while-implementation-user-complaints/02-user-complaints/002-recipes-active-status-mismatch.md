@@ -20,4 +20,4 @@ We must decide whether to:
 Writing or querying `recipes.active` will fail both at compilation and during runtime query execution since the database schema has a `status` text column.
 
 ## Status
-**OPEN.**
+**FIXED.** Updated the recipes specification (`09-recipes.md`), `update_user_recipe` tool spec (`14-update-user-recipe.md`), and `archive_user_recipe` tool spec (`15-archive-user-recipe.md`) to use the string `status` column (`'active' | 'archived'`) instead of the non-existent `active` boolean/integer column.

@@ -98,7 +98,7 @@ CREATE TABLE recipes (
   tags              TEXT NOT NULL DEFAULT '[]',  -- JSON array of strings — cuisine, meal type, occasion, etc.
   cook_count        INTEGER NOT NULL DEFAULT 0,  -- how many cooking sessions have used this recipe
   last_cooked_at    INTEGER,            -- unix timestamp ms — NULL until first cooking session
-  active            INTEGER NOT NULL DEFAULT 1,  -- 1 = active, 0 = archived (soft delete)
+  status            TEXT NOT NULL DEFAULT 'active', -- 'active' | 'archived' (soft delete)
   created_at        INTEGER NOT NULL,   -- unix timestamp ms
   updated_at        INTEGER NOT NULL    -- unix timestamp ms
 );
@@ -121,7 +121,7 @@ export const recipes = sqliteTable('recipes', {
   tags:            text('tags').notNull().default('[]'),
   cookCount:       integer('cook_count').notNull().default(0),
   lastCookedAt:    integer('last_cooked_at'),
-  active:          integer('active').notNull().default(1),
+  status:          text('status', { enum: ['active', 'archived'] }).notNull().default('active'),
   createdAt:       integer('created_at').notNull(),
   updatedAt:       integer('updated_at').notNull(),
 })
@@ -156,28 +156,28 @@ Every time a cooking session with this `recipe_id` completes successfully, `cook
 **`last_cooked_at` — nullable**
 NULL until first cooking session. Combined with `cook_count = 0`, identifies recipes that were captured but never actually cooked — archiving candidates.
 
-**`active` — soft delete**
-0 = archived. Row never deleted. If a recipe is archived and the user asks about it, the agent can surface it and offer to restore it.
+**`status` — soft delete**
+'active' | 'archived'. Row never deleted. If a recipe is archived and the user asks about it, the agent can surface it and offer to restore it.
 
 ## Indexes
 
 ```sql
-CREATE INDEX idx_recipes_active      ON recipes (active, cook_count DESC);
-CREATE INDEX idx_recipes_last_cooked ON recipes (last_cooked_at DESC) WHERE active = 1;
+CREATE INDEX idx_recipes_status      ON recipes (status, cook_count DESC);
+CREATE INDEX idx_recipes_last_cooked ON recipes (last_cooked_at DESC) WHERE status = 'active';
 CREATE INDEX idx_recipes_source      ON recipes (source_session_id) WHERE source_session_id IS NOT NULL;
 ```
 
 **Why these indexes:**
-- `(active, cook_count DESC)` — recipe index injection: load all active recipes ordered by most cooked first
+- `(status, cook_count DESC)` — recipe index injection: load all active recipes ordered by most cooked first
 - `(last_cooked_at DESC)` partial — stale detection: find active recipes with oldest last use, archiving candidates
 - `(source_session_id)` partial — trace: find which recipe came from a given session
-
+ 
 ## Write Rules
 
 - New row inserted by MiraSession at session end, only after passing the session-end decision tree. Never inserted automatically without the check.
 - `cook_count` and `last_cooked_at` updated at the end of every cooking session that uses this recipe — fire and forget, never awaited.
 - `update_user_recipe` — agent rewrites `content`. Must re-extract and update `ingredients` in the same write. `updated_at` always updated.
-- `archive_user_recipe` — sets `active = 0`. Never deletes.
+- `archive_user_recipe` — sets `status = 'archived'`. Never deletes. `updated_at` always updated.
 - Brain maintenance does NOT write to this table. Recipe lifecycle is agent-driven and user-confirmed.
 
 ## Read Rules

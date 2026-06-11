@@ -17,4 +17,4 @@ We must decide whether to:
 Writing values to columns that do not exist in the Drizzle schema results in TypeScript compiler errors and database insert failures. The spec and schema must align perfectly.
 
 ## Status
-**OPEN.**
+**FIXED.** Modified the Drizzle schema in `skill.version.schema.ts` to add `description` and `updatedBy` columns (with its check constraint), and renamed `reason` to `updateReason` (mapped to `update_reason`). Generated SQLite migrations `0002_sad_dragon_man.sql` and `0003_next_rafael_vega.sql` to recreate/migrate the table safely, and updated the migrations manifest.

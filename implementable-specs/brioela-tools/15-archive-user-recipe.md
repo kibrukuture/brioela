@@ -2,9 +2,9 @@
 
 ## Purpose
 
-`archive_user_recipe` sets a recipe's `active` flag to `0`, removing it from the active index and from constraint checking. The row is never deleted — content, ingredients, cook history, and source session reference all survive in the table permanently.
+`archive_user_recipe` sets a recipe's `status` flag to `'archived'`, removing it from the active index and from constraint checking. The row is never deleted — content, ingredients, cook history, and source session reference all survive in the table permanently.
 
-An archived recipe can be surfaced to the user on request: "you have an archived recipe for X — want to bring it back?" Restoration is a developer action (set `active = 1` directly) — no tool exposed.
+An archived recipe can be surfaced to the user on request: "you have an archived recipe for X — want to bring it back?" Restoration is a developer action (set `status = 'active'` directly) — no tool exposed.
 
 ## When to Call It
 
@@ -16,7 +16,7 @@ Call `archive_user_recipe` when:
 Do NOT call `archive_user_recipe` when:
 - The recipe just needs content changes → `update_user_recipe`
 - The recipe has been recently cooked — even if the user doesn't plan to cook it again, archive only on explicit request
-- The recipe is already archived (`active = 0`) — no-op, return early
+- The recipe is already archived (`status = 'archived'`) — no-op, return early
 
 ## Input Schema
 
@@ -25,7 +25,7 @@ import { z } from 'zod'
 
 export const ArchiveUserRecipeSchema = z.object({
   id: z.string().uuid(),
-  // The recipe UUID to archive. Must be active (active = 1).
+  // The recipe UUID to archive. Must be active (status = 'active').
 
   reason: z.string().min(1),
   // Why this recipe is being archived. Required.
@@ -48,7 +48,7 @@ if (!recipe) {
   return { error: 'recipe_not_found', id: input.id }
 }
 
-if (recipe.active === 0) {
+if (recipe.status === 'archived') {
   return {
     error: 'already_archived',
     id: input.id,
@@ -65,7 +65,7 @@ One update to `recipes`:
 ```typescript
 db.update(recipes)
   .set({
-    active:    0,
+    status:    'archived',
     updatedAt: Date.now(),
   })
   .where(eq(recipes.id, input.id))
@@ -84,7 +84,7 @@ On success:
 {
   "id": "a1b2c3d4-...",
   "title": "Doro Wat — lighter version",
-  "active": 0,
+  "status": "archived",
   "cook_count": 2,
   "last_cooked_at": 1748390400000
 }
@@ -108,7 +108,7 @@ None. No alarm triggered. No version snapshot. The `ingredients` list is preserv
 |---|---|---|
 | Validation error | ID not UUID, reason empty | Zod error with failing field |
 | Not found | No row with this ID | `{ error: 'recipe_not_found', id }` |
-| Already archived | active is already 0 | `{ error: 'already_archived', id, title, hint }` |
+| Already archived | status is already 'archived' | `{ error: 'already_archived', id, title, hint }` |
 | Write failure | SQLite error (rare) | Error message |
 
 ## Who Can Call It
@@ -121,5 +121,5 @@ None. No alarm triggered. No version snapshot. The `ingredients` list is preserv
 
 - Updating content → `update_user_recipe`
 - Permanently deleting a recipe → never exposed; rows are permanent
-- Restoring an archived recipe → developer action only (set active = 1 directly)
+- Restoring an archived recipe → developer action only (set status = 'active' directly)
 - Removing a recipe from constraint checking for a single session → not possible; archiving is the only path
