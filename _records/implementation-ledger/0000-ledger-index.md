@@ -37,6 +37,12 @@ _records/implementation-ledger/brain/05-session-lifecycle/0001.session-open.md
 | `brain/02-sqlite-migration-runtime/implementation/0001.schema-indexes-alignment.md` | Brain / SQLite migration runtime | done | Aligned Drizzle TS schemas (sessions, constraints, recipes) with spec indexes, generated standard SQLite migrations, and updated bundle. |
 | `brain/02-sqlite-migration-runtime/implementation/0002.fts5-and-sync-triggers.md` | Brain / SQLite migration runtime | done | Created FTS5 virtual tables (unicode61 & trigram) and triggers for real-time synchronization on sessions and session_turns. |
 | `brain/03-tool-protocol/implementation/0001.first-memory-tools.md` | Brain / Tool protocol | done | Implemented user memory write, read, and event log AI tools, repositories, and permission checks with green DO tests. |
+| `brain/03-tool-protocol/implementation/0002.skill-tools.md` | Brain / Tool protocol | open | 5 skill tools (create, update, view, archive, delete) + skill_versions archive write on update/delete. |
+| `brain/03-tool-protocol/implementation/0003.constraint-tools.md` | Brain / Tool protocol | open | 2 constraint tools (propose + confirm two-step) — pending → active → revoked lifecycle. |
+| `brain/03-tool-protocol/implementation/0004.alarm-tools.md` | Brain / Tool protocol | open | 2 alarm tools (schedule, cancel) — user-facing alarm types only, DO alarm callbacks injected. |
+| `brain/03-tool-protocol/implementation/0005.recipe-tools.md` | Brain / Tool protocol | open | 3 recipe tools (view, update, archive) — recipes created by Mira, managed here. |
+| `brain/03-tool-protocol/implementation/0006.session-tools.md` | Brain / Tool protocol | open | 2 session tools (load context, FTS5 search history) — read-only, general session only. |
+| `brain/03-tool-protocol/implementation/0007.web-tool.md` | Brain / Tool protocol | open | 1 web tool (Brave Search API, 5-call-per-session limit) — general session only. |
 | `brain/04-agent-identity/0001.identity-prompt.md` | Brain / Agent identity | open | Create `identity-prompt.ts` — BrioelaIdentity constant, 800-token cap. |
 | `brain/05-session-lifecycle/0001.session-open.md` | Brain / Session lifecycle | open | `open.session.handler.ts` — creates session row, schedules watchdog alarm, calls system prompt builder. |
 | `brain/05-session-lifecycle/0002.system-prompt-builder.md` | Brain / Session lifecycle | open | `build.system.prompt.handler.ts` — assembles 6 blocks in strict prefix-cache order. |
@@ -45,6 +51,7 @@ _records/implementation-ledger/brain/05-session-lifecycle/0001.session-open.md
 | `brain/06-alarm-system/0001.alarm-dispatch.md` | Brain / Alarm system | open | `dispatch.alarm.handler.ts` — alarm router + session_watchdog case (abandoned session detection). |
 | `brain/07-sub-agents/0001.brain-maintenance-agent.md` | Brain / Sub-agents | open | `BrainMaintenanceAgent` DO + brain_maintenance alarm case. |
 | `brain/07-sub-agents/0002.behavior-pattern-agent.md` | Brain / Sub-agents | open | `BehaviorPatternAgent` DO + behavior_pattern_detection alarm case. |
+| `brain/07-sub-agents/0003.session-context-compressor.md` | Brain / Sub-agents | open | `SessionContextCompressor` ephemeral Haiku call — 4-field summary, child session creation. |
 | `brain/08-framework-hardening/0001.chat-entrypoint.md` | Brain / Framework hardening | open | Wire `onMessage`/`chat()` onto BrioelaBrain — connects all prior scopes into a working agent. |
 | `tooling/01-lexicon-guard/0001.granular-vocabulary.md` | Tooling / Lexicon guard | done | Split the lexicon guard vocabulary into granular owned slices while keeping stable aggregate exports. |
 
