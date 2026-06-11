@@ -75,4 +75,4 @@ Old docs (`implementable-specs/`, `build-guide/`, ledgers) migrate here one feat
 | 53 | `53-harvest` | Harvest |
 | 54 | `54-tonight` | Tonight |
 
-**Migration status (docs only):** fully migrated — `04-brain-foundation`, `05-brain-memory-tools`. All others: stub `status.md` unless noted.
+**Migration status (docs only):** fully migrated — `04-brain-foundation`, `05-brain-memory-tools`, `06-brain-skill-tools`. All others: stub `status.md` unless noted.
