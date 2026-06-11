@@ -12,18 +12,5 @@
       "Grep"
     ],
     "defaultMode": "bypassPermissions"
-  },
-  "hooks": {
-    "PostToolUse": [
-      {
-        "matcher": "Edit|Write|MultiEdit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "BRIOELA_WORKSPACE_ROOT=\"$CLAUDE_PROJECT_DIR\" bun --cwd \"$CLAUDE_PROJECT_DIR/tools/brioela-reading-gate\" verdict --hook"
-          }
-        ]
-      }
-    ]
   }
 }

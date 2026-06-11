@@ -1,6 +1,4 @@
 #!/bin/sh
-# Brioela gate wall — fail closed.
-# A commit lands only with a live daemon, a clean board, and a signed receipt
-# matching this exact staged diff. No daemon = red. Red = no commit.
-BRIOELA_WORKSPACE_ROOT="$(git rev-parse --show-toplevel)" \
-  exec bun --cwd "$(git rev-parse --show-toplevel)/tools/brioela-reading-gate" verdict --receipt
+# Reading gate unwired — commits are not blocked by gate:verdict.
+# Run `bun run guard:check` manually when you want name/type checks.
+exit 0

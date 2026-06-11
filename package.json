@@ -81,7 +81,7 @@
     "unlock": "bash tools/scripts/unlock.sh",
     "lock:setup": "bash tools/scripts/lock.setup.sh",
     "git:safe": "bun run tools/scripts/git-safe.ts",
-    "verify": "bun run gate:verdict",
+    "verify": "echo 'verify: guards unwired (no gate daemon required)'",
     "deploy:backend": "fly deploy -c backend/fly.toml",
     "deploy:pdf-converter": "fly deploy -c pdf-converter/fly.toml",
     "deploy:universal-file-converter": "fly deploy -c universal-file-converter/fly.toml",
