@@ -6,10 +6,10 @@ Travel/restaurant food safety cards, waiter questions, Mesa audience snapshots.
 
 # Blocked by
 
-- 06-brain-foundation
-- 28-menu-scanning
-- 25-medical-conditions
-- 43-mesa
+- 04-brain-foundation
+- 26-menu-scanning
+- 23-medical-conditions
+- 41-mesa
 
 # Sources
 

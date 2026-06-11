@@ -6,12 +6,12 @@ In-store Mira guidance, constraint checks, Ground/Bela integration at shelf.
 
 # Blocked by
 
-- 31-cooking-session
-- 44-bela
-- 26-scanner
-- 29-ground
-- 30-map
-- 36-pantry-meal-plan
+- 29-cooking-session
+- 42-bela
+- 24-scanner
+- 27-ground
+- 28-map
+- 34-pantry-meal-plan
 
 # Sources
 

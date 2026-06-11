@@ -49,10 +49,10 @@ DO class, Drizzle spine, migration runtime, readiness tables, and minimal callab
 
 # Blocks
 
-- 07-brain-memory-tools (schemas exist; tools depend on foundation RPC)
-- 08-brain-skill-tools through 11-brain-alarm-tools (tables + DB)
-- 17-brain-system-prompt, 18-brain-session-tools, 22-brain-chat-runtime
-- 14-brain-sub-agents (typed parent RPC surface incomplete)
+- 05-brain-memory-tools (schemas exist; tools depend on foundation RPC)
+- 06-brain-skill-tools through 09-brain-alarm-tools (tables + DB)
+- 15-brain-system-prompt, 16-brain-session-tools, 20-brain-chat-runtime
+- 12-brain-sub-agents (typed parent RPC surface incomplete)
 
 # Sources
 

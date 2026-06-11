@@ -6,10 +6,10 @@ Pantry state, meal plan generation, shopping list, constraint-aware recipes.
 
 # Blocked by
 
-- 06-brain-foundation
-- 35-receipt-intelligence
-- 30-map
-- 10-brain-recipe-tools
+- 04-brain-foundation
+- 33-receipt-intelligence
+- 28-map
+- 08-brain-recipe-tools
 
 # Sources
 

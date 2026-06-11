@@ -6,11 +6,11 @@ Craving decode flow, skill seeding, FTS history, feeds ambient weekly pass.
 
 # Blocked by
 
-- 22-brain-chat-runtime
-- 08-brain-skill-tools
-- 37-ambient-intelligence
+- 20-brain-chat-runtime
+- 06-brain-skill-tools
+- 35-ambient-intelligence
 
 # Sources
 
-- `build-guide/39-craving-decoder/`
+- `build-guide/37-craving-decoder/`
 - `brioela-specs/52-craving-decoder.md`

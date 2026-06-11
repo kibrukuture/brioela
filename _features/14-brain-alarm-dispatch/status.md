@@ -6,8 +6,8 @@ dispatch.alarm.handler — alarm router, session_watchdog abandoned detection, a
 
 # Blocked by
 
-- 11-brain-alarm-tools
-- 13-brain-sessions-lifecycle
+- 09-brain-alarm-tools
+- 11-brain-sessions-lifecycle
 
 # Sources
 

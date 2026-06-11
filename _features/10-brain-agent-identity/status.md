@@ -6,7 +6,7 @@ BrioelaIdentity constant, 800-token cap, identity prompt block.
 
 # Blocked by
 
-- 06-brain-foundation
+- 04-brain-foundation
 
 # Sources
 

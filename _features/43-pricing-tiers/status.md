@@ -7,8 +7,8 @@ Tier gating (Culina/Luma/Viva/Signet), entitlements read from Brain DO.
 # Blocked by
 
 - 03-platform-auth-onboarding
-- 06-brain-foundation
-- 31-cooking-session
+- 04-brain-foundation
+- 29-cooking-session
 
 # Sources
 

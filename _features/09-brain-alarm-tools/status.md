@@ -6,7 +6,7 @@ schedule_user_alarm, cancel_user_alarm + scheduled_alarms schema/repos. Dispatch
 
 # Blocked by
 
-- 06-brain-foundation
+- 04-brain-foundation
 
 # Sources
 

@@ -6,7 +6,7 @@ view_user_recipe, update_user_recipe, archive_user_recipe + recipes schema.
 
 # Blocked by
 
-- 06-brain-foundation
+- 04-brain-foundation
 
 # Sources
 

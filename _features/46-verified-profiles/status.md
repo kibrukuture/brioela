@@ -7,9 +7,9 @@ Practitioner/business verification, client permission reads from Brain DO.
 # Blocked by
 
 - 03-platform-auth-onboarding
-- 06-brain-foundation
-- 30-map
-- 45-pricing-tiers
+- 04-brain-foundation
+- 28-map
+- 43-pricing-tiers
 
 # Sources
 

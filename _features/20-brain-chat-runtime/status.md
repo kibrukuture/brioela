@@ -6,10 +6,10 @@ Wire onMessage/chat() — connects sessions, system prompt, tool registry, model
 
 # Blocked by
 
-- 13-brain-sessions-lifecycle
-- 16-brain-alarm-dispatch
-- 17-brain-system-prompt
-- 21-brain-tool-registry
+- 11-brain-sessions-lifecycle
+- 14-brain-alarm-dispatch
+- 15-brain-system-prompt
+- 19-brain-tool-registry
 
 # Sources
 

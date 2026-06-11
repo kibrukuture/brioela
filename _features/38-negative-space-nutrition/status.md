@@ -6,10 +6,10 @@ Nutrient gap detection, weekly alarm cycle, intervention queue.
 
 # Blocked by
 
-- 06-brain-foundation
-- 37-ambient-intelligence
-- 26-scanner
-- 36-pantry-meal-plan
+- 04-brain-foundation
+- 35-ambient-intelligence
+- 24-scanner
+- 34-pantry-meal-plan
 
 # Sources
 

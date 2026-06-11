@@ -6,8 +6,8 @@ Session outcome_summary embeddings via Cloudflare Vectorize.
 
 # Blocked by
 
-- 13-brain-sessions-lifecycle
-- 15-brain-session-compression
+- 11-brain-sessions-lifecycle
+- 13-brain-session-compression
 
 # Sources
 

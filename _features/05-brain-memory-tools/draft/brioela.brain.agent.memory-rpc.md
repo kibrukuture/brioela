@@ -19,4 +19,4 @@ listMemoryEvents(memoryEventFilter: ListBrainMemoryEvents): BrainMemoryEvents {
 }
 ```
 
-Full file also contains migration readiness bootstrap — see feature **06-brain-foundation**.
+Full file also contains migration readiness bootstrap — see feature **04-brain-foundation**.

@@ -6,7 +6,7 @@ propose_user_constraint, confirm_user_constraint + constraints schema.
 
 # Blocked by
 
-- 06-brain-foundation
+- 04-brain-foundation
 
 # Sources
 

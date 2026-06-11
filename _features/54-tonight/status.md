@@ -6,12 +6,12 @@ open
 
 # Blocked by
 
-- 36-pantry-meal-plan
-- 06-brain-foundation
-- 38-wearables
-- 43-mesa
-- 23-platform-notifications
-- 11-brain-alarm-tools
+- 34-pantry-meal-plan
+- 04-brain-foundation
+- 36-wearables
+- 41-mesa
+- 21-platform-notifications
+- 09-brain-alarm-tools
 
 # Sources
 

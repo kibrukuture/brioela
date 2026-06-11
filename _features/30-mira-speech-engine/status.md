@@ -6,7 +6,7 @@ MiraSpeechDecisionEngine: silence tracker, visual change, adaptive frequency, su
 
 # Blocked by
 
-- 31-cooking-session
+- 29-cooking-session
 
 # Sources
 

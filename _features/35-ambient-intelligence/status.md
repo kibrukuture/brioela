@@ -6,10 +6,10 @@ Behavioral patterns, pre-trip intel, food time machine, guest mode — Brain ala
 
 # Blocked by
 
-- 16-brain-alarm-dispatch
-- 14-brain-sub-agents
-- 26-scanner
-- 31-cooking-session
+- 14-brain-alarm-dispatch
+- 12-brain-sub-agents
+- 24-scanner
+- 29-cooking-session
 
 # Sources
 

@@ -6,11 +6,11 @@ Mira cooking room: RealtimeKit, MiraSession DO, Gemini Live, timers, session end
 
 # Blocked by
 
-- 22-brain-chat-runtime
-- 13-brain-sessions-lifecycle
-- 10-brain-recipe-tools
-- 17-brain-system-prompt
-- 27-recipe-ingestion
+- 20-brain-chat-runtime
+- 11-brain-sessions-lifecycle
+- 08-brain-recipe-tools
+- 15-brain-system-prompt
+- 25-recipe-ingestion
 
 # Sources
 

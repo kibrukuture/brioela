@@ -6,10 +6,10 @@ Restaurant menu photo → item-level constraint verdicts.
 
 # Blocked by
 
-- 06-brain-foundation
-- 09-brain-constraint-tools
-- 26-scanner
-- 30-map
+- 04-brain-foundation
+- 07-brain-constraint-tools
+- 24-scanner
+- 28-map
 
 # Sources
 

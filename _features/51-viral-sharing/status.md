@@ -7,9 +7,9 @@ Discovery Cards, share-sheet loops, cook-together and scan share triggers.
 # Blocked by
 
 - 02-platform-design-system
-- 26-scanner
-- 31-cooking-session
-- 27-recipe-ingestion
+- 24-scanner
+- 29-cooking-session
+- 25-recipe-ingestion
 
 # Sources
 

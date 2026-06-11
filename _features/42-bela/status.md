@@ -6,13 +6,13 @@ Shopper marketplace: orders, escrow, live scan, smart routing, Mira shopper scen
 
 # Blocked by
 
-- 06-brain-foundation
-- 26-scanner
-- 31-cooking-session
-- 32-mira-speech-engine
-- 29-ground
-- 30-map
-- 35-receipt-intelligence
+- 04-brain-foundation
+- 24-scanner
+- 29-cooking-session
+- 30-mira-speech-engine
+- 27-ground
+- 28-map
+- 33-receipt-intelligence
 
 # Sources
 

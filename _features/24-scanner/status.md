@@ -6,11 +6,11 @@ Core product loop: barcode, product resolution, constraint check, verdict UI, vi
 
 # Blocked by
 
-- 06-brain-foundation
-- 09-brain-constraint-tools
-- 07-brain-memory-tools
-- 24-health-intelligence
-- 25-medical-conditions
+- 04-brain-foundation
+- 07-brain-constraint-tools
+- 05-brain-memory-tools
+- 22-health-intelligence
+- 23-medical-conditions
 
 # Sources
 

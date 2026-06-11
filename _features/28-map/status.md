@@ -6,8 +6,8 @@ Healthy food map + Ground signal overlay.
 
 # Blocked by
 
-- 06-brain-foundation
-- 29-ground
+- 04-brain-foundation
+- 27-ground
 - 01-platform-foundation
 
 # Sources

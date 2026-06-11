@@ -6,8 +6,8 @@ Community finds, location signals, find-from-scan entry.
 
 # Blocked by
 
-- 06-brain-foundation
-- 26-scanner
+- 04-brain-foundation
+- 24-scanner
 - 01-platform-foundation
 
 # Sources

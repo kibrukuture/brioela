@@ -6,9 +6,9 @@ Sound cue extraction, acoustic evidence stream during cooking.
 
 # Blocked by
 
-- 31-cooking-session
-- 32-mira-speech-engine
-- 27-recipe-ingestion
+- 29-cooking-session
+- 30-mira-speech-engine
+- 25-recipe-ingestion
 
 # Sources
 

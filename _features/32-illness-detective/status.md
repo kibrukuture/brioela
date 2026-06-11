@@ -6,10 +6,10 @@ Food history window ranking, recall cross-reference, Ground illness signals.
 
 # Blocked by
 
-- 06-brain-foundation
-- 07-brain-memory-tools
-- 33-recall-alerts
-- 29-ground
+- 04-brain-foundation
+- 05-brain-memory-tools
+- 31-recall-alerts
+- 27-ground
 
 # Sources
 

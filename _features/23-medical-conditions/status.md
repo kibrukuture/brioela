@@ -6,8 +6,8 @@ Condition food profiles in Brain DO; scanner and cooking session overlay.
 
 # Blocked by
 
-- 06-brain-foundation
-- 09-brain-constraint-tools
+- 04-brain-foundation
+- 07-brain-constraint-tools
 
 # Sources
 

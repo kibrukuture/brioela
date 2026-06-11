@@ -1,6 +1,6 @@
 # Brain Foundation — Spec
 
-Feature **06**. Per-user `BrioelaBrain` Durable Object: SQLite spine, Drizzle schema, migration runtime, readiness gate, and the minimal callable RPC surface every later brain feature builds on.
+Feature **04**. Per-user `BrioelaBrain` Durable Object: SQLite spine, Drizzle schema, migration runtime, readiness gate, and the minimal callable RPC surface every later brain feature builds on.
 
 ---
 
@@ -14,7 +14,7 @@ Each Brioela user gets one private SQLite database inside one `BrioelaBrain` Dur
 4. **Startup gate** — `blockConcurrencyWhile` runs migrations before any callable serves.
 5. **Foundation RPC** — `checkReadiness`, plus memory append/list callable stubs wired for smoke and feature 07.
 
-This is **not** the full brain product surface from `build-guide/05-brain/01-do-class-and-setup.md`. Handlers, context loaders, policies, schedules, subagents, and the full RPC catalog are separate features (08–22+).
+This is **not** the full brain product surface from `build-guide/05-brain/01-do-class-and-setup.md`. Handlers, context loaders, policies, schedules, subagents, and the full RPC catalog are separate features (06–20+).
 
 ---
 
@@ -296,10 +296,10 @@ Manifest tool: `tools/brioela-brain-migration-manifest/`.
 
 ## Cross-feature boundaries
 
-- **07-brain-memory-tools** — tool executables + memory write repo semantics; depends on 06 schemas + RPC wiring.
+- **05-brain-memory-tools** — tool executables + memory write repo semantics; depends on 04 schemas + RPC wiring.
 - **08+** — skill/constraint/session/recipe/alarm tools use tables defined here.
-- **22-brain-chat-runtime** — must gate on readiness and wire `getBrainTools()`.
-- **14-brain-sub-agents** — subagents call Brain via typed RPC (not built).
+- **20-brain-chat-runtime** — must gate on readiness and wire `getBrainTools()`.
+- **12-brain-sub-agents** — subagents call Brain via typed RPC (not built).
 
 ---
 

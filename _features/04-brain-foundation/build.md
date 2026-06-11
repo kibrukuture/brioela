@@ -1,6 +1,6 @@
 # Brain Foundation — Build
 
-Feature **06**. Production paths under `backend/src/agents/brain/` plus shared SQLite adapter and manifest tool.
+Feature **04**. Production paths under `backend/src/agents/brain/` plus shared SQLite adapter and manifest tool.
 
 ---
 

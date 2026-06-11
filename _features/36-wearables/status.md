@@ -6,11 +6,11 @@ CGM, Oura, Apple Health → Brain memory; scan and ambient corroboration.
 
 # Blocked by
 
-- 06-brain-foundation
-- 07-brain-memory-tools
-- 26-scanner
-- 37-ambient-intelligence
-- 23-platform-notifications
+- 04-brain-foundation
+- 05-brain-memory-tools
+- 24-scanner
+- 35-ambient-intelligence
+- 21-platform-notifications
 
 # Sources
 

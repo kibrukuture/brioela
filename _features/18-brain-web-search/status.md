@@ -6,8 +6,8 @@ search_web tool — Brave/Tavily, 5-call-per-session limit, general session only
 
 # Blocked by
 
-- 06-brain-foundation
-- 21-brain-tool-registry
+- 04-brain-foundation
+- 19-brain-tool-registry
 
 # Sources
 

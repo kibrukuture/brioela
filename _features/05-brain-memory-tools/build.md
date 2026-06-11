@@ -1,6 +1,6 @@
 # Brain Memory Tools — Build
 
-Feature **07**. Production paths under `backend/src/agents/brain/`.
+Feature **05**. Production paths under `backend/src/agents/brain/`.
 
 ---
 

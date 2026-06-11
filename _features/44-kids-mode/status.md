@@ -6,10 +6,10 @@ Kid-friendly scan explanations, cooking voice mode, allergy safety preserved.
 
 # Blocked by
 
-- 26-scanner
-- 31-cooking-session
-- 09-brain-constraint-tools
-- 45-pricing-tiers
+- 24-scanner
+- 29-cooking-session
+- 07-brain-constraint-tools
+- 43-pricing-tiers
 
 # Sources
 

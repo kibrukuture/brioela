@@ -1,6 +1,6 @@
 # Brain Memory Tools — Spec
 
-Feature **07**. The agent's write/read path for `memory_event` (append-only history) and `user_memory` (structured mergeable facts), plus the system write path for device-originated events.
+Feature **05**. The agent's write/read path for `memory_event` (append-only history) and `user_memory` (structured mergeable facts), plus the system write path for device-originated events.
 
 ---
 
@@ -176,7 +176,7 @@ Per `implementable-specs/02-user-memory.md`:
 - **`loadMemoryForPrompt(namespaces[])`** — injects active facts at session start; fire-and-forget `read_count` bump.
 - **`memory_namespaces` list** — returned by `load_session_context` at session start.
 
-These belong to features **17-brain-system-prompt** and **18-brain-session-tools**. This feature provides the tables and explicit tools they depend on.
+These belong to features **15-brain-system-prompt** and **16-brain-session-tools**. This feature provides the tables and explicit tools they depend on.
 
 ---
 

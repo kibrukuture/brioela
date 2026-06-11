@@ -6,13 +6,13 @@ getBrainTools(), session kind permissions, TOOL_PERMISSIONS. Wake wiring still o
 
 # Blocked by
 
-- 07-brain-memory-tools
-- 08-brain-skill-tools
-- 09-brain-constraint-tools
-- 10-brain-recipe-tools
-- 11-brain-alarm-tools
-- 18-brain-session-tools
-- 20-brain-web-search
+- 05-brain-memory-tools
+- 06-brain-skill-tools
+- 07-brain-constraint-tools
+- 08-brain-recipe-tools
+- 09-brain-alarm-tools
+- 16-brain-session-tools
+- 18-brain-web-search
 
 # Sources
 

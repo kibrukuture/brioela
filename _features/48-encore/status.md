@@ -6,13 +6,13 @@ Restaurant dish recreation from photo, menu context, Bela order pre-fill.
 
 # Blocked by
 
-- 06-brain-foundation
-- 10-brain-recipe-tools
-- 26-scanner
-- 28-menu-scanning
-- 29-ground
-- 44-bela
-- 31-cooking-session
+- 04-brain-foundation
+- 08-brain-recipe-tools
+- 24-scanner
+- 26-menu-scanning
+- 27-ground
+- 42-bela
+- 29-cooking-session
 
 # Sources
 

@@ -6,10 +6,10 @@ build.system.prompt.handler — 6 blocks in strict prefix-cache order.
 
 # Blocked by
 
-- 12-brain-agent-identity
-- 08-brain-skill-tools
-- 09-brain-constraint-tools
-- 07-brain-memory-tools
+- 10-brain-agent-identity
+- 06-brain-skill-tools
+- 07-brain-constraint-tools
+- 05-brain-memory-tools
 
 # Sources
 

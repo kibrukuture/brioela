@@ -6,7 +6,7 @@ open
 
 # Blocked by
 
-- 06-brain-foundation
+- 04-brain-foundation
 
 # Sources
 

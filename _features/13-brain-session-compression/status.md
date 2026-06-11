@@ -6,8 +6,8 @@ compress.session.handler — Haiku 4-field summary, child session creation.
 
 # Blocked by
 
-- 13-brain-sessions-lifecycle
-- 14-brain-sub-agents
+- 11-brain-sessions-lifecycle
+- 12-brain-sub-agents
 
 # Sources
 

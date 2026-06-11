@@ -6,9 +6,9 @@ Weekly skill trajectory, post-session extraction, acoustic evidence dimension.
 
 # Blocked by
 
-- 31-cooking-session
-- 41-acoustic-cooking
-- 14-brain-sub-agents
+- 29-cooking-session
+- 39-acoustic-cooking
+- 12-brain-sub-agents
 
 # Sources
 

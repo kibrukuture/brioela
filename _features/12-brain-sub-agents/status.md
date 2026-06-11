@@ -6,11 +6,11 @@ BrainMaintenanceAgent, BehaviorPatternAgent, SessionContextCompressor child agen
 
 # Blocked by
 
-- 06-brain-foundation
-- 07-brain-memory-tools
-- 08-brain-skill-tools
-- 09-brain-constraint-tools
-- 11-brain-alarm-tools
+- 04-brain-foundation
+- 05-brain-memory-tools
+- 06-brain-skill-tools
+- 07-brain-constraint-tools
+- 09-brain-alarm-tools
 
 # Sources
 

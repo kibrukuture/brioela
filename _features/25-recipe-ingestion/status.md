@@ -6,8 +6,8 @@ Share-sheet import, normalize, write recipes to Brain DO.
 
 # Blocked by
 
-- 06-brain-foundation
-- 10-brain-recipe-tools
+- 04-brain-foundation
+- 08-brain-recipe-tools
 - 01-platform-foundation
 
 # Sources

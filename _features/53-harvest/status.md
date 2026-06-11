@@ -6,10 +6,10 @@ Year-in-food document, Time Machine chapters, highest-volume share surface.
 
 # Blocked by
 
-- 06-brain-foundation
-- 37-ambient-intelligence
-- 54-generative-grammar
-- 42-growth-mirror
+- 04-brain-foundation
+- 35-ambient-intelligence
+- 52-generative-grammar
+- 40-growth-mirror
 
 # Sources
 

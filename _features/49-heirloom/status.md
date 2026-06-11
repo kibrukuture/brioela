@@ -6,8 +6,8 @@ Generational recipe capture, inheritance loop, heritage content in Brain DO.
 
 # Blocked by
 
-- 06-brain-foundation
-- 31-cooking-session
+- 04-brain-foundation
+- 29-cooking-session
 - 03-platform-auth-onboarding
 
 # Sources

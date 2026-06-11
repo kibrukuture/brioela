@@ -6,8 +6,8 @@ health_events, medications, health_captures tables; medication-food interaction 
 
 # Blocked by
 
-- 06-brain-foundation
-- 22-brain-chat-runtime
+- 04-brain-foundation
+- 20-brain-chat-runtime
 
 # Sources
 

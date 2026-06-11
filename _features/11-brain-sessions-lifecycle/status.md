@@ -6,8 +6,8 @@ Session open/close, sessions + session_turns schema, FTS5 sync, watchdog alarm s
 
 # Blocked by
 
-- 06-brain-foundation
-- 11-brain-alarm-tools
+- 04-brain-foundation
+- 09-brain-alarm-tools
 
 # Sources
 

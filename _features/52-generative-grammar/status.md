@@ -8,8 +8,8 @@ Emotional/contextual UI surfaces, artifact pipeline, Discovery Card rendering.
 
 - 02-platform-design-system
 - 01-platform-foundation
-- 22-brain-chat-runtime
-- 53-viral-sharing
+- 20-brain-chat-runtime
+- 51-viral-sharing
 
 # Sources
 

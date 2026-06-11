@@ -16,26 +16,26 @@ Tools, schemas, repositories, RPC append/list, and tests exist in `backend/`. Fe
 
 | ID | Gap | Owner |
 |---|---|---|
-| G1 | `importance` not on write tool input | 07 |
-| G2 | Namespace cap error missing namespace list | 07 |
-| G3 | `loadMemoryForPrompt` | 17-brain-system-prompt |
-| G4 | `memory_namespaces` at session start | 18-brain-session-tools |
-| G5 | Live chat/session handler tool wiring | 22-brain-chat-runtime |
-| G6 | Scanner dual-write via RPC | 26-scanner |
-| G7 | Maintenance write permission doc conflict | 07 + 14-brain-sub-agents |
+| G1 | `importance` not on write tool input | 05 |
+| G2 | Namespace cap error missing namespace list | 05 |
+| G3 | `loadMemoryForPrompt` | 15-brain-system-prompt |
+| G4 | `memory_namespaces` at session start | 16-brain-session-tools |
+| G5 | Live chat/session handler tool wiring | 20-brain-chat-runtime |
+| G6 | Scanner dual-write via RPC | 24-scanner |
+| G7 | Maintenance write permission doc conflict | 05 + 12-brain-sub-agents |
 
 # Blocked by
 
-- 06-brain-foundation
+- 04-brain-foundation
 
 # Blocks
 
-- 08-brain-skill-tools (pattern reference)
-- 17-brain-system-prompt (memory prompt load)
-- 18-brain-session-tools (namespace list)
-- 26-scanner (device event path)
-- 34-illness-detective (event history reads)
-- 37-ambient-intelligence (event batch reads)
+- 06-brain-skill-tools (pattern reference)
+- 15-brain-system-prompt (memory prompt load)
+- 16-brain-session-tools (namespace list)
+- 24-scanner (device event path)
+- 32-illness-detective (event history reads)
+- 35-ambient-intelligence (event batch reads)
 
 # Sources
 

@@ -6,10 +6,10 @@ Anonymous glucose fingerprint cluster, Kin-informed scan verdict overlay.
 
 # Blocked by
 
-- 38-wearables
-- 06-brain-foundation
-- 26-scanner
-- 45-pricing-tiers
+- 36-wearables
+- 04-brain-foundation
+- 24-scanner
+- 43-pricing-tiers
 
 # Sources
 

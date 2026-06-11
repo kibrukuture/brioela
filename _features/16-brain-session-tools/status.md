@@ -6,7 +6,7 @@ load_session_context, search_session_history (FTS5).
 
 # Blocked by
 
-- 13-brain-sessions-lifecycle
+- 11-brain-sessions-lifecycle
 
 # Sources
 
