@@ -1,0 +1,21 @@
+# Draft: index.ts
+
+Target: `backend/src/agents/brain/_repositories/index.ts`
+
+```ts
+export * from '@/agents/brain/_repositories/migration.lock.repository'
+export * from '@/agents/brain/_repositories/list.memory.events.repository'
+export * from '@/agents/brain/_repositories/read.schema.readiness.repository'
+export * from '@/agents/brain/_repositories/write.memory.event.repository'
+export * from '@/agents/brain/_repositories/write.memory.event.once.repository'
+export * from '@/agents/brain/_repositories/write.migration.run.repository'
+export * from '@/agents/brain/_repositories/write.migration.smoke.repository'
+export * from '@/agents/brain/_repositories/write.schema.readiness.repository'
+export * from '@/agents/brain/_repositories/read.user.recipe.repository'
+export * from '@/agents/brain/_repositories/write.user.recipe.repository'
+export * from '@/agents/brain/_repositories/read.user.alarm.repository'
+export * from '@/agents/brain/_repositories/write.user.alarm.repository'
+export * from '@/agents/brain/_repositories/read.user.memory.repository'
+export * from '@/agents/brain/_repositories/write.user.memory.repository'
+
+```

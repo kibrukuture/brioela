@@ -1,0 +1,49 @@
+# Draft: wrangler.jsonc
+
+Target: `backend/wrangler.jsonc`
+
+```jsonc
+{
+	"name": "brioela",
+	"main": "src/index.ts",
+	"compatibility_date": "2026-06-03",
+	"compatibility_flags": ["nodejs_compat", "nodejs_compat_populate_process_env"],
+	"observability": {
+		"logs": {
+			"enabled": true,
+			"head_sampling_rate": 1,
+			"invocation_logs": true
+		}
+	},
+
+	// Disable workers.dev URL
+	"workers_dev": false,
+
+	// Disable Preview URLs
+	"preview_urls": false,
+
+	"durable_objects": {
+		"bindings": [
+			{
+				"name": "BRIOELA_BRAIN",
+				"class_name": "BrioelaBrain"
+			}
+		]
+	},
+
+	"migrations": [
+		{
+			"tag": "brioela_brain_v1",
+			"new_sqlite_classes": ["BrioelaBrain"]
+		}
+	],
+
+	// Only serve on api.schnl.com
+	"routes": [
+		{
+			"pattern": "api.brioela.com/*",
+			"zone_name": "brioela.com"
+		}
+	]
+}
+```
