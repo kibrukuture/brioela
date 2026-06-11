@@ -18,4 +18,4 @@ We must decide whether to:
 TypeScript compilation and query runs will crash when trying to read/write `scheduledAlarms.payloadJson`.
 
 ## Status
-**FIXED.** Updated the scheduled alarms specifications (`10-scheduled-alarms.md`), schedule alarm tool specification (`11-schedule-user-alarm.md`), cancel alarm tool specification (`12-cancel-user-alarm.md`), brain maintenance spec (`15-brain-maintenance-and-behavior-patterns.md`), and load session context spec (`16-load-session-context.md`) to refer to `payload` instead of `payloadJson`/`payload_json` to match the actual database schema.
+**FIXED.** Specs use `payload` / `scheduled_at` / `triggering_session_id` / `cancelled_at`+`cancel_reason`+`failure_reason`. Synced: `10-scheduled-alarms.md`, `11`, `12`, `15`, `17`, build-guide schema, ledger `0004.alarm-tools.md`.

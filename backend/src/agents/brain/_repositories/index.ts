@@ -8,6 +8,8 @@ export * from '@/agents/brain/_repositories/write.migration.smoke.repository'
 export * from '@/agents/brain/_repositories/write.schema.readiness.repository'
 export * from '@/agents/brain/_repositories/read.user.recipe.repository'
 export * from '@/agents/brain/_repositories/write.user.recipe.repository'
+export * from '@/agents/brain/_repositories/read.user.alarm.repository'
+export * from '@/agents/brain/_repositories/write.user.alarm.repository'
 export * from '@/agents/brain/_repositories/read.user.memory.repository'
 export * from '@/agents/brain/_repositories/write.user.memory.repository'
 

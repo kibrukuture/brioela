@@ -19,4 +19,4 @@ We must decide whether to:
 TypeScript compilation and query runs will crash when trying to read/write `scheduledAlarms.failReason`.
 
 ## Status
-**OPEN.**
+**FIXED.** Cancel tool and specs use `cancelledAt` + `cancelReason`; failures use `failureReason`. Implemented in `cancel.user.alarm.executable.ts` and synced across `10-scheduled-alarms.md`, `12-cancel-user-alarm.md`, `15-brain-maintenance-and-behavior-patterns.md`.

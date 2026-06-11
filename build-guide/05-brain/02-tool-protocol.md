@@ -202,7 +202,6 @@ const TOOL_PERMISSIONS: Record<SessionType | 'brain_maintenance' | 'behavior_pat
   ],
   alarm: [
     'log_memory_event', 'write_user_memory',
-    'schedule_user_alarm', 'cancel_user_alarm',
   ],
   brain_maintenance: [
     'write_user_memory', 'update_user_skill', 'archive_user_skill', 'schedule_user_alarm',
@@ -212,7 +211,7 @@ const TOOL_PERMISSIONS: Record<SessionType | 'brain_maintenance' | 'behavior_pat
   ],
 }
 
-export function getToolsForSessionType(db: DrizzleDB, caller: SessionType | 'brain_maintenance' | 'behavior_pattern_detection') {
+export function getToolsForSessionType(db: DrizzleDB, userId: string, caller: SessionType | 'brain_maintenance' | 'behavior_pattern_detection', wake?: AlarmWakeCallbacks) {
   const allowed = new Set(TOOL_PERMISSIONS[caller])
   const all = buildAllTools(db)
   return Object.fromEntries(
@@ -232,8 +231,8 @@ function buildAllTools(db: DrizzleDB) {
     delete_user_skill:       deleteUserSkillTool(db),
     propose_user_constraint: proposeUserConstraintTool(db),
     confirm_user_constraint: confirmUserConstraintTool(db),
-    schedule_user_alarm:     scheduleUserAlarmTool(db),
-    cancel_user_alarm:       cancelUserAlarmTool(db),
+    schedule_user_alarm:     scheduleUserAlarmTool(db, userId, wake),
+    cancel_user_alarm:       cancelUserAlarmTool(db, userId, wake),
     view_user_recipe:        viewUserRecipeTool(db),
     update_user_recipe:      updateUserRecipeTool(db),
     archive_user_recipe:     archiveUserRecipeTool(db),
@@ -242,6 +241,23 @@ function buildAllTools(db: DrizzleDB) {
   }
 }
 ```
+
+---
+
+## Alarm wake callbacks
+
+`schedule_user_alarm` and `cancel_user_alarm` require injected `AlarmWakeCallbacks` from the Brain DO layer. Code: `getBrainTools(..., wake?)` in `get.brain.tools.ts`.
+
+```typescript
+type AlarmWakeCallbacks = {
+  scheduleAlarm: (scheduledAtMs: number) => Promise<void>  // MIN pending scheduled_at
+  cancelAlarm:   () => Promise<void>                      // no pending rows remain
+}
+```
+
+Tool executables write SQLite first, then call `readEarliestPendingScheduledAt` and either `scheduleAlarm(next.scheduledAt)` or `cancelAlarm()`. They never call `this.ctx.storage.setAlarm()` directly.
+
+If `wake` is omitted, alarm tools are not registered for that session build.
 
 ---
 

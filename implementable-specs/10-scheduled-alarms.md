@@ -75,42 +75,72 @@ If step 8 fails: row stays at `status = 'processing'`, `attempts` incremented. N
 
 ```sql
 CREATE TABLE scheduled_alarms (
-  id                    TEXT PRIMARY KEY,  -- UUID v4
-  user_id               TEXT NOT NULL,     -- owner — self-describing for export
-  alarm_type            TEXT NOT NULL,     -- free text — known values are suggestions, not a fixed enum
-  status                TEXT NOT NULL DEFAULT 'pending',  -- 'pending' | 'processing' | 'completed' | 'failed' | 'cancelled'
-  scheduled_at          INTEGER NOT NULL,  -- unix timestamp ms — when this alarm should fire
-  payload               TEXT NOT NULL DEFAULT '{}',  -- JSON — context the handler needs when it wakes up
-  triggering_session_id TEXT,             -- which session scheduled this alarm — NULL for system-scheduled alarms
-  attempts              INTEGER NOT NULL DEFAULT 0,  -- how many processing attempts have been made
-  last_attempted_at     INTEGER,          -- unix timestamp ms — when the last attempt was made
-  completed_at          INTEGER,          -- unix timestamp ms — when this alarm successfully completed
-  fail_reason           TEXT,             -- why it failed — NULL unless status = 'failed'
-  created_at            INTEGER NOT NULL, -- unix timestamp ms
-  updated_at            INTEGER NOT NULL  -- unix timestamp ms
+  id                    TEXT PRIMARY KEY,
+  user_id               TEXT NOT NULL,
+  alarm_type            TEXT NOT NULL,
+  triggering_session_id TEXT,
+  payload               TEXT NOT NULL DEFAULT '{}',
+  sdk_schedule_id       TEXT,
+  status                TEXT NOT NULL DEFAULT 'pending',
+  attempts              INTEGER NOT NULL DEFAULT 0,
+  failure_reason        TEXT,
+  cancelled_at          INTEGER,
+  cancel_reason         TEXT,
+  rescheduled_from_alarm_id TEXT,
+  rescheduled_to_alarm_id   TEXT,
+  label                 TEXT,
+  scheduled_at          INTEGER NOT NULL,
+  started_at            INTEGER,
+  completed_at          INTEGER,
+  action_outcome_status TEXT,
+  action_outcome_json   TEXT,
+  created_at            INTEGER NOT NULL,
+  updated_at            INTEGER NOT NULL,
+  CHECK (json_valid(payload) AND json_type(payload) = 'object'),
+  CHECK (status IN ('pending', 'processing', 'completed', 'failed', 'cancelled')),
+  CHECK (attempts >= 0),
+  CHECK (cancelled_at IS NULL OR cancelled_at >= 0),
+  CHECK (scheduled_at >= 0),
+  CHECK (started_at IS NULL OR started_at >= scheduled_at),
+  CHECK (completed_at IS NULL OR completed_at >= scheduled_at),
+  CHECK (action_outcome_json IS NULL OR (json_valid(action_outcome_json) AND json_type(action_outcome_json) = 'object')),
+  CHECK (created_at >= 0),
+  CHECK (updated_at >= created_at)
 );
 ```
 
 ## Drizzle Schema
 
 ```typescript
-import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core'
+import { check, index, integer, sql, sqliteTable, text } from '@/database/sqlite/_schema'
 
 export const scheduledAlarms = sqliteTable('scheduled_alarms', {
   id:                   text('id').primaryKey(),
   userId:               text('user_id').notNull(),
-  alarmType:            text('alarm_type').notNull(),     // free text — not an enum, new types added freely
-  status:               text('status').notNull().default('pending'),
-  scheduledAt:          integer('scheduled_at').notNull(),
-  payload:              text('payload').notNull().default('{}'),
+  alarmType:            text('alarm_type').notNull(),
   triggeringSessionId:  text('triggering_session_id'),
+  payload:              text('payload').notNull(),
+  sdkScheduleId:        text('sdk_schedule_id'),
+  status:               text('status').notNull().default('pending'),
   attempts:             integer('attempts').notNull().default(0),
-  lastAttemptedAt:      integer('last_attempted_at'),
+  failureReason:        text('failure_reason'),
+  cancelledAt:          integer('cancelled_at'),
+  cancelReason:         text('cancel_reason'),
+  rescheduledFromAlarmId: text('rescheduled_from_alarm_id'),
+  rescheduledToAlarmId:   text('rescheduled_to_alarm_id'),
+  label:                text('label'),
+  scheduledAt:          integer('scheduled_at').notNull(),
+  startedAt:            integer('started_at'),
   completedAt:          integer('completed_at'),
-  failReason:           text('fail_reason'),
+  actionOutcomeStatus:  text('action_outcome_status'),
+  actionOutcomeJson:    text('action_outcome_json'),
   createdAt:            integer('created_at').notNull(),
   updatedAt:            integer('updated_at').notNull(),
-})
+}, (table) => [
+  index('scheduled_alarms_status_scheduled_at_index').on(table.status, table.scheduledAt),
+  index('scheduled_alarms_type_status_index').on(table.alarmType, table.status),
+  index('scheduled_alarms_triggering_session_id_index').on(table.triggeringSessionId).where(sql`triggering_session_id IS NOT NULL`),
+])
 ```
 
 ## Column Decisions
@@ -122,8 +152,8 @@ Known values are documented above as suggestions. The handler dispatches on this
 - `pending` — waiting to fire
 - `processing` — DO is currently handling this alarm. Prevents double-processing if something goes wrong mid-execution.
 - `completed` — handled successfully, `completed_at` set
-- `failed` — all retry attempts exhausted, `fail_reason` set
-- `cancelled` — explicitly cancelled before it fired (e.g. user cancelled a trip, sickness resolved before followup)
+- `failed` — all retry attempts exhausted, `failure_reason` set
+- `cancelled` — explicitly cancelled before it fired (`cancelled_at`, `cancel_reason` set)
 
 **`scheduled_at` — unix timestamp ms**
 The target fire time. The DO alarm slot is always set to `MIN(scheduled_at) WHERE status = 'pending'`. When the DO wakes up: `WHERE status = 'pending' AND scheduled_at <= now()` — everything due now or overdue gets processed in one wake-up.
@@ -137,8 +167,8 @@ What the handler needs when it wakes up. Without this, the handler has no contex
 **`triggering_session_id` — nullable**
 Which session scheduled this alarm. NULL for system-scheduled alarms (behavior_pattern_detection, brain_maintenance_run). Set for agent-triggered alarms (sickness_followup triggered mid-chat, travel_preload triggered when user mentions a trip).
 
-**`attempts` + `last_attempted_at` — retry tracking**
-If processing fails, `attempts` increments and the alarm is retried on the next DO wake-up. Max retry count enforced in handler logic. After max attempts: `status = 'failed'`, `fail_reason` written.
+**`attempts` + `started_at` — retry tracking**
+If processing fails, `attempts` increments and the alarm is retried on the next wake-up. Max retry count enforced in handler logic. After max attempts: `status = 'failed'`, `failure_reason` written. `started_at` records when processing began.
 
 **`completed_at` vs `updated_at`**
 `completed_at` is NULL until the alarm successfully completes — `WHERE completed_at IS NULL AND status != 'cancelled'` finds all unresolved alarms. `updated_at` tracks any row change for audit.
@@ -172,9 +202,9 @@ CREATE INDEX idx_alarms_type_status  ON scheduled_alarms (alarm_type, status);
 
 ## Write Rules
 
-- `schedule_user_alarm` tool — agent only. Inserts with `status = 'pending'`. After insert, calls `this.ctx.storage.setAlarm(MIN scheduled_at)` to update the DO slot.
-- DO alarm handler — sets `status = 'processing'` before handling. Sets `status = 'completed'` or `status = 'failed'` after. Increments `attempts` on each attempt. After all rows processed, re-reads `MIN(scheduled_at)` of remaining pending rows and resets DO alarm slot.
-- `cancel_user_alarm` tool — agent only. Sets `status = 'cancelled'`. After cancel, re-reads `MIN(scheduled_at)` and resets DO alarm slot.
+- `schedule_user_alarm` tool — agent only. Inserts with `status = 'pending'`. After insert, calls injected `scheduleAlarm(MIN scheduled_at)` to update the DO wake slot.
+- DO alarm handler — sets `status = 'processing'` before handling. Sets `status = 'completed'` or `status = 'failed'` after. Increments `attempts` on each attempt. After all rows processed, re-reads `MIN(scheduled_at)` of remaining pending rows and calls `scheduleAlarm` or `cancelAlarm`.
+- `cancel_user_alarm` tool — agent only. Sets `status = 'cancelled'`, `cancelled_at`, `cancel_reason`. After cancel, re-reads `MIN(scheduled_at)` and calls `scheduleAlarm` or `cancelAlarm`.
 - Never deleted. History of all past alarms stays in the table permanently.
 
 ## Read Rules

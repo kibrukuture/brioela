@@ -29,8 +29,7 @@ export const CancelUserAlarmSchema = z.object({
   // or from agent reading the scheduled_alarms table to find the relevant row.
 
   reason: z.string().min(1).optional(),
-  // Why this alarm is being cancelled. Stored in fail_reason column for history.
-  // Optional but recommended — a cancelled alarm with no reason is hard to audit later.
+  // Why this alarm is being cancelled. Stored in cancel_reason. Optional but recommended.
   // Examples:
   //   "User said trip was cancelled"
   //   "User reported feeling fine — sickness followup no longer needed"
@@ -67,41 +66,27 @@ if (alarm.status !== 'pending') {
 ### Step 1 — Cancel the row
 
 ```typescript
-db.update(scheduledAlarms)
-  .set({
-    status:    'cancelled',
-    failReason: input.reason ?? null,
-    updatedAt:  Date.now(),
-  })
-  .where(eq(scheduledAlarms.id, input.id))
-  .run()
-```
+import { readCurrentEpochMs } from '@/time/_helpers'
+import { cancelUserAlarm, readEarliestPendingScheduledAt, readUserAlarm } from '@/agents/brain/_repositories'
 
-`failReason` is reused to store the cancellation reason — the column name is accurate enough; a cancelled row with a `fail_reason` describing why it was cancelled is readable and expected.
+const alarm = readUserAlarm(db, input.id)
+// ... pending guard ...
 
-### Step 2 — Update DO alarm slot
+const now = readCurrentEpochMs()
+cancelUserAlarm(db, {
+  id: input.id,
+  cancelReason: input.reason ?? null,
+  cancelledAt: now,
+  updatedAt: now,
+})
 
-After cancelling, immediately re-read the next earliest pending row and update the DO slot:
-
-```typescript
-const next = db.select({ scheduledAt: scheduledAlarms.scheduledAt })
-  .from(scheduledAlarms)
-  .where(eq(scheduledAlarms.status, 'pending'))
-  .orderBy(asc(scheduledAlarms.scheduledAt))
-  .limit(1)
-  .get()
-
+const next = readEarliestPendingScheduledAt(db, ctx.userId)
 if (next) {
-  await this.ctx.storage.setAlarm(next.scheduledAt)
+  await scheduleAlarm(next.scheduledAt)
 } else {
-  // No more pending alarms — clear the DO alarm slot entirely
-  await this.ctx.storage.deleteAlarm()
+  await cancelAlarm()
 }
 ```
-
-This step is critical. If the cancelled alarm was the one the DO slot was pointing at, the DO would still wake up at that time, find no due work (it just got cancelled), and go back to sleep pointlessly. Resetting the slot immediately prevents this wasted wake-up.
-
-If there are no more pending rows at all, `deleteAlarm()` clears the slot — the DO will not wake up until a new alarm is scheduled via `schedule_user_alarm`.
 
 ## What It Returns
 

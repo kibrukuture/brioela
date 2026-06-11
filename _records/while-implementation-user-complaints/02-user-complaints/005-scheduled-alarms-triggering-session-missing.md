@@ -14,4 +14,4 @@ We must decide whether to:
 TypeScript compilation and query runs will crash when trying to read/write `scheduledAlarms.triggeringSessionId`.
 
 ## Status
-**OPEN.**
+**FIXED.** Added `triggeringSessionId` / `triggering_session_id` to `scheduled.alarm.schema.ts`, migration `0007_scheduled_alarms_triggering_session_id`, specs (`10-scheduled-alarms.md`, `11`, `15`, `17`), build-guide, and alarm tool insert path.

@@ -283,17 +283,23 @@ This needs a concrete detection mechanism. Nothing in the current spec detects i
 When ANY session starts (chat, cooking, alarm, background), the Brain inserts a `session_watchdog` alarm into `scheduled_alarms`:
 
 ```typescript
-db.insert(scheduledAlarms).values({
-  id:                 crypto.randomUUID(),
-  userId:             ctx.userId,
-  alarmType:          'session_watchdog',
-  status:             'pending',
-  scheduledFor:       now + WATCHDOG_DURATION[session.sessionType],
-  payloadJson:        JSON.stringify({ session_id: session.id }),
-  triggeringSessionId: session.id,
-  attempts:           0,
-  createdAt:          now,
-  updatedAt:          now,
+import { createId } from '@brioela/shared/_ids'
+import { readCurrentEpochMs } from '@/time/_helpers'
+import { writeUserAlarm } from '@/agents/brain/_repositories'
+
+const now = readCurrentEpochMs()
+
+writeUserAlarm(db, {
+  id:                    createId(),
+  userId:                ctx.userId,
+  alarmType:             'session_watchdog',
+  status:                'pending',
+  scheduledAt:           now + WATCHDOG_DURATION[session.sessionType],
+  payload:               JSON.stringify({ session_id: session.id }),
+  triggeringSessionId:   session.id,
+  attempts:              0,
+  createdAt:             now,
+  updatedAt:             now,
 })
 ```
 
@@ -314,7 +320,7 @@ The DO alarm handler wakes up, finds the `session_watchdog` row due, and runs:
 
 ```typescript
 async function handleSessionWatchdog(alarm: ScheduledAlarm) {
-  const payload    = JSON.parse(alarm.payloadJson) as { session_id: string }
+  const payload    = JSON.parse(alarm.payload) as { session_id: string }
   const session    = db.select().from(sessions)
                       .where(eq(sessions.id, payload.session_id)).get()
 
@@ -354,17 +360,17 @@ async function handleSessionWatchdog(alarm: ScheduledAlarm) {
       .run()
   } else {
     // Session is still active and recent — reschedule watchdog for 1 more hour
-    db.insert(scheduledAlarms).values({
-      id:                 crypto.randomUUID(),
-      userId:             ctx.userId,
-      alarmType:          'session_watchdog',
-      status:             'pending',
-      scheduledFor:       Date.now() + 60 * 60 * 1000,
-      payloadJson:        alarm.payloadJson,
+    writeUserAlarm(db, {
+      id:                  createId(),
+      userId:              ctx.userId,
+      alarmType:           'session_watchdog',
+      status:              'pending',
+      scheduledAt:         Date.now() + 60 * 60 * 1000,
+      payload:             alarm.payload,
       triggeringSessionId: payload.session_id,
-      attempts:           0,
-      createdAt:          Date.now(),
-      updatedAt:          Date.now(),
+      attempts:            0,
+      createdAt:           Date.now(),
+      updatedAt:           Date.now(),
     })
   }
 }
@@ -403,18 +409,15 @@ async function closeSession(sessionId: string, endReason: string, outcomeSummary
     .get()
 
   if (watchdog) {
-    db.update(scheduledAlarms)
-      .set({ status: 'cancelled', updatedAt: Date.now() })
-      .where(eq(scheduledAlarms.id, watchdog.id))
-      .run()
-    // Reset DO alarm slot to next earliest pending alarm
-    const next = db.select({ scheduledFor: scheduledAlarms.scheduledFor })
-      .from(scheduledAlarms)
-      .where(eq(scheduledAlarms.status, 'pending'))
-      .orderBy(asc(scheduledAlarms.scheduledFor))
-      .limit(1).get()
-    if (next) await this.ctx.storage.setAlarm(next.scheduledFor)
-    else      await this.ctx.storage.deleteAlarm()
+    cancelUserAlarm(db, {
+      id: watchdog.id,
+      cancelReason: 'session_closed',
+      cancelledAt: Date.now(),
+      updatedAt: Date.now(),
+    })
+    const next = readEarliestPendingScheduledAt(db, ctx.userId)
+    if (next) await scheduleAlarm(next.scheduledAt)
+    else await cancelAlarm()
   }
 }
 ```

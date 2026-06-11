@@ -50,6 +50,13 @@
       "when": 1781180700000,
       "tag": "0006_recipe_origin_naming",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "6",
+      "when": 1781180800000,
+      "tag": "0007_scheduled_alarms_triggering_session_id",
+      "breakpoints": true
     }
   ]
 }

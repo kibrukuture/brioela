@@ -685,6 +685,7 @@ CREATE TABLE scheduled_alarms (
   id             TEXT PRIMARY KEY,
   user_id        TEXT NOT NULL,
   alarm_type     TEXT NOT NULL,   -- free text — no fixed enum
+  triggering_session_id TEXT,     -- session that scheduled this alarm — NULL for system-scheduled
   payload        TEXT NOT NULL,   -- JSON object — alarm handler reads this
   sdk_schedule_id TEXT,           -- Agents SDK schedule id used as wake/callback mechanism
   status         TEXT NOT NULL DEFAULT 'pending',  -- lifecycle: 'pending' | 'processing' | 'completed' | 'failed' | 'cancelled'
@@ -723,6 +724,7 @@ export const scheduledAlarms = sqliteTable('scheduled_alarms', {
   id:            text('id').primaryKey(),
   userId:        text('user_id').notNull(),
   alarmType:     text('alarm_type').notNull(),
+  triggeringSessionId: text('triggering_session_id'),
   payload:       text('payload').notNull(),
   sdkScheduleId: text('sdk_schedule_id'),
   status:        text('status', { enum: scheduledAlarmStatus }).notNull().default('pending'),

@@ -11,7 +11,7 @@ import { archiveUserRecipeExecutable } from '@/agents/brain/_tools/_executables/
 import { updateUserRecipeExecutable } from '@/agents/brain/_tools/_executables/update.user.recipe.executable'
 import { viewUserRecipeExecutable } from '@/agents/brain/_tools/_executables/view.user.recipe.executable'
 import { archiveUserRecipeTool } from '@/agents/brain/_tools/archive.user.recipe.tool'
-import { buildToolsForSession } from '@/agents/brain/_tools/memory.tool'
+import { getBrainTools } from '@/agents/brain/_tools/get.brain.tools'
 import { updateUserRecipeTool } from '@/agents/brain/_tools/update.user.recipe.tool'
 import { viewUserRecipeTool } from '@/agents/brain/_tools/view.user.recipe.tool'
 import { and, eq } from '@/database/drizzle/_database'
@@ -114,9 +114,9 @@ function seedActiveRecipe(
 describe('Brain Recipe Tools', () => {
 	it('exposes recipe tools by session kind', async () => {
 		await withMigratedDatabase((database) => {
-			const cookingTools = buildToolsForSession(database, userId, 'cooking')
-			const chatTools = buildToolsForSession(database, userId, 'chat')
-			const alarmTools = buildToolsForSession(database, userId, 'alarm')
+			const cookingTools = getBrainTools(database, userId, 'cooking')
+			const chatTools = getBrainTools(database, userId, 'chat')
+			const alarmTools = getBrainTools(database, userId, 'alarm')
 
 			expect(cookingTools.view_user_recipe).toBeDefined()
 			expect(cookingTools.update_user_recipe).toBeDefined()

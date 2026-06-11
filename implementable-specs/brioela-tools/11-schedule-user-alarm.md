@@ -85,44 +85,31 @@ export const ScheduleUserAlarmSchema = z.object({
 ### Step 1 — Insert into scheduled_alarms
 
 ```typescript
-const id = crypto.randomUUID()
-const now = Date.now()
+import { createId } from '@brioela/shared/_ids'
+import { readCurrentEpochMs } from '@/time/_helpers'
+import { writeUserAlarm, readEarliestPendingScheduledAt } from '@/agents/brain/_repositories'
 
-db.insert(scheduledAlarms).values({
+const now = readCurrentEpochMs()
+const id = createId()
+
+writeUserAlarm(db, {
   id,
   userId:              ctx.userId,
   alarmType:           input.alarm_type,
   status:              'pending',
-  scheduledAt:          input.scheduled_at,
+  scheduledAt:         input.scheduled_at,
   payload:             JSON.stringify(input.payload),
   triggeringSessionId: input.triggering_session_id ?? null,
   attempts:            0,
-  lastAttemptedAt:     null,
-  completedAt:         null,
-  failReason:          null,
   createdAt:           now,
   updatedAt:           now,
-}).run()
-```
+})
 
-### Step 2 — Update DO alarm slot
-
-After inserting, immediately read the earliest pending scheduled_at across all pending rows and set the DO alarm slot:
-
-```typescript
-const next = db.select({ scheduledAt: scheduledAlarms.scheduledAt })
-  .from(scheduledAlarms)
-  .where(eq(scheduledAlarms.status, 'pending'))
-  .orderBy(asc(scheduledAlarms.scheduledAt))
-  .limit(1)
-  .get()
-
+const next = readEarliestPendingScheduledAt(db, ctx.userId)
 if (next) {
-  await this.ctx.storage.setAlarm(next.scheduledAt)
+  await scheduleAlarm(next.scheduledAt)
 }
 ```
-
-This is critical. Without step 2, the DO never wakes up for the new alarm. The slot is always pointed at the earliest pending row — adding a new row that is earlier than the current slot is automatically handled by this read-and-set pattern.
 
 ## What It Returns
 
@@ -151,7 +138,7 @@ The agent can report the scheduled alarm to the user: "I've set a check-in for 6
 | Validation error | scheduled_at in the past, alarm_type empty, payload not a record | Zod error with failing field |
 | Alarm already pending | Same alarm_type has a pending row (for dedup types) | `{ error: 'alarm_already_pending', id, alarm_type, scheduled_at, hint }` |
 | Write failure | SQLite error (rare) | Error message |
-| setAlarm failure | CF DO storage error (rare) | Error message — alarm row inserted but slot not updated |
+| scheduleAlarm failure | CF DO storage error (rare) | Error message — alarm row inserted but wake slot not updated |
 
 ## Who Can Call It
 

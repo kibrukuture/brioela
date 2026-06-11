@@ -277,17 +277,17 @@ const existingBrainMaintenance = db.select().from(scheduledAlarms)
   )).get()
 
 if (!existingBrainMaintenance) {
-  db.insert(scheduledAlarms).values({
-    id:          crypto.randomUUID(),
-    userId:      ctx.userId,
-    alarmType:   'brain_maintenance_run',
-    status:      'pending',
-    scheduledAt: Date.now() + 7 * 24 * 60 * 60 * 1000,  // 7 days from init
-    payload: '{}',
+  writeUserAlarm(db, {
+    id:                  createId(),
+    userId:              ctx.userId,
+    alarmType:           'brain_maintenance_run',
+    status:              'pending',
+    scheduledAt:         Date.now() + 7 * 24 * 60 * 60 * 1000,
+    payload:             '{}',
     triggeringSessionId: null,
-    attempts:    0,
-    createdAt:   Date.now(),
-    updatedAt:   Date.now(),
+    attempts:            0,
+    createdAt:           Date.now(),
+    updatedAt:           Date.now(),
   })
 }
 
@@ -298,22 +298,22 @@ const existingPattern = db.select().from(scheduledAlarms)
   )).get()
 
 if (!existingPattern) {
-  db.insert(scheduledAlarms).values({
-    id:          crypto.randomUUID(),
-    userId:      ctx.userId,
-    alarmType:   'behavior_pattern_detection',
-    status:      'pending',
-    scheduledAt: Date.now() + 3 * 24 * 60 * 60 * 1000,  // 3 days from init
-    payload: '{}',
+  writeUserAlarm(db, {
+    id:                  createId(),
+    userId:              ctx.userId,
+    alarmType:           'behavior_pattern_detection',
+    status:              'pending',
+    scheduledAt:         Date.now() + 3 * 24 * 60 * 60 * 1000,
+    payload:             '{}',
     triggeringSessionId: null,
-    attempts:    0,
-    createdAt:   Date.now(),
-    updatedAt:   Date.now(),
+    attempts:            0,
+    createdAt:           Date.now(),
+    updatedAt:           Date.now(),
   })
 }
 
-// Update DO alarm slot to the earliest of the two
-await this.ctx.storage.setAlarm(Date.now() + 3 * 24 * 60 * 60 * 1000)
+const next = readEarliestPendingScheduledAt(db, ctx.userId)
+if (next) await scheduleAlarm(next.scheduledAt)
 ```
 
 Both are system-scheduled — `triggeringSessionId = null`. No agent session created them.
@@ -729,7 +729,7 @@ The scheduled_alarms row stays at `status = 'processing'`. On the next DO wake-u
 - Pass 2 (decay): re-applying decay math is idempotent. A trait already at 0.10 stays at 0.10 — additional decay does not go below 0.
 - Pass 3 (inference): `create_personality_trait` with a duplicate name returns an error — Brain maintenance skips it.
 
-Max retry attempts: 3. After 3 failures, `status = 'failed'`, `fail_reason` written. Next brain_maintenance_run scheduled from now normally — one failed run does not block the next cycle.
+Max retry attempts: 3. After 3 failures, `status = 'failed'`, `failure_reason` written. Next brain_maintenance_run scheduled from now normally — one failed run does not block the next cycle.
 
 ### BehaviorPatternAgent fails
 

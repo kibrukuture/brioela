@@ -8,6 +8,7 @@ export const scheduledAlarms = sqliteTable(
 		id: text('id').primaryKey(),
 		userId: text('user_id').notNull(),
 		alarmType: text('alarm_type').notNull(),
+		triggeringSessionId: text('triggering_session_id'),
 		payload: text('payload').notNull(),
 		sdkScheduleId: text('sdk_schedule_id'),
 		status: text('status', { enum: scheduledAlarmStatus }).notNull().default('pending'),
@@ -45,6 +46,7 @@ export const scheduledAlarms = sqliteTable(
 		check('scheduled_alarms_updated_at_check', sql`${table.updatedAt} >= ${table.createdAt}`),
 		index('scheduled_alarms_status_scheduled_at_index').on(table.status, table.scheduledAt),
 		index('scheduled_alarms_type_status_index').on(table.alarmType, table.status),
+		index('scheduled_alarms_triggering_session_id_index').on(table.triggeringSessionId).where(sql`triggering_session_id IS NOT NULL`),
 	],
 )
 
