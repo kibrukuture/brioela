@@ -7,7 +7,7 @@ const gateCall = await fetch('http://gate/status', { unix: gateSocketPath }).cat
 
 if (gateCall === null) {
   console.error('The reading gate daemon is not running.')
-  console.error('Only the human can start it: sudo bun gate:up')
+  console.error('Only the human can start it: sudo bun run gate:up   (from the repo root)')
   exit(1)
 }
 

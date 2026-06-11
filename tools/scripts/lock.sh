@@ -14,6 +14,10 @@ LOCKED=0
 lock_file() {
   local f="$1"
   if [ -f "$f" ]; then
+    # drop the unlock-window deny-delete ACL first (fails silently on already-locked
+    # files — harmless, schg dominates), then make the file fully immutable:
+    # locked = no edit, no delete, no rename, enforced by the OS.
+    sudo chmod -N "$f" 2>/dev/null || true
     sudo chflags schg,uchg "$f"
     echo "  locked  ${f#"$WORKSPACE_ROOT/"}"
     LOCKED=$((LOCKED + 1))

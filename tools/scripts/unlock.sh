@@ -54,7 +54,12 @@ unlock_file() {
   local f="$1"
   if [ -f "$f" ]; then
     sudo chflags noschg,nouchg "$f"
-    echo "  unlocked  ${f#"$WORKSPACE_ROOT/"}"
+    # unlocked = edit only. A deny-delete ACL on the file itself blocks rm and mv
+    # (rename needs the delete right on the source) while leaving writes free.
+    # No directory ownership changes — parents stay untouched.
+    sudo chmod -N "$f" 2>/dev/null || true
+    sudo chmod +a "everyone deny delete" "$f"
+    echo "  unlocked  ${f#"$WORKSPACE_ROOT/"}  (edit only — delete/rename blocked)"
     UNLOCKED=$((UNLOCKED + 1))
   fi
 }

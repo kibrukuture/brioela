@@ -1,77 +1,93 @@
 #!/usr/bin/env bun
 
-import { spawn } from 'node:child_process'
-import { chmodSync, mkdirSync, openSync, writeFileSync } from 'node:fs'
+import { existsSync, mkdirSync, readFileSync, unlinkSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { execPath, exit } from 'node:process'
 import {
-  gateErrorLogPath,
+  buildGatePlist,
+  gateKeyFolder,
+  gateLaunchdLabel,
+  gateLaunchdPlistPath,
   gateLogFolder,
   gatePidPath,
-  gateRunLogPath,
   gateSocketPath,
   gateStateFolder,
   manifestFolder,
   resolveWorkspaceRoot,
+  watchGateStream,
 } from './_helpers'
 
 const ownerId = process.geteuid?.() ?? -1
 
 if (ownerId !== 0) {
-  console.error('gate:up must run as root so the manifest stays unforgeable: sudo bun gate:up')
+  console.error('gate:up must run as root so the manifest stays unforgeable: sudo bun run gate:up   (from the repo root)')
   exit(1)
-}
-
-if (await checkGateSocket()) {
-  console.log('Reading gate daemon is already running.')
-  console.log(`Socket: ${gateSocketPath}`)
-  exit(0)
 }
 
 mkdirSync(gateStateFolder, { recursive: true, mode: 0o755 })
 mkdirSync(gateLogFolder, { recursive: true, mode: 0o755 })
 mkdirSync(manifestFolder, { recursive: true, mode: 0o700 })
-chmodSync(gateStateFolder, 0o755)
-chmodSync(gateLogFolder, 0o755)
-chmodSync(manifestFolder, 0o700)
+mkdirSync(gateKeyFolder, { recursive: true, mode: 0o700 })
 
 const workspaceRoot = resolveWorkspaceRoot()
 const runtimePath = execPath.includes('/Cellar/bun/') ? '/opt/homebrew/bin/bun' : execPath
 const daemonScriptPath = join(import.meta.dir, 'run.gate.daemon.handler.ts')
-const runLogFile = openSync(gateRunLogPath, 'a')
-const errorLogFile = openSync(gateErrorLogPath, 'a')
 
-const gateDaemon = spawn(runtimePath, [daemonScriptPath], {
+// a daemon from the pre-launchd era may still hold the socket — bootout cannot
+// reach it, so kill it through its pid file before bootstrapping the real one
+if (existsSync(gatePidPath)) {
+  const stalePid = Number(readFileSync(gatePidPath, 'utf8').trim())
+  if (Number.isInteger(stalePid) && stalePid > 1) {
+    try {
+      process.kill(stalePid, 'SIGTERM')
+      console.log(`Stopped stale detached daemon (pid ${stalePid}).`)
+    } catch (staleError) {
+      if (!(staleError instanceof Error)) throw staleError
+    }
+  }
+  unlinkSync(gatePidPath)
+}
+if (existsSync(gateSocketPath)) unlinkSync(gateSocketPath)
+
+const logOut = Bun.file(join(gateLogFolder, 'gate.out.log'))
+const logErr = Bun.file(join(gateLogFolder, 'gate.err.log'))
+
+const daemonProcess = Bun.spawn([
+  '/bin/bash',
+  '-c',
+  'ulimit -n 8192 && exec "$0" "$@"',
+  runtimePath,
+  daemonScriptPath
+], {
   detached: true,
-  stdio: ['ignore', runLogFile, errorLogFile],
-  env: { ...process.env, BRIOELA_WORKSPACE_ROOT: workspaceRoot },
+  stdout: logOut,
+  stderr: logErr,
+  env: {
+    ...process.env,
+    BRIOELA_WORKSPACE_ROOT: workspaceRoot,
+  },
 })
 
-gateDaemon.unref()
+daemonProcess.unref()
+writeFileSync(gatePidPath, String(daemonProcess.pid))
 
-if (typeof gateDaemon.pid !== 'number') {
-  console.error('Could not launch the reading gate daemon. Check the logs:')
-  console.error(`  ${gateErrorLogPath}`)
-  exit(1)
-}
-
-writeFileSync(gatePidPath, `${gateDaemon.pid}\n`, { mode: 0o644 })
-
-for (let index = 0; index < 30; index++) {
+for (let index = 0; index < 50; index++) {
   await Bun.sleep(100)
   if (await checkGateSocket()) {
-    console.log('Reading gate is up. Agents earn read credit only through: bun gate:read <file>')
+    console.log('Reading gate is up in the background.')
     console.log(`  Workspace: ${workspaceRoot}`)
     console.log(`  Socket:    ${gateSocketPath}`)
     console.log(`  Manifest:  ${manifestFolder} (root-owned, mode 700)`)
-    console.log(`  Pid:       ${gateDaemon.pid}`)
+    console.log(`  Pid:       ${daemonProcess.pid}`)
     console.log(`  Logs:      ${gateLogFolder}`)
-    exit(0)
+    console.log('')
+    console.log('  Other mouths:  bun run gate:watch · bun run gate:verdict · bun run gate:hooks:install')
+    await watchGateStream()
   }
 }
 
 console.error('The reading gate daemon did not come up in time. Check the logs:')
-console.error(`  ${gateErrorLogPath}`)
+console.error(`  ${join(gateLogFolder, 'gate.err.log')}`)
 exit(1)
 
 async function checkGateSocket(): Promise<boolean> {

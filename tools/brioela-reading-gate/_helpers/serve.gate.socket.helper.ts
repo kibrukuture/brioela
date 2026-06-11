@@ -2,6 +2,8 @@ import { chmodSync, existsSync, unlinkSync } from 'node:fs'
 import { gateSocketPath } from './gate.config.helper'
 import { serveReadRoute } from './serve.read.route.helper'
 import { serveStatusRoute } from './serve.status.route.helper'
+import { serveVerdictRoute } from './serve.verdict.route.helper'
+import { serveWatchRoute } from './serve.watch.route.helper'
 
 export function serveGateSocket(workspaceRoot: string): ReturnType<typeof Bun.serve> {
   if (existsSync(gateSocketPath)) unlinkSync(gateSocketPath)
@@ -17,6 +19,14 @@ export function serveGateSocket(workspaceRoot: string): ReturnType<typeof Bun.se
 
       if (url.pathname === '/status') {
         return serveStatusRoute(workspaceRoot)
+      }
+
+      if (url.pathname === '/verdict') {
+        return serveVerdictRoute(workspaceRoot, url.searchParams.get('hash'))
+      }
+
+      if (url.pathname === '/watch') {
+        return serveWatchRoute()
       }
 
       if (url.pathname === '/check') {

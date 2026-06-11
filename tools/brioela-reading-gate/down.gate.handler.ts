@@ -7,29 +7,28 @@ import { gatePidPath, gateSocketPath } from './_helpers'
 const ownerId = process.geteuid?.() ?? -1
 
 if (ownerId !== 0) {
-  console.error('gate:down must run as root: sudo bun gate:down')
+  console.error('gate:down must run as root: sudo bun run gate:down   (from the repo root)')
   exit(1)
 }
 
-if (!existsSync(gatePidPath)) {
-  console.log('Reading gate daemon is not running (no pid file).')
-  exit(0)
+let stopped = false
+if (existsSync(gatePidPath)) {
+  const pid = Number(readFileSync(gatePidPath, 'utf8').trim())
+  if (Number.isInteger(pid) && pid > 1) {
+    try {
+      process.kill(pid, 'SIGTERM')
+      console.log(`Reading gate daemon stopped (SIGTERM pid ${pid}).`)
+      stopped = true
+    } catch (error) {
+      if (!(error instanceof Error)) throw error
+      console.log(`Failed to kill process ${pid}: ${error.message}`)
+    }
+  }
+  unlinkSync(gatePidPath)
 }
 
-const pidText = readFileSync(gatePidPath, 'utf8').trim()
-const gatePid = Number(pidText)
-
-if (!Number.isInteger(gatePid) || gatePid <= 0) {
-  console.error(`Pid file is unreadable: ${gatePidPath}`)
-  exit(1)
-}
-
-try {
-  process.kill(gatePid, 'SIGTERM')
-  console.log(`Reading gate daemon stopped (pid ${gatePid}).`)
-} catch (error) {
-  console.log(`Reading gate daemon was not running (pid ${gatePid}): ${error instanceof Error ? error.message : 'unknown'}`)
+if (!stopped) {
+  console.log('Reading gate daemon was not running.')
 }
 
 if (existsSync(gateSocketPath)) unlinkSync(gateSocketPath)
-unlinkSync(gatePidPath)

@@ -16,7 +16,7 @@ const gateCall = await fetch(`http://gate/read?file=${encodeURIComponent(filePat
 
 if (gateCall === null) {
   console.error('The reading gate daemon is not running, so this read cannot earn credit.')
-  console.error('Only the human can start it: sudo bun gate:up')
+  console.error('Only the human can start it: sudo bun run gate:up   (from the repo root)')
   exit(1)
 }
 
