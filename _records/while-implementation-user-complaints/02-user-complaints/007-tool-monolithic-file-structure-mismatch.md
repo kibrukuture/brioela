@@ -16,4 +16,4 @@ We must write all future tools using this split structure instead of the obsolet
 Violating the established tool naming and splitting convention breaks the project's folder organization rules, fails codebase consistency metrics, and goes against the executable naming law.
 
 ## Status
-**OPEN.**
+**FIXED.** All shipped Brain tools use the split layout: memory (`log` / `read` / `write`), recipes (`view` / `update` / `archive`), alarms (`schedule` / `cancel`). Each has matching files under `_schemas/`, `_prompts/`, `_executables/`, and a root `.tool.ts`. Open skill/constraint ledgers remain unimplemented — when built, they must follow this same split (complaint rule satisfied for current code).
