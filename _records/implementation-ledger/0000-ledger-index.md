@@ -54,5 +54,7 @@ _records/implementation-ledger/brain/05-session-lifecycle/0001.session-open.md
 | `brain/07-sub-agents/0003.session-context-compressor.md` | Brain / Sub-agents | open | `SessionContextCompressor` ephemeral Haiku call — 4-field summary, child session creation. |
 | `brain/08-framework-hardening/0001.chat-entrypoint.md` | Brain / Framework hardening | open | Wire `onMessage`/`chat()` onto BrioelaBrain — connects all prior scopes into a working agent. |
 | `tooling/01-lexicon-guard/0001.granular-vocabulary.md` | Tooling / Lexicon guard | done | Split the lexicon guard vocabulary into granular owned slices while keeping stable aggregate exports. |
+| `tooling/02-reading-gate/0001.design.docs.md` | Tooling / Reading gate | done | Wrote the Reading Gate and Agent Loop Orchestration design doctrine (build-guide 14 & 15) — hard mechanical read-proof gate at commit time plus the agent loop where the human is reviewer/merger only. |
+| `tooling/02-reading-gate/0002.unforgeable-design.md` | Tooling / Reading gate | done | Revised build-guide 14 & 15 to the unforgeable model: root daemon as reader-of-record, root-owned manifest, ed25519-signed passes, clean-room verification, daemon-executed merges, sovereign-territory locks on all tooling, full automation behind one `sudo bun gate:up` command. |
 
 
