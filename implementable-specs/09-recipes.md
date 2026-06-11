@@ -89,103 +89,112 @@ A user will have at most tens to low hundreds of recipes — never thousands. Al
 CREATE TABLE recipes (
   id                TEXT PRIMARY KEY,   -- UUID v4
   user_id           TEXT NOT NULL,      -- owner — self-describing for export
-  title             TEXT NOT NULL,      -- recipe name — not unique, user can have "Doro Wat" and "Grandma's Doro Wat"
-  content           TEXT NOT NULL,      -- full markdown: ingredients as written, steps, notes, cultural context
-  ingredients       TEXT NOT NULL DEFAULT '[]',  -- JSON array of strings — extracted from content for constraint checking
-  source            TEXT NOT NULL,      -- 'session' | 'reconstructed' | 'user_created' — free text, not an enum
-  source_session_id TEXT,               -- which session first produced this recipe — NULL for user_created
-  cook_time_minutes INTEGER,            -- nullable — used by cooking session for pacing and alarm system for timing warnings
-  tags              TEXT NOT NULL DEFAULT '[]',  -- JSON array of strings — cuisine, meal type, occasion, etc.
-  cook_count        INTEGER NOT NULL DEFAULT 0,  -- how many cooking sessions have used this recipe
-  last_cooked_at    INTEGER,            -- unix timestamp ms — NULL until first cooking session
+  title             TEXT NOT NULL,      -- recipe name
+  source            TEXT NOT NULL,      -- 'cooking_session' | 'url' | 'manual' | 'family_capture'
+  source_session_id TEXT,               -- session_id that produced this recipe
+  source_url        TEXT,               -- URL if source = 'url'
+  content           TEXT NOT NULL,      -- JSON string of NormalizedImportedRecipe
+  version           INTEGER NOT NULL DEFAULT 1, -- current version of the recipe
+  cook_count        INTEGER NOT NULL DEFAULT 0,
+  last_cooked_at    INTEGER,
   status            TEXT NOT NULL DEFAULT 'active', -- 'active' | 'archived' (soft delete)
+  confidence        REAL NOT NULL DEFAULT 1.0,
   created_at        INTEGER NOT NULL,   -- unix timestamp ms
-  updated_at        INTEGER NOT NULL    -- unix timestamp ms
+  updated_at        INTEGER NOT NULL,   -- unix timestamp ms
+  CONSTRAINT "recipes_content_json_object_check" CHECK(json_valid(content) and json_type(content) = 'object'),
+  CONSTRAINT "recipes_version_check" CHECK(version >= 1),
+  CONSTRAINT "recipes_cook_count_check" CHECK(cook_count >= 0),
+  CONSTRAINT "recipes_last_cooked_at_check" CHECK(last_cooked_at is null or last_cooked_at >= 0),
+  CONSTRAINT "recipes_status_check" CHECK(status in ('active', 'archived')),
+  CONSTRAINT "recipes_confidence_check" CHECK(confidence >= 0 and confidence <= 1),
+  CONSTRAINT "recipes_created_at_check" CHECK(created_at >= 0),
+  CONSTRAINT "recipes_updated_at_check" CHECK(updated_at >= created_at)
+);
+
+CREATE TABLE recipe_versions (
+  id            TEXT PRIMARY KEY,   -- UUID v4
+  recipe_id     TEXT NOT NULL,      -- references recipes.id logical FK
+  user_id       TEXT NOT NULL,
+  version       INTEGER NOT NULL,   -- version before incrementing
+  content       TEXT NOT NULL,      -- JSON string of NormalizedImportedRecipe before update
+  updated_by    TEXT NOT NULL,      -- 'agent' | 'brain_maintenance'
+  update_reason TEXT NOT NULL,      -- audit reason for change
+  archived_at   INTEGER NOT NULL,   -- unix timestamp ms
+  CONSTRAINT "recipe_versions_version_check" CHECK(version >= 1),
+  CONSTRAINT "recipe_versions_updated_by_check" CHECK(updated_by in ('agent', 'brain_maintenance')),
+  CONSTRAINT "recipe_versions_archived_at_check" CHECK(archived_at >= 0)
 );
 ```
 
 ## Drizzle Schema
 
 ```typescript
-import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core'
+import { check, index, integer, real, sql, sqliteTable, text } from 'drizzle-orm/sqlite-core'
 
 export const recipes = sqliteTable('recipes', {
   id:              text('id').primaryKey(),
   userId:          text('user_id').notNull(),
   title:           text('title').notNull(),
-  content:         text('content').notNull(),
-  ingredients:     text('ingredients').notNull().default('[]'),   // JSON array of strings
-  source:          text('source').notNull(),                      // free text — not an enum
+  source:          text('source').notNull(),
   sourceSessionId: text('source_session_id'),
-  cookTimeMinutes: integer('cook_time_minutes'),
-  tags:            text('tags').notNull().default('[]'),
+  sourceUrl:       text('source_url'),
+  content:         text('content').notNull(),
+  version:         integer('version').notNull().default(1),
   cookCount:       integer('cook_count').notNull().default(0),
   lastCookedAt:    integer('last_cooked_at'),
   status:          text('status', { enum: ['active', 'archived'] }).notNull().default('active'),
+  confidence:      real('confidence').notNull().default(1.0),
   createdAt:       integer('created_at').notNull(),
   updatedAt:       integer('updated_at').notNull(),
 })
-```
 
-## Column Decisions
+export const recipeVersions = sqliteTable('recipe_versions', {
+  id:           text('id').primaryKey(),
+  recipeId:     text('recipe_id').notNull(),
+  userId:       text('user_id').notNull(),
+  version:      integer('version').notNull(),
+  content:      text('content').notNull(),
+  updatedBy:    text('updated_by').notNull(),
+  updateReason: text('update_reason').notNull(),
+  archivedAt:   integer('archived_at').notNull(),
+})
+```
 
 **`id` — UUID**
-Sessions reference recipes via `sessions.recipe_id`. Stable cross-table identity needed. UUID is the right key — title is not unique and not stable.
+Sessions reference recipes via `sessions.recipe_id`. Stable cross-table identity needed. UUID is the right key.
 
 **`title` — not unique**
-A user can have "Doro Wat", "Grandma's Doro Wat", "Doro Wat — lighter version". No uniqueness constraint. UUID is the identity.
+A user can have "Doro Wat", "Grandma's Doro Wat". No uniqueness constraint. UUID is the identity.
 
-**`content` — full markdown, no size cap**
-Grandma's voice, cultural context, technique notes, exact phrasing — all preserved. A reconstructed grandma recipe can be long. The agent loads this only when needed via `view_user_recipe(id)`, never preloaded into every prompt.
+**`content` — JSON string of NormalizedImportedRecipe**
+Stores the normalized recipe JSON object including: `title`, `ingredients` (array of objects), `steps` (array of objects), `tags` (array of strings), `cuisine`, `servings`, `totalTimeMinutes`, and `warnings`. The agent loads this on demand via `view_user_recipe(id)`.
 
-**`ingredients` — JSON array of strings, kept in sync with content**
-Exists only for constraint checking. When the agent checks "is this recipe safe for this user," it reads `ingredients` and matches against `constraints`. It does not parse `content` for safety checks — that would be unreliable. Every `update_user_recipe` that changes content must re-extract and update `ingredients` in the same transaction.
-
-**`source` — free text, known values are suggestions**
-`session`: captured from a Mira session. `reconstructed`: agent rebuilt from memory_event fragments after the fact. `user_created`: user dictated it directly. New sources added without schema change.
+**`source` — free text**
+`session`: captured from a Mira session. `url`: imported from web url. `manual`: created by user.
 
 **`source_session_id` — nullable**
-Points to the first session that produced this recipe. NULL for user_created. Lets you trace back to the original conversation and re-read the grandma session transcript if needed.
+Points to the session ID that produced this recipe.
 
-**`cook_time_minutes` — nullable integer**
-NULL when grandma does not state a time — never fabricated. When present, the Mira uses it at session start to set expectations ("this will take about 2 hours") and to pace the session. The alarm system uses it to warn the user if starting this recipe conflicts with a scheduled event or upcoming alarm.
+**`cook_count` — integer**
+Incremented on every successful cook session.
 
-**`cook_count` — incremented by cooking sessions**
-Every time a cooking session with this `recipe_id` completes successfully, `cook_count` increments. This is the primary signal for recipe relevance — recipes the user actually makes vs recipes they saved and never touched. Fire-and-forget increment, never awaited.
-
-**`last_cooked_at` — nullable**
-NULL until first cooking session. Combined with `cook_count = 0`, identifies recipes that were captured but never actually cooked — archiving candidates.
+**`last_cooked_at` — nullable integer**
+Timestamp of last cook session.
 
 **`status` — soft delete**
-'active' | 'archived'. Row never deleted. If a recipe is archived and the user asks about it, the agent can surface it and offer to restore it.
+'active' | 'archived'. Row never deleted.
 
-## Indexes
-
-```sql
-CREATE INDEX idx_recipes_status      ON recipes (status, cook_count DESC);
-CREATE INDEX idx_recipes_last_cooked ON recipes (last_cooked_at DESC) WHERE status = 'active';
-CREATE INDEX idx_recipes_source      ON recipes (source_session_id) WHERE source_session_id IS NOT NULL;
-```
-
-**Why these indexes:**
-- `(status, cook_count DESC)` — recipe index injection: load all active recipes ordered by most cooked first
-- `(last_cooked_at DESC)` partial — stale detection: find active recipes with oldest last use, archiving candidates
-- `(source_session_id)` partial — trace: find which recipe came from a given session
- 
 ## Write Rules
 
-- New row inserted by MiraSession at session end, only after passing the session-end decision tree. Never inserted automatically without the check.
-- `cook_count` and `last_cooked_at` updated at the end of every cooking session that uses this recipe — fire and forget, never awaited.
-- `update_user_recipe` — agent rewrites `content`. Must re-extract and update `ingredients` in the same write. `updated_at` always updated.
-- `archive_user_recipe` — sets `status = 'archived'`. Never deletes. `updated_at` always updated.
-- Brain maintenance does NOT write to this table. Recipe lifecycle is agent-driven and user-confirmed.
+- New row inserted at cooking session end.
+- `update_user_recipe` — updates the JSON `content` payload. Must archive the previous version's `content` and metadata to `recipe_versions` table within the same transaction.
+- `archive_user_recipe` — sets `status = 'archived'`. Never deletes.
 
 ## Read Rules
 
-- Title index injected into every session prompt: `id: title` for all active recipes. Agent calls `view_user_recipe(id)` to load full content on demand.
-- Read by constraint checker before a cooking session starts: `ingredients` checked against user's active constraints.
-- Read by `sessions` queries: "show me all sessions where we cooked this recipe" via `sessions.recipe_id`.
-- Read by the agent when the user asks about past cooking: "when did we last make doro wat."
+- Title index injected into session prompts: `id: title`. Agent calls `view_user_recipe(id)` to load full content.
+- Read by constraint checker: ingredients array inside JSON `content` checked against user's active constraints.
+- Read by sessions: find all sessions for a given `recipe_id`.
 
 ## What Is NOT Stored Here
 

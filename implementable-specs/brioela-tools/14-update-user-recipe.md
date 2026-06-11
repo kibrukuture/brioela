@@ -28,34 +28,14 @@ export const UpdateUserRecipeSchema = z.object({
   // The recipe UUID to update. Must be active (status = 'active').
 
   content: z.string().min(1),
-  // The full new markdown content. Replaces the current content entirely.
-  // Must include all ingredients, steps, and notes — not a patch.
-  // The ingredients list is re-extracted from this content after the write.
-
-  ingredients: z.array(z.string().min(1)).min(1),
-  // Machine-extracted ingredient strings from the new content.
-  // The agent extracts these before calling this tool — they are not auto-extracted server-side.
-  // Why: the agent doing the cooking session has the context to extract accurately.
-  //   A generic extractor would miss: "niter kibbeh" as one ingredient vs "butter" as a substitute.
-  // Must be non-empty — a recipe with no extractable ingredients is a reconstruction failure.
-  // Format: lowercase, individual ingredient name only — no quantities, no units.
-  // Good: ["berbere", "niter kibbeh", "chicken", "onions", "eggs"]
-  // Bad:  ["2 lbs chicken thighs", "enough berbere"]  ← quantities belong in content, not here
-
-  cook_time_minutes: z.number().int().positive().optional(),
-  // Update cook time if changed. Omit to keep existing value.
-  // Pass null explicitly to clear it if grandma's new version has no stated time.
-  // This field is nullable in the schema — do not pass 0, pass null to clear.
-
-  tags: z.array(z.string()).optional(),
-  // Update tags if changed. Omit to keep existing tags.
+  // The new JSON string representing the NormalizedImportedRecipe.
+  // Replaces the current content entirely.
 
   reason: z.string().min(1),
   // Why this recipe is being updated. Required.
-  // Examples:
-  //   "Cooking session with grandma — she corrected the spice order and timing"
-  //   "User said to add the egg-marbling step she noticed from last session"
-  //   "Session 3 produced a refined technique — updating to capture it"
+
+  updated_by: z.enum(['agent', 'brain_maintenance']),
+  // Who is making this update.
 })
 ```
 
@@ -83,18 +63,26 @@ if (!recipe) {
 
 ## What It Writes — One Transaction
 
-`content` and `ingredients` must always be in sync. Single transaction:
+Single transaction to archive to `recipe_versions` and update the recipe:
 
 ```typescript
 db.transaction(() => {
+  // Step 1: Archive current version to recipe_versions
+  db.insert(recipeVersions).values({
+    id:           crypto.randomUUID(),
+    recipeId:     recipe.id,
+    userId:       ctx.userId,
+    version:      recipe.version,
+    content:      recipe.content,
+    updatedBy:    input.updated_by,
+    updateReason: input.reason,
+    archivedAt:   Date.now(),
+  })
+
+  // Step 2: Update the recipe
   db.update(recipes)
     .set({
       content:         input.content,
-      ingredients:     JSON.stringify(input.ingredients),
-      cookTimeMinutes: input.cook_time_minutes !== undefined
-                         ? input.cook_time_minutes
-                         : recipe.cookTimeMinutes,
-      tags:            input.tags ? JSON.stringify(input.tags) : recipe.tags,
       updatedAt:       Date.now(),
     })
     .where(eq(recipes.id, input.id))
@@ -102,7 +90,7 @@ db.transaction(() => {
 })
 ```
 
-If the transaction fails, both content and ingredients stay unchanged. No partial state.
+If the transaction fails, both are rolled back.
 
 ## What It Returns
 
@@ -112,7 +100,6 @@ On success:
 {
   "id": "a1b2c3d4-...",
   "title": "Grandma's Doro Wat",
-  "ingredients_count": 6,
   "status": "updated"
 }
 ```

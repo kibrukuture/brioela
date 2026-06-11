@@ -513,20 +513,22 @@ User's saved recipe collection. One row per distinct recipe.
 
 ```sql
 CREATE TABLE recipes (
-  id              TEXT PRIMARY KEY,   -- UUID v4
-  user_id         TEXT NOT NULL,
-  title           TEXT NOT NULL,
-  source          TEXT NOT NULL,      -- 'cooking_session' | 'url' | 'manual' | 'family_capture'
-  source_session  TEXT,               -- session_id that produced this recipe
-  source_url      TEXT,               -- URL if source = 'url'
-  content         TEXT NOT NULL,      -- JSON: { ingredients[], steps[], notes, timing, servings, cultural_notes }
-  cook_count      INTEGER NOT NULL DEFAULT 0,
-  last_cooked_at  INTEGER,
-  status          TEXT NOT NULL DEFAULT 'active',  -- 'active' | 'archived'
-  confidence      REAL NOT NULL DEFAULT 1.0,       -- 0.0–1.0 for URL-extracted recipes
-  created_at      INTEGER NOT NULL,
-  updated_at      INTEGER NOT NULL
+  id                TEXT PRIMARY KEY,   -- UUID v4
+  user_id           TEXT NOT NULL,
+  title             TEXT NOT NULL,
+  source            TEXT NOT NULL,      -- 'cooking_session' | 'url' | 'manual' | 'family_capture'
+  source_session_id TEXT,               -- session_id that produced this recipe
+  source_url        TEXT,               -- URL if source = 'url'
+  content           TEXT NOT NULL,      -- JSON: { ingredients[], steps[], notes, timing, servings, cultural_notes }
+  version           INTEGER NOT NULL DEFAULT 1, -- current version of the recipe
+  cook_count        INTEGER NOT NULL DEFAULT 0,
+  last_cooked_at    INTEGER,
+  status            TEXT NOT NULL DEFAULT 'active',  -- 'active' | 'archived'
+  confidence        REAL NOT NULL DEFAULT 1.0,       -- 0.0–1.0 for URL-extracted recipes
+  created_at        INTEGER NOT NULL,
+  updated_at        INTEGER NOT NULL
   CHECK (json_valid(content) AND json_type(content) = 'object'),
+  CHECK (version >= 1),
   CHECK (cook_count >= 0),
   CHECK (last_cooked_at IS NULL OR last_cooked_at >= 0),
   CHECK (status IN ('active', 'archived')),
@@ -535,25 +537,52 @@ CREATE TABLE recipes (
   CHECK (updated_at >= created_at)
 );
 
+CREATE TABLE recipe_versions (
+  id            TEXT PRIMARY KEY,   -- UUID v4
+  recipe_id     TEXT NOT NULL,      -- logical reference to recipes.id
+  user_id       TEXT NOT NULL,
+  version       INTEGER NOT NULL,   -- recipe version before incrementing
+  content       TEXT NOT NULL,      -- JSON content before the update
+  updated_by    TEXT NOT NULL,      -- 'agent' | 'brain_maintenance'
+  update_reason TEXT NOT NULL,      -- why updated
+  archived_at   INTEGER NOT NULL    -- unix ms when version archived
+  CHECK (version >= 1),
+  CHECK (updated_by IN ('agent', 'brain_maintenance')),
+  CHECK (archived_at >= 0)
+);
+
 CREATE INDEX idx_recipes_active    ON recipes (user_id, status, last_cooked_at DESC);
 CREATE INDEX idx_recipes_source    ON recipes (source, created_at DESC);
+CREATE INDEX idx_recipe_versions   ON recipe_versions (recipe_id, version DESC);
 ```
 
 ```typescript
 export const recipes = sqliteTable('recipes', {
-  id:            text('id').primaryKey(),
-  userId:        text('user_id').notNull(),
-  title:         text('title').notNull(),
-  source:        text('source').notNull(),
-  sourceSession: text('source_session'),
-  sourceUrl:     text('source_url'),
-  content:       text('content').notNull(),
-  cookCount:     integer('cook_count').notNull().default(0),
-  lastCookedAt:  integer('last_cooked_at'),
-  status:        text('status', { enum: recipeStatus }).notNull().default('active'),
-  confidence:    real('confidence').notNull().default(1.0),
-  createdAt:     integer('created_at').notNull(),
-  updatedAt:     integer('updated_at').notNull(),
+  id:              text('id').primaryKey(),
+  userId:          text('user_id').notNull(),
+  title:           text('title').notNull(),
+  source:          text('source').notNull(),
+  sourceSessionId: text('source_session_id'),
+  sourceUrl:       text('source_url'),
+  content:         text('content').notNull(),
+  version:         integer('version').notNull().default(1),
+  cookCount:       integer('cook_count').notNull().default(0),
+  lastCookedAt:    integer('last_cooked_at'),
+  status:          text('status', { enum: recipeStatus }).notNull().default('active'),
+  confidence:      real('confidence').notNull().default(1.0),
+  createdAt:       integer('created_at').notNull(),
+  updatedAt:       integer('updated_at').notNull(),
+})
+
+export const recipeVersions = sqliteTable('recipe_versions', {
+  id:           text('id').primaryKey(),
+  recipeId:     text('recipe_id').notNull(),
+  userId:       text('user_id').notNull(),
+  version:      integer('version').notNull(),
+  content:      text('content').notNull(),
+  updatedBy:    text('updated_by').notNull(),
+  updateReason: text('update_reason').notNull(),
+  archivedAt:   integer('archived_at').notNull(),
 })
 ```
 
