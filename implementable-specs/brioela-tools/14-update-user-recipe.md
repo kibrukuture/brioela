@@ -71,29 +71,29 @@ const content = validatedContent.data
 ## What It Writes — Two Tables, One Transaction
 
 ```typescript
-db.transaction(() => {
-  // Step 1: Archive current version to recipe_versions
-  db.insert(recipeVersions).values({
-    id:           crypto.randomUUID(),
-    recipeId:     recipe.id,
-    userId:       ctx.userId,
-    version:      recipe.version,
-    content:      recipe.content,
-    updatedBy:    input.updated_by,
-    updateReason: input.reason,
-    archivedAt:   Date.now(),
-  })
+import { createId } from '@brioela/shared/_ids'
+import { getReturned } from '@/database/drizzle/_database'
+import { readCurrentEpochMs } from '@/time/_helpers'
+import { replaceUserRecipeContent } from '@/agents/brain/_repositories'
 
-  // Step 2: Update the live recipe row
-  db.update(recipes)
-    .set({
-      content:   input.content,
-      title:     content.title,
-      version:   recipe.version + 1,
-      updatedAt: Date.now(),
-    })
-    .where(eq(recipes.id, input.id))
-    .run()
+const now = readCurrentEpochMs()
+
+replaceUserRecipeContent(db, {
+  recipeId: recipe.id,
+  archive: {
+    id: createId(),
+    recipeId: recipe.id,
+    userId: ctx.userId,
+    version: recipe.version,
+    content: recipe.content,
+    updatedBy: input.updated_by,
+    updateReason: input.reason,
+    archivedAt: now,
+  },
+  newContent: input.content,
+  newTitle: content.title,
+  newVersion: recipe.version + 1,
+  updatedAt: now,
 })
 ```
 

@@ -39,10 +39,11 @@ export const ArchiveUserRecipeSchema = z.object({
 ## Pre-Archive Guards
 
 ```typescript
-const recipe = db.select()
-  .from(recipes)
-  .where(eq(recipes.id, input.id))
-  .get()
+import { getOne } from '@/database/drizzle/_database'
+import { readUserRecipe, archiveUserRecipe } from '@/agents/brain/_repositories'
+import { readCurrentEpochMs } from '@/time/_helpers'
+
+const recipe = readUserRecipe(db, input.id)
 
 if (!recipe) {
   return { error: 'recipe_not_found', id: input.id }
@@ -63,13 +64,7 @@ if (recipe.status === 'archived') {
 One update to `recipes`:
 
 ```typescript
-db.update(recipes)
-  .set({
-    status:    'archived',
-    updatedAt: Date.now(),
-  })
-  .where(eq(recipes.id, input.id))
-  .run()
+archiveUserRecipe(db, input.id, readCurrentEpochMs())
 ```
 
 No `archived_reason` column exists on the `recipes` table. The reason is meaningful at the session level — the agent writes it into `outcome_summary` at session end ("Archived doro-wat-variant recipe — user confirmed it was superseded by grandma's Doro Wat"). Tracing why a recipe was archived means reading the session that archived it.

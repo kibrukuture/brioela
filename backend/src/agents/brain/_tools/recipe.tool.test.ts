@@ -2,6 +2,7 @@ import { runInDurableObject } from 'cloudflare:test'
 import { env } from 'cloudflare:workers'
 import { describe, expect, it } from 'vitest'
 import { createDatabase } from '@/agents/brain/_database'
+import { runMigrations } from '@/agents/brain/_migrations'
 import { writeUserRecipe } from '@/agents/brain/_repositories'
 import { recipeVersions, recipes } from '@/agents/brain/_schemas'
 import type { NormalizedRecipeContent } from '@/agents/brain/_schemas/normalized.recipe.content.schema'
@@ -13,9 +14,24 @@ import { buildToolsForSession } from '@/agents/brain/_tools/memory.tool'
 import { updateUserRecipeTool } from '@/agents/brain/_tools/update.user.recipe.tool'
 import { viewUserRecipeTool } from '@/agents/brain/_tools/view.user.recipe.tool'
 import { and, eq } from '@/database/drizzle/_database'
+import { readCurrentEpochMs } from '@/time/_helpers'
 
 const recipeId = '00000000-0000-4000-8000-000000000001'
 const userId = 'user-recipe-test'
+
+async function withMigratedDatabase(
+	run: (database: ReturnType<typeof createDatabase>) => void | Promise<void>,
+) {
+	const brain = env.BRIOELA_BRAIN.get(env.BRIOELA_BRAIN.newUniqueId())
+	await brain.checkReadiness()
+
+	await runInDurableObject(brain, async (_, state) => {
+		const database = createDatabase(state.storage)
+		const readiness = await runMigrations(database, readCurrentEpochMs())
+		expect(readiness.status).toBe('ready')
+		await run(database)
+	})
+}
 
 function sampleRecipe(overrides: Partial<NormalizedRecipeContent> = {}): NormalizedRecipeContent {
 	return {
@@ -97,11 +113,7 @@ function seedActiveRecipe(
 
 describe('Brain Recipe Tools', () => {
 	it('exposes recipe tools by session kind', async () => {
-		const brain = env.BRIOELA_BRAIN.get(env.BRIOELA_BRAIN.newUniqueId())
-		await brain.checkReadiness()
-
-		await runInDurableObject(brain, (_, state) => {
-			const database = createDatabase(state.storage)
+		await withMigratedDatabase((database) => {
 			const cookingTools = buildToolsForSession(database, userId, 'cooking')
 			const chatTools = buildToolsForSession(database, userId, 'chat')
 			const alarmTools = buildToolsForSession(database, userId, 'alarm')
@@ -116,11 +128,7 @@ describe('Brain Recipe Tools', () => {
 	})
 
 	it('view_user_recipe returns parsed content and ingredient_names for active recipes', async () => {
-		const brain = env.BRIOELA_BRAIN.get(env.BRIOELA_BRAIN.newUniqueId())
-		await brain.checkReadiness()
-
-		await runInDurableObject(brain, async (_, state) => {
-			const database = createDatabase(state.storage)
+		await withMigratedDatabase(async (database) => {
 			expect(viewUserRecipeTool(database)).toBeDefined()
 			seedActiveRecipe(database)
 
@@ -139,11 +147,7 @@ describe('Brain Recipe Tools', () => {
 	})
 
 	it('view_user_recipe returns found false for archived recipes', async () => {
-		const brain = env.BRIOELA_BRAIN.get(env.BRIOELA_BRAIN.newUniqueId())
-		await brain.checkReadiness()
-
-		await runInDurableObject(brain, async (_, state) => {
-			const database = createDatabase(state.storage)
+		await withMigratedDatabase(async (database) => {
 			seedActiveRecipe(database)
 			await archiveUserRecipeExecutable(database, {
 				id: recipeId,
@@ -160,11 +164,7 @@ describe('Brain Recipe Tools', () => {
 	})
 
 	it('update_user_recipe archives recipe_versions and increments version with title sync', async () => {
-		const brain = env.BRIOELA_BRAIN.get(env.BRIOELA_BRAIN.newUniqueId())
-		await brain.checkReadiness()
-
-		await runInDurableObject(brain, async (_, state) => {
-			const database = createDatabase(state.storage)
+		await withMigratedDatabase(async (database) => {
 			expect(updateUserRecipeTool(database, userId)).toBeDefined()
 			seedActiveRecipe(database)
 
@@ -225,11 +225,7 @@ describe('Brain Recipe Tools', () => {
 	})
 
 	it('update_user_recipe rejects archived recipes', async () => {
-		const brain = env.BRIOELA_BRAIN.get(env.BRIOELA_BRAIN.newUniqueId())
-		await brain.checkReadiness()
-
-		await runInDurableObject(brain, async (_, state) => {
-			const database = createDatabase(state.storage)
+		await withMigratedDatabase(async (database) => {
 			seedActiveRecipe(database)
 			await archiveUserRecipeExecutable(database, {
 				id: recipeId,
@@ -248,11 +244,7 @@ describe('Brain Recipe Tools', () => {
 	})
 
 	it('archive_user_recipe soft-deletes and rejects already archived recipes', async () => {
-		const brain = env.BRIOELA_BRAIN.get(env.BRIOELA_BRAIN.newUniqueId())
-		await brain.checkReadiness()
-
-		await runInDurableObject(brain, async (_, state) => {
-			const database = createDatabase(state.storage)
+		await withMigratedDatabase(async (database) => {
 			expect(archiveUserRecipeTool(database)).toBeDefined()
 			seedActiveRecipe(database)
 

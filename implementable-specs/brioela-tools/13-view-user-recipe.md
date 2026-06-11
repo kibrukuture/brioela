@@ -59,8 +59,14 @@ The row's `content` column is a JSON string (`NormalizedRecipeContent`). Ingredi
 On success, parse `recipe.content` and derive ingredient names for constraint checking:
 
 ```typescript
-const parsed = jsonValueSchema.parse(JSON.parse(recipe.content))
-const ingredientNames = parsed.ingredients.map((entry) => entry.name)
+import { normalizedRecipeContentSchema, deriveIngredientNames } from '@/agents/brain/_schemas/normalized.recipe.content.schema'
+
+const validatedContent = normalizedRecipeContentSchema.safeParse(JSON.parse(recipe.content))
+if (!validatedContent.success) {
+  return { found: false, id: input.id, hint: 'Recipe content failed validation.' }
+}
+const content = validatedContent.data
+const ingredientNames = deriveIngredientNames(content)
 ```
 
 ```json

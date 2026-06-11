@@ -20,10 +20,16 @@ We must decide whether to:
 Writing or querying `recipes.active` will fail both at compilation and during runtime query execution since the database schema has a `status` text column.
 
 ## Status
-**FIXED.** Specs and schema aligned:
+**FIXED (002 scope closed).** Specs, schema, migrations, and tools aligned:
 
-- `13-view-user-recipe.md` — `status = 'active'`, `getOne()`, JSON content model
-- `14-update-user-recipe.md` — version archive transaction, title sync from `content.title`
-- `09-recipes.md` — removed contradictory "no versions" / markdown-ingredients prose; title mirror + version history documented
-- `09-recipe-versions.md` — new table spec
-- Code — `recipes.version`, `recipe_versions` table, `recipes_title_matches_content_check`, migration `0005_recipe_versions_and_title_sync`
+- `13-view-user-recipe.md` — `status = 'active'`, `getOne()`, `normalizedRecipeContentSchema.safeParse`
+- `14-update-user-recipe.md` — version archive transaction, title sync from `content.title`, `createId()` + `replaceUserRecipeContent`
+- `15-archive-user-recipe.md` — `archiveUserRecipe` repository, `status = 'archived'`
+- `09-recipes.md` — title mirror + version history + origin naming documented
+- `09-recipe-versions.md` — archive table spec
+- Code — `recipes.version`, `recipe_versions`, `recipes_title_matches_content_check`, migrations `0005_recipe_versions_and_title_sync` and `0006_recipe_origin_naming`
+- Tools — split structure (`_schemas`, `_prompts`, `_executables`, `.tool.ts`), wired in `memory.tool.ts`
+- Tests — `recipe.tool.test.ts` with explicit `runMigrations` before seed
+- Ledger — `0005.recipe-tools.md` marked Shipped
+
+**Out of 002 scope (separate work):** Mira session-end recipe create path, share/import job pipeline naming.

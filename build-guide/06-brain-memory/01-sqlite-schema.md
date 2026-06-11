@@ -553,7 +553,7 @@ CREATE TABLE recipe_versions (
 );
 
 CREATE INDEX idx_recipes_active    ON recipes (user_id, status, last_cooked_at DESC);
-CREATE INDEX idx_recipes_source    ON recipes (source, created_at DESC);
+CREATE INDEX idx_recipes_origin    ON recipes (origin, created_at DESC);
 CREATE INDEX idx_recipe_versions   ON recipe_versions (recipe_id, version DESC);
 ```
 
