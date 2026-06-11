@@ -18,4 +18,4 @@ We must decide whether to:
 TypeScript compilation and query runs will crash when trying to read/write `scheduledAlarms.scheduledFor`.
 
 ## Status
-**FIXED.** Specs aligned to `scheduled_at` / `scheduledAt`. Remaining stale references in `17-session-lifecycle.md` updated in alarm pass 003–006.
+**FIXED.** Specs aligned to `scheduled_at` / `scheduledAt`. Tool registry: `get.brain.tools.ts` / `getBrainTools()`. Specs synced: `10`, `11`, `12`, `15`, `17`, build-guide, ledgers `0001`–`0007`, `0004`.

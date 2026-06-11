@@ -19,4 +19,4 @@ This is a raw TypeScript union type. There is no Zod validation schema for it. A
 TypeScript unions disappear at runtime. A raw string `'hacker_mode'` passes TypeScript checks if the input is typed loosely elsewhere. Zod `z.enum()` rejects it at the boundary with a clear error.
 
 ## Status
-**FIXED.** Raw TS union replaced with `z.enum([...])` in `memory.tool.ts`. `sessionKindSchema` exported as the Zod schema; `SessionKind` derived from it via `z.infer`. Any boundary that receives a session kind value can now call `sessionKindSchema.parse()` for runtime rejection of unknown values. Lexicon baseline updated (line numbers shifted from the import addition). Guards clean, 7/7 tests pass.
+**FIXED.** Raw TS union replaced with `z.enum([...])` in `get.brain.tools.ts`. `sessionKindSchema` exported; `SessionKind` derived via `z.infer`.

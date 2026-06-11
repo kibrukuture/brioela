@@ -21,7 +21,7 @@ This is a generic Zod utility type — it is not brain-specific. Any part of the
 - `backend/src/agents/brain/_tools/_executables/write.user.memory.executable.ts`
 - `backend/src/agents/brain/_tools/_schemas/write.user.memory.schema.ts`
 - `backend/src/agents/brain/_tools/_schemas/log.memory.event.schema.ts`
-- `backend/src/agents/brain/_tools/brain.memory.tool.test.ts` (indirectly via schemas)
+- `backend/src/agents/brain/_tools/memory.tool.test.ts` (indirectly via schemas)
 
 ## Why
 Generic primitives (JSON value types, common Zod utilities) belong in shared infrastructure, not inside a domain agent's implementation folder.

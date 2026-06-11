@@ -14,4 +14,4 @@ Same complaint applies to `SessionCallerType` — "Type" at the end is a meaning
 Padding like "Type", "Object", "Data", "Info" in identifiers is banned by convention. The identifier should name the concept, not describe its technical category.
 
 ## Status
-**FIXED.** `SessionCallerType` → `SessionKind` (`kind` is lexicon-valid: "Finite category of a domain object"). `getToolsForSessionType` → `buildToolsForSession` (`build` is the approved action word, `tools`/`for`/`session` all lexicon-valid). Parameter `caller` → `kind`. Full audit of brain subtree confirmed no other `Type`/`Caller` padding violations. Guards clean.
+**FIXED.** `SessionCallerType` → `SessionKind`. Registry renamed `getToolsForSessionType` → `buildToolsForSession` → **`getBrainTools`** in **`get.brain.tools.ts`**. Parameter `caller` → `kind`.

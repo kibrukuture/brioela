@@ -104,9 +104,10 @@ export const writeUserMemoryTool = (db: BrainDatabase, userId: string) => (tool 
 
 | # | Tool name | File | Table | Who can call |
 |---|---|---|---|---|
-| 01 | `log_memory_event` | `log-memory-event.tool.ts` | `memory_event` | chat, cooking, alarm, behavior_pattern_detection |
-| 02 | `write_user_memory` | `write-user-memory.tool.ts` | `user_memory` | chat, cooking, brain maintenance, behavior_pattern_detection |
-| 03 | `read_user_memory` | `read-user-memory.tool.ts` | `user_memory` | chat, cooking |
+| 00 | `getBrainTools` | `get.brain.tools.ts` | all registered tools | filtered by `SessionKind` |
+| 01 | `log_memory_event` | `log.memory.event.tool.ts` | `memory_event` | chat, cooking, alarm, behavior_pattern_detection |
+| 02 | `write_user_memory` | `write.user.memory.tool.ts` | `user_memory` | chat, cooking, brain maintenance, behavior_pattern_detection |
+| 03 | `read_user_memory` | `read.user.memory.tool.ts` | `user_memory` | chat, cooking |
 | 04 | `create_user_skill` | `create-user-skill.tool.ts` | `skills` | chat, cooking |
 | 05 | `update_user_skill` | `update-user-skill.tool.ts` | `skills` + `skill_versions` | chat, cooking, brain maintenance |
 | 06 | `view_user_skill` | `view-user-skill.tool.ts` | `skills` | chat, cooking |
@@ -133,17 +134,18 @@ Tools are passed to the Agent SDK's `generateText` (or `streamText`) call. They 
 
 import { streamText } from 'ai'
 import { anthropic } from '@ai-sdk/anthropic'
-import { getToolsForSessionType } from '../_tools'
+import { getBrainTools } from '../_tools/get.brain.tools'
 import { buildSystemPrompt } from './system-prompt.builder'
 import type { SessionType } from '@brioela/shared'
 
 export async function runSession(
   db: DrizzleDB,
   env: Env,
+  userId: string,
   sessionType: SessionType,
   messages: CoreMessage[],
 ): Promise<ReadableStream> {
-  const tools   = getToolsForSessionType(db, sessionType)
+  const tools   = getBrainTools(db, userId, sessionType)
   const sysPrompt = await buildSystemPrompt(db, sessionType)
 
   const { textStream } = streamText({
@@ -159,87 +161,12 @@ export async function runSession(
 ```
 
 ```typescript
-// backend/src/agents/brain/_tools/index.ts
+// Session handler — import registry from get.brain.tools.ts
 
-import { writeUserMemoryTool }      from './write-user-memory.tool'
-import { readUserMemoryTool }       from './read-user-memory.tool'
-import { logMemoryEventTool }       from './log-memory-event.tool'
-import { createUserSkillTool }      from './create-user-skill.tool'
-import { updateUserSkillTool }      from './update-user-skill.tool'
-import { viewUserSkillTool }        from './view-user-skill.tool'
-import { archiveUserSkillTool }     from './archive-user-skill.tool'
-import { deleteUserSkillTool }      from './delete-user-skill.tool'
-import { proposeUserConstraintTool } from './propose-user-constraint.tool'
-import { confirmUserConstraintTool } from './confirm-user-constraint.tool'
-import { scheduleUserAlarmTool }    from './schedule-user-alarm.tool'
-import { cancelUserAlarmTool }      from './cancel-user-alarm.tool'
-import { viewUserRecipeTool }       from './view-user-recipe.tool'
-import { updateUserRecipeTool }     from './update-user-recipe.tool'
-import { archiveUserRecipeTool }    from './archive-user-recipe.tool'
-import { loadSessionContextTool }   from './load-session-context.tool'
-import { searchSessionHistoryTool } from './search-session-history.tool'
-import type { DrizzleDB } from '@/types/db'
-import type { SessionType } from '@brioela/shared'
+import { getBrainTools, sessionKindSchema } from '@/agents/brain/_tools/get.brain.tools'
 
-const TOOL_PERMISSIONS: Record<SessionType | 'brain_maintenance' | 'behavior_pattern_detection', string[]> = {
-  chat: [
-    'log_memory_event', 'write_user_memory', 'read_user_memory',
-    'create_user_skill', 'update_user_skill', 'view_user_skill',
-    'archive_user_skill', 'delete_user_skill',
-    'propose_user_constraint', 'confirm_user_constraint',
-    'schedule_user_alarm', 'cancel_user_alarm',
-    'view_user_recipe', 'update_user_recipe', 'archive_user_recipe',
-    'load_session_context', 'search_session_history',
-  ],
-  cooking: [
-    'log_memory_event', 'write_user_memory', 'read_user_memory',
-    'create_user_skill', 'update_user_skill', 'view_user_skill',
-    'archive_user_skill',
-    'propose_user_constraint',
-    'schedule_user_alarm', 'cancel_user_alarm',
-    'view_user_recipe', 'update_user_recipe',
-    'load_session_context',
-  ],
-  alarm: [
-    'log_memory_event', 'write_user_memory',
-  ],
-  brain_maintenance: [
-    'write_user_memory', 'update_user_skill', 'archive_user_skill', 'schedule_user_alarm',
-  ],
-  behavior_pattern_detection: [
-    'log_memory_event', 'write_user_memory', 'schedule_user_alarm',
-  ],
-}
-
-export function getToolsForSessionType(db: DrizzleDB, userId: string, caller: SessionType | 'brain_maintenance' | 'behavior_pattern_detection', wake?: AlarmWakeCallbacks) {
-  const allowed = new Set(TOOL_PERMISSIONS[caller])
-  const all = buildAllTools(db)
-  return Object.fromEntries(
-    Object.entries(all).filter(([name]) => allowed.has(name))
-  )
-}
-
-function buildAllTools(db: DrizzleDB) {
-  return {
-    log_memory_event:        logMemoryEventTool(db),
-    write_user_memory:       writeUserMemoryTool(db),
-    read_user_memory:        readUserMemoryTool(db),
-    create_user_skill:       createUserSkillTool(db),
-    update_user_skill:       updateUserSkillTool(db),
-    view_user_skill:         viewUserSkillTool(db),
-    archive_user_skill:      archiveUserSkillTool(db),
-    delete_user_skill:       deleteUserSkillTool(db),
-    propose_user_constraint: proposeUserConstraintTool(db),
-    confirm_user_constraint: confirmUserConstraintTool(db),
-    schedule_user_alarm:     scheduleUserAlarmTool(db, userId, wake),
-    cancel_user_alarm:       cancelUserAlarmTool(db, userId, wake),
-    view_user_recipe:        viewUserRecipeTool(db),
-    update_user_recipe:      updateUserRecipeTool(db),
-    archive_user_recipe:     archiveUserRecipeTool(db),
-    load_session_context:    loadSessionContextTool(db),
-    search_session_history:  searchSessionHistoryTool(db),
-  }
-}
+const kind = sessionKindSchema.parse(sessionType)
+const tools = getBrainTools(db, userId, kind, activeSessionId, waitUntil, wake)
 ```
 
 ---

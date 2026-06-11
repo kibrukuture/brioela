@@ -24,6 +24,7 @@ Every file has a suffix that declares its role. The suffix comes after the descr
 | `.middleware.ts` | Hono middleware | `auth.middleware.ts` |
 | `.agent.ts` | Agent-backed Durable Object class | `brioela.brain.agent.ts` |
 | `.tool.ts` | AI-callable tool function | `write.user.memory.tool.ts` |
+| `.tools.ts` | Session tool registry (multiple tools + permissions) | `get.brain.tools.ts` |
 | `.schema.ts` | Drizzle table definition (backend `db/` and `_schema/`) — or Zod entity/input schema (shared `validator/`) | `products.schema.ts`, `scan.schema.ts` |
 | `.type.ts` | Pure TypeScript type declarations — only when not derivable from a Zod schema | `user.id.type.ts` |
 | `.event.ts` | Domain event schemas (shared `validator/`) | `scan.event.ts` |
@@ -53,6 +54,7 @@ File names are dot-case. Dots separate every structural part of the name. Hyphen
 ```
 ✓ create.scan.handler.ts              — handler that creates a scan
 ✓ write.user.memory.tool.ts           — AI tool that writes user memory
+✓ get.brain.tools.ts                  — Brain session tool registry (`getBrainTools()`)
 ✓ build.verdict.response.helper.ts    — pure helper that formats a verdict
 ✓ brioela.brain.agent.ts              — the BrioelaBrain DO class
 ✓ write.brain.memory.rpc.ts           — typed RPC surface for one Brain write
