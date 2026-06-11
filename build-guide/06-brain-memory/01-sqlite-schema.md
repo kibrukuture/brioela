@@ -259,14 +259,17 @@ Full content history before every `update_user_skill` call. One row per version.
 
 ```sql
 CREATE TABLE skill_versions (
-  id          TEXT PRIMARY KEY,   -- UUID v4
-  skill_name  TEXT NOT NULL,      -- references skills.name
-  user_id     TEXT NOT NULL,
-  version     INTEGER NOT NULL,   -- which version of the skill this was (before the update)
-  content     TEXT NOT NULL,      -- full markdown content of this version
-  reason      TEXT NOT NULL,      -- why this update was made
-  archived_at INTEGER NOT NULL    -- unix ms — when this version was replaced
+  id            TEXT PRIMARY KEY,   -- UUID v4
+  skill_name    TEXT NOT NULL,      -- references skills.name
+  user_id       TEXT NOT NULL,
+  version       INTEGER NOT NULL,   -- which version of the skill this was (before the update)
+  content       TEXT NOT NULL,      -- full markdown content of this version
+  description   TEXT NOT NULL,      -- description at this version
+  updated_by    TEXT NOT NULL,      -- 'agent' | 'brain_maintenance'
+  update_reason TEXT NOT NULL,      -- why this update was made
+  archived_at   INTEGER NOT NULL    -- unix ms — when this version was replaced
   CHECK (version >= 1),
+  CHECK (updated_by IN ('agent', 'brain_maintenance')),
   CHECK (archived_at >= 0)
 );
 
@@ -275,17 +278,19 @@ CREATE INDEX idx_skill_versions_name ON skill_versions (skill_name, version DESC
 
 ```typescript
 export const skillVersions = sqliteTable('skill_versions', {
-  id:         text('id').primaryKey(),
-  skillName:  text('skill_name').notNull(),
-  userId:     text('user_id').notNull(),
-  version:    integer('version').notNull(),
-  content:    text('content').notNull(),
-  reason:     text('reason').notNull(),
-  archivedAt: integer('archived_at').notNull(),
+  id:           text('id').primaryKey(),
+  skillName:    text('skill_name').notNull(),
+  userId:       text('user_id').notNull(),
+  version:      integer('version').notNull(),
+  content:      text('content').notNull(),
+  description:  text('description').notNull(),
+  updatedBy:    text('updated_by').notNull(),
+  updateReason: text('update_reason').notNull(),
+  archivedAt:   integer('archived_at').notNull(),
 })
 ```
 
-**Write:** `update_user_skill` execution path only. Before every content overwrite, current content + version + reason are archived here.
+**Write:** `update_user_skill` execution path only. Before every content overwrite, current content + version + description + updated_by + update_reason are archived here.
 
 **Read:** developer rollback. Never loaded into prompts. Never read by the agent.
 
