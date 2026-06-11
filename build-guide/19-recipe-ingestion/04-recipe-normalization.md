@@ -28,14 +28,38 @@ Blocked:
 
 ---
 
+## Recipe Entry Naming
+
+Recipe entry uses **two layers** of field names. Never reuse `source` or bare `url` — they caused confusion between library entry and import extraction.
+
+Code source of truth for allowed enum values: `backend/src/agents/brain/_schemas/recipe.origin.schema.ts`
+
+Recipe body validation: `normalizedRecipeContentSchema` in `backend/src/agents/brain/_schemas/normalized.recipe.content.schema.ts`
+
+| Term | Layer | Question |
+|---|---|---|
+| **`origin`** | `recipes` table column | How did this recipe enter the library? |
+| **`read_via`** | JSON `content` (share imports only) | How did we extract the recipe text? |
+| **`link_url`** | table + JSON | Original shared link |
+| **`session_id`** | table | Session that produced a live-captured recipe |
+| **`shared_from`** | JSON (share imports only) | Platform shared from: `tiktok`, `youtube`, `instagram`, `browser`, `unknown` |
+
+**`origin` values:** `cooking_session` | `family_capture` | `user_written` | `share_import`
+
+**`read_via` values (when `origin = share_import`):** `video` | `photo` | `webpage`
+
+Session and user-written recipes omit `read_via`, `link_url`, and `shared_from` in JSON unless relevant.
+
+---
+
 ## Canonical Recipe Shape
 
 ```typescript
-type NormalizedImportedRecipe = {
+type NormalizedRecipeContent = {
   title: string
-  source: "shared_url" | "video" | "image" | "browser"
-  sourceUrl: string | null
-  sourceApp: string | null
+  read_via?: "video" | "photo" | "webpage"   // share_import only
+  link_url?: string | null                   // share_import only
+  shared_from?: "tiktok" | "youtube" | "instagram" | "browser" | "unknown" | null
   attribution: {
     title: string | null
     authorName: string | null
@@ -170,4 +194,4 @@ Attribution supports:
 - future reprocessing
 - creator/source recognition
 
-Do not strip attribution just because the recipe is normalized. The normalized recipe is the user's private copy, but source provenance remains visible.
+Do not strip attribution just because the recipe is normalized. The normalized recipe is the user's private copy, but where it came from remains visible.

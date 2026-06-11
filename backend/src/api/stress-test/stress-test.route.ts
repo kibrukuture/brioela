@@ -56,7 +56,7 @@ stressTestRoutes.get('/test-crypto', async (c: AppContext) => {
 });
 
 const alignCustomerLookupSchema = z.object({
-	email: z.string().email(),
+	email: z.email(),
 });
 
 stressTestRoutes.post('/align/customers/list', async (c: AppContext) => {

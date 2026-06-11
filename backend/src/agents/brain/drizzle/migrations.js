@@ -4,6 +4,8 @@ import m0001 from './0001_add_fts_and_triggers.sql';
 import m0002 from './0002_sad_dragon_man.sql';
 import m0003 from './0003_next_rafael_vega.sql';
 import m0004 from './0004_rename_recipes_source_session_id.sql';
+import m0005 from './0005_recipe_versions_and_title_sync.sql';
+import m0006 from './0006_recipe_origin_naming.sql';
 
   export default {
     journal,
@@ -12,7 +14,9 @@ import m0004 from './0004_rename_recipes_source_session_id.sql';
 m0001,
 m0002,
 m0003,
-m0004
+m0004,
+m0005,
+m0006
     }
   }
   

@@ -123,8 +123,8 @@ async function runSessionEndProcessing(
       const recipe = await reconstructRecipe(turns, sessionNotes, miraSession.env)
       await forwardToolToBrain('create_recipe', {
         title:         recipe.title,
-        source:        'cooking_session',
-        sourceSessionId: state.sessionId,
+        origin:        'cooking_session',
+        sessionId:     state.sessionId,
         content:       JSON.stringify(recipe),
       }, state, miraSession.env)
       break
@@ -224,7 +224,7 @@ Return JSON:
   "steps": [{ "instruction": string, "duration_minutes": number | null, "confidence": number }],
   "culturalNotes": string | null,
   "techniques": string[],
-  "source": "cooking_session"
+  "origin": "cooking_session"
 }
 `
 ```

@@ -16,7 +16,7 @@ SQLite stores only `NULL`, `INTEGER`, `REAL`, `TEXT`, and `BLOB`, so Brain schem
 - Binary flags use Drizzle boolean mode over SQLite integer storage, plus a `CHECK` limiting storage to `0` or `1`.
 - JSON stored in `TEXT` must be valid JSON at the database boundary. Object fields use `json_valid(column) AND json_type(column) = 'object'`; array fields use `json_valid(column) AND json_type(column) = 'array'`; nullable JSON fields guard with `column IS NULL OR ...`.
 - Scores, confidence, importance, counters, versions, and timestamps use numeric `CHECK` constraints. The database should reject impossible values before repository code sees them.
-- Open extension points stay open text. Do not turn future-growth surfaces such as `memory_event.kind`, `scheduled_alarms.alarm_type`, or `recipes.source` into enums just because launch values are known.
+- Open extension points stay open text. Do not turn future-growth surfaces such as `memory_event.kind` or `scheduled_alarms.alarm_type` into enums just because launch values are known. `recipes.origin` is Zod-enforced at write boundaries.
 
 ---
 
@@ -516,9 +516,9 @@ CREATE TABLE recipes (
   id                TEXT PRIMARY KEY,   -- UUID v4
   user_id           TEXT NOT NULL,
   title             TEXT NOT NULL,
-  source            TEXT NOT NULL,      -- 'cooking_session' | 'url' | 'manual' | 'family_capture'
-  source_session_id TEXT,               -- session_id that produced this recipe
-  source_url        TEXT,               -- URL if source = 'url'
+  origin            TEXT NOT NULL,      -- cooking_session | family_capture | user_written | share_import
+  session_id        TEXT,
+  link_url          TEXT,
   content           TEXT NOT NULL,      -- JSON: { ingredients[], steps[], notes, timing, servings, cultural_notes }
   version           INTEGER NOT NULL DEFAULT 1, -- current version of the recipe
   cook_count        INTEGER NOT NULL DEFAULT 0,
@@ -528,6 +528,7 @@ CREATE TABLE recipes (
   created_at        INTEGER NOT NULL,
   updated_at        INTEGER NOT NULL
   CHECK (json_valid(content) AND json_type(content) = 'object'),
+  CHECK (json_extract(content, '$.title') = title),
   CHECK (version >= 1),
   CHECK (cook_count >= 0),
   CHECK (last_cooked_at IS NULL OR last_cooked_at >= 0),
@@ -561,9 +562,9 @@ export const recipes = sqliteTable('recipes', {
   id:              text('id').primaryKey(),
   userId:          text('user_id').notNull(),
   title:           text('title').notNull(),
-  source:          text('source').notNull(),
-  sourceSessionId: text('source_session_id'),
-  sourceUrl:       text('source_url'),
+  origin:          text('origin').notNull(),
+  sessionId:       text('session_id'),
+  linkUrl:         text('link_url'),
   content:         text('content').notNull(),
   version:         integer('version').notNull().default(1),
   cookCount:       integer('cook_count').notNull().default(0),
@@ -572,7 +573,9 @@ export const recipes = sqliteTable('recipes', {
   confidence:      real('confidence').notNull().default(1.0),
   createdAt:       integer('created_at').notNull(),
   updatedAt:       integer('updated_at').notNull(),
-})
+}, (table) => [
+  check('recipes_title_matches_content_check', sql`json_extract(${table.content}, '$.title') = ${table.title}`),
+])
 
 export const recipeVersions = sqliteTable('recipe_versions', {
   id:           text('id').primaryKey(),

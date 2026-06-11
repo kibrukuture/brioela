@@ -26,7 +26,7 @@ Do NOT call `load_session_context`:
 import { z } from 'zod'
 
 export const LoadSessionContextSchema = z.object({
-  current_session_id: z.string().uuid(),
+  current_session_id: z.uuid(),
   // The session row that was just created for this session.
   // The tool uses this to exclude the current session from "previous session" queries.
 

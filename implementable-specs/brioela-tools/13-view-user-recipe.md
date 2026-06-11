@@ -2,7 +2,7 @@
 
 ## Purpose
 
-`view_user_recipe` loads a recipe's full content into the agent's context on demand. The recipe index (id + title for every active recipe) is injected into every session prompt. The agent reads the index, identifies the relevant recipe, and calls `view_user_recipe` to load the parsed `NormalizedImportedRecipe` JSON only when it actually needs it — for a cooking session, for answering a question about ingredients, for constraint checking before recommending.
+`view_user_recipe` loads a recipe's full content into the agent's context on demand. The recipe index (id + title for every active recipe) is injected into every session prompt. The agent reads the index, identifies the relevant recipe, and calls `view_user_recipe` to load the parsed `NormalizedRecipeContent` JSON only when it actually needs it — for a cooking session, for answering a question about ingredients, for constraint checking before recommending.
 
 Full recipe content is never preloaded into every prompt. Token cost is zero until this tool is called.
 
@@ -25,7 +25,7 @@ Do NOT call `view_user_recipe` when:
 import { z } from 'zod'
 
 export const ViewUserRecipeSchema = z.object({
-  id: z.string().uuid(),
+  id: z.uuid(),
   // The recipe UUID from the index injected into the session prompt.
   // Must be the exact UUID — no fuzzy matching, no title lookup.
   // If the agent only has a title and needs the ID, it reads the injected index.
@@ -52,7 +52,7 @@ const recipe = getOne(
 
 Only active recipes (`status = 'active'`) are returned. Archived recipes (`status = 'archived'`) return `found: false`. The agent should not attempt to load archived recipes — they are excluded from the index and the agent should not know their IDs.
 
-The row's `content` column is a JSON string (`NormalizedImportedRecipe`). Ingredients, steps, tags, and timing live **inside that JSON** — not as separate SQLite columns.
+The row's `content` column is a JSON string (`NormalizedRecipeContent`). Ingredients, steps, tags, and timing live **inside that JSON** — not as separate SQLite columns.
 
 ## What It Returns
 
@@ -68,9 +68,9 @@ const ingredientNames = parsed.ingredients.map((entry) => entry.name)
   "found": true,
   "id": "a1b2c3d4-...",
   "title": "Grandma's Doro Wat",
-  "source": "cooking_session",
-  "source_session_id": "b2c3d4e5-...",
-  "source_url": null,
+  "origin": "cooking_session",
+  "session_id": "b2c3d4e5-...",
+  "link_url": null,
   "cook_count": 4,
   "last_cooked_at": 1748390400000,
   "status": "active",
@@ -89,10 +89,10 @@ const ingredientNames = parsed.ingredients.map((entry) => entry.name)
 }
 ```
 
-- **`content`** — parsed `NormalizedImportedRecipe` object from the row's JSON column (see `build-guide/19-recipe-ingestion/04-recipe-normalization.md`).
+- **`content`** — parsed `NormalizedRecipeContent` object from the row's JSON column (see `build-guide/19-recipe-ingestion/04-recipe-normalization.md`).
 - **`ingredient_names`** — derived at read time from `content.ingredients[].name` for constraint checking. Not stored as a separate column.
 
-Table metadata (`title`, `source`, `source_session_id`, `cook_count`, etc.) comes from the `recipes` row. Cookable body fields (`ingredients`, `steps`, `tags`, `totalTimeMinutes`, …) come from `content` only.
+Table metadata (`title`, `origin`, `session_id`, `link_url`, `cook_count`, etc.) comes from the `recipes` row. Cookable body fields (`ingredients`, `steps`, `tags`, `totalTimeMinutes`, …) come from `content` only.
 
 **Recipe not found or archived:**
 

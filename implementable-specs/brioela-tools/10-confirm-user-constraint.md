@@ -33,7 +33,7 @@ Do NOT call `confirm_user_constraint` for:
 import { z } from 'zod'
 
 export const ConfirmUserConstraintSchema = z.object({
-  id: z.string().uuid(),
+  id: z.uuid(),
   // The constraint row to act on. From the id returned by propose_user_constraint.
 
   mark_surfaced: z.boolean().optional().default(false),

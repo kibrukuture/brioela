@@ -29,6 +29,7 @@ Implementation status note: this status tracks build-guide coverage, not backend
 - `implementable-specs/07-sessions.md` — sessions table
 - `implementable-specs/08-session-turns.md` — session_turns table + FTS5 virtual tables
 - `implementable-specs/09-recipes.md` — recipes table, session-end decision tree
+- `implementable-specs/09-recipe-versions.md` — recipe_versions table
 - `implementable-specs/10-scheduled-alarms.md` — scheduled_alarms table, Path A vs Path B distinction
 - `implementable-specs/11-agent-state.md` — agent_state table, all known keys
 - `implementable-specs/12-schema-version.md` — Drizzle migration state, Brain readiness, DO startup sequence

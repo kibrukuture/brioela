@@ -28,10 +28,11 @@ type RecipeRow = {
   id: string
   userId: string
   title: string
-  source: "url" | "manual" | "cooking_session" | "family_capture"
-  sourceSessionId: string | null
-  sourceUrl: string | null
+  origin: "cooking_session" | "family_capture" | "user_written" | "share_import"
+  sessionId: string | null
+  linkUrl: string | null
   content: string
+  version: number
   cookCount: number
   lastCookedAt: number | null
   status: "active" | "archived"
@@ -41,14 +42,21 @@ type RecipeRow = {
 }
 ```
 
-For imported recipes:
+For share imports:
 
-- `source = "url"` for URL/video/share imports in the current schema.
-- `sourceUrl` stores the canonical source URL when available.
-- `content` stores the normalized recipe JSON plus attribution, warnings, and ranking metadata.
-- `confidence` stores overall import confidence.
+- `origin = "share_import"`
+- `link_url` stores the canonical shared URL when available.
+- `content` stores `NormalizedRecipeContent` including optional `read_via`, `shared_from`, attribution, warnings, and ranking metadata.
+- `title` on the row must equal `content.title` inside the JSON — set both from the same parsed object on insert.
 
-If implementation needs finer source types later (`video`, `image`, `shared_url`), update the Brain Memory schema intentionally instead of overloading silently.
+**Share sheet → row mapping:**
+
+| Share `sourceType` | `origin` | `content.read_via` |
+|---|---|---|
+| `url`, `video_url` | `share_import` | `video` or `webpage` |
+| `image` | `share_import` | `photo` |
+
+Set `content.shared_from` from share payload (`tiktok`, `youtube`, `instagram`, `browser`, `unknown`).
 
 ---
 
@@ -83,7 +91,7 @@ type RecipeImportedEvent = {
   kind: "recipe_imported"
   recipeId: string
   sourceType: "url" | "video_url" | "image" | "native_media_reference"
-  sourceApp: string | null
+  shared_from: string | null
   title: string
   confidence: number
   status: "completed" | "needs_review" | "partial"

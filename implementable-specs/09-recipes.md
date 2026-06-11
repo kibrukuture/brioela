@@ -63,21 +63,41 @@ Dietary restriction adaptations always fall in the second category. Even if the 
 
 Confidence threshold for dish identity inference not yet defined. Documented here so it is not forgotten.
 
-## Design Decision: Hybrid Storage — Markdown Content + Extracted Ingredients
+## Design Decision: Normalized JSON Content
 
-**Problem**: If ingredients are buried in markdown content only, the constraint system cannot programmatically check "does this recipe contain peanuts." It would have to guess from free text — unreliable for safety-critical allergy checking.
+Recipe body lives in the `content` column as a JSON string (`NormalizedRecipeContent`). Ingredients, steps, tags, timing, and cuisine are fields inside that object — not separate SQLite columns. The agent loads the parsed JSON via `view_user_recipe(id)`. Ingredient names for constraint checking are derived at read time from `content.ingredients[].name`.
 
-**Problem**: If ingredients are forced into rigid structured objects (name, quantity, unit), grandma's recipe loses fidelity. "Enough berbere until it smells right" cannot be expressed as `{ quantity: 2, unit: "tsp" }`.
+See `build-guide/19-recipe-ingestion/04-recipe-normalization.md` for the canonical shape.
 
-**Solution**: Two representations of the same truth:
-- `content` — full markdown. Ingredients as written (narrative, cultural voice preserved), steps, technique notes, grandma's exact words. What the user reads and the agent loads during cooking.
-- `ingredients` — JSON array of strings. Machine-extracted from content. Used only for constraint checking. Example: `["berbere", "niter kibbeh", "chicken", "onions"]`. Not structured objects — just strings. Enough to match against `constraints.entity_value`.
+## Design Decision: Recipe Entry Naming (`origin` vs `read_via`)
 
-When content is updated, `ingredients` must be re-extracted and updated in the same write.
+Allowed values live in `backend/src/agents/brain/_schemas/recipe.origin.schema.ts` and are documented in `build-guide/19-recipe-ingestion/04-recipe-normalization.md`.
 
-## Design Decision: No Recipe Versions Table
+**`recipes.origin`** — how the recipe entered the library: `cooking_session`, `family_capture`, `user_written`, `share_import`.
 
-Unlike skills, recipe edits are user-driven refinements — grandma corrected a step, user found a better technique. A separate versions table is premature. If version history becomes needed, it is a straightforward addition. For now: `updated_at` records the last change, `source_session_id` traces back to the originating session.
+**`content.read_via`** — how import text was extracted: `video`, `photo`, `webpage`. Present only when `origin = share_import`.
+
+**`recipes.session_id`** — session that produced a live-captured recipe (`cooking_session` / `family_capture`).
+
+**`recipes.link_url`** — original shared link when `origin = share_import`.
+
+**`content.shared_from`** — platform shared from (`tiktok`, `youtube`, `instagram`, `browser`, `unknown`). Share imports only.
+
+Do not use `source`, `shared_url`, or row-level `url` — retired names.
+
+## Design Decision: Title Column Mirrors content.title
+
+`recipes.title` is the index/display column — recipe prompt index, library cards, session-end title-similarity checks. `content.title` inside the JSON is the same string.
+
+**Write rule:** on every insert and update, set `recipes.title = parsed(content).title`. One source of truth in the JSON payload; the column is a synced mirror for cheap listing. Mismatch is a data bug.
+
+**Enforcement:** SQLite check `json_extract(content, '$.title') = title`.
+
+`recipe_versions` archives full `content` JSON only — no separate `title` column on archive rows. The old title is inside the archived JSON.
+
+## Design Decision: Recipe Version History (Same Pattern as Skills)
+
+Every `update_user_recipe` call overwrites `recipes.content`. Before overwrite, the previous content is archived to `recipe_versions` in the same transaction. `recipes.version` increments. This is a developer safety net — no agent `restore_recipe_version` tool. See `implementable-specs/09-recipe-versions.md`.
 
 ## Design Decision: No FTS Virtual Table for Recipes
 
@@ -90,10 +110,10 @@ CREATE TABLE recipes (
   id                TEXT PRIMARY KEY,   -- UUID v4
   user_id           TEXT NOT NULL,      -- owner — self-describing for export
   title             TEXT NOT NULL,      -- recipe name
-  source            TEXT NOT NULL,      -- 'cooking_session' | 'url' | 'manual' | 'family_capture'
-  source_session_id TEXT,               -- session_id that produced this recipe
-  source_url        TEXT,               -- URL if source = 'url'
-  content           TEXT NOT NULL,      -- JSON string of NormalizedImportedRecipe
+  origin            TEXT NOT NULL,      -- cooking_session | family_capture | user_written | share_import
+  session_id        TEXT,               -- sessions.id when origin is cooking_session or family_capture
+  link_url          TEXT,               -- shared link when origin is share_import
+  content           TEXT NOT NULL,      -- JSON string of NormalizedRecipeContent
   version           INTEGER NOT NULL DEFAULT 1, -- current version of the recipe
   cook_count        INTEGER NOT NULL DEFAULT 0,
   last_cooked_at    INTEGER,
@@ -102,6 +122,7 @@ CREATE TABLE recipes (
   created_at        INTEGER NOT NULL,   -- unix timestamp ms
   updated_at        INTEGER NOT NULL,   -- unix timestamp ms
   CONSTRAINT "recipes_content_json_object_check" CHECK(json_valid(content) and json_type(content) = 'object'),
+  CONSTRAINT "recipes_title_matches_content_check" CHECK(json_extract(content, '$.title') = title),
   CONSTRAINT "recipes_version_check" CHECK(version >= 1),
   CONSTRAINT "recipes_cook_count_check" CHECK(cook_count >= 0),
   CONSTRAINT "recipes_last_cooked_at_check" CHECK(last_cooked_at is null or last_cooked_at >= 0),
@@ -116,7 +137,7 @@ CREATE TABLE recipe_versions (
   recipe_id     TEXT NOT NULL,      -- references recipes.id logical FK
   user_id       TEXT NOT NULL,
   version       INTEGER NOT NULL,   -- version before incrementing
-  content       TEXT NOT NULL,      -- JSON string of NormalizedImportedRecipe before update
+  content       TEXT NOT NULL,      -- JSON string of NormalizedRecipeContent before update
   updated_by    TEXT NOT NULL,      -- 'agent' | 'brain_maintenance'
   update_reason TEXT NOT NULL,      -- audit reason for change
   archived_at   INTEGER NOT NULL,   -- unix timestamp ms
@@ -135,9 +156,9 @@ export const recipes = sqliteTable('recipes', {
   id:              text('id').primaryKey(),
   userId:          text('user_id').notNull(),
   title:           text('title').notNull(),
-  source:          text('source').notNull(),
-  sourceSessionId: text('source_session_id'),
-  sourceUrl:       text('source_url'),
+  origin:          text('origin').notNull(),
+  sessionId:       text('session_id'),
+  linkUrl:         text('link_url'),
   content:         text('content').notNull(),
   version:         integer('version').notNull().default(1),
   cookCount:       integer('cook_count').notNull().default(0),
@@ -146,7 +167,9 @@ export const recipes = sqliteTable('recipes', {
   confidence:      real('confidence').notNull().default(1.0),
   createdAt:       integer('created_at').notNull(),
   updatedAt:       integer('updated_at').notNull(),
-})
+}, (table) => [
+  check('recipes_title_matches_content_check', sql`json_extract(${table.content}, '$.title') = ${table.title}`),
+])
 
 export const recipeVersions = sqliteTable('recipe_versions', {
   id:           text('id').primaryKey(),
@@ -163,17 +186,23 @@ export const recipeVersions = sqliteTable('recipe_versions', {
 **`id` — UUID**
 Sessions reference recipes via `sessions.recipe_id`. Stable cross-table identity needed. UUID is the right key.
 
-**`title` — not unique**
-A user can have "Doro Wat", "Grandma's Doro Wat". No uniqueness constraint. UUID is the identity.
+**`title` — index/display mirror of content.title**
+Used for prompt recipe index (`id: title`), library cards, and session-end title-similarity checks. Must equal `json_extract(content, '$.title')` on every row. Set from parsed `NormalizedRecipeContent` on insert and update — never edited independently of `content`. Not unique — a user can have "Doro Wat" and "Grandma's Doro Wat". UUID is identity.
 
-**`content` — JSON string of NormalizedImportedRecipe**
-Stores the normalized recipe JSON object including: `title`, `ingredients` (array of objects), `steps` (array of objects), `tags` (array of strings), `cuisine`, `servings`, `totalTimeMinutes`, and `warnings`. The agent loads this on demand via `view_user_recipe(id)`.
+**`content` — JSON string of NormalizedRecipeContent**
+Stores the normalized recipe JSON object including: `title`, `ingredients` (array of objects), `steps` (array of objects), `tags` (array of strings), `cuisine`, `servings`, `totalTimeMinutes`, and `warnings`. Share imports may also include `read_via`, `link_url`, `shared_from`. The agent loads this on demand via `view_user_recipe(id)`.
 
-**`source` — free text**
-`session`: captured from a Mira session. `url`: imported from web url. `manual`: created by user.
+**`version` — integer, starts at 1**
+Current version number. Incremented on every `update_user_recipe`. Previous content archived to `recipe_versions` before increment.
 
-**`source_session_id` — nullable**
-Points to the session ID that produced this recipe.
+**`origin` — how the recipe entered the library**
+`cooking_session`: saved after a Mira cooking session. `family_capture`: family session capture. `user_written`: user created manually. `share_import`: share sheet / external import.
+
+**`session_id` — nullable**
+Points to `sessions.id` when `origin` is `cooking_session` or `family_capture`.
+
+**`link_url` — nullable**
+Original shared URL when `origin` is `share_import`.
 
 **`cook_count` — integer**
 Incremented on every successful cook session.
@@ -186,14 +215,14 @@ Timestamp of last cook session.
 
 ## Write Rules
 
-- New row inserted at cooking session end.
-- `update_user_recipe` — updates the JSON `content` payload. Must archive the previous version's `content` and metadata to `recipe_versions` table within the same transaction.
-- `archive_user_recipe` — sets `status = 'archived'`. Never deletes.
+- New row inserted at cooking session end (or import completion). Set `recipes.title` from `parsed(content).title`.
+- `update_user_recipe` — archives current `content` to `recipe_versions`, increments `version`, writes new `content`, syncs `title` from parsed JSON. Single transaction.
+- `archive_user_recipe` — sets `status = 'archived'`. Never deletes. Does not write to `recipe_versions`.
 
 ## Read Rules
 
 - Title index injected into session prompts: `id: title`. Agent calls `view_user_recipe(id)` to load full content.
-- Read by constraint checker: ingredients array inside JSON `content` checked against user's active constraints.
+- Read by constraint checker: ingredient names derived from `content.ingredients[].name` checked against user's active constraints.
 - Read by sessions: find all sessions for a given `recipe_id`.
 
 ## What Is NOT Stored Here

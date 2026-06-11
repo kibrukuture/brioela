@@ -52,7 +52,7 @@ type RecipeImportWorkflowState = {
   input: RecipeShareInput
   classification: SharedContentClassification | null
   artifacts: RecipeSourceArtifacts | null
-  normalizedRecipe: NormalizedImportedRecipe | null
+  normalizedRecipe: NormalizedRecipeContent | null
 }
 ```
 

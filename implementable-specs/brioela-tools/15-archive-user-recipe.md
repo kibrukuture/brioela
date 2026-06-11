@@ -24,7 +24,7 @@ Do NOT call `archive_user_recipe` when:
 import { z } from 'zod'
 
 export const ArchiveUserRecipeSchema = z.object({
-  id: z.string().uuid(),
+  id: z.uuid(),
   // The recipe UUID to archive. Must be active (status = 'active').
 
   reason: z.string().min(1),

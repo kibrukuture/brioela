@@ -2,9 +2,9 @@
 
 ## Purpose
 
-`update_user_recipe` rewrites a recipe's `content` and synchronously re-extracts the `ingredients` list from the new content. These two writes happen in a single transaction — they must always be in sync. A recipe where `content` has new ingredients but `ingredients` still has old values is a constraint-checking liability: the allergy system would miss the new ingredient.
+`update_user_recipe` replaces a recipe's `content` JSON and syncs `recipes.title` from `parsed(content).title`. Before overwrite, the current content is archived to `recipe_versions` and `recipes.version` increments — same atomic pattern as `update_user_skill`.
 
-Unlike `update_user_skill`, recipes have no version history table. Recipe edits are user-confirmed refinements — grandma corrected a step, user found a better spice ratio, the technique was improved from a recent cooking session. The edit is authoritative. The old content is gone. If version history becomes necessary, it is a future addition.
+Recipe edits are user-confirmed refinements — grandma corrected a step, user found a better spice ratio, technique improved from a recent cooking session. The live row is authoritative; old content is preserved in `recipe_versions` for developer rollback only.
 
 ## When to Call It
 
@@ -22,48 +22,53 @@ Do NOT call `update_user_recipe` when:
 
 ```typescript
 import { z } from 'zod'
+import { normalizedRecipeContentSchema } from '@/agents/brain/_schemas/normalized.recipe.content.schema'
 
 export const UpdateUserRecipeSchema = z.object({
-  id: z.string().uuid(),
-  // The recipe UUID to update. Must be active (status = 'active').
+  id: z.uuid(),
 
   content: z.string().min(1),
-  // The new JSON string representing the NormalizedImportedRecipe.
-  // Replaces the current content entirely.
+  // JSON string — validated with normalizedRecipeContentSchema.safeParse in the executable
 
   reason: z.string().min(1),
-  // Why this recipe is being updated. Required.
 
   updated_by: z.enum(['agent', 'brain_maintenance']),
-  // Who is making this update.
 })
 ```
 
 ## Pre-Update Guards
 
 ```typescript
-const recipe = db.select()
-  .from(recipes)
-  .where(
-    and(
-      eq(recipes.id, input.id),
-      eq(recipes.status, 'active')
-    )
-  )
-  .get()
+import { and, eq, getOne } from '@/database/drizzle/_database'
+
+const recipe = getOne(
+  db.select()
+    .from(recipes)
+    .where(
+      and(
+        eq(recipes.id, input.id),
+        eq(recipes.status, 'active'),
+      ),
+    ),
+)
 
 if (!recipe) {
   return {
     error: 'recipe_not_found_or_archived',
     id: input.id,
-    hint: 'Recipe not found or archived. Only active recipes can be updated.'
+    hint: 'Recipe not found or archived. Only active recipes can be updated.',
   }
 }
+
+// Validate before write:
+const validatedContent = normalizedRecipeContentSchema.safeParse(JSON.parse(input.content))
+if (!validatedContent.success) {
+  return { error: 'invalid_content', id: input.id, hint: '...' }
+}
+const content = validatedContent.data
 ```
 
-## What It Writes — One Transaction
-
-Single transaction to archive to `recipe_versions` and update the recipe:
+## What It Writes — Two Tables, One Transaction
 
 ```typescript
 db.transaction(() => {
@@ -79,18 +84,20 @@ db.transaction(() => {
     archivedAt:   Date.now(),
   })
 
-  // Step 2: Update the recipe
+  // Step 2: Update the live recipe row
   db.update(recipes)
     .set({
-      content:         input.content,
-      updatedAt:       Date.now(),
+      content:   input.content,
+      title:     content.title,
+      version:   recipe.version + 1,
+      updatedAt: Date.now(),
     })
     .where(eq(recipes.id, input.id))
     .run()
 })
 ```
 
-If the transaction fails, both are rolled back.
+If either step fails, the transaction rolls back. No partial state.
 
 ## What It Returns
 
@@ -100,23 +107,25 @@ On success:
 {
   "id": "a1b2c3d4-...",
   "title": "Grandma's Doro Wat",
+  "previous_version": 2,
+  "new_version": 3,
+  "archived": true,
   "status": "updated"
 }
 ```
 
-`ingredients_count` lets the agent confirm that the extracted ingredients list was non-empty and written.
-
 ## Side Effects
 
-None beyond the two column updates. No alarm triggered. No version snapshot created. The updated recipe takes effect immediately — the agent in the current session now has the new content if it calls `view_user_recipe` again (though the content is already in context from the update call's input).
+One `recipe_versions` archive row inserted. The updated recipe is live immediately — the agent in the current session already has the new content from the update input. No alarm triggered. `cook_count` unchanged.
 
 ## Error Cases
 
 | Error | Cause | What Agent Receives |
 |---|---|---|
-| Validation error | ID not UUID, content empty, ingredients empty, cook_time_minutes is 0 or negative | Zod error with failing field |
+| Validation error | ID not UUID, content empty, content fails NormalizedRecipeContent parse | Zod error with failing field |
 | Not found or archived | No active row with this ID | `{ error: 'recipe_not_found_or_archived', id, hint }` |
-| Transaction failure | SQLite error on write | Error — content and ingredients both unchanged |
+| Title sync failure | `parsed(content).title` does not match after write (should not happen if transaction succeeds) | Transaction failure — row unchanged |
+| Transaction failure | SQLite error on write | Error — recipe unchanged, no archive row |
 
 ## Who Can Call It
 
@@ -128,5 +137,5 @@ None beyond the two column updates. No alarm triggered. No version snapshot crea
 
 - Creating a new recipe → recipe-reconstruction skill (inserts directly, no separate tool)
 - Archiving a recipe → `archive_user_recipe`
-- Restoring an archived recipe → developer action, no tool exposed
+- Restoring an archived recipe or old version → developer action, no tool exposed
 - Incrementing cook_count → fire-and-forget at cooking session end, not through this tool

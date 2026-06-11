@@ -24,7 +24,7 @@ Do NOT call `cancel_user_alarm` when:
 import { z } from 'zod'
 
 export const CancelUserAlarmSchema = z.object({
-  id: z.string().uuid(),
+  id: z.uuid(),
   // The exact alarm row to cancel. From the id returned by schedule_user_alarm,
   // or from agent reading the scheduled_alarms table to find the relevant row.
 

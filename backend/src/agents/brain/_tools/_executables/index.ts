@@ -1,3 +1,6 @@
 export * from '@/agents/brain/_tools/_executables/write.user.memory.executable'
 export * from '@/agents/brain/_tools/_executables/read.user.memory.executable'
 export * from '@/agents/brain/_tools/_executables/log.memory.event.executable'
+export * from '@/agents/brain/_tools/_executables/view.user.recipe.executable'
+export * from '@/agents/brain/_tools/_executables/update.user.recipe.executable'
+export * from '@/agents/brain/_tools/_executables/archive.user.recipe.executable'

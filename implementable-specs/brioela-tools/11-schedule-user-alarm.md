@@ -70,7 +70,7 @@ export const ScheduleUserAlarmSchema = z.object({
   //   behavior_pattern_detection:  {}
   //   brain_maintenance_run:        {}
 
-  triggering_session_id: z.string().uuid().optional(),
+  triggering_session_id: z.uuid().optional(),
   // The session that scheduled this alarm. Pass the current session_id.
   // NULL for system-scheduled alarms (e.g. recurring behavior_pattern_detection at DO init).
 })

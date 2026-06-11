@@ -20,6 +20,10 @@ We must decide whether to:
 Writing or querying `recipes.active` will fail both at compilation and during runtime query execution since the database schema has a `status` text column.
 
 ## Status
-**FIXED (narrow scope).** Updated `13-view-user-recipe.md` to query `status = 'active'` instead of non-existent `active = 1`, use `getOne()`, and document that ingredients/tags/steps live inside `content` JSON with `ingredient_names` derived at read time.
+**FIXED.** Specs and schema aligned:
 
-**Still open (separate slices):** `recipes.version` + `recipe_versions` table in code; `09-recipes.md` internal contradictions; `14-update-user-recipe.md` self-contradictions.
+- `13-view-user-recipe.md` — `status = 'active'`, `getOne()`, JSON content model
+- `14-update-user-recipe.md` — version archive transaction, title sync from `content.title`
+- `09-recipes.md` — removed contradictory "no versions" / markdown-ingredients prose; title mirror + version history documented
+- `09-recipe-versions.md` — new table spec
+- Code — `recipes.version`, `recipe_versions` table, `recipes_title_matches_content_check`, migration `0005_recipe_versions_and_title_sync`

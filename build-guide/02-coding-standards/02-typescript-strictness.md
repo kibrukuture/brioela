@@ -153,7 +153,7 @@ Branded types integrate with Zod:
 import { z } from 'zod'
 import { asUserId } from './user.id.type'
 
-export const UserIdSchema = z.string().uuid().transform(asUserId)
+export const UserIdSchema = z.uuid().transform(asUserId)
 export type UserId = z.output<typeof UserIdSchema>
 ```
 

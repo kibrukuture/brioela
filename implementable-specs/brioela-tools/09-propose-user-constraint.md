@@ -86,7 +86,7 @@ export const ProposeUserConstraintSchema = z.object({
   // Used by the agent when deciding whether and how urgently to surface this for confirmation.
   // Not a dynamic score. After confirmation or rejection, confidence is for historical context only.
 
-  evidence: z.array(z.string().uuid()).min(1),
+  evidence: z.array(z.uuid()).min(1),
   // IDs from memory_event — the raw events that led to this inference.
   // Minimum one ID. The agent must have logged the triggering events first.
   // No evidence = no proposal.

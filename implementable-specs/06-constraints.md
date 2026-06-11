@@ -141,7 +141,7 @@ const ProposeConstraintSchema = z.object({
 })
 
 const ConfirmConstraintSchema = z.object({
-  id:                  z.string().uuid(),
+  id:                  z.uuid(),
   confirmation_source: z.enum(['user_explicit', 'behavioral_threshold']),
 })
 ```

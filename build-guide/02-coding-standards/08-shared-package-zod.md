@@ -98,7 +98,7 @@ import { z } from 'zod'
 import { UserIdSchema, ProductIdSchema } from '../user'
 
 export const ScanEventSchema = z.object({
-  id:        z.string().uuid(),
+  id:        z.uuid(),
   userId:    UserIdSchema,
   upc:       z.string().min(6).max(14),
   productId: ProductIdSchema.optional(),
@@ -152,14 +152,14 @@ export const asShopperId = (s: string): ShopperId => s as ShopperId
 export const asAlertId   = (s: string): AlertId   => s as AlertId
 
 // Zod schemas — validate AND brand in one step
-export const UserIdSchema    = z.string().uuid().transform(asUserId)
-export const RecipeIdSchema  = z.string().uuid().transform(asRecipeId)
-export const OrderIdSchema   = z.string().uuid().transform(asOrderId)
-export const FindIdSchema    = z.string().uuid().transform(asFindId)
-export const ProductIdSchema = z.string().uuid().transform(asProductId)
-export const SessionIdSchema = z.string().uuid().transform(asSessionId)
-export const ShopperIdSchema = z.string().uuid().transform(asShopperId)
-export const AlertIdSchema   = z.string().uuid().transform(asAlertId)
+export const UserIdSchema    = z.uuid().transform(asUserId)
+export const RecipeIdSchema  = z.uuid().transform(asRecipeId)
+export const OrderIdSchema   = z.uuid().transform(asOrderId)
+export const FindIdSchema    = z.uuid().transform(asFindId)
+export const ProductIdSchema = z.uuid().transform(asProductId)
+export const SessionIdSchema = z.uuid().transform(asSessionId)
+export const ShopperIdSchema = z.uuid().transform(asShopperId)
+export const AlertIdSchema   = z.uuid().transform(asAlertId)
 ```
 
 ---
@@ -174,7 +174,7 @@ import { z } from 'zod'
 
 // Input for the import action — verb prefix (ImportRecipe) distinguishes from entity (Recipe)
 export const ImportRecipeSchema = z.object({
-  sourceUrl:  z.string().url(),
+  sourceUrl:  z.url(),
   sourceType: z.enum(['tiktok', 'youtube', 'instagram', 'url']),
 })
 
@@ -187,7 +187,7 @@ import { z } from 'zod'
 
 // What the server returns when import is queued — it IS a job, so name it that
 export const ImportRecipeJobSchema = z.object({
-  jobId:     z.string().uuid(),
+  jobId:     z.uuid(),
   status:    z.enum(['queued', 'processing']),
   createdAt: z.coerce.date(),
 })
@@ -211,7 +211,7 @@ export const RecipeSchema = z.object({
   title:       z.string(),
   ingredients: z.array(RecipeIngredientSchema),
   steps:       z.array(z.string()),
-  sourceUrl:   z.string().url().optional(),
+  sourceUrl:   z.url().optional(),
   confidence:  z.number().min(0).max(1).optional(),
   createdAt:   z.coerce.date(),
 })
