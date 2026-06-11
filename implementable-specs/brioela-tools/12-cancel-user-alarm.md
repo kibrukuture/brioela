@@ -84,15 +84,15 @@ db.update(scheduledAlarms)
 After cancelling, immediately re-read the next earliest pending row and update the DO slot:
 
 ```typescript
-const next = db.select({ scheduledFor: scheduledAlarms.scheduledFor })
+const next = db.select({ scheduledAt: scheduledAlarms.scheduledAt })
   .from(scheduledAlarms)
   .where(eq(scheduledAlarms.status, 'pending'))
-  .orderBy(asc(scheduledAlarms.scheduledFor))
+  .orderBy(asc(scheduledAlarms.scheduledAt))
   .limit(1)
   .get()
 
 if (next) {
-  await this.ctx.storage.setAlarm(next.scheduledFor)
+  await this.ctx.storage.setAlarm(next.scheduledAt)
 } else {
   // No more pending alarms — clear the DO alarm slot entirely
   await this.ctx.storage.deleteAlarm()
@@ -142,7 +142,7 @@ db.select()
   .all()
 ```
 
-The agent reads the result, confirms the right row by `scheduled_for` and `payload_json` context, then calls `cancel_user_alarm` with the correct ID. Never guess an ID.
+The agent reads the result, confirms the right row by `scheduled_at` and `payload_json` context, then calls `cancel_user_alarm` with the correct ID. Never guess an ID.
 
 ## Error Cases
 

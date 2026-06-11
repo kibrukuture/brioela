@@ -18,4 +18,4 @@ We must decide whether to:
 TypeScript compilation and query runs will crash when trying to read/write `scheduledAlarms.scheduledFor`.
 
 ## Status
-**OPEN.**
+**FIXED.** Updated alarm table specification (`10-scheduled-alarms.md`), `schedule_user_alarm` tool spec (`11-schedule-user-alarm.md`), `cancel_user_alarm` tool spec (`12-cancel-user-alarm.md`), brain maintenance spec (`15-brain-maintenance-and-behavior-patterns.md`), load session context spec (`16-load-session-context.md`), and the implementation ledger (`0004.alarm-tools.md`) to use `scheduledAt`/`scheduled_at` to match the actual SQLite database schema.

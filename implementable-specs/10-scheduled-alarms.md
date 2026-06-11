@@ -12,9 +12,9 @@ Not all autonomous agent work is time-based. There are two fundamentally differe
 
 **Path A — Time-based (this table)**
 ```
-agent calls schedule_user_alarm(type, scheduled_for, payload)
+agent calls schedule_user_alarm(type, scheduled_at, payload)
 → row inserted into scheduled_alarms with status = 'pending'
-→ DO alarm slot set to MIN(scheduled_for) across all pending rows
+→ DO alarm slot set to MIN(scheduled_at) across all pending rows
 → DO sleeps until that timestamp
 → DO wakes up, reads table, processes all due rows
 → creates an 'alarm' session
@@ -54,17 +54,17 @@ A product recall notification fires the moment the condition is detected — not
 ## The DO Alarm Pattern (Path A detail)
 
 ```
-1. Agent calls schedule_user_alarm(type, scheduled_for, payload)
+1. Agent calls schedule_user_alarm(type, scheduled_at, payload)
 2. Row inserted into scheduled_alarms with status = 'pending'
-3. DO alarm slot set to MIN(scheduled_for) across all pending rows
+3. DO alarm slot set to MIN(scheduled_at) across all pending rows
 4. DO sleeps
 
 5. DO wakes up when alarm fires
-6. Reads all rows WHERE status = 'pending' AND scheduled_for <= now()
+6. Reads all rows WHERE status = 'pending' AND scheduled_at <= now()
 7. Sets each row to status = 'processing'
 8. Processes each row — dispatches on alarm_type, spawns agent action
 9. Sets each completed row to status = 'completed'
-10. Reads MIN(scheduled_for) of remaining pending rows
+10. Reads MIN(scheduled_at) of remaining pending rows
 11. Sets DO alarm slot to that timestamp
 12. DO sleeps again
 ```
@@ -79,7 +79,7 @@ CREATE TABLE scheduled_alarms (
   user_id               TEXT NOT NULL,     -- owner — self-describing for export
   alarm_type            TEXT NOT NULL,     -- free text — known values are suggestions, not a fixed enum
   status                TEXT NOT NULL DEFAULT 'pending',  -- 'pending' | 'processing' | 'completed' | 'failed' | 'cancelled'
-  scheduled_for         INTEGER NOT NULL,  -- unix timestamp ms — when this alarm should fire
+  scheduled_at          INTEGER NOT NULL,  -- unix timestamp ms — when this alarm should fire
   payload_json          TEXT NOT NULL DEFAULT '{}',  -- JSON — context the handler needs when it wakes up
   triggering_session_id TEXT,             -- which session scheduled this alarm — NULL for system-scheduled alarms
   attempts              INTEGER NOT NULL DEFAULT 0,  -- how many processing attempts have been made
@@ -101,7 +101,7 @@ export const scheduledAlarms = sqliteTable('scheduled_alarms', {
   userId:               text('user_id').notNull(),
   alarmType:            text('alarm_type').notNull(),     // free text — not an enum, new types added freely
   status:               text('status').notNull().default('pending'),
-  scheduledFor:         integer('scheduled_for').notNull(),
+  scheduledAt:          integer('scheduled_at').notNull(),
   payloadJson:          text('payload_json').notNull().default('{}'),
   triggeringSessionId:  text('triggering_session_id'),
   attempts:             integer('attempts').notNull().default(0),
@@ -125,8 +125,8 @@ Known values are documented above as suggestions. The handler dispatches on this
 - `failed` — all retry attempts exhausted, `fail_reason` set
 - `cancelled` — explicitly cancelled before it fired (e.g. user cancelled a trip, sickness resolved before followup)
 
-**`scheduled_for` — unix timestamp ms**
-The target fire time. The DO alarm slot is always set to `MIN(scheduled_for) WHERE status = 'pending'`. When the DO wakes up: `WHERE status = 'pending' AND scheduled_for <= now()` — everything due now or overdue gets processed in one wake-up.
+**`scheduled_at` — unix timestamp ms**
+The target fire time. The DO alarm slot is always set to `MIN(scheduled_at) WHERE status = 'pending'`. When the DO wakes up: `WHERE status = 'pending' AND scheduled_at <= now()` — everything due now or overdue gets processed in one wake-up.
 
 **`payload_json` — context for the handler**
 What the handler needs when it wakes up. Without this, the handler has no context for why it was scheduled. Examples:
@@ -150,7 +150,7 @@ import { z } from 'zod'
 
 const ScheduleAlarmSchema = z.object({
   alarm_type:    z.string().min(1),          // free text — not an enum
-  scheduled_for: z.number().int().positive(),
+  scheduled_at:  z.number().int().positive(),
   payload:       z.record(z.unknown()).default({}),
 })
 
@@ -162,24 +162,24 @@ const CancelAlarmSchema = z.object({
 ## Indexes
 
 ```sql
-CREATE INDEX idx_alarms_pending      ON scheduled_alarms (status, scheduled_for ASC) WHERE status = 'pending';
+CREATE INDEX idx_alarms_pending      ON scheduled_alarms (status, scheduled_at ASC) WHERE status = 'pending';
 CREATE INDEX idx_alarms_type_status  ON scheduled_alarms (alarm_type, status);
 ```
 
 **Why these indexes:**
-- `(status, scheduled_for ASC)` partial on pending — the critical query: find the next alarm to fire and all currently due alarms. Runs every DO wake-up.
+- `(status, scheduled_at ASC)` partial on pending — the critical query: find the next alarm to fire and all currently due alarms. Runs every DO wake-up.
 - `(alarm_type, status)` — check if a pending brain_maintenance_run or behavior_pattern_detection already exists before scheduling a duplicate.
 
 ## Write Rules
 
-- `schedule_user_alarm` tool — agent only. Inserts with `status = 'pending'`. After insert, calls `this.ctx.storage.setAlarm(MIN scheduled_for)` to update the DO slot.
-- DO alarm handler — sets `status = 'processing'` before handling. Sets `status = 'completed'` or `status = 'failed'` after. Increments `attempts` on each attempt. After all rows processed, re-reads `MIN(scheduled_for)` of remaining pending rows and resets DO alarm slot.
-- `cancel_user_alarm` tool — agent only. Sets `status = 'cancelled'`. After cancel, re-reads `MIN(scheduled_for)` and resets DO alarm slot.
+- `schedule_user_alarm` tool — agent only. Inserts with `status = 'pending'`. After insert, calls `this.ctx.storage.setAlarm(MIN scheduled_at)` to update the DO slot.
+- DO alarm handler — sets `status = 'processing'` before handling. Sets `status = 'completed'` or `status = 'failed'` after. Increments `attempts` on each attempt. After all rows processed, re-reads `MIN(scheduled_at)` of remaining pending rows and resets DO alarm slot.
+- `cancel_user_alarm` tool — agent only. Sets `status = 'cancelled'`. After cancel, re-reads `MIN(scheduled_at)` and resets DO alarm slot.
 - Never deleted. History of all past alarms stays in the table permanently.
 
 ## Read Rules
 
-- Read by DO alarm handler on every wake-up: `WHERE status = 'pending' AND scheduled_for <= now()`.
+- Read by DO alarm handler on every wake-up: `WHERE status = 'pending' AND scheduled_at <= now()`.
 - Read before scheduling a new `brain_maintenance_run` or `behavior_pattern_detection` to check if one is already pending — prevent duplicates.
 - Read by agent to tell the user what alarms are set: "you have a sickness followup scheduled for tomorrow morning."
 

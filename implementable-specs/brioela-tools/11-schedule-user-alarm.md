@@ -16,7 +16,7 @@ Call `schedule_user_alarm` when:
 Do NOT call `schedule_user_alarm` when:
 - The work should happen immediately on event detection → Upstash Workflow (Path B)
 - A pending alarm of the same type already exists and is not yet cancelled or completed
-- The `scheduled_for` timestamp is in the past
+- The `scheduled_at` timestamp is in the past
 
 ## Duplicate Check Before Scheduling
 
@@ -38,7 +38,7 @@ if (existing) {
     error: 'alarm_already_pending',
     id: existing.id,
     alarm_type: input.alarm_type,
-    scheduled_for: existing.scheduledFor,
+    scheduled_at: existing.scheduledAt,
     hint: 'A pending alarm of this type already exists. Cancel it first if you need to reschedule.'
   }
 }
@@ -57,7 +57,7 @@ export const ScheduleUserAlarmSchema = z.object({
   // 'behavior_pattern_detection', 'brain_maintenance_run'. New types are added by writing a new handler branch.
   // No Zod enum update needed when adding new types.
 
-  scheduled_for: z.number().int().positive(),
+  scheduled_at: z.number().int().positive(),
   // Unix timestamp ms — when this alarm should fire.
   // Must be in the future. The tool validates this before inserting.
 
@@ -75,8 +75,8 @@ export const ScheduleUserAlarmSchema = z.object({
   // NULL for system-scheduled alarms (e.g. recurring behavior_pattern_detection at DO init).
 })
 .refine(
-  (data) => data.scheduled_for > Date.now(),
-  { message: 'scheduled_for must be a future timestamp', path: ['scheduled_for'] }
+  (data) => data.scheduled_at > Date.now(),
+  { message: 'scheduled_at must be a future timestamp', path: ['scheduled_at'] }
 )
 ```
 
@@ -93,7 +93,7 @@ db.insert(scheduledAlarms).values({
   userId:              ctx.userId,
   alarmType:           input.alarm_type,
   status:              'pending',
-  scheduledFor:        input.scheduled_for,
+  scheduledAt:          input.scheduled_at,
   payloadJson:         JSON.stringify(input.payload),
   triggeringSessionId: input.triggering_session_id ?? null,
   attempts:            0,
@@ -107,18 +107,18 @@ db.insert(scheduledAlarms).values({
 
 ### Step 2 — Update DO alarm slot
 
-After inserting, immediately read the earliest pending scheduled_for across all pending rows and set the DO alarm slot:
+After inserting, immediately read the earliest pending scheduled_at across all pending rows and set the DO alarm slot:
 
 ```typescript
-const next = db.select({ scheduledFor: scheduledAlarms.scheduledFor })
+const next = db.select({ scheduledAt: scheduledAlarms.scheduledAt })
   .from(scheduledAlarms)
   .where(eq(scheduledAlarms.status, 'pending'))
-  .orderBy(asc(scheduledAlarms.scheduledFor))
+  .orderBy(asc(scheduledAlarms.scheduledAt))
   .limit(1)
   .get()
 
 if (next) {
-  await this.ctx.storage.setAlarm(next.scheduledFor)
+  await this.ctx.storage.setAlarm(next.scheduledAt)
 }
 ```
 
@@ -132,7 +132,7 @@ On success:
 {
   "id": "a1b2c3d4-...",
   "alarm_type": "sickness_followup",
-  "scheduled_for": 1748390400000,
+  "scheduled_at": 1748390400000,
   "status": "pending"
 }
 ```
@@ -141,15 +141,15 @@ The agent can report the scheduled alarm to the user: "I've set a check-in for 6
 
 ## Side Effects
 
-- DO alarm slot updated to `MIN(scheduled_for)` across all pending rows. If this new alarm is earlier than what was previously set, the DO will now wake up earlier.
+- DO alarm slot updated to `MIN(scheduled_at)` across all pending rows. If this new alarm is earlier than what was previously set, the DO will now wake up earlier.
 - No other tables touched.
 
 ## Error Cases
 
 | Error | Cause | What Agent Receives |
 |---|---|---|
-| Validation error | scheduled_for in the past, alarm_type empty, payload not a record | Zod error with failing field |
-| Alarm already pending | Same alarm_type has a pending row (for dedup types) | `{ error: 'alarm_already_pending', id, alarm_type, scheduled_for, hint }` |
+| Validation error | scheduled_at in the past, alarm_type empty, payload not a record | Zod error with failing field |
+| Alarm already pending | Same alarm_type has a pending row (for dedup types) | `{ error: 'alarm_already_pending', id, alarm_type, scheduled_at, hint }` |
 | Write failure | SQLite error (rare) | Error message |
 | setAlarm failure | CF DO storage error (rare) | Error message — alarm row inserted but slot not updated |
 

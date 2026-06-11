@@ -101,12 +101,12 @@ Alarms that are still pending — things the agent scheduled and the user should
 const pendingAlarms = db.select({
   id:          scheduledAlarms.id,
   alarmType:   scheduledAlarms.alarmType,
-  scheduledFor: scheduledAlarms.scheduledFor,
+  scheduledAt: scheduledAlarms.scheduledAt,
   payloadJson: scheduledAlarms.payloadJson,
 })
 .from(scheduledAlarms)
 .where(eq(scheduledAlarms.status, 'pending'))
-.orderBy(asc(scheduledAlarms.scheduledFor))
+.orderBy(asc(scheduledAlarms.scheduledAt))
 .all()
 ```
 
@@ -179,7 +179,7 @@ If `lastAbandoned.endedAt` is recent (within 24 hours), the agent should acknowl
     {
       "id": "alarm-uuid",
       "alarm_type": "travel_preload",
-      "scheduled_for": 1748736000000,
+      "scheduled_at": 1748736000000,
       "payload": { "destination": "Addis Ababa" }
     }
   ],

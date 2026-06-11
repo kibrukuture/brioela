@@ -282,7 +282,7 @@ if (!existingBrainMaintenance) {
     userId:      ctx.userId,
     alarmType:   'brain_maintenance_run',
     status:      'pending',
-    scheduledFor: Date.now() + 7 * 24 * 60 * 60 * 1000,  // 7 days from init
+    scheduledAt: Date.now() + 7 * 24 * 60 * 60 * 1000,  // 7 days from init
     payloadJson: '{}',
     triggeringSessionId: null,
     attempts:    0,
@@ -303,7 +303,7 @@ if (!existingPattern) {
     userId:      ctx.userId,
     alarmType:   'behavior_pattern_detection',
     status:      'pending',
-    scheduledFor: Date.now() + 3 * 24 * 60 * 60 * 1000,  // 3 days from init
+    scheduledAt: Date.now() + 3 * 24 * 60 * 60 * 1000,  // 3 days from init
     payloadJson: '{}',
     triggeringSessionId: null,
     attempts:    0,
@@ -326,14 +326,14 @@ At the end of each run, the sub-agent calls `schedule_user_alarm` (forwarded to 
 // BrainMaintenanceAgent at end of run:
 await callTool('schedule_user_alarm', {
   alarm_type:    'brain_maintenance_run',
-  scheduled_for: Date.now() + 7 * 24 * 60 * 60 * 1000,
+  scheduled_at: Date.now() + 7 * 24 * 60 * 60 * 1000,
   payload:       {},
 })
 
 // BehaviorPatternAgent at end of run:
 await callTool('schedule_user_alarm', {
   alarm_type:    'behavior_pattern_detection',
-  scheduled_for: Date.now() + 3 * 24 * 60 * 60 * 1000,
+  scheduled_at: Date.now() + 3 * 24 * 60 * 60 * 1000,
   payload:       {},
 })
 ```
@@ -352,7 +352,7 @@ if (activeSessionCheck.has_active_session) {
   // Reschedule self for 1 hour later — do not proceed
   await callTool('schedule_user_alarm', {
     alarm_type:    this.alarmType,          // 'brain_maintenance_run' or 'behavior_pattern_detection'
-    scheduled_for: Date.now() + 60 * 60 * 1000,
+    scheduled_at: Date.now() + 60 * 60 * 1000,
     payload:       {},
   })
   return { deferred: true, reason: 'active_session' }
@@ -683,7 +683,7 @@ await brain.setAgentState('behavior_pattern_detection.last_run', String(Date.now
 
 await callTool('schedule_user_alarm', {
   alarm_type:    'behavior_pattern_detection',
-  scheduled_for: Date.now() + 3 * 24 * 60 * 60 * 1000,
+  scheduled_at: Date.now() + 3 * 24 * 60 * 60 * 1000,
   payload:       {},
 })
 ```
