@@ -80,7 +80,7 @@ CREATE TABLE scheduled_alarms (
   alarm_type            TEXT NOT NULL,     -- free text — known values are suggestions, not a fixed enum
   status                TEXT NOT NULL DEFAULT 'pending',  -- 'pending' | 'processing' | 'completed' | 'failed' | 'cancelled'
   scheduled_at          INTEGER NOT NULL,  -- unix timestamp ms — when this alarm should fire
-  payload_json          TEXT NOT NULL DEFAULT '{}',  -- JSON — context the handler needs when it wakes up
+  payload               TEXT NOT NULL DEFAULT '{}',  -- JSON — context the handler needs when it wakes up
   triggering_session_id TEXT,             -- which session scheduled this alarm — NULL for system-scheduled alarms
   attempts              INTEGER NOT NULL DEFAULT 0,  -- how many processing attempts have been made
   last_attempted_at     INTEGER,          -- unix timestamp ms — when the last attempt was made
@@ -102,7 +102,7 @@ export const scheduledAlarms = sqliteTable('scheduled_alarms', {
   alarmType:            text('alarm_type').notNull(),     // free text — not an enum, new types added freely
   status:               text('status').notNull().default('pending'),
   scheduledAt:          integer('scheduled_at').notNull(),
-  payloadJson:          text('payload_json').notNull().default('{}'),
+  payload:              text('payload').notNull().default('{}'),
   triggeringSessionId:  text('triggering_session_id'),
   attempts:             integer('attempts').notNull().default(0),
   lastAttemptedAt:      integer('last_attempted_at'),
@@ -128,7 +128,7 @@ Known values are documented above as suggestions. The handler dispatches on this
 **`scheduled_at` — unix timestamp ms**
 The target fire time. The DO alarm slot is always set to `MIN(scheduled_at) WHERE status = 'pending'`. When the DO wakes up: `WHERE status = 'pending' AND scheduled_at <= now()` — everything due now or overdue gets processed in one wake-up.
 
-**`payload_json` — context for the handler**
+**`payload` — context for the handler**
 What the handler needs when it wakes up. Without this, the handler has no context for why it was scheduled. Examples:
 - `sickness_followup`: `{ "memory_event_ids": ["..."], "symptoms_reported": "felt nauseous after dinner" }`
 - `travel_preload`: `{ "destination": "Addis Ababa", "departure_at": 1234567890 }`

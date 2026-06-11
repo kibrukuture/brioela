@@ -94,7 +94,7 @@ db.insert(scheduledAlarms).values({
   alarmType:           input.alarm_type,
   status:              'pending',
   scheduledAt:          input.scheduled_at,
-  payloadJson:         JSON.stringify(input.payload),
+  payload:             JSON.stringify(input.payload),
   triggeringSessionId: input.triggering_session_id ?? null,
   attempts:            0,
   lastAttemptedAt:     null,

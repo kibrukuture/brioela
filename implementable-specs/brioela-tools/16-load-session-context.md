@@ -102,7 +102,7 @@ const pendingAlarms = db.select({
   id:          scheduledAlarms.id,
   alarmType:   scheduledAlarms.alarmType,
   scheduledAt: scheduledAlarms.scheduledAt,
-  payloadJson: scheduledAlarms.payloadJson,
+  payload:     scheduledAlarms.payload,
 })
 .from(scheduledAlarms)
 .where(eq(scheduledAlarms.status, 'pending'))

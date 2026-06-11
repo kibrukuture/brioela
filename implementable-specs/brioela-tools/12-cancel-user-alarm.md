@@ -142,7 +142,7 @@ db.select()
   .all()
 ```
 
-The agent reads the result, confirms the right row by `scheduled_at` and `payload_json` context, then calls `cancel_user_alarm` with the correct ID. Never guess an ID.
+The agent reads the result, confirms the right row by `scheduled_at` and `payload` context, then calls `cancel_user_alarm` with the correct ID. Never guess an ID.
 
 ## Error Cases
 

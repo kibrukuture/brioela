@@ -283,7 +283,7 @@ if (!existingBrainMaintenance) {
     alarmType:   'brain_maintenance_run',
     status:      'pending',
     scheduledAt: Date.now() + 7 * 24 * 60 * 60 * 1000,  // 7 days from init
-    payloadJson: '{}',
+    payload: '{}',
     triggeringSessionId: null,
     attempts:    0,
     createdAt:   Date.now(),
@@ -304,7 +304,7 @@ if (!existingPattern) {
     alarmType:   'behavior_pattern_detection',
     status:      'pending',
     scheduledAt: Date.now() + 3 * 24 * 60 * 60 * 1000,  // 3 days from init
-    payloadJson: '{}',
+    payload: '{}',
     triggeringSessionId: null,
     attempts:    0,
     createdAt:   Date.now(),
