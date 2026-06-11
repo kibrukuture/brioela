@@ -1,6 +1,5 @@
 export * from './append.gate.event.helper'
 export * from './append.read.entry.helper'
-export * from './build.gate.plist.helper'
 export * from './check.gate.heartbeat.helper'
 export * from './check.gate.signature.helper'
 export * from './create.board.diff.helper'

@@ -4,10 +4,7 @@ import { existsSync, mkdirSync, readFileSync, unlinkSync, writeFileSync } from '
 import { join } from 'node:path'
 import { execPath, exit } from 'node:process'
 import {
-  buildGatePlist,
   gateKeyFolder,
-  gateLaunchdLabel,
-  gateLaunchdPlistPath,
   gateLogFolder,
   gatePidPath,
   gateSocketPath,
