@@ -29,7 +29,7 @@ Writing or querying `recipes.active` will fail both at compilation and during ru
 - `09-recipe-versions.md` — archive table spec
 - Code — `recipes.version`, `recipe_versions`, `recipes_title_matches_content_check`, migrations `0005_recipe_versions_and_title_sync` and `0006_recipe_origin_naming`
 - Tools — split structure (`_schemas`, `_prompts`, `_executables`, `.tool.ts`), wired in `memory.tool.ts`
-- Tests — `recipe.tool.test.ts` with explicit `runMigrations` before seed
+- Tests — `recipe.tool.test.ts` + `recipe.tool.test.schema.helper.ts` (scoped recipe tables, `idFromName()`)
 - Ledger — `0005.recipe-tools.md` marked Shipped
 
 **Out of 002 scope (separate work):** Mira session-end recipe create path, share/import job pipeline naming.

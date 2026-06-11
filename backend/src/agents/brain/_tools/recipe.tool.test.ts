@@ -1,8 +1,9 @@
 import { runInDurableObject } from 'cloudflare:test'
 import { env } from 'cloudflare:workers'
 import { describe, expect, it } from 'vitest'
+import { createId } from '@brioela/shared/_ids'
 import { createDatabase } from '@/agents/brain/_database'
-import { runMigrations } from '@/agents/brain/_migrations'
+import { ensureRecipeToolTestSchema } from '@/agents/brain/_tools/recipe.tool.test.schema.helper'
 import { writeUserRecipe } from '@/agents/brain/_repositories'
 import { recipeVersions, recipes } from '@/agents/brain/_schemas'
 import type { NormalizedRecipeContent } from '@/agents/brain/_schemas/normalized.recipe.content.schema'
@@ -14,7 +15,6 @@ import { buildToolsForSession } from '@/agents/brain/_tools/memory.tool'
 import { updateUserRecipeTool } from '@/agents/brain/_tools/update.user.recipe.tool'
 import { viewUserRecipeTool } from '@/agents/brain/_tools/view.user.recipe.tool'
 import { and, eq } from '@/database/drizzle/_database'
-import { readCurrentEpochMs } from '@/time/_helpers'
 
 const recipeId = '00000000-0000-4000-8000-000000000001'
 const userId = 'user-recipe-test'
@@ -22,13 +22,13 @@ const userId = 'user-recipe-test'
 async function withMigratedDatabase(
 	run: (database: ReturnType<typeof createDatabase>) => void | Promise<void>,
 ) {
-	const brain = env.BRIOELA_BRAIN.get(env.BRIOELA_BRAIN.newUniqueId())
-	await brain.checkReadiness()
+	const brain = env.BRIOELA_BRAIN.get(
+		env.BRIOELA_BRAIN.idFromName(`recipe-tool-test-${createId()}`),
+	)
 
 	await runInDurableObject(brain, async (_, state) => {
 		const database = createDatabase(state.storage)
-		const readiness = await runMigrations(database, readCurrentEpochMs())
-		expect(readiness.status).toBe('ready')
+		ensureRecipeToolTestSchema(database)
 		await run(database)
 	})
 }
