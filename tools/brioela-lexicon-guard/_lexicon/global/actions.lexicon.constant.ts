@@ -26,7 +26,7 @@ export const globalActionLexicon: LexiconWord[] = [
   { word: 'read', kind: 'action', scopes: ['global'], meaning: 'Load without mutating.' },
   { word: 'record', kind: 'action', scopes: ['global'], meaning: 'Persist a fact.' },
   { word: 'resolve', kind: 'action', scopes: ['global'], meaning: 'Turn an input into a canonical target.' },
-  { word: 'run', kind: 'action', scopes: ['global'], meaning: 'Execute a command, handler, or process.' },
+  { word: 'run', kind: 'action', scopes: ['global'], meaning: 'Reserved: orchestration-level execution only — daemons, guard runs, loop dispatch. Not for domain behavior.' },
   { word: 'select', kind: 'action', scopes: ['global'], meaning: 'Choose matching items.' },
   { word: 'tail', kind: 'action', scopes: ['global'], meaning: 'Follow log output.' },
   { word: 'validate', kind: 'action', scopes: ['global'], meaning: 'Check a value against a rule.' },

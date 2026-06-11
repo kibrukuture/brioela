@@ -1,4 +1,4 @@
 import type { LexiconWord } from '../_types'
-import { toolsDaemonLexicon } from './tools'
+import { toolsDaemonLexicon, toolsReadingGateLexicon } from './tools'
 
-export const toolsLexicon: LexiconWord[] = [...toolsDaemonLexicon]
+export const toolsLexicon: LexiconWord[] = [...toolsDaemonLexicon, ...toolsReadingGateLexicon]

@@ -1,0 +1,21 @@
+{
+  "name": "@brioela/reading-gate",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "up": "bun up.gate.handler.ts",
+    "down": "bun down.gate.handler.ts",
+    "read": "bun read.gate.handler.ts",
+    "status": "bun status.gate.handler.ts",
+    "test": "bun test",
+    "typecheck": "bunx tsc --noEmit --pretty false"
+  },
+  "dependencies": {
+    "dayjs": "^1.11.19"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.3.14",
+    "typescript": "^5.9.3"
+  }
+}

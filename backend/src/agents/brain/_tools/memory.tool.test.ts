@@ -5,9 +5,9 @@ import { createDatabase } from '@/agents/brain/_database'
 import { logMemoryEventTool } from '@/agents/brain/_tools/log.memory.event.tool'
 import { writeUserMemoryTool } from '@/agents/brain/_tools/write.user.memory.tool'
 import { readUserMemoryTool } from '@/agents/brain/_tools/read.user.memory.tool'
-import { logMemoryEventExecute } from '@/agents/brain/_tools/_executables/log.memory.event.executable'
-import { writeUserMemoryExecute } from '@/agents/brain/_tools/_executables/write.user.memory.executable'
-import { readUserMemoryExecute } from '@/agents/brain/_tools/_executables/read.user.memory.executable'
+import { logMemoryEventExecutable } from '@/agents/brain/_tools/_executables/log.memory.event.executable'
+import { writeUserMemoryExecutable } from '@/agents/brain/_tools/_executables/write.user.memory.executable'
+import { readUserMemoryExecutable } from '@/agents/brain/_tools/_executables/read.user.memory.executable'
 import { readUserMemory } from '@/agents/brain/_repositories'
 import { memoryEvent } from '@/agents/brain/_schemas'
 import { eq } from '@/database/drizzle/_database'
@@ -26,7 +26,7 @@ describe('Brain Memory Tools', () => {
 			const eventTool = logMemoryEventTool(database, userId, sessionId)
 			expect(eventTool).toBeDefined()
 
-			const logged = await logMemoryEventExecute(database, userId, sessionId, {
+			const logged = await logMemoryEventExecutable(database, userId, sessionId, {
 				kind: 'food_intake',
 				payload: { dish: 'shiro wot', rating: 'excellent' },
 				source: 'agent',
@@ -66,7 +66,7 @@ describe('Brain Memory Tools', () => {
 			expect(writeTool).toBeDefined()
 
 			// 1. Initial write
-			const firstWrite = await writeUserMemoryExecute(database, userId, {
+			const firstWrite = await writeUserMemoryExecutable(database, userId, {
 				namespace: 'health.diet',
 				key: 'preferences',
 				value: { spicy: true },
@@ -83,7 +83,7 @@ describe('Brain Memory Tools', () => {
 			expect(firstRow?.confidence).toBe(0.8)
 
 			// 2. Lower confidence update (should be skipped)
-			const skippedWrite = await writeUserMemoryExecute(database, userId, {
+			const skippedWrite = await writeUserMemoryExecutable(database, userId, {
 				namespace: 'health.diet',
 				key: 'preferences',
 				value: { spicy: false },
@@ -93,7 +93,7 @@ describe('Brain Memory Tools', () => {
 			expect(skippedWrite.action).toBe('skipped')
 
 			// 3. Stated source update (should overwrite and merge even if lower confidence)
-			const statedWrite = await writeUserMemoryExecute(database, userId, {
+			const statedWrite = await writeUserMemoryExecutable(database, userId, {
 				namespace: 'health.diet',
 				key: 'preferences',
 				value: { vegetarian: true },
@@ -110,7 +110,7 @@ describe('Brain Memory Tools', () => {
 			// 4. Fill up to namespace cap
 			// Note: We already have 'health.diet' (1 namespace). Add 39 more.
 			for (let idx = 0; idx < 39; idx++) {
-				await writeUserMemoryExecute(database, userId, {
+				await writeUserMemoryExecutable(database, userId, {
 					namespace: `test.ns.n${idx}`,
 					key: 'dummy',
 					value: { val: idx },
@@ -120,7 +120,7 @@ describe('Brain Memory Tools', () => {
 			}
 
 			// Verify we can update an existing namespace at the limit
-			const limitUpdate = await writeUserMemoryExecute(database, userId, {
+			const limitUpdate = await writeUserMemoryExecutable(database, userId, {
 				namespace: 'health.diet',
 				key: 'preferences',
 				value: { vegan: false },
@@ -130,7 +130,7 @@ describe('Brain Memory Tools', () => {
 			expect(limitUpdate.status).toBe('written')
 
 			// 41st namespace should fail
-			const overCap = await writeUserMemoryExecute(database, userId, {
+			const overCap = await writeUserMemoryExecutable(database, userId, {
 				namespace: 'test.ns.blocked',
 				key: 'dummy',
 				value: { val: 999 },
@@ -154,7 +154,7 @@ describe('Brain Memory Tools', () => {
 			expect(readTool).toBeDefined()
 
 			// Seed database
-			await writeUserMemoryExecute(database, userId, {
+			await writeUserMemoryExecutable(database, userId, {
 				namespace: 'cooking.pref',
 				key: 'spice_level',
 				value: { level: 'hot' },
@@ -162,7 +162,7 @@ describe('Brain Memory Tools', () => {
 				source: 'stated',
 			})
 
-			await writeUserMemoryExecute(database, userId, {
+			await writeUserMemoryExecutable(database, userId, {
 				namespace: 'cooking.pref',
 				key: 'preferred_dishes',
 				value: { Ethiopian: ['doro wat', 'shiro'] },
@@ -171,7 +171,7 @@ describe('Brain Memory Tools', () => {
 			})
 
 			// 1. Read specific key
-			const readSingle = await readUserMemoryExecute(database, userId, {
+			const readSingle = await readUserMemoryExecutable(database, userId, {
 				namespace: 'cooking.pref',
 				key: 'spice_level',
 			})
@@ -180,14 +180,14 @@ describe('Brain Memory Tools', () => {
 			expect(readSingle.confidence).toBe(0.9)
 
 			// 2. Read non-existent key
-			const readMissing = await readUserMemoryExecute(database, userId, {
+			const readMissing = await readUserMemoryExecutable(database, userId, {
 				namespace: 'cooking.pref',
 				key: 'non_existent',
 			})
 			expect(readMissing.found).toBe(false)
 
 			// 3. Read full namespace
-			const readFull = await readUserMemoryExecute(database, userId, {
+			const readFull = await readUserMemoryExecutable(database, userId, {
 				namespace: 'cooking.pref',
 			})
 			if ('entries' in readFull && readFull.entries) {

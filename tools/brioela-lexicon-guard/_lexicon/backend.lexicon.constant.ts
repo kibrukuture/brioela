@@ -1,4 +1,4 @@
 import type { LexiconWord } from '../_types'
-import { backendCloudflareLexicon, backendDatabaseLexicon } from './backend'
+import { backendCloudflareLexicon, backendDatabaseLexicon, backendExecutableLexicon } from './backend'
 
-export const backendLexicon: LexiconWord[] = [...backendCloudflareLexicon, ...backendDatabaseLexicon]
+export const backendLexicon: LexiconWord[] = [...backendCloudflareLexicon, ...backendDatabaseLexicon, ...backendExecutableLexicon]

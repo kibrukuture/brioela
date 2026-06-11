@@ -93,7 +93,7 @@ export function validateFileName(entry: WorkspaceEntry): NamingViolation[] {
     }
   }
 
-  if (directory.endsWith('/_handlers') && !fileName.endsWith('.handler.ts') && !allowedStandaloneFiles.has(fileName)) {
+  if (directory.endsWith('/_handlers') && !fileName.endsWith('.handler.ts') && !fileName.endsWith('.handler.test.ts') && !allowedStandaloneFiles.has(fileName)) {
     violations.push({
       rule: 'handler-folder-role-match',
       path: entry.repoPath,
@@ -102,7 +102,7 @@ export function validateFileName(entry: WorkspaceEntry): NamingViolation[] {
     })
   }
 
-	if (directory.endsWith('/_helpers') && !fileName.endsWith('.helper.ts') && !allowedStandaloneFiles.has(fileName)) {
+	if (directory.endsWith('/_helpers') && !fileName.endsWith('.helper.ts') && !fileName.endsWith('.helper.test.ts') && !allowedStandaloneFiles.has(fileName)) {
     violations.push({
       rule: 'helper-folder-role-match',
       path: entry.repoPath,
@@ -111,7 +111,7 @@ export function validateFileName(entry: WorkspaceEntry): NamingViolation[] {
     })
 	}
 
-	if (directory.endsWith('/_repositories') && !fileName.endsWith('.repository.ts') && !allowedStandaloneFiles.has(fileName)) {
+	if (directory.endsWith('/_repositories') && !fileName.endsWith('.repository.ts') && !fileName.endsWith('.repository.test.ts') && !allowedStandaloneFiles.has(fileName)) {
 		violations.push({
 			rule: 'repository-folder-role-match',
 			path: entry.repoPath,
@@ -120,7 +120,7 @@ export function validateFileName(entry: WorkspaceEntry): NamingViolation[] {
 		})
 	}
 
-	if (directory.endsWith('/_database') && !fileName.endsWith('.database.ts') && !fileName.endsWith('.database.helper.ts') && !allowedStandaloneFiles.has(fileName)) {
+	if (directory.endsWith('/_database') && !fileName.endsWith('.database.ts') && !fileName.endsWith('.database.helper.ts') && !fileName.endsWith('.database.test.ts') && !fileName.endsWith('.database.helper.test.ts') && !allowedStandaloneFiles.has(fileName)) {
 		violations.push({
 			rule: 'database-folder-role-match',
 			path: entry.repoPath,

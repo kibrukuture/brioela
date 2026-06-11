@@ -8,11 +8,11 @@ import { z, jsonValueSchema, type JsonValue } from '@brioela/shared/zod'
 import type { writeUserMemorySchema } from '@/agents/brain/_tools/_schemas/write.user.memory.schema'
 import { readCurrentEpochMs } from '@/time/_helpers'
 
-export async function writeUserMemoryExecute(
+export const writeUserMemoryExecutable = async (
 	db: BrainDatabase,
 	userId: string,
 	{ namespace, key, value, confidence, source }: z.infer<typeof writeUserMemorySchema>,
-) {
+) => {
 	const id = `${namespace}:${key}`
 	const existing = readUserMemory(db, userId, namespace, key)
 

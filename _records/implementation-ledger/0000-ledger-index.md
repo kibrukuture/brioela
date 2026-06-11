@@ -43,6 +43,7 @@ _records/implementation-ledger/brain/05-session-lifecycle/0001.session-open.md
 | `brain/03-tool-protocol/implementation/0005.recipe-tools.md` | Brain / Tool protocol | open | 3 recipe tools (view, update, archive) — recipes created by Mira, managed here. |
 | `brain/03-tool-protocol/implementation/0006.session-tools.md` | Brain / Tool protocol | open | 2 session tools (load context, FTS5 search history) — read-only, general session only. |
 | `brain/03-tool-protocol/implementation/0007.web-tool.md` | Brain / Tool protocol | open | 1 web tool (Brave Search API, 5-call-per-session limit) — general session only. |
+| `brain/03-tool-protocol/implementation/0008.executable-artifact-naming.md` | Brain / Tool protocol | done | Established the artifact naming law: executable exports mirror their file stems (`logMemoryEventExecutable` etc.), `run` reserved for orchestration, `executable` added to backend lexicon. Guards clean, brain tests green. |
 | `brain/04-agent-identity/0001.identity-prompt.md` | Brain / Agent identity | open | Create `identity-prompt.ts` — BrioelaIdentity constant, 800-token cap. |
 | `brain/05-session-lifecycle/0001.session-open.md` | Brain / Session lifecycle | open | `open.session.handler.ts` — creates session row, schedules watchdog alarm, calls system prompt builder. |
 | `brain/05-session-lifecycle/0002.system-prompt-builder.md` | Brain / Session lifecycle | open | `build.system.prompt.handler.ts` — assembles 6 blocks in strict prefix-cache order. |
@@ -56,5 +57,6 @@ _records/implementation-ledger/brain/05-session-lifecycle/0001.session-open.md
 | `tooling/01-lexicon-guard/0001.granular-vocabulary.md` | Tooling / Lexicon guard | done | Split the lexicon guard vocabulary into granular owned slices while keeping stable aggregate exports. |
 | `tooling/02-reading-gate/0001.design.docs.md` | Tooling / Reading gate | done | Wrote the Reading Gate and Agent Loop Orchestration design doctrine (build-guide 14 & 15) — hard mechanical read-proof gate at commit time plus the agent loop where the human is reviewer/merger only. |
 | `tooling/02-reading-gate/0002.unforgeable-design.md` | Tooling / Reading gate | done | Revised build-guide 14 & 15 to the unforgeable model: root daemon as reader-of-record, root-owned manifest, ed25519-signed passes, clean-room verification, daemon-executed merges, sovereign-territory locks on all tooling, full automation behind one `sudo bun gate:up` command. |
+| `tooling/02-reading-gate/0003.daemon-manifest-read.md` | Tooling / Reading gate | done | Slice 1 built: root gate daemon on a unix socket, root-owned TSV manifest, `gate:read`/`gate:status`/`gate:up`/`gate:down` handlers, freshness + hash verdicts, 7 green tests. Blocked items need human unlocks (lexicon wiring, helper-test policy conflict). |
 
 

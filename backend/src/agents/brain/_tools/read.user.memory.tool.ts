@@ -2,7 +2,7 @@ import { tool } from 'ai'
 import type { BrainDatabase } from '@/agents/brain/_database'
 import { readUserMemorySchema } from '@/agents/brain/_tools/_schemas/read.user.memory.schema'
 import { readUserMemoryPrompt } from '@/agents/brain/_tools/_prompts/read.user.memory.prompt'
-import { readUserMemoryExecute } from '@/agents/brain/_tools/_executables/read.user.memory.executable'
+import { readUserMemoryExecutable } from '@/agents/brain/_tools/_executables/read.user.memory.executable'
 
 export const readUserMemoryTool = (
 	db: BrainDatabase,
@@ -11,5 +11,5 @@ export const readUserMemoryTool = (
 ) => tool({
 	description: readUserMemoryPrompt,
 	inputSchema: readUserMemorySchema,
-	execute: async (params) => readUserMemoryExecute(db, userId, params, waitUntil),
+	execute: async (params) => readUserMemoryExecutable(db, userId, params, waitUntil),
 })

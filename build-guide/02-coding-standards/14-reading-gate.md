@@ -186,7 +186,9 @@ No new binaries or npm packages are required. If a future slice wants kernel-lev
 
 ## Guard structure — one file, one responsibility
 
-A fourth guard: `tools/brioela-reading-gate/`, following the established guard shape (`brioela-type-guard` is the precedent: root entry handlers, underscore-prefixed owned folders, dot-named role-suffixed files). The law inside this guard: **one file carries exactly one responsibility.** Handlers parse the command and delegate; helpers do one job; policies hold one attestation rule; types hold one shape. Assembly happens in `index.ts` barrels per folder, never by swelling a file.
+A fourth guard: `tools/brioela-reading-gate/`, following the established guard shape (`brioela-type-guard` is the precedent: entry handlers at the package root, sanctioned underscore folders, dot-named role-suffixed files). The law inside this guard: **one file carries exactly one responsibility.** Handlers parse the command and delegate; helpers do one job; policies hold one attestation rule; types hold one shape. Assembly happens in `index.ts` barrels, never by swelling a file.
+
+The folder set obeys the name guard's locked `allowedUnderscoreFolders` law — no invented folders. Everything lives in `_helpers`, `_policies`, `_types`, `_watch`, with all entry handlers (including the daemon process script) at the package root, exactly like the other three guards.
 
 ```text
 tools/brioela-reading-gate/
@@ -194,94 +196,51 @@ tools/brioela-reading-gate/
 ├── tsconfig.json
 ├── index.ts                              # public surface assembly only
 │
-│   # entry handlers — one CLI command = one handler, parse + delegate only
-├── up.gate.handler.ts                    # sudo entry: lock integrity → daemon → orchestrator → dashboard
-├── down.gate.handler.ts                  # sudo stop of the full stack
-├── read.gate.handler.ts                  # client side of gate:read (socket request, stream content)
-├── attest.gate.handler.ts                # client side of gate:attest (challenge round-trip)
-├── check.gate.handler.ts                 # gate:check — pass record vs staged diff (pre-commit + verify)
-├── status.gate.handler.ts                # one-shot checklist + board + lock integrity
-├── watch.gate.handler.ts                 # attach the live dashboard stream
-├── rotate.key.gate.handler.ts            # sudo key rotation
+│   # entry handlers — one CLI command = one handler (slice 1 built: up/down/read/status/run)
+├── up.gate.handler.ts                    # sudo entry: folders → spawn daemon → health poll
+├── down.gate.handler.ts                  # sudo stop via pid file
+├── run.gate.daemon.handler.ts            # the root daemon process (spawned by gate:up)
+├── read.gate.handler.ts                  # client side of gate:read (socket call, stream content)
+├── status.gate.handler.ts                # checklist of recorded reads, fresh/stale verdicts
+├── attest.gate.handler.ts                # (slice 2) challenge round-trip
+├── check.gate.handler.ts                 # (slice 3) pass record vs staged diff
+├── rotate.key.gate.handler.ts            # (slice 3) sudo key rotation
+├── watch.gate.handler.ts                 # (slice 4) attach the live dashboard
 │
-├── _daemon/                              # root process internals
+├── _helpers/                             # one job per file, slice 1 built:
 │   ├── index.ts
-│   ├── start.gate.daemon.handler.ts      # boots socket server + services, root-check
-│   ├── serve.gate.socket.helper.ts       # unix socket transport (Bun.serve)
-│   ├── route.gate.request.helper.ts      # one request → one service, nothing else
-│   └── verify.lock.integrity.helper.ts   # sovereign territory flags/ownership audit
-│
-├── _manifest/                            # reading manifest — root-owned storage only
-│   ├── index.ts
+│   ├── gate.config.helper.ts             # all gate paths + ttl, single source
+│   ├── workspace.root.helper.ts          # BRIOELA_WORKSPACE_ROOT resolution
+│   ├── read.current.epoch.ms.helper.ts   # dayjs clock (native Date is banned)
+│   ├── create.content.hash.helper.ts     # sha256 of served bytes
+│   ├── format.manifest.entry.helper.ts   # entry → manifest line
+│   ├── parse.manifest.entry.helper.ts    # manifest line → entry | null
 │   ├── append.read.entry.helper.ts       # the ONLY writer of manifest lines
-│   ├── read.manifest.helper.ts           # load + parse manifest for a worktree
-│   ├── expire.stale.entries.helper.ts    # freshness window + hash-change expiry
-│   └── hash.file.content.helper.ts       # sha256 of file bytes
+│   ├── read.manifest.entries.helper.ts   # load + parse the manifest
+│   ├── is.fresh.entry.helper.ts          # ttl freshness verdict
+│   ├── serve.gate.socket.helper.ts       # Bun.serve on the unix socket + routing
+│   ├── serve.read.route.helper.ts        # /read — daemon performs the OS read, records, streams back
+│   ├── serve.status.route.helper.ts      # /status — fresh/stale checklist text
+│   └── append.gate.event.helper.ts       # event log line for the future dashboard
+│       # later slices add here: signing, scope, cleanroom, merge, orchestrator helpers
 │
-├── _ledger/                              # ledger entry frontmatter intake
-│   ├── index.ts
-│   ├── parse.required.reading.helper.ts  # declared Required Reading list
-│   ├── parse.touched.files.helper.ts     # declared Touched Files scope
-│   └── derive.required.reading.helper.ts # mandatory floor from diff (schemas, imports)
+├── _policies/                            # (slice 2+) one attestation rule per file
+│   ├── attest.drizzle.columns.policy.ts  # parse schema TS → exact column list
+│   ├── attest.module.exports.policy.ts   # parse real exports of imported modules
+│   ├── attest.enum.values.policy.ts      # allowed values of consumed enums/unions
+│   └── attest.excerpt.lines.policy.ts    # random line-range exact-text challenge
 │
-├── _attestation/                         # challenge issue + judgment
-│   ├── index.ts
-│   ├── issue.challenge.helper.ts         # picks policies + randomizes per attempt
-│   ├── judge.answer.helper.ts            # byte-diff verdict + mismatch report
-│   └── _policies/                        # one attestation rule per file (Layer A + B)
-│       ├── index.ts
-│       ├── attest.drizzle.columns.policy.ts    # parse schema TS → exact column list
-│       ├── attest.module.exports.policy.ts     # parse real exports of imported modules
-│       ├── attest.enum.values.policy.ts        # allowed values of consumed enums/unions
-│       └── attest.excerpt.lines.policy.ts      # random line-range exact-text challenge
-│
-├── _signing/                             # ed25519 pass records
-│   ├── index.ts
-│   ├── generate.gate.keypair.helper.ts   # first-run: private → root 0600, public → repo
-│   ├── sign.pass.record.helper.ts        # daemon-only
-│   └── verify.pass.record.helper.ts      # public-key verify, usable by anything
-│
-├── _scope/                               # diff containment
-│   ├── index.ts
-│   ├── compute.diff.hash.helper.ts       # canonical hash of a staged/branch diff
-│   └── check.diff.containment.helper.ts  # diff ⊆ Touched Files verdict
-│
-├── _cleanroom/                           # daemon-side re-verification
-│   ├── index.ts
-│   ├── checkout.branch.cleanroom.helper.ts  # root-owned scratch checkout
-│   └── run.verify.cleanroom.helper.ts       # full guard suite + tests, trusting nothing
-│
-├── _merge/                               # the fortress
-│   ├── index.ts
-│   ├── watch.ready.branches.helper.ts    # detects signal-ready branches
-│   └── execute.approved.merge.helper.ts  # merge + ledger bookkeeping, daemon-only
-│
-├── _orchestrator/                        # loop services (doc 15)
-│   ├── index.ts
-│   ├── dispatch.next.assignment.helper.ts   # idle worktree → next open ledger entry
-│   ├── route.feedback.inbox.helper.ts       # failures + human notes → worktree INBOX.md
-│   ├── detect.assignment.stall.helper.ts    # no events in window → flag
-│   └── update.assignment.board.helper.ts    # board state transitions
-│
-├── _watch/                               # dashboard rendering
-│   ├── index.ts
-│   ├── format.gate.event.helper.ts       # one event → one formatted line
-│   ├── stream.gate.dashboard.helper.ts   # live tail across worktrees
-│   └── prompt.branch.approval.helper.ts  # inline approve/reject keystroke handling
+├── _watch/                               # (slice 4) dashboard rendering
 │
 └── _types/                               # one shape per file
     ├── index.ts
-    ├── read.manifest.entry.type.ts
-    ├── pass.record.type.ts
-    ├── attestation.challenge.type.ts
-    ├── attestation.verdict.type.ts
-    ├── gate.assignment.type.ts
-    └── gate.event.type.ts
+    ├── read.manifest.entry.type.ts       # slice 1 built
+    └── pass.record / challenge / verdict / assignment / event types (later slices)
 ```
 
-Wiring: `package.json` scripts `gate:up`, `gate:down`, `gate:read`, `gate:attest`, `gate:check`, `gate:status`, `gate:watch`, `gate:rotate-key`, plus the standard daemon log scripts, all following the existing `BRIOELA_WORKSPACE_ROOT=$PWD bun --cwd tools/brioela-reading-gate ...` pattern. `gate:check` joins `bun run verify` and the sovereign hooks path.
+Wiring: root `package.json` scripts `gate:up`, `gate:down`, `gate:read`, `gate:status` (slice 1, wired), later `gate:attest`, `gate:check`, `gate:watch`, `gate:rotate-key`, all following the existing `BRIOELA_WORKSPACE_ROOT=$PWD bun --cwd tools/brioela-reading-gate ...` pattern. `gate:check` joins `bun run verify` and the sovereign hooks path.
 
-Growth rule: a new attestable domain = one new file in `_attestation/_policies/`, nothing else changes. A new dashboard event = one new case in `format.gate.event.helper.ts`. No file ever absorbs a second responsibility; assembly lives in the barrels. The entire folder is sovereign territory from the day it is created.
+Growth rule: a new attestable domain = one new file in `_policies/`, nothing else changes. A new dashboard event = one new case in the watch formatter. No file ever absorbs a second responsibility; assembly lives in the barrels. The entire folder is sovereign territory once the gate code stabilizes.
 
 ## Properties this design guarantees
 

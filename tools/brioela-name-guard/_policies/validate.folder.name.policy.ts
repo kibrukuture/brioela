@@ -51,7 +51,7 @@ export function validateFolderName(entry: WorkspaceEntry): NamingViolation[] {
 
 function isAllowedNumberedDocFolder(repoPath: string, folderName: string): boolean {
   return (
-    (repoPath.startsWith('build-guide/') || repoPath.startsWith('brioela-specs/') || repoPath.startsWith('implementable-specs/'))
+    (repoPath.startsWith('build-guide/') || repoPath.startsWith('brioela-specs/') || repoPath.startsWith('implementable-specs/') || repoPath.startsWith('_records/'))
     && numberedDocFolderPattern.test(folderName)
   )
 }
