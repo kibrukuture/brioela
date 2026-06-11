@@ -124,7 +124,7 @@ async function runSessionEndProcessing(
       await forwardToolToBrain('create_recipe', {
         title:         recipe.title,
         source:        'cooking_session',
-        sourceSession: state.sessionId,
+        sourceSessionId: state.sessionId,
         content:       JSON.stringify(recipe),
       }, state, miraSession.env)
       break

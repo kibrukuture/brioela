@@ -29,7 +29,7 @@ type RecipeRow = {
   userId: string
   title: string
   source: "url" | "manual" | "cooking_session" | "family_capture"
-  sourceSession: string | null
+  sourceSessionId: string | null
   sourceUrl: string | null
   content: string
   cookCount: number

@@ -9,7 +9,7 @@ export const recipes = sqliteTable(
 		userId: text('user_id').notNull(),
 		title: text('title').notNull(),
 		source: text('source').notNull(),
-		sourceSession: text('source_session'),
+		sourceSessionId: text('source_session_id'),
 		sourceUrl: text('source_url'),
 		content: text('content').notNull(),
 		cookCount: integer('cook_count', { mode: 'number' }).notNull().default(0),
@@ -31,7 +31,7 @@ export const recipes = sqliteTable(
 		index('recipes_source_created_at_index').on(table.source, table.createdAt),
 		index('recipes_status_cook_count_index').on(table.status, table.cookCount),
 		index('recipes_last_cooked_index').on(table.lastCookedAt).where(sql`status = 'active'`),
-		index('recipes_source_session_index').on(table.sourceSession).where(sql`source_session IS NOT NULL`),
+		index('recipes_source_session_id_index').on(table.sourceSessionId).where(sql`source_session_id IS NOT NULL`),
 	],
 )
 
