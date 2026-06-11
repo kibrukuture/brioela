@@ -183,7 +183,7 @@ Every `search_web` call is logged to `memory_event` as a fire-and-forget side ef
 ```typescript
 ctx.waitUntil(
   db.insert(memoryEvent).values({
-    id:         crypto.randomUUID(),
+    id:         createId(),
     userId:     ctx.userId,
     sessionId:  input.session_id,
     eventType:  'web_search',

@@ -208,7 +208,7 @@ The default internal transport between Brain and Brain-owned child agents is typ
 Use `subAgent()` when Brain starts a child:
 
 ```typescript
-const runId = crypto.randomUUID()
+const runId = createId()
 const behaviorPattern = await this.subAgent(
   BehaviorPatternAgent,
   `behavior-pattern-${this.userId}-${runId}`,

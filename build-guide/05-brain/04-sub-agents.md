@@ -65,7 +65,7 @@ case 'brain_maintenance_run': {
     return
   }
 
-  const runId = crypto.randomUUID()
+  const runId = createId()
   const brainMaintenance = await this.subAgent(
     BrainMaintenanceAgent,
     `brain-maintenance-${userId}-${runId}`,

@@ -97,7 +97,7 @@ CREATE INDEX idx_skill_versions_user    ON skill_versions (user_id);
 - Written ONLY by the `update_user_skill` execution path — never written directly by any other code.
 - One row inserted per `update_user_skill` call, before the content is overwritten in `skills`.
 - `archived_at` is always `Date.now()` at write time, set by the system, never passed in.
-- `id` is always `crypto.randomUUID()`, generated at insert time.
+- `id` is always `createId()`, generated at insert time.
 - Never updated after insert. Never deleted (even when the parent skill is deleted).
 
 ## Read Rules

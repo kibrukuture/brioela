@@ -132,7 +132,7 @@ export const scheduleUserAlarmTool = (agent: BrioelaBrain) => tool({
     label:       z.string().optional().describe('human-readable label for this alarm'),
   }),
   execute: async ({ alarmType, payload, scheduledAt, label }) => {
-    const id = crypto.randomUUID()
+    const id = createId()
 
     agent.db.insert(scheduledAlarms).values({
       id,
@@ -176,7 +176,7 @@ if (isFirstBoot) {
 
   // Brain maintenance — first run 7 days from now
   await scheduleUserAlarm({
-    id: crypto.randomUUID(),
+    id: createId(),
     alarmType: 'brain_maintenance_run',
     payload: JSON.stringify({ userId: this.userId }),
     scheduledAt: Date.now() + 7 * 24 * 60 * 60 * 1000,
@@ -184,7 +184,7 @@ if (isFirstBoot) {
 
   // Behavior behavior pattern detection — first run 14 days from now
   await scheduleUserAlarm({
-    id: crypto.randomUUID(),
+    id: createId(),
     alarmType: 'behavior_pattern_detection',
     payload: JSON.stringify({ userId: this.userId }),
     scheduledAt: Date.now() + 14 * 24 * 60 * 60 * 1000,
@@ -192,7 +192,7 @@ if (isFirstBoot) {
 
   // Recall check — first run 6 hours from now
   await scheduleUserAlarm({
-    id: crypto.randomUUID(),
+    id: createId(),
     alarmType: 'recall_check',
     payload: JSON.stringify({ userId: this.userId }),
     scheduledAt: Date.now() + 6 * 60 * 60 * 1000,

@@ -74,7 +74,7 @@ The archive and the update are atomic:
 db.transaction(() => {
   // Step 1: Archive current version to skill_versions FIRST
   db.insert(skillVersions).values({
-    id:           crypto.randomUUID(),
+    id:           createId(),
     skillName:    skill.name,
     userId:       ctx.userId,
     version:      skill.version,          // the version BEFORE incrementing

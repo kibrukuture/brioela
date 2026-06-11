@@ -18,7 +18,7 @@ export async function openSession(
   userId: string,
   sessionType: 'chat' | 'cooking' | 'alarm' | 'background',
 ): Promise<{ sessionId: string; systemPrompt: string }> {
-  const sessionId = crypto.randomUUID()
+  const sessionId = createId()
 
   db.insert(sessions).values({
     id:          sessionId,
@@ -34,7 +34,7 @@ export async function openSession(
   // If session is still 'active' when this fires, it was abandoned
   const WATCHDOG_MS = sessionType === 'cooking' ? 4 * 60 * 60 * 1000 : 2 * 60 * 60 * 1000
   await db.insert(scheduledAlarms).values({
-    id:          crypto.randomUUID(),
+    id:          createId(),
     type:        'session_watchdog',
     payload:     JSON.stringify({ sessionId }),
     scheduledAt: Date.now() + WATCHDOG_MS,
@@ -215,7 +215,7 @@ export async function runCompression(
     .run()
 
   // Create new child session — continues from where the old one stopped
-  const newSessionId = crypto.randomUUID()
+  const newSessionId = createId()
   db.insert(sessions).values({
     id:              newSessionId,
     userId,

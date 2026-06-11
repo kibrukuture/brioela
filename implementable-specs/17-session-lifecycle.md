@@ -160,7 +160,7 @@ async function applyCompression(
   last10Turns: SessionTurn[]
 ) {
   const now = Date.now()
-  const newSessionId = crypto.randomUUID()
+  const newSessionId = createId()
 
   db.transaction(() => {
     // 1. Mark old session as compressed

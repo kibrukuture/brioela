@@ -66,7 +66,7 @@ Before removing the row, the tool archives the current skill state to `skill_ver
 
 ```typescript
 db.insert(skillVersions).values({
-  id:           crypto.randomUUID(),
+  id:           createId(),
   skillName:    skill.name,
   userId:       ctx.userId,
   version:      skill.version,

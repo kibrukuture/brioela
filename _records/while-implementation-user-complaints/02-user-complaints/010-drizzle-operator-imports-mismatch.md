@@ -14,4 +14,4 @@ All database queries and schemas must import query operators and schemas from th
 Importing from incorrect paths results in unresolved module exports, failing type checks, and compilation crashes.
 
 ## Status
-**FIXED.** Brain `_repositories/` and `_schemas/` import operators from `@/database/drizzle/_database` and schema builders from `@/database/sqlite/_schema`. No `@brioela/shared/drizzle` imports under `backend/src/agents/brain/`.
+**FIXED.** Brain `_repositories/` / `_schemas/` import from `@/database/drizzle/_database` and `@/database/sqlite/_schema`. Ledgers `0002`, `0003`, `0005`, `0006` repo snippets updated — no `@brioela/shared/drizzle`.

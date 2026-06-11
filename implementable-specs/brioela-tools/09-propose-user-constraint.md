@@ -119,7 +119,7 @@ One insert into `constraints`:
 
 ```typescript
 db.insert(constraints).values({
-  id:               crypto.randomUUID(),
+  id:               createId(),
   userId:           ctx.userId,
   constraintType:   input.constraint_type,
   entityKind:       input.entity_kind,

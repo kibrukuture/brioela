@@ -19,4 +19,4 @@ All repository helper methods returning inserted or updated rows must be written
 Calling `.returning().get()` is not a standard method in Drizzle ORM and will throw compilation errors. We must maintain codebase consistency and type safety.
 
 ## Status
-**FIXED.** Brain `_repositories/` uses `getReturned(...)` for all insert/update returning paths (`write.user.memory.repository.ts`, `write.memory.event.repository.ts`, `write.user.recipe.repository.ts`, `write.user.alarm.repository.ts`, migration write repos). No `.returning().get()` in `backend/src/agents/brain/`.
+**FIXED.** Brain `_repositories/` uses `getReturned` / `getOne`. Ledgers `0002`, `0003`, `0005`, `0006` repo snippets updated — no `.returning().get()` or bare `.get()` on selects.

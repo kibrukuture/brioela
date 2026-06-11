@@ -75,7 +75,7 @@ These fields are NEVER passed in by the agent. The system sets them:
 
 | Field | Value |
 |---|---|
-| `id` | `crypto.randomUUID()` — generated at insert time |
+| `id` | `createId()` — generated at insert time |
 | `user_id` | From DO context — the owner of this DO instance |
 | `session_id` | From current active session context — NULL for background sessions |
 | `ingested_at` | `Date.now()` — when the DO wrote the row, always now |
@@ -86,7 +86,7 @@ One row inserted into `memory_event`. The insert is:
 
 ```typescript
 db.insert(memoryEvent).values({
-  id:          crypto.randomUUID(),
+  id:          createId(),
   userId:      ctx.userId,
   kind:        input.kind,
   payloadJson: JSON.stringify(input.payload),
