@@ -2,7 +2,7 @@
 
 ## Purpose
 
-`view_user_recipe` loads a recipe's full content into the agent's context on demand. The recipe index (id + title for every active recipe) is injected into every session prompt. The agent reads the index, identifies the relevant recipe, and calls `view_user_recipe` to load the full markdown content only when it actually needs it — for a cooking session, for answering a question about ingredients, for constraint checking before recommending.
+`view_user_recipe` loads a recipe's full content into the agent's context on demand. The recipe index (id + title for every active recipe) is injected into every session prompt. The agent reads the index, identifies the relevant recipe, and calls `view_user_recipe` to load the parsed `NormalizedImportedRecipe` JSON only when it actually needs it — for a cooking session, for answering a question about ingredients, for constraint checking before recommending.
 
 Full recipe content is never preloaded into every prompt. Token cost is zero until this tool is called.
 
@@ -35,39 +35,64 @@ export const ViewUserRecipeSchema = z.object({
 ## What It Reads
 
 ```typescript
-const recipe = db.select()
-  .from(recipes)
-  .where(
-    and(
-      eq(recipes.id, input.id),
-      eq(recipes.active, 1)
-    )
-  )
-  .get()
+import { and, eq, getOne } from '@/database/drizzle/_database'
+import { recipes } from '@/agents/brain/_schemas'
+
+const recipe = getOne(
+  db.select()
+    .from(recipes)
+    .where(
+      and(
+        eq(recipes.id, input.id),
+        eq(recipes.status, 'active'),
+      ),
+    ),
+)
 ```
 
-Only active recipes (`active = 1`) are returned. Archived recipes (`active = 0`) return `found: false`. The agent should not attempt to load archived recipes — they are excluded from the index and the agent should not know their IDs.
+Only active recipes (`status = 'active'`) are returned. Archived recipes (`status = 'archived'`) return `found: false`. The agent should not attempt to load archived recipes — they are excluded from the index and the agent should not know their IDs.
+
+The row's `content` column is a JSON string (`NormalizedImportedRecipe`). Ingredients, steps, tags, and timing live **inside that JSON** — not as separate SQLite columns.
 
 ## What It Returns
 
-On success:
+On success, parse `recipe.content` and derive ingredient names for constraint checking:
+
+```typescript
+const parsed = jsonValueSchema.parse(JSON.parse(recipe.content))
+const ingredientNames = parsed.ingredients.map((entry) => entry.name)
+```
 
 ```json
 {
+  "found": true,
   "id": "a1b2c3d4-...",
   "title": "Grandma's Doro Wat",
-  "content": "# Grandma's Doro Wat\n\n## Ingredients\n...",
-  "ingredients": ["chicken", "berbere", "niter kibbeh", "onions", "eggs"],
-  "source": "session",
+  "source": "cooking_session",
   "source_session_id": "b2c3d4e5-...",
-  "cook_time_minutes": 120,
+  "source_url": null,
   "cook_count": 4,
   "last_cooked_at": 1748390400000,
-  "tags": ["ethiopian", "poultry", "special-occasion"]
+  "status": "active",
+  "confidence": 1.0,
+  "version": 1,
+  "content": {
+    "title": "Grandma's Doro Wat",
+    "ingredients": [{ "name": "chicken", "quantityText": "1 whole", "unit": null, "preparation": null, "optional": false, "estimated": false, "confidence": 1.0 }],
+    "steps": [{ "order": 1, "instruction": "...", "durationMinutes": null, "temperatureText": null, "confidence": 1.0 }],
+    "tags": ["ethiopian", "poultry", "special-occasion"],
+    "totalTimeMinutes": { "value": 120, "confidence": 0.9 },
+    "cuisine": "ethiopian",
+    "warnings": []
+  },
+  "ingredient_names": ["chicken", "berbere", "niter kibbeh", "onions", "eggs"]
 }
 ```
 
-`ingredients` is the machine-extracted list — useful for immediate constraint checking without parsing the full content. The agent should check this against the user's active constraints before beginning a cooking session or recommending the recipe.
+- **`content`** — parsed `NormalizedImportedRecipe` object from the row's JSON column (see `build-guide/19-recipe-ingestion/04-recipe-normalization.md`).
+- **`ingredient_names`** — derived at read time from `content.ingredients[].name` for constraint checking. Not stored as a separate column.
+
+Table metadata (`title`, `source`, `source_session_id`, `cook_count`, etc.) comes from the `recipes` row. Cookable body fields (`ingredients`, `steps`, `tags`, `totalTimeMinutes`, …) come from `content` only.
 
 **Recipe not found or archived:**
 
@@ -83,17 +108,17 @@ Not an error. The agent should check the index and re-evaluate.
 
 ## Constraint Check Pattern
 
-After loading a recipe, the agent should immediately cross-check the `ingredients` array against the user's active constraints. This check is agent-side logic, not a side effect of this tool:
+After loading a recipe, the agent should immediately cross-check `ingredient_names` against the user's active constraints. This check is agent-side logic, not a side effect of this tool:
 
 ```
-1. view_user_recipe(id) → ingredients: ["chicken", "berbere", "niter kibbeh", "eggs"]
+1. view_user_recipe(id) → ingredient_names from content.ingredients[].name
 2. Check user's active constraints (already in session context)
 3. If hard_allergy or confirmed intolerance matches → warn user before proceeding
 4. If proposed constraint matches → surface for confirmation before proceeding
 5. If dislike matches → deprioritize or note, do not block
 ```
 
-The tool returns `ingredients` so this check can happen inline. The agent does not need a second database read.
+The tool returns `ingredient_names` so this check can happen inline. The agent does not need a second database read.
 
 ## Side Effects
 
@@ -106,7 +131,7 @@ There is no `view_count` on recipes. The recipe index injection + `view_user_rec
 | Error | Cause | What Agent Receives |
 |---|---|---|
 | Validation error | ID not a valid UUID | Zod error with failing field |
-| Not found or archived | No active row with this ID | `{ found: false, id, hint }` |
+| Not found or archived | No row with this ID where `status = 'active'` | `{ found: false, id, hint }` |
 | Read failure | SQLite error (rare) | Error message |
 
 ## Who Can Call It
