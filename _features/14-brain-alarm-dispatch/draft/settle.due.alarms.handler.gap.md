@@ -1,6 +1,6 @@
-# Draft: process.due.alarms.handler.ts (gap — file does not exist)
+# Draft: settle.due.alarms.handler.ts (gap — file does not exist)
 
-Target: `backend/src/agents/brain/_handlers/process.due.alarms.handler.ts`
+Target: `backend/src/agents/brain/_handlers/settle.due.alarms.handler.ts`
 
 **Gap (feature 14):** Batch alarm processor — canonical MIN-pending wake path per `10-scheduled-alarms.md`.
 
@@ -43,7 +43,7 @@ async function refreshWakeSlot(
 	}
 }
 
-export async function processDueAlarms(
+export async function settleDueAlarms(
 	database: BrainDatabase,
 	brain: BrioelaBrain,
 	userId: string,

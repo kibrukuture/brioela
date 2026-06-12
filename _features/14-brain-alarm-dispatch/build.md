@@ -14,7 +14,7 @@ Feature **14**. Production paths under `backend/src/agents/brain/`. Wires DO wak
 |---|---|
 | `scheduled_alarms` schema + **09** repos (`readUserAlarm`, `writeUserAlarm`, `cancelUserAlarm`, `readEarliestPendingScheduledAt`) | ✓ |
 | `AlarmWakeCallbacks` type | ✓ (**09** — type only) |
-| `BrioelaBrain.alarm()` / `processDueAlarms` | ✗ |
+| `BrioelaBrain.alarm()` / `settleDueAlarms` | ✗ |
 | `AlarmWakeCallbacks` implemented on `BrioelaBrain` | ✗ |
 | `_handlers/dispatch.alarm.handler.ts` | ✗ |
 | `_handlers/session.watchdog.handler.ts` | ✗ |
@@ -37,7 +37,7 @@ Feature **14**. Production paths under `backend/src/agents/brain/`. Wires DO wak
 | File | Role |
 |---|---|
 | `_handlers/dispatch.alarm.handler.ts` | `dispatchAlarm` — `switch (alarm.alarmType)` router |
-| `_handlers/process.due.alarms.handler.ts` | Batch: read due rows, lifecycle, dispatch each, refresh wake |
+| `_handlers/settle.due.alarms.handler.ts` | Batch: read due rows, lifecycle, dispatch each, refresh wake |
 | `_handlers/run.scheduled.alarm.handler.ts` | Optional per-row SDK entry `{ scheduledAlarmId }` |
 | `_handlers/session.watchdog.handler.ts` | `handleSessionWatchdog` — abandon or reschedule |
 | `_helpers/build.abandoned.summary.helper.ts` | `buildAbandonedSummary(session, lastTurn)` per **17** |
@@ -79,7 +79,7 @@ Feature **14**. Production paths under `backend/src/agents/brain/`. Wires DO wak
 | File | Role |
 |---|---|
 | `_handlers/dispatch.alarm.handler.test.ts` | Switch routes to correct handler mocks |
-| `_handlers/process.due.alarms.handler.test.ts` | Batch lifecycle, wake refresh, idempotency |
+| `_handlers/settle.due.alarms.handler.test.ts` | Batch lifecycle, wake refresh, idempotency |
 | `_handlers/session.watchdog.handler.test.ts` | Abandon vs reschedule; inactive vs active-long |
 | `_helpers/alarm.wake.callbacks.helper.test.ts` | MIN-pending slot updates |
 
@@ -87,7 +87,7 @@ Feature **14**. Production paths under `backend/src/agents/brain/`. Wires DO wak
 
 ## Handler contracts
 
-### `processDueAlarms(database, brain, userId, wake)`
+### `settleDueAlarms(database, brain, userId, wake)`
 
 1. `due = readDuePendingAlarms(database, userId, now)` — `pending AND scheduled_at <= now`, ORDER BY `scheduled_at`.
 2. `stale = readStaleProcessingAlarms(database, userId, now - STALE_PROCESSING_MS)` — reclaim stuck rows.
@@ -137,7 +137,7 @@ No new DO bindings for **14** itself. Sub-agent bindings are **12** / **22**.
 
 ## Acceptance criteria
 
-1. `BrioelaBrain` implements `alarm()` calling `processDueAlarms` after readiness check.
+1. `BrioelaBrain` implements `alarm()` calling `settleDueAlarms` after readiness check.
 2. `AlarmWakeCallbacks` wired; **09** tools receive `wake` in live sessions (**20** passes it).
 3. Due pending rows transition `pending` → `processing` → `completed` on success.
 4. Failed dispatch increments `attempts`; after `MAX_ALARM_ATTEMPTS` → `failed` + `failure_reason`.
@@ -162,7 +162,7 @@ No new DO bindings for **14** itself. Sub-agent bindings are **12** / **22**.
 ```sh
 cd backend && bun run brain:typecheck
 cd backend && bunx vitest run src/agents/brain/_handlers/dispatch.alarm.handler.test.ts
-cd backend && bunx vitest run src/agents/brain/_handlers/process.due.alarms.handler.test.ts
+cd backend && bunx vitest run src/agents/brain/_handlers/settle.due.alarms.handler.test.ts
 cd backend && bunx vitest run src/agents/brain/_handlers/session.watchdog.handler.test.ts
 cd backend && bun run verify
 ```
@@ -173,7 +173,7 @@ cd backend && bun run verify
 
 | In **14** build | In separate feature |
 |---|---|
-| `dispatch.alarm.handler.ts`, `process.due.alarms.handler.ts` | `schedule.user.alarm.*` — **09** |
+| `dispatch.alarm.handler.ts`, `settle.due.alarms.handler.ts` | `schedule.user.alarm.*` — **09** |
 | `session.watchdog.handler.ts` | `open.session.handler.ts` watchdog insert — **11** |
 | `alarm.wake.callbacks.helper.ts` on Brain | Alarm tool executables — **09** |
 | `spawn.*.handler.ts` **calls** from switch | Spawn handler **bodies** — **12**, **22** |

@@ -14,6 +14,8 @@ import {
 } from '@/agents/brain/_rpc'
 import { BrainReadinessUnavailableError } from '@/agents/brain/_types'
 import { readCurrentEpochMs } from '@/time/_helpers'
+import type { AlarmRegistry } from '@/agents/brain/_dispatch'
+import { createBrainAlarmRegistry, settleDueAlarms } from '@/agents/brain/_handlers'
 
 export interface BrioelaBrainState {
 	ready: boolean
@@ -26,6 +28,7 @@ export class BrioelaBrain extends Agent<BrioelaBrainEnv, BrioelaBrainState> {
 
 	private readonly database: BrainDatabase
 	private readiness: BrainMigrationReadiness | null = null
+	private readonly alarmRegistry: AlarmRegistry = createBrainAlarmRegistry()
 
 	constructor(ctx: DurableObjectState, env: BrioelaBrainEnv) {
 		super(ctx, env)
@@ -61,5 +64,17 @@ export class BrioelaBrain extends Agent<BrioelaBrainEnv, BrioelaBrainState> {
 		}
 
 		return { readiness: this.readiness }
+	}
+
+	// CF Durable Object lifecycle — name `alarm` is fixed by the runtime and cannot be changed.
+	// https://developers.cloudflare.com/durable-objects/api/alarms/
+	// `super.alarm()` must run first: Agents SDK uses it to run `#ensureInitialized()` before any user logic.
+	// https://github.com/cloudflare/agents/blob/main/packages/agents/src/index.ts
+	override async alarm(): Promise<void> {
+		await super.alarm()
+		await settleDueAlarms(this.database, this.name, this.alarmRegistry, {
+			scheduleAlarm: (ms) => this.ctx.storage.setAlarm(ms),
+			cancelAlarm: () => this.ctx.storage.deleteAlarm(),
+		})
 	}
 }

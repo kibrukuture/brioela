@@ -45,7 +45,7 @@ scheduled_alarms (pending rows, MIN scheduled_at drives wake slot)
 BrioelaBrain.alarm()  OR  Agents SDK schedule('runScheduledAlarm', { scheduledAlarmId })
         │
         ▼
-processDueAlarms / runScheduledAlarm          ← 14 entry
+settleDueAlarms / runScheduledAlarm          ← 14 entry
         │
         ├── mark processing + attempts++
         ├── dispatchAlarm(alarm)              ← 14 router
@@ -97,9 +97,9 @@ processDueAlarms / runScheduledAlarm          ← 14 entry
 
 | Method | Signature | When |
 |---|---|---|
-| `alarm()` | DO lifecycle — no payload | Raw `setAlarm(MIN)` fires; calls `processDueAlarms` |
+| `alarm()` | DO lifecycle — no payload | Raw `setAlarm(MIN)` fires; calls `settleDueAlarms` |
 | `runScheduledAlarm` | `(payload: { scheduledAlarmId: string })` | Per-row SDK schedule callback (if adopted) |
-| `processDueAlarms` | `(database, brain, userId, wake)` | Batch processor — canonical for MIN-pending |
+| `settleDueAlarms` | `(database, brain, userId, wake)` | Batch processor — canonical for MIN-pending |
 
 ### Row lifecycle (per alarm)
 
@@ -406,7 +406,7 @@ Generic outcome columns on `scheduled_alarms` for any alarm type (`06-brain-memo
 | MIN-pending `AlarmWakeCallbacks` type | **09** defines; **14** implements on `BrioelaBrain` |
 | `session_watchdog` schedule/cancel on open/close | **11** |
 | `session_watchdog` fire + inactivity logic | **14** |
-| `dispatchAlarm` switch + `processDueAlarms` | **14** |
+| `dispatchAlarm` switch + `settleDueAlarms` | **14** |
 | `spawnBrainMaintenance` / `spawnBehaviorPattern` bodies | **12** |
 | Sub-agent DO classes | **12** |
 | First-boot seed maintenance + pattern alarms | **12** (`initializeBrainSubAgentAlarms`) |

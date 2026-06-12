@@ -34,7 +34,7 @@ export function createAlarmWakeCallbacks(brain: BrioelaBrain): AlarmWakeCallback
 async alarm(): Promise<void> {
 	if (!this.readiness || this.readiness.status !== 'ready') return
 	const wake = createAlarmWakeCallbacks(this)
-	await processDueAlarms(this.database, this, this.userId, wake)
+	await settleDueAlarms(this.database, this, this.userId, wake)
 }
 ```
 

@@ -101,7 +101,7 @@ Signal sources (not owned by 38)
   ├── Visual intake meal logs (spec **34**)
   └── diet.* user_memory + spec **17** drift patterns
 
-scheduled_alarms: behavior_pattern_detection [14 processDueAlarms]
+scheduled_alarms: behavior_pattern_detection [14 settleDueAlarms]
         │
         ├── **12** BehaviorPatternAgent spawn (pattern.* presence patterns)
         │

@@ -21,7 +21,7 @@ export class BrioelaBrain extends Agent<BrioelaBrainEnv, BrioelaBrainState> {
 
 ```typescript
 import { createAlarmWakeCallbacks } from '@/agents/brain/_helpers/alarm.wake.callbacks.helper'
-import { processDueAlarms } from '@/agents/brain/_handlers/process.due.alarms.handler'
+import { settleDueAlarms } from '@/agents/brain/_handlers/settle.due.alarms.handler'
 import { runScheduledAlarmById } from '@/agents/brain/_handlers/run.scheduled.alarm.handler'
 import { initializeBrainSubAgentAlarms } from '@/agents/brain/_handlers/initialize.brain.sub.agent.alarms.handler'
 import { readEarliestPendingScheduledAt } from '@/agents/brain/_repositories'
@@ -32,7 +32,7 @@ private userId: string  // from DO name — set in constructor or onStart
 async alarm(): Promise<void> {
 	if (this.readiness?.status !== 'ready') return
 	const wake = createAlarmWakeCallbacks(this)
-	await processDueAlarms(this.database, this, this.userId, wake)
+	await settleDueAlarms(this.database, this, this.userId, wake)
 }
 
 async runScheduledAlarm(payload: { scheduledAlarmId: string }): Promise<void> {

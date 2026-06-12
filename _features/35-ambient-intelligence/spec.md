@@ -96,7 +96,7 @@ User interactions (scan, cook, voice, receipt, map search, calendar)
         ├── Realtime: travel.intent_detected event → confirm → schedule travel_preload
         └── Realtime: guest constraint detection → guest_session active layer
 
-scheduled_alarms wake [14 processDueAlarms]
+scheduled_alarms wake [14 settleDueAlarms]
         │
         ├── behavior_pattern_detection [12 spawns BehaviorPatternAgent OR 35 ambient pass wraps]
         │     ├── 12: memory_event → pattern.* user_memory (3+ events, conf ≥ 0.6)

@@ -1,28 +1,36 @@
 # Status
 
-open
+in_progress
 
-**Alarm dispatch not shipped.** `scheduled_alarms` queue and **09** tools exist. No `dispatch.alarm.handler.ts`, no `BrioelaBrain.alarm()`, no `processDueAlarms`, no `session_watchdog` handler, no lifecycle update repos, no wake callback implementation on Brain. Sub-agent spawn handlers (**12**) also missing — maintenance/pattern cases have nothing to call.
+**Dispatch infrastructure shipped.** Registry, batch processor, lifecycle repos, and `BrioelaBrain.alarm()` are live. Handler stub bodies (session_watchdog, brain_maintenance, behavior_pattern) are placeholders — features 11 and 12 fill them in.
 
-**Living catalog:** Alarm type inventory in `spec.md` is a snapshot — new `alarm_type` strings require a new `dispatchAlarm` case and scheduling owner doc; no schema migration.
+**Living catalog:** Alarm type inventory in `spec.md` is a snapshot — new `alarm_type` strings require a new handler registered in `register.brain.alarm.handlers.ts`; no schema migration, no Brain core changes.
 
-# Shipped in backend (partial — dependencies only)
+# Shipped in backend
 
 - [x] `scheduled_alarms` Drizzle schema — `scheduled.alarm.schema.ts` (**04** / **09**)
 - [x] `readUserAlarm`, `readPendingUserAlarmByType`, `readEarliestPendingScheduledAt` (**09**)
 - [x] `writeUserAlarm`, `cancelUserAlarm` (**09**)
 - [x] `AlarmWakeCallbacks` type exported (**09**)
 - [x] `sessions.alarm_type` column for dispatch-created rows (**04**)
-- [ ] `_handlers/dispatch.alarm.handler.ts`
-- [ ] `_handlers/process.due.alarms.handler.ts`
-- [ ] `_handlers/session.watchdog.handler.ts`
-- [ ] `_repositories/read.due.pending.alarms.repository.ts`
-- [ ] `_repositories/update.scheduled.alarm.lifecycle.repository.ts`
-- [ ] `_helpers/alarm.wake.callbacks.helper.ts`
-- [ ] `BrioelaBrain.alarm()` + `runScheduledAlarm`
-- [ ] `AlarmWakeCallbacks` on live Brain
-- [ ] Spawn handler targets (**12** G26, **22**)
-- [ ] Inline alarm handlers (sickness, travel, medication, weekly, scan)
+- [x] `_dispatch/alarm.handler.registry.ts` — `AlarmHandlerRegistry` (exact + prefix match)
+- [x] `_types/brain.alarm.handler.type.ts` — `AlarmHandler`, `AlarmHandlerContext`, `AlarmHandlerResult`
+- [x] `_constants/alarm.dispatch.constant.ts` — `MAX_ALARM_ATTEMPTS = 3`, `STALE_PROCESSING_MS`
+- [x] `_repositories/read.due.alarms.repository.ts` — pending due + stuck processing rows
+- [x] `_repositories/update.alarm.status.repository.ts` — `markAlarmProcessing`, `markAlarmFinished`
+- [x] `_handlers/settle.due.alarms.handler.ts` — batch processor
+- [x] `_handlers/register.brain.alarm.handlers.ts` — registry factory (only file that changes when agents are added)
+- [x] `_handlers/run.session.watchdog.handler.ts` — stub (**11** fills body)
+- [x] `_handlers/run.brain.maintenance.handler.ts` — stub (**12** fills body)
+- [x] `_handlers/run.behavior.pattern.handler.ts` — stub (**12** fills body)
+- [x] `_handlers/run.unknown.alarm.handler.ts` — marks failed with `unknown_alarm_type:<type>`
+- [x] `BrioelaBrain.alarm()` — wired; `this.ctx.storage.setAlarm` / `deleteAlarm` as wake callbacks
+- [x] `AlarmWakeCallbacks` on live Brain
+- [ ] `session_watchdog` handler body (**11**)
+- [ ] `brain_maintenance_run` spawn handler body (**12**)
+- [ ] `behavior_pattern_detection` spawn handler body (**12**)
+- [ ] `health_insight_run` case + spawn handler (**22**)
+- [ ] Inline alarm handlers (sickness, travel, medication, weekly, scan) (**20**, **32**, **35**, **22**)
 - [ ] Dispatch tests
 - [ ] End-to-end alarm fire integration test
 
@@ -33,7 +41,7 @@ open
 | G1 | No `dispatch.alarm.handler.ts` | Ledger `06-alarm-system/0001` Status `[ ] Open`; `glob **/dispatch*` backend — zero |
 | G2 | No `BrioelaBrain.alarm()` lifecycle | `brioela.brain.agent.ts` — migrations + memory RPC only; no `alarm` method |
 | G3 | `AlarmWakeCallbacks` not implemented on Brain | **09** G1; `getBrainTools` never receives `wake` in production |
-| G4 | No `processDueAlarms` batch processor | `rg processDueAlarms backend` — zero |
+| G4 | No `settleDueAlarms` batch processor | `rg settleDueAlarms backend` — zero |
 | G5 | No `readDuePendingAlarms` repository | Only `readEarliestPendingScheduledAt` exists — no due-row list query |
 | G6 | Wake strategy unresolved (MIN `setAlarm` vs per-row SDK + `sdk_schedule_id`) | **09** G6; `05-alarm-system.md` vs `10-scheduled-alarms.md` |
 | G7 | No alarm lifecycle update repo (`processing`/`completed`/`failed`) | `write.user.alarm.repository.ts` — insert + cancel only |
@@ -60,7 +68,7 @@ open
 
 | In **14** (this feature) | In separate feature |
 |---|---|
-| `dispatchAlarm` router + `processDueAlarms` | `schedule_user_alarm` / `cancel_user_alarm` — **09** |
+| `dispatchAlarm` router + `settleDueAlarms` | `schedule_user_alarm` / `cancel_user_alarm` — **09** |
 | `BrioelaBrain.alarm()` + wake callback impl | Wake type definition — **09** |
 | `session_watchdog` **fire** logic | Watchdog **schedule/cancel** — **11** |
 | Calls `spawnBrainMaintenance` / `spawnBehaviorPattern` | Spawn bodies + sub-agent DOs — **12** |
