@@ -4,6 +4,10 @@ open
 
 **No sub-agent DO classes, spawn handlers, or maintenance-only tools shipped.** Partial foundation: `sessions`/`agent_state` schemas, `SessionKind` enum stub in `get.brain.tools.ts` with wrong permissions, alarm schedule tools (**09**). Feature is not done per full spec.
 
+**First migration gap (user correction):** prior **12** docs covered only the maintenance/pattern/compressor trio. Full system has **MiraSession**, **BelaOrderAgent**, **HealthInsightAgent**, **Brain chat inline runtime**, **search_web tool**, alarm-inline sessions, and seven **MiraSceneKind** values — cataloged in `spec.md` **Complete agent inventory**. Feature **12** scope stays the three Brain child DOs; cross-links point to owning features.
+
+**Living catalog:** The agent inventory is **not static** — as the product grows, new agents will be added. Update `spec.md` **Complete agent inventory** and the owning feature folder when introducing a new agent DO, tool surface, or alarm pass.
+
 # Shipped in backend (partial)
 
 - [x] `sessions.session_type` includes `background` + `alarm_type` column — `_schemas/session.schema.ts`
@@ -118,21 +122,34 @@ open
 - `implementable-specs/11-agent-state.md`
 - `implementable-specs/12-schema-version.md`
 - `implementable-specs/10-scheduled-alarms.md`
+- `implementable-specs/cooking-session/02-mira-session.md`
+- `implementable-specs/bela/00-overview.md`, `14-shopper-ai-assistant.md`
+- `implementable-specs/brioela-tools/18-search-web.md`
 - `build-guide/05-brain/04-sub-agents.md`
 - `build-guide/05-brain/01-do-class-and-setup.md`
 - `build-guide/05-brain/05-alarm-system.md`
 - `build-guide/06-brain-memory/02-brain-maintenance-passes.md`
 - `build-guide/05-brain/02-tool-protocol.md`
+- `build-guide/08-cooking-session/02-mira-session-do.md`
+- `build-guide/30-mira/00-overview.md`, `01-scene-contract.md`
+- `build-guide/11-bela/00-overview.md`, `14-shopper-ai-assistant.md`
+- `build-guide/29-health-intelligence/03-health-insight-agent.md`
+- `build-guide/32-in-store-copilot/01-session-lifecycle.md`
+- `brioela-specs/09-per-user-brain.md`, `24-technical-architecture-backbone.md`
 - `brioela-specs/17-behavioral-food-pattern-detection.md`
 - `build-guide/29-health-intelligence/03-health-insight-agent.md` (boundary — feature 22)
 - `_records/implementation-ledger/brain/07-sub-agents/`
 - `_records/implementation-ledger/brain/05-session-lifecycle/0004.session-compression.md`
 - `_records/implementation-ledger/brain/06-alarm-system/0001.alarm-dispatch.md`
+- `_records/implementation-ledger/brain/03-tool-protocol/implementation/0007.web-tool.md`
 - `_features/06-brain-skill-tools/status.md`
 - `_features/09-brain-alarm-tools/status.md`
 - `_features/11-brain-sessions-lifecycle/status.md`
 - `_features/13-brain-session-compression/status.md`
+- `_features/20-brain-chat-runtime/status.md`
+- `_features/29-cooking-session/status.md`
+- `_features/42-bela/status.md`
 
 # Draft count
 
-**18** files in `draft/` — 1 production snapshot (partial `get.brain.tools.ts`) + 17 gap/intended snapshots (3 DO agents, handlers, tools, prompts, init, policy).
+**22** files in `draft/` — 1 production snapshot (partial `get.brain.tools.ts`) + 17 gap/intended snapshots for **12** trio + **4** cross-feature boundary notes (Mira, Bela, HealthInsight, search_web).

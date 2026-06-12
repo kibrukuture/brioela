@@ -2,6 +2,8 @@
 
 Feature **12**. Production paths under `backend/src/agents/brain/` plus sibling DO registrations in wrangler.
 
+**Scope:** three Brain child sub-agent DO classes only. For **MiraSession**, **BelaOrderAgent**, **HealthInsightAgent**, and **search_web**, see `spec.md` **Complete agent inventory** and `draft/*` boundary gap files — owned by features **29**, **42**, **22**, **18** respectively. That inventory is **living, not closed**; extend it when new agents ship.
+
 ---
 
 ## Shipped today
