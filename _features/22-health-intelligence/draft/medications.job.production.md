@@ -1,0 +1,35 @@
+# Draft: medications.job.ts — production snapshot
+
+Target: `backend/src/api/medications/jobs/medications.job.ts`
+
+Queue orchestrator — only handles `extract_data` today. Queue route not mounted.
+
+```typescript
+import { AppContext } from '@/index';
+import { handleExtractDataJob } from '@/api/medications/jobs/extract-data.job';
+import { apiErrorResponse } from '@/lib/response';
+import { ErrorCode } from '@brioela/shared/types/api';
+
+export async function medicationsJobOrchestrator(c: AppContext) {
+	try {
+		const payload = await c.req.json();
+		const { type } = payload;
+		switch (type) {
+			case 'extract_data':
+				return handleExtractDataJob(c);
+			default:
+				return c.json(apiErrorResponse(ErrorCode.INVALID_INPUT, 'Unknown medications job type'), 400);
+		}
+	} catch (error) {
+		console.error('Medications job orchestrator error:', error);
+		return c.json(
+			apiErrorResponse(
+				ErrorCode.PROCESSING_FAILED,
+				'Failed to process medications job',
+				error instanceof Error ? error.message : 'Unknown error'
+			),
+			500
+		);
+	}
+}
+```
