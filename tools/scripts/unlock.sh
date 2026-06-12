@@ -22,6 +22,7 @@ if [ -z "$CATEGORY" ]; then
   echo "  schema       database schema files"
   echo "  deploy       deploy config files"
   echo "  migrations   brain drizzle SQL + snapshots + brain.migration.ts"
+  echo "  env          all .env and .env.local files"
   echo ""
   exit 1
 fi
@@ -100,6 +101,11 @@ case "$CATEGORY" in
       unlock_file "$f"
     done < <(find "$WORKSPACE_ROOT" \( -name "fly.toml" -o -name "wrangler.toml" -o -name "wrangler.json" \) -not -path "*/node_modules/*" -print0 2>/dev/null)
     ;;
+  env)
+    while IFS= read -r -d '' f; do
+      unlock_file "$f"
+    done < <(find "$WORKSPACE_ROOT" -name ".env*" -not -path "*/node_modules/*" -not -path "*/.git/*" -print0 2>/dev/null)
+    ;;
   migrations)
     unlock_file "$WORKSPACE_ROOT/backend/src/agents/brain/_migrations/brain.migration.ts"
     unlock_pattern "$WORKSPACE_ROOT/backend/src/agents/brain/drizzle" "*.sql"
@@ -108,7 +114,7 @@ case "$CATEGORY" in
     ;;
   *)
     echo "unknown category: $CATEGORY"
-    echo "valid: baselines  policies  lexicon  schema  deploy  migrations"
+    echo "valid: baselines  policies  lexicon  schema  deploy  migrations  env"
     exit 1
     ;;
 esac

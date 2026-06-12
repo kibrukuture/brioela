@@ -54,6 +54,11 @@ lock_pattern "$WORKSPACE_ROOT/tools/brioela-lexicon-guard/_lexicon" "*.ts"
 # ── database schema ────────────────────────────────────────────────────────────
 lock_pattern "$WORKSPACE_ROOT/backend/src/database" "*.ts"
 
+# ── env files ─────────────────────────────────────────────────────────────────
+while IFS= read -r -d '' f; do
+  lock_file "$f"
+done < <(find "$WORKSPACE_ROOT" -name ".env*" -not -path "*/node_modules/*" -not -path "*/.git/*" -print0 2>/dev/null)
+
 # ── brain migrations ───────────────────────────────────────────────────────────
 lock_file "$WORKSPACE_ROOT/backend/src/agents/brain/_migrations/brain.migration.ts"
 lock_pattern "$WORKSPACE_ROOT/backend/src/agents/brain/drizzle" "*.sql"
