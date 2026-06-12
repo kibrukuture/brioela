@@ -1,0 +1,110 @@
+# Draft: brioela.brain.agent.ts — chat entrypoint extension (gap)
+
+Target: `backend/src/agents/brain/brioela.brain.agent.ts`
+
+**Gap (feature 20):** Wire `@callable() chat`, optional `onMessage`, `alarm()` delegation to **14**, and `buildAlarmWakeCallbacks`. Full intended snapshot — merges with production memory RPC.
+
+---
+
+## Intended production file (full snapshot — not yet created)
+
+```typescript
+import { Agent, callable } from 'agents'
+import { createDatabase, type BrainDatabase } from '@/agents/brain/_database'
+import { createMemoryEventWrite } from '@/agents/brain/_mappers'
+import { runMigrations, type BrainMigrationReadiness } from '@/agents/brain/_migrations'
+import { listMemoryEvents, writeMemoryEvent } from '@/agents/brain/_repositories'
+import {
+	appendMemoryEventSchema,
+	type AppendBrainMemoryEvent,
+	type BrainMemoryEventAppend,
+	type BrainMemoryEvents,
+	type CheckedBrainReadiness,
+	listMemoryEventsSchema,
+	type ListBrainMemoryEvents,
+} from '@/agents/brain/_rpc'
+import {
+	chatTurnInputSchema,
+	type ChatTurnInput,
+	type ChatTurnResponse,
+} from '@/agents/brain/_rpc/chat.rpc'
+import { handleChatMessage } from '@/agents/brain/_handlers/chat.entrypoint.handler'
+import { buildAlarmWakeCallbacks } from '@/agents/brain/_helpers/build.alarm.wake.callbacks.helper'
+import { BrainReadinessUnavailableError } from '@/agents/brain/_types'
+import { readCurrentEpochMs } from '@/time/_helpers'
+
+export interface BrioelaBrainState {
+	ready: boolean
+}
+
+export type BrioelaBrainEnv = Cloudflare.Env
+
+export class BrioelaBrain extends Agent<BrioelaBrainEnv, BrioelaBrainState> {
+	initialState: BrioelaBrainState = { ready: false }
+
+	private readonly database: BrainDatabase
+	private readiness: BrainMigrationReadiness | null = null
+
+	constructor(ctx: DurableObjectState, env: BrioelaBrainEnv) {
+		super(ctx, env)
+		this.database = createDatabase(ctx.storage)
+
+		ctx.blockConcurrencyWhile(async () => {
+			const readiness = await runMigrations(this.database, readCurrentEpochMs())
+			this.readiness = readiness
+			this.setState({ ready: readiness.status === 'ready' })
+		})
+	}
+
+	private get userId(): string {
+		// Agents SDK: derive from DO name / routing — exact helper TBD with platform auth
+		return this.ctx.id.toString()
+	}
+
+	private get wake() {
+		return buildAlarmWakeCallbacks(this.ctx, this.database, this.userId)
+	}
+
+	@callable()
+	appendMemoryEvent(memoryEventAppend: AppendBrainMemoryEvent): BrainMemoryEventAppend {
+		const memoryEvent = appendMemoryEventSchema.parse(memoryEventAppend)
+		const event = writeMemoryEvent(this.database, createMemoryEventWrite(memoryEvent, readCurrentEpochMs()))
+
+		return { event }
+	}
+
+	@callable()
+	listMemoryEvents(memoryEventFilter: ListBrainMemoryEvents): BrainMemoryEvents {
+		const filter = listMemoryEventsSchema.parse(memoryEventFilter)
+
+		return listMemoryEvents(this.database, filter)
+	}
+
+	@callable()
+	checkReadiness(): CheckedBrainReadiness {
+		if (this.readiness === null) {
+			throw new BrainReadinessUnavailableError()
+		}
+
+		return { readiness: this.readiness }
+	}
+
+	@callable()
+	async chat(input: ChatTurnInput): Promise<ChatTurnResponse> {
+		const turn = chatTurnInputSchema.parse(input)
+
+		return handleChatMessage({
+			database: this.database,
+			env: this.env,
+			userId: this.userId,
+			wake: this.wake,
+			waitUntil: (promise) => this.ctx.waitUntil(promise),
+			input: turn,
+		})
+	}
+
+	// TODO(14): override async alarm() { await dispatchDueAlarms(this) }
+
+	// TODO(20): Agents SDK onMessage hook — delegate to handleChatMessage when chat transport ships
+}
+```
