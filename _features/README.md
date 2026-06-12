@@ -75,4 +75,4 @@ Old docs (`implementable-specs/`, `build-guide/`, ledgers) migrate here one feat
 | 53 | `53-harvest` | Harvest |
 | 54 | `54-tonight` | Tonight |
 
-**Migration status (docs only):** fully migrated — `04-brain-foundation`, `05-brain-memory-tools`, `06-brain-skill-tools`, `07-brain-constraint-tools`, `08-brain-recipe-tools`, `09-brain-alarm-tools`, `10-brain-agent-identity`, `11-brain-sessions-lifecycle`, `12-brain-sub-agents`, `13-brain-session-compression`, `14-brain-alarm-dispatch`. All others: stub `status.md` unless noted.
+**Migration status (docs only):** fully migrated — `04-brain-foundation`, `05-brain-memory-tools`, `06-brain-skill-tools`, `07-brain-constraint-tools`, `08-brain-recipe-tools`, `09-brain-alarm-tools`, `10-brain-agent-identity`, `11-brain-sessions-lifecycle`, `12-brain-sub-agents`, `13-brain-session-compression`, `14-brain-alarm-dispatch`, `15-brain-system-prompt`. All others: stub `status.md` unless noted.
