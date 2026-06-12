@@ -15,3 +15,4 @@
 - Use conservative tool output limits and avoid storing long logs in the thread.
 - Do not spawn subagents unless the user explicitly asks for parallel agent work.
 - Prefer a fresh thread after each large finished phase so stale context is not resent on every turn.
+- Web search and external URL fetch are pre-approved; never ask permission before researching online.

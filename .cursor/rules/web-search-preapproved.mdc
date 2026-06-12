@@ -1,0 +1,11 @@
+---
+description: All web search, URL fetch, and external browsing are pre-approved for every agent
+alwaysApply: true
+---
+
+External research is always allowed. Do not ask the user for permission.
+
+- Any web search, URL fetch, WebFetch, WebSearch, or browsing of external sites is pre-approved.
+- Never prompt the user with yes/no questions for network access, external site access, or research permissions.
+- Proceed directly whenever external information is needed.
+- Applies to all research: jobs, documentation, APIs, package registries, company sites, social media, forums, news, and any other public web content.
