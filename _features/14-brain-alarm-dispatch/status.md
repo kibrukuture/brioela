@@ -4,7 +4,7 @@ in_progress
 
 **Dispatch infrastructure shipped.** Registry, batch processor, lifecycle repos, and `BrioelaBrain.alarm()` are live. Handler stub bodies (session_watchdog, brain_maintenance, behavior_pattern) are placeholders — features 11 and 12 fill them in.
 
-**Living catalog:** Alarm type inventory in `spec.md` is a snapshot — new `alarm_type` strings require a new handler registered in `register.brain.alarm.handlers.ts`; no schema migration, no Brain core changes.
+**Living catalog:** Alarm type inventory in `spec.md` is a snapshot — new `alarm_type` strings require a new action registered in `create.brain.alarm.registry.handler.ts`; no schema migration, no Brain core changes.
 
 # Shipped in backend
 
@@ -13,13 +13,13 @@ in_progress
 - [x] `writeUserAlarm`, `cancelUserAlarm` (**09**)
 - [x] `AlarmWakeCallbacks` type exported (**09**)
 - [x] `sessions.alarm_type` column for dispatch-created rows (**04**)
-- [x] `_dispatch/alarm.handler.registry.ts` — `AlarmHandlerRegistry` (exact + prefix match)
-- [x] `_types/brain.alarm.handler.type.ts` — `AlarmHandler`, `AlarmHandlerContext`, `AlarmHandlerResult`
+- [x] `_dispatch/alarm.registry.ts` — `AlarmRegistry` (exact + prefix match)
+- [x] `_types/brain.alarm.action.type.ts` — `AlarmAction`, `AlarmContext`, `AlarmOutcome`
 - [x] `_constants/alarm.dispatch.constant.ts` — `MAX_ALARM_ATTEMPTS = 3`, `STALE_PROCESSING_MS`
 - [x] `_repositories/read.due.alarms.repository.ts` — pending due + stuck processing rows
 - [x] `_repositories/update.alarm.status.repository.ts` — `markAlarmProcessing`, `markAlarmFinished`
 - [x] `_handlers/settle.due.alarms.handler.ts` — batch processor
-- [x] `_handlers/register.brain.alarm.handlers.ts` — registry factory (only file that changes when agents are added)
+- [x] `_handlers/create.brain.alarm.registry.handler.ts` — registry factory (only file that changes when agents are added)
 - [x] `_handlers/run.session.watchdog.handler.ts` — stub (**11** fills body)
 - [x] `_handlers/run.brain.maintenance.handler.ts` — stub (**12** fills body)
 - [x] `_handlers/run.behavior.pattern.handler.ts` — stub (**12** fills body)
