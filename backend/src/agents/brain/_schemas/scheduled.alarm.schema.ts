@@ -19,6 +19,7 @@ export const scheduledAlarms = sqliteTable(
 		rescheduledFromAlarmId: text('rescheduled_from_alarm_id'),
 		rescheduledToAlarmId: text('rescheduled_to_alarm_id'),
 		label: text('label'),
+		dedupKey: text('dedup_key'),
 		scheduledAt: integer('scheduled_at', { mode: 'number' }).notNull(),
 		startedAt: integer('started_at', { mode: 'number' }),
 		completedAt: integer('completed_at', { mode: 'number' }),
@@ -47,6 +48,7 @@ export const scheduledAlarms = sqliteTable(
 		index('scheduled_alarms_status_scheduled_at_index').on(table.status, table.scheduledAt),
 		index('scheduled_alarms_type_status_index').on(table.alarmType, table.status),
 		index('scheduled_alarms_triggering_session_id_index').on(table.triggeringSessionId).where(sql`triggering_session_id IS NOT NULL`),
+		index('scheduled_alarms_user_dedup_key_index').on(table.userId, table.dedupKey).where(sql`dedup_key IS NOT NULL`),
 	],
 )
 

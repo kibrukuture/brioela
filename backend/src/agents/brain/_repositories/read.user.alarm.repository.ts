@@ -30,6 +30,25 @@ export function readPendingUserAlarmByType(
 	)
 }
 
+export function readPendingUserAlarmByDedupKey(
+	database: BrainDatabase,
+	userId: string,
+	dedupKey: string,
+) {
+	return getOne(
+		database
+			.select()
+			.from(scheduledAlarms)
+			.where(
+				and(
+					eq(scheduledAlarms.userId, userId),
+					eq(scheduledAlarms.dedupKey, dedupKey),
+					eq(scheduledAlarms.status, 'pending'),
+				),
+			),
+	)
+}
+
 export function readEarliestPendingScheduledAt(database: BrainDatabase, userId: string) {
 	return getOne(
 		database

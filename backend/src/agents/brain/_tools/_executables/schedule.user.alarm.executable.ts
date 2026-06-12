@@ -2,11 +2,10 @@ import { createId } from '@brioela/shared/_ids'
 import type { BrainDatabase } from '@/agents/brain/_database'
 import {
 	readEarliestPendingScheduledAt,
-	readPendingUserAlarmByType,
+	readPendingUserAlarmByDedupKey,
 	writeUserAlarm,
 } from '@/agents/brain/_repositories'
 import { type scheduleUserAlarmSchema } from '@/agents/brain/_tools/_schemas/schedule.user.alarm.schema'
-import { DEDUP_ALARM_TYPE_VALUES } from '@/agents/brain/_constants'
 import { readCurrentEpochMs } from '@/time/_helpers'
 import type { z } from '@brioela/shared/zod'
 
@@ -31,15 +30,16 @@ export const scheduleUserAlarmExecutable = async (
 		}
 	}
 
-	if (DEDUP_ALARM_TYPE_VALUES.some((alarmType) => alarmType === input.alarm_type)) {
-		const existing = readPendingUserAlarmByType(database, userId, input.alarm_type)
+	if (input.dedup_key) {
+		const existing = readPendingUserAlarmByDedupKey(database, userId, input.dedup_key)
 		if (existing) {
 			return {
 				error: 'alarm_already_pending' as const,
 				id: existing.id,
-				alarm_type: input.alarm_type,
+				alarm_type: existing.alarmType,
+				dedup_key: input.dedup_key,
 				scheduled_at: existing.scheduledAt,
-				hint: 'A pending alarm of this type already exists. Cancel it first if you need to reschedule.',
+				hint: 'A pending alarm with this dedup_key already exists. Cancel it first if you need to reschedule.',
 			}
 		}
 	}
@@ -50,6 +50,7 @@ export const scheduleUserAlarmExecutable = async (
 		id: alarmId,
 		userId,
 		alarmType: input.alarm_type,
+		dedupKey: input.dedup_key ?? null,
 		triggeringSessionId: input.triggering_session_id ?? null,
 		payload: JSON.stringify(input.payload),
 		status: 'pending',
