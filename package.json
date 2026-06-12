@@ -82,7 +82,7 @@
     "lock:setup": "bash tools/scripts/lock.setup.sh",
     "git:safe": "bun run tools/scripts/git-safe.ts",
     "verify": "echo 'verify: guards unwired (no gate daemon required)'",
-    "brain:db:generate": "bun --cwd backend brain:db:generate",
+    "brain:db:generate": "bash tools/scripts/brain-db-generate.sh",
     "brain:db:check": "bun --cwd backend brain:db:check",
     "brain:typecheck": "bun --cwd backend brain:typecheck",
     "brain:test": "bun --cwd backend brain:test",

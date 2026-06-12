@@ -4,7 +4,7 @@
 # The schg flag is OS-enforced: no script, no AI, no process can bypass it without sudo.
 #
 # Usage: bun run unlock <category>
-# Categories: baselines  policies  lexicon  schema  deploy
+# Categories: baselines  policies  lexicon  schema  deploy  migrations
 set -euo pipefail
 
 WORKSPACE_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
@@ -16,11 +16,12 @@ if [ -z "$CATEGORY" ]; then
   echo ""
   echo "usage: bun run unlock <category>"
   echo ""
-  echo "  baselines   guard baseline files"
-  echo "  policies    guard rule policy files"
-  echo "  lexicon     approved word list files"
-  echo "  schema      database schema files"
-  echo "  deploy      deploy config files"
+  echo "  baselines    guard baseline files"
+  echo "  policies     guard rule policy files"
+  echo "  lexicon      approved word list files"
+  echo "  schema       database schema files"
+  echo "  deploy       deploy config files"
+  echo "  migrations   brain drizzle SQL + snapshots + brain.migration.ts"
   echo ""
   exit 1
 fi
@@ -99,9 +100,15 @@ case "$CATEGORY" in
       unlock_file "$f"
     done < <(find "$WORKSPACE_ROOT" \( -name "fly.toml" -o -name "wrangler.toml" -o -name "wrangler.json" \) -not -path "*/node_modules/*" -print0 2>/dev/null)
     ;;
+  migrations)
+    unlock_file "$WORKSPACE_ROOT/backend/src/agents/brain/_migrations/brain.migration.ts"
+    unlock_pattern "$WORKSPACE_ROOT/backend/src/agents/brain/drizzle" "*.sql"
+    unlock_pattern "$WORKSPACE_ROOT/backend/src/agents/brain/drizzle/meta" "*.json"
+    unlock_file "$WORKSPACE_ROOT/tools/scripts/brain-db-generate.sh"
+    ;;
   *)
     echo "unknown category: $CATEGORY"
-    echo "valid: baselines  policies  lexicon  schema  deploy"
+    echo "valid: baselines  policies  lexicon  schema  deploy  migrations"
     exit 1
     ;;
 esac
