@@ -8,10 +8,7 @@ import { scheduleUserAlarmTool } from '@/agents/brain/_tools/schedule.user.alarm
 import { cancelUserAlarmTool } from '@/agents/brain/_tools/cancel.user.alarm.tool'
 import type { AlarmWakeCallbacks } from '@/agents/brain/_tools/_executables/schedule.user.alarm.executable'
 import type { BrainDatabase } from '@/agents/brain/_database'
-import { z } from '@brioela/shared/zod'
-
-export const sessionKindSchema = z.enum(['chat', 'cooking', 'alarm', 'brain_maintenance', 'behavior_pattern_detection'])
-export type SessionKind = z.infer<typeof sessionKindSchema>
+import { sessionKindSchema, type SessionKind } from '@/agents/brain/_constants'
 
 const TOOL_PERMISSIONS: Record<SessionKind, string[]> = {
 	chat: [

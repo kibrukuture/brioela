@@ -13,4 +13,3 @@ export const scheduleUserAlarmSchema = z
 		{ message: 'scheduled_at must be a future timestamp', path: ['scheduled_at'] },
 	)
 
-export const DEDUP_USER_ALARM_TYPES = ['brain_maintenance_run', 'behavior_pattern_detection'] as const

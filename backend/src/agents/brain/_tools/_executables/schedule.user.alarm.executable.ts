@@ -5,10 +5,8 @@ import {
 	readPendingUserAlarmByType,
 	writeUserAlarm,
 } from '@/agents/brain/_repositories'
-import {
-	DEDUP_USER_ALARM_TYPES,
-	type scheduleUserAlarmSchema,
-} from '@/agents/brain/_tools/_schemas/schedule.user.alarm.schema'
+import { type scheduleUserAlarmSchema } from '@/agents/brain/_tools/_schemas/schedule.user.alarm.schema'
+import { DEDUP_ALARM_TYPE_VALUES } from '@/agents/brain/_constants'
 import { readCurrentEpochMs } from '@/time/_helpers'
 import type { z } from '@brioela/shared/zod'
 
@@ -33,7 +31,7 @@ export const scheduleUserAlarmExecutable = async (
 		}
 	}
 
-	if (DEDUP_USER_ALARM_TYPES.some((alarmType) => alarmType === input.alarm_type)) {
+	if (DEDUP_ALARM_TYPE_VALUES.some((alarmType) => alarmType === input.alarm_type)) {
 		const existing = readPendingUserAlarmByType(database, userId, input.alarm_type)
 		if (existing) {
 			return {

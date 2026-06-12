@@ -1,6 +1,6 @@
 import { check, index, integer, real, sql, sqliteTable, text } from '@/database/sqlite/_schema'
+import { SESSION_TYPE_VALUES } from '@/agents/brain/_constants'
 
-const sessionKind = ['chat', 'cooking', 'alarm', 'background'] as const
 const sessionStatus = ['active', 'completed', 'compressed', 'abandoned'] as const
 
 export const sessions = sqliteTable(
@@ -8,7 +8,7 @@ export const sessions = sqliteTable(
 	{
 		id: text('id').primaryKey(),
 		userId: text('user_id').notNull(),
-		sessionType: text('session_type', { enum: sessionKind }).notNull(),
+		sessionType: text('session_type', { enum: SESSION_TYPE_VALUES }).notNull(),
 		parentSessionId: text('parent_session_id'),
 		recipeId: text('recipe_id'),
 		alarmType: text('alarm_type'),
