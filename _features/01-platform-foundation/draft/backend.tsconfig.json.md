@@ -1,0 +1,33 @@
+# Draft: backend.tsconfig.json
+
+Target: `backend/tsconfig.json`
+
+```
+{
+	"compilerOptions": {
+		"target": "es2021",
+		"lib": ["es2021"],
+		"jsx": "react-jsx",
+		"jsxImportSource": "hono/jsx",
+
+		"module": "es2022",
+		"moduleResolution": "Bundler",
+		"types": ["@cloudflare/workers-types/2023-07-01"],
+		"resolveJsonModule": true,
+		"allowJs": true,
+		"checkJs": false,
+		"noEmit": true,
+		"isolatedModules": true,
+		"allowSyntheticDefaultImports": true,
+		"forceConsistentCasingInFileNames": true,
+		"strict": true,
+		"skipLibCheck": true,
+		"paths": {
+			"@/*": ["./src/*"],
+			"@brioela/shared/*": ["../shared/*"]
+		}
+	},
+	"exclude": ["test", "src/**/*.test.ts"],
+	"include": ["worker-configuration.d.ts", "src/**/*.ts", "src/**/*.tsx"]
+}
+```

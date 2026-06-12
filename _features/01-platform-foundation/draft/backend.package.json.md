@@ -1,0 +1,71 @@
+# Draft: backend.package.json
+
+Target: `backend/package.json`
+
+```
+{
+	"name": "@brioela/api",
+	"version": "1.0.0",
+	"private": true,
+	"engines": {
+		"node": "24.x"
+	},
+	"scripts": {
+		"dev": "bun --watch  --preload ./src/instrument.ts ./src/index.ts",
+		"start": "bun --preload ./src/instrument.ts ./dist/index.js",
+		"build": "bun build src/index.ts --outdir=dist --target=node",
+		"brain:typecheck": "tsc -p brain.typecheck.config.json --noEmit",
+		"brain:test:typecheck": "tsc -p brain.test.typecheck.config.json --noEmit",
+		"brain:test": "bun run brain:test:typecheck && vitest run src/agents/brain/**/*.test.ts",
+		"brain:db:manifest:generate": "BRIOELA_WORKSPACE_ROOT=.. bun ../tools/brioela-brain-migration-manifest/generate.brain.migration.manifest.handler.ts",
+		"brain:db:manifest:check": "BRIOELA_WORKSPACE_ROOT=.. bun ../tools/brioela-brain-migration-manifest/check.brain.migration.manifest.handler.ts",
+		"brain:db:generate": "drizzle-kit generate --config brain.drizzle.config.ts && bun run brain:db:manifest:generate",
+		"brain:db:check": "drizzle-kit check --config brain.drizzle.config.ts && bun run brain:db:manifest:check",
+		"dep": "npx wrangler deploy"
+	},
+	"devDependencies": {
+		"@babel/plugin-proposal-decorators": "^7.29.7",
+		"@cloudflare/vitest-pool-workers": "^0.16.13",
+		"@cloudflare/workers-types": "^4.20260608.1",
+		"@types/lodash-es": "^4.17.12",
+		"@types/nodemailer": "^7.0.11",
+		"@types/pg": "^8.20.0",
+		"@types/react": "^19.2.17",
+		"@types/stripe": "^8.0.417",
+		"@types/validator": "^13.15.10",
+		"drizzle-kit": "^0.31.8",
+		"esbuild": "^0.27.7",
+		"esbuild-plugin-alias": "^0.2.1",
+		"typescript": "^5.9.3",
+		"vitest": "^4.1.8",
+		"wrangler": "^4.98.0"
+	},
+	"dependencies": {
+		"@ai-sdk/anthropic": "^3.0.81",
+		"@ai-sdk/openai": "^3.0.68",
+		"@aws-sdk/client-s3": "^3.1063.0",
+		"@onesignal/node-onesignal": "^5.8.0",
+		"@sentry/node": "^10.56.0",
+		"@supabase/supabase-js": "^2.107.0",
+		"@ts-rest/serverless": "^3.52.1",
+		"@upstash/qstash": "^2.11.0",
+		"@upstash/redis": "^1.38.0",
+		"agents": "^0.14.5",
+		"ai": "^6.0.198",
+		"base64-arraybuffer-es6": "^3.1.0",
+		"base64-js": "^1.5.1",
+		"dayjs": "^1.11.21",
+		"drizzle-orm": "^0.44.7",
+		"fuse.js": "^7.4.2",
+		"global": "^4.4.0",
+		"hono": "^4.12.24",
+		"ioredis": "^5.11.1",
+		"lodash-es": "^4.18.1",
+		"nanoid": "^5.1.11",
+		"pg": "^8.21.0",
+		"postgres": "^3.4.9",
+		"resend": "^6.12.4",
+		"stripe": "^20.4.1"
+	}
+}
+```
