@@ -56,11 +56,9 @@ Platform skeleton exists and config/adapter layer is now Brioela-aligned. Schnl/
 | G6 | No API route calls `BRIOELA_BRAIN.idFromName(userId)` | `rg BRIOELA_BRAIN backend/src/api` — zero; `04-brain-foundation/status.md` G17 |
 | G7 | Shared folders `api/` + `validators/` vs guide `routes/` + `validator/` | `shared/` tree vs `04-shared-package-setup.md` |
 | G8 | No root `shared/index.ts` barrel — subpath imports only | `glob shared/index.ts` — missing; guide requires barrel |
-| G9 | CORS + mobile API URLs still `schnl.com` / `api.schnl.com` | `allowed-cors-origins.ts`; `constants/urls.ts` |
-| G10 | Supabase admin uses `schema: 'schnl'` while Drizzle uses `brioela` | `supabase-admin-client.ts` `@ts-ignore schema: 'schnl'` |
-| G11 | Postgres pool max 30/min 5 — not isolate-safe if deployed on Workers | `database/client.ts` |
-| G12 | Banned packages present: `ioredis` (backend), `axios` (mobile) | `backend/package.json`; `mobile/network/core/client.ts`; `11-packages.md` bans |
+| G12 | Banned package present: `axios` (mobile) | `mobile/network/core/client.ts`; `11-packages.md` bans |
 | G13 | No `@upstash/workflow` dependency despite architecture spec | `backend/package.json`; `24-technical-architecture-backbone.md` |
+| G25 | Email footer still says `Schnl Team` — not `Brioela` | `backend/src/core/email/templates/wrapper.template.tsx:92` |
 | G14 | `dev` script runs Bun on `index.ts` with no `Bun.serve` / no `wrangler dev` | `backend/package.json`; `rg Bun.serve backend/src` — zero |
 | G15 | Root `deploy:backend` references missing `backend/fly.toml` | `package.json` `deploy:backend`; `glob **/fly.toml` — zero |
 | G16 | Root tsconfig missing `@brioela/shared` path aliases | `tsconfig.json` vs `02-typescript-strictness.md` |
