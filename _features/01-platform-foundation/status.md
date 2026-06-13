@@ -2,7 +2,7 @@
 
 open
 
-Platform skeleton exists (monorepo, Hono shell, shared Drizzle + routes, Brain DO export, wrangler config, guard tooling) but production still carries **Schnl/fintech legacy** and is **not** aligned with Brioela foundation build guides on hosting target, URLs, route prefix, shared layout, or product Postgres schema. Feature is **not** fully done — status stays `open`.
+Platform skeleton exists and config/adapter layer is now Brioela-aligned. Schnl/fintech legacy code (routes, handlers, jobs, schemas) **intentionally stays in the codebase** — it will be removed incrementally as new Brioela features replace each area. Do not bulk-delete legacy code ahead of replacement. New Brioela product features (routes, Postgres tables, mobile screens) are not added all at once — they ship one feature at a time as the numbered feature list progresses.
 
 # Shipped in repo (partial)
 
@@ -17,8 +17,8 @@ Platform skeleton exists (monorepo, Hono shell, shared Drizzle + routes, Brain D
 - [x] CORS, error handler, auth middleware with skip routes
 - [x] Routers mounted via `API_ROUTES` from shared
 - [x] Zod env validation (`core/config/env.ts`)
-- [x] `getDb()` Postgres Drizzle client
-- [x] Supabase admin client for JWT validation
+- [x] `getDb()` Postgres Drizzle client — `drizzle-orm/postgres-js` + `postgres()`, transaction pooler, `prepare: false`
+- [x] Supabase admin client — `createClient<BrioelaNonTypedDb, 'brioela'>`, schema `brioela`
 - [x] QStash queue ingress + signature verify
 - [x] Upstash Redis client
 - [x] Response helpers with meta/requestId
