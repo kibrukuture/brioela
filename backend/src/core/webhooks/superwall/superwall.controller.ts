@@ -73,7 +73,7 @@ export async function handleSuperwallWebhook(c: AppContext) {
 				result = await handlePaymentFailed(data, db);
 				if (result.processed && result.userId) {
 					await queueEmail(c, 'payment_failed', result.userId, {
-						updatePaymentUrl: 'https://app.schnl.com/settings/billing',
+						updatePaymentUrl: 'https://app.brioela.com/settings/billing',
 					});
 				}
 				break;
@@ -91,7 +91,7 @@ export async function handleSuperwallWebhook(c: AppContext) {
 				result = await handleSubscriptionExpired(data, db);
 				if (result.processed && result.userId) {
 					await queueEmail(c, 'subscription_expired', result.userId, {
-						reactivateUrl: 'https://app.schnl.com/subscribe',
+						reactivateUrl: 'https://app.brioela.com/subscribe',
 					});
 				}
 				break;

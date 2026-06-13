@@ -33,7 +33,6 @@
 		}
 	],
 
-	// Only serve on api.schnl.com
 	"routes": [
 		{
 			"pattern": "api.brioela.com/*",

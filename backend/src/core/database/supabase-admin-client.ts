@@ -1,17 +1,17 @@
-import { createClient } from '@supabase/supabase-js';
+import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 
-let supabaseAdmin: ReturnType<typeof createClient> | null = null;
+type BrioelaNonTypedDb = { brioela: Record<string, unknown> }
+
+let supabaseAdmin: SupabaseClient<BrioelaNonTypedDb, 'brioela'> | null = null;
 
 export function getSupabaseAdmin() {
 	if (!supabaseAdmin) {
-		supabaseAdmin = createClient(
+		supabaseAdmin = createClient<BrioelaNonTypedDb, 'brioela'>(
 			process.env.SUPABASE_URL,
-			//
 			process.env.SUPABASE_SERVICE_ROLE_KEY,
 			{
 				db: {
-					// @ts-ignore
-					schema: 'schnl',
+					schema: 'brioela',
 				},
 			}
 		);

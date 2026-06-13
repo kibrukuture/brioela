@@ -40,7 +40,7 @@ export default function WrapperEmailTemplate({ title, WrappableContent, communic
 										margin: 0,
 									}}
 								>
-									Schnl
+									Brioela
 								</p>
 
 								{communicationCode ? (
@@ -95,13 +95,13 @@ export default function WrapperEmailTemplate({ title, WrappableContent, communic
 								<table width="100%" role="presentation" style={{ marginTop: '24px', paddingTop: '16px', borderTop: '1px solid #f0f0f0' }}>
 									<tr>
 										<td style={{ fontSize: '12px', color: '#999999', padding: 0 }}>
-											<a href="https://schnl.com" target="_blank" style="color:#999999;text-decoration:none;margin-right:16px;">
+											<a href="https://brioela.com" target="_blank" style="color:#999999;text-decoration:none;margin-right:16px;">
 												Website
 											</a>
-											<a href="https://schnl.com/terms" target="_blank" style="color:#999999;text-decoration:none;margin-right:16px;">
+											<a href="https://brioela.com/terms" target="_blank" style="color:#999999;text-decoration:none;margin-right:16px;">
 												Terms
 											</a>
-											<a href="https://schnl.com/privacy" target="_blank" style="color:#999999;text-decoration:none;">
+											<a href="https://brioela.com/privacy" target="_blank" style="color:#999999;text-decoration:none;">
 												Privacy
 											</a>
 										</td>

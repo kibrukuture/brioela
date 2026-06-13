@@ -1,4 +1,4 @@
 export const ALLOWED_CORS_ORIGINS = [
-  "https://schnl.com",
-  "https://www.schnl.com",
+  "https://brioela.com",
+  "https://www.brioela.com",
 ];
