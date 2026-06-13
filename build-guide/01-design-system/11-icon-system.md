@@ -90,11 +90,11 @@ Icons always use semantic color tokens — never raw hex.
 
 | Context | Token | Class |
 |---|---|---|
-| Default icon | `text.secondary` | `text-text-secondary` |
+| Default icon | `ink.secondary` | `text-ink-secondary` |
 | Active icon | `accent.primary` | `text-accent-primary` |
 | Danger icon | `accent.danger` | `text-accent-danger` |
 | Caution icon | `accent.caution` | `text-accent-caution` |
-| Inverse (on dark surface) | `text.inverse` | `text-text-inverse` |
+| Inverse (on dark surface) | `ink.inverse` | `text-ink-inverse` |
 
 The `color` prop on Phosphor icons accepts a hex string. Pass it from the semantic token constants in `src/design-system/colors.ts`.
 

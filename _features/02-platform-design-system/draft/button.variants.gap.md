@@ -13,7 +13,7 @@ export const buttonVariants = cva(
     variants: {
       variant: {
         primary: 'bg-accent-primary',
-        secondary: 'bg-surface-elevated border border-border-visible',
+        secondary: 'bg-surface-elevated border border-stroke-visible',
         ghost: 'bg-transparent',
         danger: 'bg-accent-danger',
       },

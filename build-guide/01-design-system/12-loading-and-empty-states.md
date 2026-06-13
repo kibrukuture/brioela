@@ -75,7 +75,7 @@ Three elements only, in order:
 
 **1. Ambient field intensity** — when a screen has no content, the ambient background shader (Layer 1 from `05-skia-layers.md`) increases its amplitude. The space breathes more visibly. The screen feels alive and expectant rather than absent. Each screen that can be empty signals this to the root ambient canvas via a context value.
 
-**2. One line of display text** — Cormorant Garamond, `text-display-sm` (40pt), centered, Regular weight, color `text-text-secondary`. The copy is defined per-feature in each feature's UI spec — not here. The design system only specifies the visual treatment. This is the rarest font in the system appearing at a moment that earns it.
+**2. One line of display text** — Cormorant Garamond, `text-display-sm` (40pt), centered, Regular weight, color `text-ink-secondary`. The copy is defined per-feature in each feature's UI spec — not here. The design system only specifies the visual treatment. This is the rarest font in the system appearing at a moment that earns it.
 
 **3. One action** — if there is something the user can do to populate the space. One button, `variant: ghost` or `variant: secondary` (never primary — the empty state is not urgent). No second action. No "or you could also..." option.
 

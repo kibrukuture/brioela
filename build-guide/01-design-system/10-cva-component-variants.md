@@ -29,7 +29,7 @@ const buttonVariants = cva(
     variants: {
       variant: {
         primary:   'bg-accent-primary',
-        secondary: 'bg-surface-elevated border border-border-visible',
+        secondary: 'bg-surface-elevated border border-stroke-visible',
         ghost:     'bg-transparent',
         danger:    'bg-accent-danger',
       },
@@ -60,7 +60,7 @@ export function Button({ variant, size, label, onPress, disabled }: ButtonProps)
       disabled={disabled}
       accessibilityRole="button"
     >
-      <Text className="font-jakarta text-label-lg font-semibold text-text-inverse">
+      <Text className="font-jakarta text-label-lg font-semibold text-ink-inverse">
         {label}
       </Text>
     </Pressable>
@@ -81,8 +81,8 @@ const cardVariants = cva(
     variants: {
       surface: {
         glass:    'bg-surface-glass border-surface-glass-border',
-        elevated: 'bg-surface-elevated border-border-subtle',
-        recessed: 'bg-surface-recessed border-border-subtle',
+        elevated: 'bg-surface-elevated border-stroke-subtle',
+        recessed: 'bg-surface-recessed border-stroke-subtle',
       },
       verdict: {
         none:    '',

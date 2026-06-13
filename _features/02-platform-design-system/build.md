@@ -146,7 +146,7 @@ When complete, `app/_layout.tsx` must:
 
 ### Tokens
 - [ ] `mobile/design-system/colors.ts` exports primitives + semantic light/dark + verdict bloom helpers.
-- [ ] `global.css` + `tailwind.config` use Brioela semantic names (`bg-bg-primary`, `text-text-secondary`, `accent-primary`, …).
+- [ ] `global.css` + `tailwind.config` use Brioela semantic names (`bg-surface-primary`, `text-ink-secondary`, `accent-primary`, …).
 - [ ] No arbitrary color classes (`text-[#…]`, `neutral-*`, default Tailwind palette) in new Brioela product code.
 - [ ] Typography scale available as NativeWind classes; three font families loaded.
 

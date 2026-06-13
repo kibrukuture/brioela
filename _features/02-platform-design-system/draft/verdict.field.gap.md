@@ -40,7 +40,7 @@ export function VerdictField({ level, children }: VerdictFieldProps) {
   }))
 
   return (
-    <Animated.View style={animatedStyle} className="flex-1 bg-bg-primary">
+    <Animated.View style={animatedStyle} className="flex-1 bg-surface-primary">
       {children}
     </Animated.View>
   )

@@ -69,32 +69,27 @@ const primitive = {
 
 All Tailwind class names reference these via `tailwind.config.ts` extension. Components use class names — never raw values.
 
-### Background
-
-| Semantic | Light value | Dark value | Class |
-|---|---|---|---|
-| `background.primary` | `#F8F6F2` | `#0E0C10` | `bg-bg-primary dark:bg-bg-primary` |
-| `background.deep` | `#EDE9E3` | `#080609` | `bg-bg-deep dark:bg-bg-deep` |
-
 ### Surface
 
 | Semantic | Light value | Dark value | Class |
 |---|---|---|---|
+| `surface.primary` | `#F8F6F2` | `#0E0C10` | `bg-surface-primary dark:bg-surface-primary` |
+| `surface.deep` | `#EDE9E3` | `#080609` | `bg-surface-deep dark:bg-surface-deep` |
 | `surface.glass` | `rgba(255,255,255,0.72)` | `rgba(255,255,255,0.06)` | `bg-surface-glass` |
 | `surface.glass.border` | `rgba(0,0,0,0.06)` | `rgba(255,255,255,0.10)` | `border-surface-glass-border` |
 | `surface.glass.shadow` | `rgba(0,0,0,0.08)` | `rgba(0,0,0,0.40)` | shadow via `elevation` token |
 | `surface.elevated` | `rgba(255,255,255,0.90)` | `rgba(255,255,255,0.10)` | `bg-surface-elevated` |
 | `surface.recessed` | `rgba(0,0,0,0.04)` | `rgba(0,0,0,0.25)` | `bg-surface-recessed` |
 
-### Text
+### Ink
 
 | Semantic | Light value | Dark value | Class |
 |---|---|---|---|
-| `text.primary` | `#1C1917` | `#F2F0F5` | `text-text-primary dark:text-text-primary` |
-| `text.secondary` | `#78716C` | `#C8C5D0` | `text-text-secondary dark:text-text-secondary` |
-| `text.tertiary` | `#A8A29E` | `#7A7785` | `text-text-tertiary dark:text-text-tertiary` |
-| `text.disabled` | `#C4BDB8` | `#3D3A45` | `text-text-disabled dark:text-text-disabled` |
-| `text.inverse` | `#F8F6F2` | `#1C1917` | `text-text-inverse dark:text-text-inverse` |
+| `ink.primary` | `#1C1917` | `#F2F0F5` | `text-ink-primary dark:text-ink-primary` |
+| `ink.secondary` | `#78716C` | `#C8C5D0` | `text-ink-secondary dark:text-ink-secondary` |
+| `ink.tertiary` | `#A8A29E` | `#7A7785` | `text-ink-tertiary dark:text-ink-tertiary` |
+| `ink.disabled` | `#C4BDB8` | `#3D3A45` | `text-ink-disabled dark:text-ink-disabled` |
+| `ink.inverse` | `#F8F6F2` | `#1C1917` | `text-ink-inverse dark:text-ink-inverse` |
 
 ### Accent
 
@@ -104,13 +99,13 @@ All Tailwind class names reference these via `tailwind.config.ts` extension. Com
 | `accent.caution` | `#92400E` | `#C49A2B` | `text-accent-caution dark:text-accent-caution` |
 | `accent.danger` | `#991B1B` | `#B33A3A` | `text-accent-danger dark:text-accent-danger` |
 
-### Border
+### Stroke
 
 | Semantic | Light value | Dark value | Class |
 |---|---|---|---|
-| `border.subtle` | `rgba(0,0,0,0.05)` | `rgba(255,255,255,0.08)` | `border-border-subtle` |
-| `border.visible` | `rgba(0,0,0,0.10)` | `rgba(255,255,255,0.15)` | `border-border-visible` |
-| `border.accent` | `#2D7A4F` | `#4DB87A` | `border-border-accent` |
+| `stroke.subtle` | `rgba(0,0,0,0.05)` | `rgba(255,255,255,0.08)` | `border-stroke-subtle` |
+| `stroke.visible` | `rgba(0,0,0,0.10)` | `rgba(255,255,255,0.15)` | `border-stroke-visible` |
+| `stroke.accent` | `#2D7A4F` | `#4DB87A` | `border-stroke-accent` |
 
 ---
 
@@ -154,17 +149,23 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        bg: {
-          primary: { DEFAULT: '#F8F6F2', dark: '#0E0C10' },
-          deep:    { DEFAULT: '#EDE9E3', dark: '#080609' },
+        surface: {
+          primary:  { DEFAULT: '#F8F6F2', dark: '#0E0C10' },
+          deep:     { DEFAULT: '#EDE9E3', dark: '#080609' },
+          // glass, elevated, recessed defined via CSS variables (rgba — cannot be static hex)
         },
-        text: {
+        ink: {
           primary:   { DEFAULT: '#1C1917', dark: '#F2F0F5' },
           secondary: { DEFAULT: '#78716C', dark: '#C8C5D0' },
           // ...
         },
         accent: {
           primary: { DEFAULT: '#2D7A4F', dark: '#4DB87A' },
+          // ...
+        },
+        stroke: {
+          subtle:  { DEFAULT: 'rgba(0,0,0,0.05)',  dark: 'rgba(255,255,255,0.08)' },
+          visible: { DEFAULT: 'rgba(0,0,0,0.10)',  dark: 'rgba(255,255,255,0.15)' },
           // ...
         },
       }
@@ -181,10 +182,10 @@ All light mode text tokens meet WCAG 2.1 AA minimum (4.5:1 for normal text, 3:1 
 
 | Pair | Ratio | Passes |
 |---|---|---|
-| `text.primary` on `background.primary` (#1C1917 on #F8F6F2) | ~14:1 | AA + AAA |
-| `text.secondary` on `background.primary` (#78716C on #F8F6F2) | ~4.8:1 | AA |
-| `accent.primary` on `background.primary` (#2D7A4F on #F8F6F2) | ~5.2:1 | AA |
-| `accent.danger` on `background.primary` (#991B1B on #F8F6F2) | ~6.8:1 | AA + AAA |
+| `ink.primary` on `surface.primary` (#1C1917 on #F8F6F2) | ~14:1 | AA + AAA |
+| `ink.secondary` on `surface.primary` (#78716C on #F8F6F2) | ~4.8:1 | AA |
+| `accent.primary` on `surface.primary` (#2D7A4F on #F8F6F2) | ~5.2:1 | AA |
+| `accent.danger` on `surface.primary` (#991B1B on #F8F6F2) | ~6.8:1 | AA + AAA |
 
 Dark mode equivalents similarly verified against dark background values.
 
@@ -198,4 +199,4 @@ Dark mode equivalents similarly verified against dark background values.
 - Skia fills and Reanimated-driven colors that cannot use Tailwind import raw values from `src/design-system/colors.ts`.
 - Never use Tailwind's default palette (gray, slate, stone, zinc, etc.) — only extended semantic tokens.
 - The Verdict Field bloom is an animation, not a color change. Logic for when to bloom lives in the AI verdict response handler, not in the component.
-- Color names describe intent, not appearance. `text-text-secondary` not `text-stone-400`. `bg-surface-glass` not `bg-white/70`.
+- Color names describe intent, not appearance. `text-ink-secondary` not `text-stone-400`. `bg-surface-glass` not `bg-white/70`.
